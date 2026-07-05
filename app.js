@@ -1,6 +1,7 @@
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
+  positions:["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"],
   rot:1, my:0, op:0, serve:"mine",
   mode:"トス", result:"成功", logs:[], hist:[]
 };
@@ -14,7 +15,7 @@ function show(id){
   render();
 }
 function save(){ localStorage.setItem("setterTheoryV2", JSON.stringify(s)); }
-function load(){ const x=localStorage.getItem("setterTheoryV2"); if(x) s=JSON.parse(x); }
+function load(){ const x=localStorage.getItem("setterTheoryV2"); if(x) s=JSON.parse(x); if(!s.positions) s.positions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"]; }
 function snap(){ s.hist.push(JSON.stringify(s)); if(s.hist.length>300)s.hist.shift(); }
 function rotationNums(){
   let a=s.nums.slice();
@@ -32,6 +33,10 @@ function renderSetup(){
     b.classList.toggle("active", i===setupSelected);
     b.classList.toggle("setter", i===s.setterIndex);
     b.querySelector(".num").textContent=s.nums[i] || "-";
+    const name=b.querySelector(".name");
+    const sel=b.querySelector(".posSelect");
+    if(name) name.textContent=s.positions[i] || "";
+    if(sel) sel.value=s.positions[i] || sel.value;
   });
   const used=new Set(s.nums);
   const bank=document.getElementById("numberBank");
@@ -169,7 +174,17 @@ function downloadCSV(){
 }
 document.addEventListener("DOMContentLoaded",()=>{
   load();
-  document.querySelectorAll(".setupSpot").forEach(b=>b.addEventListener("click",()=>{setupSelected=Number(b.dataset.spot);renderSetup();}));
+  document.querySelectorAll(".setupSpot").forEach(b=>{
+    b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
+    b.addEventListener("keydown",(e)=>{ if(e.key==="Enter" || e.key===" "){setupSelected=Number(b.dataset.spot);renderSetup();}});
+  });
+  document.querySelectorAll(".posSelect").forEach(sel=>sel.addEventListener("change",(e)=>{
+    const i=Number(e.target.dataset.posSelect);
+    s.positions[i]=e.target.value;
+    setupSelected=i;
+    save();
+    renderSetup();
+  }));
   document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>add(b.dataset.pos)));
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{s.mode=b.dataset.mode;save();render();}));
   document.querySelectorAll(".results button").forEach(b=>b.addEventListener("click",()=>{s.result=b.dataset.result;save();render();}));
