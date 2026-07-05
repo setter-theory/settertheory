@@ -387,6 +387,42 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 @media(max-width:900px){.reportHeader{grid-template-columns:1fr}.backLink{text-align:center}.csvBtn{width:100%}.summaryCards{grid-template-columns:1fr 1fr}.panelGrid,.wideGrid,.bottomGrid{grid-template-columns:1fr}.donutWrap,.tossPanel{grid-template-columns:1fr}.donut{margin:auto}.bigBarRow{grid-template-columns:32px 1fr 52px 52px 1fr 56px}}
 @media(max-width:520px){.summaryCards{grid-template-columns:1fr}.statValue{font-size:38px}.reportTitle h1{font-size:26px}.bigBarRow{grid-template-columns:28px 1fr 46px 46px 80px 50px;gap:5px}.bigBarName{font-size:12px}}
 
+
+/* v15: 上部5項目の数字をはっきり見えるように修正 */
+.summaryCards .statCard{
+  min-height:150px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  overflow:visible;
+}
+.summaryCards .statValue{
+  font-size:54px!important;
+  line-height:1!important;
+  opacity:1!important;
+  visibility:visible!important;
+  color:inherit;
+  text-shadow:none!important;
+  margin:10px 0 8px!important;
+  letter-spacing:-1px;
+}
+.summaryCards .statValue.blue{color:#2563eb!important}
+.summaryCards .statValue.red{color:#dc2626!important}
+.summaryCards .statValue.green{color:#16a34a!important}
+.summaryCards .statValue.orange{color:#f97316!important}
+.summaryCards .statValue.purple{color:#7c3aed!important}
+.summaryCards .statSub{
+  font-size:14px!important;
+  color:#0f172a!important;
+  font-weight:1000!important;
+}
+.summaryCards .miniTrack{
+  height:9px!important;
+}
+@media(max-width:900px){
+  .summaryCards .statValue{font-size:46px!important}
+}
+
 </style>
 </head>
 <body>
