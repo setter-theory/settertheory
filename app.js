@@ -253,6 +253,86 @@ function buildPersonalBars(){
   return html;
 }
 
+function pctClass(pct){
+  if(pct>=60) return "good";
+  if(pct>=40) return "mid";
+  return "bad";
+}
+function buildReportHero(){
+  const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
+  const total=actionLogs.length;
+  const ok=actionLogs.filter(x=>x.result==="成功").length;
+  const miss=actionLogs.filter(x=>x.result==="ミス").length;
+  const blocked=actionLogs.filter(x=>x.result==="被ブロック").length;
+  const okPct=total?Math.round(ok/total*100):0;
+  const missPct=total?Math.round(miss/total*100):0;
+  const blockPct=total?Math.round(blocked/total*100):0;
+  return `<div class="reportHero">
+    <div class="metricCard"><div class="metricLabel">総入力</div><div class="metricValue">${total}</div><div class="metricSub">本</div></div>
+    <div class="metricCard"><div class="metricLabel">成功率</div><div class="metricValue">${okPct}%</div><div class="metricSub">${ok}/${total}</div></div>
+    <div class="metricCard"><div class="metricLabel">失点系</div><div class="metricValue">${missPct+blockPct}%</div><div class="metricSub">ミス＋被ブロック</div></div>
+  </div>`;
+}
+function buildResultSummary(){
+  const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
+  const total=actionLogs.length || 0;
+  const labels=[
+    ["成功","success"],
+    ["ミス","miss"],
+    ["被ブロック","blocked"],
+    ["継続","cont"]
+  ];
+  return `<div class="resultSummary">${
+    labels.map(([label,cls])=>{
+      const count=actionLogs.filter(x=>x.result===label).length;
+      const pct=total?Math.round(count/total*100):0;
+      return `<div class="resultBox ${cls}"><div class="label">${label}</div><div class="pct">${pct}%</div><div class="metricSub">${count}/${total}</div></div>`;
+    }).join("")
+  }</div>`;
+}
+function buildActionPercentBars(){
+  const total=s.logs.filter(x=>actionTypes.includes(x.type)).length || 0;
+  let html="<div class='bigBarChart'>";
+  actionTypes.forEach(t=>{
+    const count=s.logs.filter(x=>x.type===t).length;
+    const pct=total?Math.round(count/total*100):0;
+    html+=`<div class="bigBarRow"><div class="bigBarLabel">${t}</div><div class="bigBarTrack"><div class="bigBarFill" style="width:${pct}%"></div></div><div class="bigBarPct">${pct}%</div></div>`;
+  });
+  html+="</div>";
+  return html;
+}
+function buildSuccessPercentTable(){
+  let html="<table class='percentTable'><tr><th>項目</th><th>成功率</th><th>成功/本数</th><th>ミス</th><th>被ブロック</th></tr>";
+  actionTypes.forEach(t=>{
+    const a=s.logs.filter(x=>x.type===t);
+    const total=a.length;
+    const ok=a.filter(x=>x.result==="成功").length;
+    const miss=a.filter(x=>x.result==="ミス").length;
+    const blocked=a.filter(x=>x.result==="被ブロック").length;
+    const pct=total?Math.round(ok/total*100):0;
+    html+=`<tr><td>${t}</td><td><span class="percentCell ${pctClass(pct)}">${pct}%</span></td><td>${ok}/${total}</td><td>${miss}</td><td>${blocked}</td></tr>`;
+  });
+  html+="</table>";
+  return html;
+}
+function buildPersonalSuccessTable(){
+  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
+  let html="<table class='percentTable'><tr><th>選手</th><th>成功率</th><th>成功/本数</th><th>ミス</th><th>被ブロック</th></tr>";
+  nums.forEach(n=>{
+    const a=s.logs.filter(x=>String(x.num)===String(n) && actionTypes.includes(x.type));
+    const total=a.length;
+    const ok=a.filter(x=>x.result==="成功").length;
+    const miss=a.filter(x=>x.result==="ミス").length;
+    const blocked=a.filter(x=>x.result==="被ブロック").length;
+    const pct=total?Math.round(ok/total*100):0;
+    const name=getPlayerName(n);
+    html+=`<tr><td>${n}${name?`<br><small>${name}</small>`:""}</td><td><span class="percentCell ${pctClass(pct)}">${pct}%</span></td><td>${ok}/${total}</td><td>${miss}</td><td>${blocked}</td></tr>`;
+  });
+  html+="</table>";
+  return html;
+}
+
+
 function buildIndividualTable(){
   const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
   let html="<table><tr><th>番</th>"+actionTypes.map(t=>`<th>${t}</th>`).join("")+"<th>合計</th></tr>";
@@ -269,21 +349,24 @@ function quick(){
   const target=document.getElementById("quick");
   if(!target)return;
   target.innerHTML=`
+    ${buildReportHero()}
+    ${buildResultSummary()}
     <div class="quickWrap">
-      <div><div class="quickTitle">全体集計</div><div class="quickScroll">${buildOverallTable()}</div></div>
-      <div><div class="quickTitle">個人集計</div><div class="quickScroll">${buildIndividualTable()}</div></div>
-      <div><div class="quickTitle">プレー別グラフ</div>${buildOverallBars()}</div>
-      <div><div class="quickTitle">選手別グラフ</div>${buildPersonalBars()}</div>
+      <div><div class="quickTitle">項目別の割合</div>${buildActionPercentBars()}</div>
+      <div><div class="quickTitle">項目別の成功率</div><div class="quickScroll">${buildSuccessPercentTable()}</div></div>
+      <div><div class="quickTitle">個人別の成功率</div><div class="quickScroll">${buildPersonalSuccessTable()}</div></div>
+      <div><div class="quickTitle">選手別の入力数</div>${buildPersonalBars()}</div>
     </div>`;
 }
 function showReport(){report();show("report");}
 function report(){
   document.getElementById("reportAll").innerHTML=
-    "<h3>全体集計</h3>"+buildOverallTable()+
-    "<h3 style='margin-top:14px'>プレー別グラフ</h3>"+buildOverallBars()+
-    "<h3 style='margin-top:14px'>結果別グラフ</h3>"+buildResultBars()+
-    "<h3 style='margin-top:14px'>個人集計</h3>"+buildIndividualTable()+
-    "<h3 style='margin-top:14px'>選手別グラフ</h3>"+buildPersonalBars();
+    buildReportHero()+
+    buildResultSummary()+
+    "<h3 style='margin-top:14px'>項目別の割合</h3>"+buildActionPercentBars()+
+    "<h3 style='margin-top:14px'>項目別の成功率</h3>"+buildSuccessPercentTable()+
+    "<h3 style='margin-top:14px'>個人別の成功率</h3>"+buildPersonalSuccessTable()+
+    "<h3 style='margin-top:14px'>選手別の入力数</h3>"+buildPersonalBars();
   const toss=s.logs.filter(x=>x.type==="トス");
   let thtml="<table><tr><th>ゾーン</th><th>本数</th><th>配分</th></tr>";
   [["レフト",[4,5]],["センター",[3,6]],["ライト",[1,2]]].forEach(row=>{
