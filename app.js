@@ -6,7 +6,9 @@ let s = {
   mode:"トス", result:"成功", logs:[], hist:[]
 };
 let setupSelected = 0;
-let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12"];
+let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
+const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
+const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
 
 function show(id){
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
@@ -14,17 +16,32 @@ function show(id){
   document.getElementById("bottomBar").classList.toggle("hidden", id==="home" || id==="setup");
   render();
 }
+function goHome(){
+  if(confirm("ホームへ戻りますか？\n試合中の記録は保存されています。")){
+    show("home");
+  }
+}
 function save(){ localStorage.setItem("setterTheoryV2", JSON.stringify(s)); }
-function load(){ const x=localStorage.getItem("setterTheoryV2"); if(x) s=JSON.parse(x); if(!s.positions) s.positions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"]; }
-function snap(){ s.hist.push(JSON.stringify(s)); if(s.hist.length>300)s.hist.shift(); }
+function load(){
+  const x=localStorage.getItem("setterTheoryV2");
+  if(x){
+    try{s=JSON.parse(x);}catch(e){}
+  }
+  if(!s.positions) s.positions=defaultPositions.slice();
+  if(!s.hist) s.hist=[];
+  if(!s.logs) s.logs=[];
+  if(!s.nums) s.nums=["1","2","3","4","5","7"];
+}
+function snap(){
+  s.hist.push(JSON.stringify({...s,hist:[]}));
+  if(s.hist.length>300)s.hist.shift();
+}
 function rotationNums(){
   let a=s.nums.slice();
   for(let i=1;i<s.rot;i++){ a=[a[5],a[0],a[1],a[2],a[3],a[4]]; }
   return a;
 }
-function rotatedSetterNum(){
-  return s.nums[s.setterIndex];
-}
+function rotatedSetterNum(){ return s.nums[s.setterIndex]; }
 function nextRot(){ s.rot=s.rot%6+1; }
 
 function renderSetup(){
@@ -32,36 +49,39 @@ function renderSetup(){
   spots.forEach((b,i)=>{
     b.classList.toggle("active", i===setupSelected);
     b.classList.toggle("setter", i===s.setterIndex);
-    b.querySelector(".num").textContent=s.nums[i] || "-";
+    const num=b.querySelector(".num");
+    if(num) num.textContent=s.nums[i] || "-";
     const name=b.querySelector(".name");
-    const sel=b.querySelector(".posSelect");
     if(name) name.textContent=s.positions[i] || "";
+    const sel=b.querySelector(".posSelect");
     if(sel) sel.value=s.positions[i] || sel.value;
   });
   const used=new Set(s.nums);
   const bank=document.getElementById("numberBank");
-  bank.innerHTML="";
-  const pool=[...new Set([...numberPool,...s.nums].filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
-  pool.forEach(n=>{
-    const btn=document.createElement("button");
-    btn.className="numBtn";
-    btn.textContent=n;
-    if(used.has(n))btn.classList.add("used");
-    if(s.nums[setupSelected]===n)btn.classList.add("active");
-    btn.onclick=()=>{s.nums[setupSelected]=n; save(); renderSetup();};
-    bank.appendChild(btn);
-  });
+  if(bank){
+    bank.innerHTML="";
+    const pool=[...new Set([...numberPool,...s.nums].filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+    pool.forEach(n=>{
+      const btn=document.createElement("button");
+      btn.className="numBtn";
+      btn.textContent=n;
+      if(used.has(n))btn.classList.add("used");
+      if(s.nums[setupSelected]===n)btn.classList.add("active");
+      btn.onclick=()=>{s.nums[setupSelected]=n; save(); renderSetup(); renderMatchNumberBank();};
+      bank.appendChild(btn);
+    });
+  }
 }
 function addNumber(){
   const n=prompt("追加する背番号は？");
   if(!n)return;
   numberPool.push(n);
   s.nums[setupSelected]=n;
-  save(); renderSetup();
+  save(); renderSetup(); renderMatchNumberBank();
 }
 function toggleSetter(){
   s.setterIndex=setupSelected;
-  save(); renderSetup();
+  save(); renderSetup(); render();
 }
 function startMatch(){
   s.team=document.getElementById("team").value || "自チーム";
@@ -78,11 +98,18 @@ function pointByResult(result){
   return "継続";
 }
 function add(pos){
-  snap();
   const nums=rotationNums();
   const num=nums[Number(pos)-1];
+  addByNumber(num, pos);
+}
+function addByNumber(num, pos="-"){
+  snap();
   const point=pointByResult(s.result);
-  s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"P"+s.rot,type:s.mode,num:num,pos:pos,result:s.result,point:point,score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
+  s.logs.push({
+    no:s.logs.length+1,set:s.setNo,rot:"P"+s.rot,type:s.mode,
+    num:String(num),pos:String(pos),result:s.result,point:point,
+    score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
+  });
   save(); render();
 }
 function pointOnly(team){
@@ -99,8 +126,20 @@ function pointOnly(team){
 }
 function manualRotate(){snap();nextRot();save();render();}
 function toggleServe(){snap();s.serve=s.serve==="mine"?"opp":"mine";save();render();}
-function undo(){const h=s.hist.pop();if(!h)return;s=JSON.parse(h);save();render();}
-function goHome(){ if(confirm("ホームへ戻りますか？")){ show("home"); } }
+function undo(){
+  const h=s.hist.pop();
+  if(!h){ alert("取り消す記録がありません"); return; }
+  const keep=s.hist;
+  s=JSON.parse(h);
+  s.hist=keep;
+  save(); render();
+}
+function clearLogs(){
+  if(!confirm("すべての記録を消しますか？")) return;
+  snap();
+  s.logs=[]; s.my=0; s.op=0; s.rot=1; s.serve="mine";
+  save(); render();
+}
 function render(){
   if(document.getElementById("setup").classList.contains("active")) renderSetup();
   if(!document.getElementById("match").classList.contains("active") && !document.getElementById("report").classList.contains("active")) return;
@@ -118,27 +157,25 @@ function render(){
   });
   document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active", b.dataset.mode===s.mode));
   document.querySelectorAll(".results button").forEach(b=>b.classList.toggle("active", b.dataset.result===s.result));
+  renderMatchNumberBank();
   quick();
 }
-function quick(){
-  const target=document.getElementById("quick");
-  if(!target)return;
-  const types=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
-  let html="<table><tr><th>項目</th><th>本数</th><th>成功率</th></tr>";
-  types.forEach(t=>{
-    const a=s.logs.filter(x=>x.type===t);
-    const ok=a.filter(x=>x.result==="成功").length;
-    const pct=a.length?Math.round(ok/a.length*100):0;
-    html+=`<tr><td>${t}</td><td>${a.length}</td><td>${pct}%</td></tr>`;
+function renderMatchNumberBank(){
+  const bank=document.getElementById("matchNumberBank");
+  if(!bank) return;
+  bank.innerHTML="";
+  const pool=[...new Set(s.nums.filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+  pool.forEach(n=>{
+    const btn=document.createElement("button");
+    btn.className="matchNumBtn";
+    btn.textContent=n;
+    btn.onclick=()=>addByNumber(n);
+    bank.appendChild(btn);
   });
-  html+="</table>";
-  target.innerHTML=html;
 }
-function showReport(){report();show("report");}
-function report(){
-  const types=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
+function buildOverallTable(){
   let html="<table><tr><th>項目</th><th>本数</th><th>成功</th><th>ミス</th><th>成功率</th></tr>";
-  types.forEach(t=>{
+  actionTypes.forEach(t=>{
     const a=s.logs.filter(x=>x.type===t);
     const ok=a.filter(x=>x.result==="成功").length;
     const miss=a.filter(x=>x.result==="ミス"||x.result==="被ブロック").length;
@@ -146,7 +183,32 @@ function report(){
     html+=`<tr><td>${t}</td><td>${a.length}</td><td>${ok}</td><td>${miss}</td><td>${pct}%</td></tr>`;
   });
   html+="</table>";
-  document.getElementById("reportAll").innerHTML=html;
+  return html;
+}
+function buildIndividualTable(){
+  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
+  let html="<table><tr><th>番</th>"+actionTypes.map(t=>`<th>${t}</th>`).join("")+"<th>合計</th></tr>";
+  nums.forEach(n=>{
+    const logs=s.logs.filter(x=>String(x.num)===String(n));
+    html+=`<tr><td>${n}</td>`;
+    actionTypes.forEach(t=>{html+=`<td>${logs.filter(x=>x.type===t).length}</td>`;});
+    html+=`<td>${logs.length}</td></tr>`;
+  });
+  html+="</table>";
+  return html;
+}
+function quick(){
+  const target=document.getElementById("quick");
+  if(!target)return;
+  target.innerHTML=`
+    <div class="quickWrap">
+      <div><div class="quickTitle">全体集計</div><div class="quickScroll">${buildOverallTable()}</div></div>
+      <div><div class="quickTitle">個人集計</div><div class="quickScroll">${buildIndividualTable()}</div></div>
+    </div>`;
+}
+function showReport(){report();show("report");}
+function report(){
+  document.getElementById("reportAll").innerHTML=buildOverallTable()+"<h3 style='margin-top:14px'>個人集計</h3>"+buildIndividualTable();
   const toss=s.logs.filter(x=>x.type==="トス");
   let thtml="<table><tr><th>ゾーン</th><th>本数</th><th>配分</th></tr>";
   [["レフト",[4,5]],["センター",[3,6]],["ライト",[1,2]]].forEach(row=>{
@@ -170,14 +232,13 @@ document.addEventListener("DOMContentLoaded",()=>{
   load();
   document.querySelectorAll(".setupSpot").forEach(b=>{
     b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
-    b.addEventListener("keydown",(e)=>{ if(e.key==="Enter" || e.key===" "){setupSelected=Number(b.dataset.spot);renderSetup();}});
+    b.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){setupSelected=Number(b.dataset.spot);renderSetup();}});
   });
   document.querySelectorAll(".posSelect").forEach(sel=>sel.addEventListener("change",(e)=>{
     const i=Number(e.target.dataset.posSelect);
     s.positions[i]=e.target.value;
     setupSelected=i;
-    save();
-    renderSetup();
+    save(); renderSetup();
   }));
   document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>add(b.dataset.pos)));
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{s.mode=b.dataset.mode;save();render();}));

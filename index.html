@@ -67,8 +67,8 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 .badge{display:inline-block;padding:7px 12px;border-radius:999px;background:#ffedd5;color:#9a3412;font-weight:1000;font-size:13px}
 .hidden{display:none!important}
 
-/* v3 update: setup court is 横3 × 縦2. Match court is unchanged. */
-#setupCourt{
+/* v4: 3横×2縦レイアウト・番号入力・個人/全体集計 */
+#setupCourt, #matchCourt{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   grid-template-rows:repeat(2,1fr);
@@ -76,54 +76,70 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   aspect-ratio:3/1.45;
   padding:8px;
   background:
-    linear-gradient(to right, transparent calc(33.333% - 1.5px), rgba(255,255,255,.9) calc(33.333% - 1.5px), rgba(255,255,255,.9) calc(33.333% + 1.5px), transparent calc(33.333% + 1.5px)),
-    linear-gradient(to right, transparent calc(66.666% - 1.5px), rgba(255,255,255,.9) calc(66.666% - 1.5px), rgba(255,255,255,.9) calc(66.666% + 1.5px), transparent calc(66.666% + 1.5px)),
-    linear-gradient(to bottom, transparent calc(50% - 1.5px), rgba(255,255,255,.7) calc(50% - 1.5px), rgba(255,255,255,.7) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(to right, transparent calc(33.333% - 1.5px), rgba(255,255,255,.88) calc(33.333% - 1.5px), rgba(255,255,255,.88) calc(33.333% + 1.5px), transparent calc(33.333% + 1.5px)),
+    linear-gradient(to right, transparent calc(66.666% - 1.5px), rgba(255,255,255,.88) calc(66.666% - 1.5px), rgba(255,255,255,.88) calc(66.666% + 1.5px), transparent calc(66.666% + 1.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 1.5px), rgba(255,255,255,.70) calc(50% - 1.5px), rgba(255,255,255,.70) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
     linear-gradient(135deg,#ffab45,#ff7900);
 }
-#setupCourt:before,#setupCourt:after,#setupCourt .line3{display:none}
-#setupCourt .setupSpot{
+#setupCourt:before,#setupCourt:after,#setupCourt .line3,
+#matchCourt:before,#matchCourt:after,#matchCourt .line3{display:none}
+#setupCourt .setupSpot,
+#matchCourt .player{
   position:relative;
-  left:auto!important;top:auto!important;
-  width:auto;height:auto;
-  margin:6px;
-  padding:10px 8px;
+  left:auto!important;
+  top:auto!important;
+  width:auto;
+  height:auto;
+  margin:7px;
   border-radius:18px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
+}
+#setupCourt .setupSpot{
+  padding:8px;
+  cursor:pointer;
 }
 #setupCourt .setupSpot .name{display:none}
-#setupCourt .setupSpot .num{font-size:38px;line-height:1;margin:0}
-#setupCourt .setupSpot.setter .num{font-size:34px;padding:6px 22px}
-#setupCourt .setupSpot.setter .name:after{content:""}
-#setupCourt .setupSpot .posSelect{
+#setupCourt .setupSpot .num{font-size:36px;margin:2px 0 8px}
+.setupSpot .posSelect{
   width:92%;
-  min-height:38px;
-  padding:7px 10px;
+  min-height:36px;
+  padding:6px 8px;
   border:2px solid var(--line);
   border-radius:12px;
   background:white;
   color:var(--ink);
-  font-size:14px;
+  font-size:13px;
   font-weight:1000;
-  box-shadow:0 3px 10px rgba(0,0,0,.05);
 }
-#setupCourt .setupSpot.active{outline:4px solid var(--blue)}
-#setupCourt .s2{grid-column:1;grid-row:1}
-#setupCourt .s6{grid-column:2;grid-row:1}
-#setupCourt .s1{grid-column:3;grid-row:1}
-#setupCourt .s3{grid-column:1;grid-row:2}
-#setupCourt .s4{grid-column:2;grid-row:2}
-#setupCourt .s5{grid-column:3;grid-row:2}
+#matchCourt .player{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  min-height:86px;
+  cursor:pointer;
+}
+.s2,.pos2{grid-column:1;grid-row:1}
+.s6,.pos6{grid-column:2;grid-row:1}
+.s1,.pos1{grid-column:3;grid-row:1}
+.s3,.pos3{grid-column:1;grid-row:2}
+.s4,.pos4{grid-column:2;grid-row:2}
+.s5,.pos5{grid-column:3;grid-row:2}
+.matchNumberBank{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
+.matchNumBtn{background:white;color:var(--blue);border:2px solid var(--line);box-shadow:none;font-size:20px;min-height:48px}
+.quickWrap{display:grid;grid-template-columns:1fr;gap:12px}
+.quickTitle{font-size:16px;font-weight:1000;margin:0 0 8px;color:var(--ink)}
+.quickScroll{overflow:auto}
+.undoBtn{background:#475569}
+@media(min-width:680px){
+  .quickWrap{grid-template-columns:1fr 1fr}
+}
 @media(max-width:520px){
-  #setupCourt{aspect-ratio:3/1.75;padding:6px}
-  #setupCourt .setupSpot{margin:4px;padding:7px 4px;border-radius:14px}
-  #setupCourt .setupSpot .num{font-size:32px}
-  #setupCourt .setupSpot.setter .num{font-size:30px;padding:5px 18px}
-  #setupCourt .setupSpot .posSelect{width:96%;font-size:12px;padding:6px 6px;min-height:34px}
+  #setupCourt,#matchCourt{aspect-ratio:3/1.7;padding:5px}
+  #setupCourt .setupSpot,#matchCourt .player{margin:4px}
+  #setupCourt .setupSpot .num{font-size:30px}
+  #matchCourt .player{font-size:30px;min-height:72px}
+  .setupSpot .posSelect{width:98%;font-size:12px;padding:5px}
+  .matchNumberBank{grid-template-columns:repeat(4,1fr)}
 }
 
 </style>
@@ -166,12 +182,12 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
     </div>
     <div class="court" id="setupCourt">
       <div class="line3"></div>
-      <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="posSelect" data-pos-select="0" aria-label="ポジション選択"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛" selected>ライト後衛</option></select></div>
-      <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="posSelect" data-pos-select="1" aria-label="ポジション選択"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛" selected>レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s3" data-spot="2" tabindex="0"><span class="name">レフト前衛</span><span class="num">3</span><select class="posSelect" data-pos-select="2" aria-label="ポジション選択"><option value="レフト前衛" selected>レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s4 setter" data-spot="3" tabindex="0"><span class="name">センター前衛</span><span class="num">4</span><select class="posSelect" data-pos-select="3" aria-label="ポジション選択"><option value="レフト前衛">レフト前衛</option><option value="センター前衛" selected>センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s5" data-spot="4" tabindex="0"><span class="name">ライト前衛</span><span class="num">5</span><select class="posSelect" data-pos-select="4" aria-label="ポジション選択"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛" selected>ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s6" data-spot="5" tabindex="0"><span class="name">センター後衛</span><span class="num">7</span><select class="posSelect" data-pos-select="5" aria-label="ポジション選択"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛" selected>センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
+      <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="posSelect" data-pos-select="0"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛" selected>ライト後衛</option></select></div>
+      <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="posSelect" data-pos-select="1"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛" selected>レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
+      <div class="setupSpot s3" data-spot="2" tabindex="0"><span class="name">レフト前衛</span><span class="num">3</span><select class="posSelect" data-pos-select="2"><option value="レフト前衛" selected>レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
+      <div class="setupSpot s4 setter" data-spot="3" tabindex="0"><span class="name">センター前衛</span><span class="num">4</span><select class="posSelect" data-pos-select="3"><option value="レフト前衛">レフト前衛</option><option value="センター前衛" selected>センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
+      <div class="setupSpot s5" data-spot="4" tabindex="0"><span class="name">ライト前衛</span><span class="num">5</span><select class="posSelect" data-pos-select="4"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛" selected>ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
+      <div class="setupSpot s6" data-spot="5" tabindex="0"><span class="name">センター後衛</span><span class="num">7</span><select class="posSelect" data-pos-select="5"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛" selected>センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
     </div>
 
     <h3 style="margin-top:16px">背番号を選択</h3>
@@ -202,7 +218,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
       <h2 style="margin:0">コート入力</h2>
       <span class="badge" id="modeBadge">トス / 成功</span>
     </div>
-    <div class="court">
+    <div class="court" id="matchCourt">
       <div class="line3"></div>
       <button class="player pos1" data-pos="1"></button>
       <button class="player pos2" data-pos="2"></button>
@@ -225,7 +241,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
       <button class="yellow" data-result="被ブロック">ブロック</button>
       <button class="purple" data-result="継続">継続</button>
     </div>
-    <div class="helper">モードと結果を選んで、背番号をタップ</div>
+    <div class="helper">モードと結果を選んで、コート上か下の背番号をタップ</div>
+    <h3 style="margin-top:14px">背番号で入力</h3>
+    <div class="matchNumberBank" id="matchNumberBank"></div>
   </div>
 
   <div class="card">
@@ -233,8 +251,10 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
     <div class="grid">
       <button class="green" onclick="pointOnly('my')">自チーム得点</button>
       <button class="red" onclick="pointOnly('op')">相手得点</button>
+      <button class="undoBtn" onclick="undo()">取り消し</button>
       <button class="gray" onclick="manualRotate()">ローテ＋</button>
       <button class="gray" onclick="toggleServe()">サーブ切替</button>
+      <button class="red" onclick="clearLogs()">ログ全消去</button>
     </div>
   </div>
 
@@ -251,6 +271,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="bottom hidden" id="bottomBar">
   <button class="red" onclick="goHome()">🏠 ホーム</button>
+  <button class="undoBtn" onclick="undo()">取り消し</button>
   <button class="orange" onclick="showReport()">レポート</button>
   <button class="blue" onclick="downloadCSV()">CSV</button>
 </div>
