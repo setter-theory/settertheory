@@ -36,9 +36,15 @@ function snap(){
   s.hist.push(JSON.stringify({...s,hist:[]}));
   if(s.hist.length>300)s.hist.shift();
 }
+function rotateClockwiseOnce(a){
+  // 表示上の時計回り：
+  // 左上(pos2) → 上中(pos6) → 右上(pos1) → 右下(pos5) → 下中(pos4) → 左下(pos3)
+  // s.numsの並びは [pos1,pos2,pos3,pos4,pos5,pos6]
+  return [a[5], a[2], a[3], a[4], a[0], a[1]];
+}
 function rotationNums(){
   let a=s.nums.slice();
-  for(let i=1;i<s.rot;i++){ a=[a[5],a[0],a[1],a[2],a[3],a[4]]; }
+  for(let i=1;i<s.rot;i++){ a=rotateClockwiseOnce(a); }
   return a;
 }
 function rotatedSetterNum(){ return s.nums[s.setterIndex]; }
@@ -185,6 +191,43 @@ function buildOverallTable(){
   html+="</table>";
   return html;
 }
+
+function buildOverallBars(){
+  const total=s.logs.filter(x=>actionTypes.includes(x.type)).length || 0;
+  let html="<div class='barChart'>";
+  actionTypes.forEach(t=>{
+    const count=s.logs.filter(x=>x.type===t).length;
+    const pct=total?Math.round(count/total*100):0;
+    html+=`<div class="barRow"><div class="barLabel">${t}</div><div class="barTrack"><div class="barFill" style="width:${pct}%"></div></div><div class="barNum">${count}本</div></div>`;
+  });
+  html+="</div>";
+  return html;
+}
+function buildResultBars(){
+  const labels=["成功","ミス","被ブロック","継続"];
+  const total=s.logs.filter(x=>actionTypes.includes(x.type)).length || 0;
+  let html="<div class='barChart'>";
+  labels.forEach(t=>{
+    const count=s.logs.filter(x=>x.result===t).length;
+    const pct=total?Math.round(count/total*100):0;
+    html+=`<div class="barRow"><div class="barLabel">${t}</div><div class="barTrack"><div class="barFill result" style="width:${pct}%"></div></div><div class="barNum">${count}本</div></div>`;
+  });
+  html+="</div>";
+  return html;
+}
+function buildPersonalBars(){
+  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
+  const max=Math.max(1,...nums.map(n=>s.logs.filter(x=>String(x.num)===String(n)).length));
+  let html="<div class='barChart'>";
+  nums.forEach(n=>{
+    const count=s.logs.filter(x=>String(x.num)===String(n)).length;
+    const pct=Math.round(count/max*100);
+    html+=`<div class="barRow"><div class="barLabel">${n}番</div><div class="barTrack"><div class="barFill person" style="width:${pct}%"></div></div><div class="barNum">${count}本</div></div>`;
+  });
+  html+="</div>";
+  return html;
+}
+
 function buildIndividualTable(){
   const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
   let html="<table><tr><th>番</th>"+actionTypes.map(t=>`<th>${t}</th>`).join("")+"<th>合計</th></tr>";
@@ -204,11 +247,18 @@ function quick(){
     <div class="quickWrap">
       <div><div class="quickTitle">全体集計</div><div class="quickScroll">${buildOverallTable()}</div></div>
       <div><div class="quickTitle">個人集計</div><div class="quickScroll">${buildIndividualTable()}</div></div>
+      <div><div class="quickTitle">プレー別グラフ</div>${buildOverallBars()}</div>
+      <div><div class="quickTitle">選手別グラフ</div>${buildPersonalBars()}</div>
     </div>`;
 }
 function showReport(){report();show("report");}
 function report(){
-  document.getElementById("reportAll").innerHTML=buildOverallTable()+"<h3 style='margin-top:14px'>個人集計</h3>"+buildIndividualTable();
+  document.getElementById("reportAll").innerHTML=
+    "<h3>全体集計</h3>"+buildOverallTable()+
+    "<h3 style='margin-top:14px'>プレー別グラフ</h3>"+buildOverallBars()+
+    "<h3 style='margin-top:14px'>結果別グラフ</h3>"+buildResultBars()+
+    "<h3 style='margin-top:14px'>個人集計</h3>"+buildIndividualTable()+
+    "<h3 style='margin-top:14px'>選手別グラフ</h3>"+buildPersonalBars();
   const toss=s.logs.filter(x=>x.type==="トス");
   let thtml="<table><tr><th>ゾーン</th><th>本数</th><th>配分</th></tr>";
   [["レフト",[4,5]],["センター",[3,6]],["ライト",[1,2]]].forEach(row=>{
