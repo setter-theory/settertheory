@@ -4,7 +4,7 @@ let s = {
   positions:["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"],
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
   rot:1, my:0, op:0, serve:"mine",
-  mode:"トス", result:"成功", logs:[], hist:[]
+  mode:"スパイク", result:"成功", logs:[], hist:[]
 };
 let setupSelected = 0;
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
@@ -56,6 +56,17 @@ function getPlayerName(num){ return (s.players && s.players[String(num)]) ? s.pl
 function serverPos(){
   // サーブ権ありのときは現在の右後衛(pos1)を赤枠にする
   return s.serve==="mine" ? 1 : null;
+}
+
+function playLabel(){
+  if(s.mode==="トス") return `トス→${s.result}`;
+  if(s.mode==="レセプ") return `${s.result}`;
+  if(s.result==="エース") return "サービスエース";
+  if(s.result==="シャット") return "ブロックシャット";
+  if(s.result==="ワンタッチ") return "ブロックワンタッチ";
+  if(s.result==="被ブロック") return "被ブロック";
+  if(s.result==="継続") return `${s.mode}継続`;
+  return `${s.mode}${s.result}`;
 }
 function addPlayerName(){
   const no=document.getElementById("newPlayerNo").value.trim();
@@ -119,13 +130,27 @@ function startMatch(){
   s.oppTeam=document.getElementById("oppTeam").value || "相手";
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
-  s.rot=1; s.my=0; s.op=0; s.mode="トス"; s.result="成功"; s.logs=[]; s.hist=[];
+  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[];
   save(); show("match");
 }
 function pointByResult(result){
   const before=s.serve;
-  if(result==="成功"){s.my++; if(before==="opp"){nextRot(); s.serve="mine";} return "自";}
-  if(result==="ミス" || result==="被ブロック"){s.op++; s.serve="opp"; return "相";}
+
+  // 得点になる結果
+  if(result==="成功" || result==="エース" || result==="シャット"){
+    s.my++;
+    if(before==="opp"){nextRot(); s.serve="mine";}
+    return "自";
+  }
+
+  // 失点になる結果
+  if(result==="ミス" || result==="被ブロック" || result==="レセプミス" || result==="ブロックミス"){
+    s.op++;
+    s.serve="opp";
+    return "相";
+  }
+
+  // B/Cパス・トス先・ワンタッチ・継続などはラリー継続扱い
   return "継続";
 }
 function add(pos){
@@ -178,7 +203,8 @@ function render(){
   document.getElementById("myScore").textContent=s.my;
   document.getElementById("opScore").textContent=s.op;
   document.getElementById("serveLabel").textContent=s.serve==="mine"?"自サーブ":"相手サーブ";
-  document.getElementById("modeBadge").textContent=s.mode+" / "+s.result;
+  document.getElementById("modeBadge").textContent=playLabel();
+  const spl=document.getElementById("selectedPlayLabel"); if(spl) spl.textContent=playLabel();
   const nums=rotationNums();
   const setterNum=rotatedSetterNum();
   document.querySelectorAll(".player").forEach(b=>{
@@ -186,8 +212,7 @@ function render(){
     b.textContent=n;
     b.classList.toggle("setter", n===setterNum);
   });
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active", b.dataset.mode===s.mode));
-  document.querySelectorAll(".results button").forEach(b=>b.classList.toggle("active", b.dataset.result===s.result));
+  document.querySelectorAll(".fastBtn").forEach(b=>b.classList.toggle("active", b.dataset.type===s.mode && b.dataset.result===s.result));
   renderMatchNumberBank();
   quick();
 }
@@ -204,12 +229,20 @@ function renderMatchNumberBank(){
     bank.appendChild(btn);
   });
 }
+
+function isSuccessResult(x){
+  return ["成功","エース","シャット","Aパス","Bパス","Cパス","レフト","センター","ライト","バック","ワンタッチ"].includes(x.result);
+}
+function isMissResult(x){
+  return ["ミス","レセプミス","ブロックミス","被ブロック"].includes(x.result);
+}
+
 function buildOverallTable(){
   let html="<table><tr><th>項目</th><th>本数</th><th>成功</th><th>ミス</th><th>成功率</th></tr>";
   actionTypes.forEach(t=>{
     const a=s.logs.filter(x=>x.type===t);
-    const ok=a.filter(x=>x.result==="成功").length;
-    const miss=a.filter(x=>x.result==="ミス"||x.result==="被ブロック").length;
+    const ok=a.filter(isSuccessResult).length;
+    const miss=a.filter(isMissResult).length;
     const pct=a.length?Math.round(ok/a.length*100):0;
     html+=`<tr><td>${t}</td><td>${a.length}</td><td>${ok}</td><td>${miss}</td><td>${pct}%</td></tr>`;
   });
@@ -261,8 +294,8 @@ function pctClass(pct){
 function buildReportHero(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length;
-  const ok=actionLogs.filter(x=>x.result==="成功").length;
-  const miss=actionLogs.filter(x=>x.result==="ミス").length;
+  const ok=actionLogs.filter(isSuccessResult).length;
+  const miss=actionLogs.filter(isMissResult).length;
   const blocked=actionLogs.filter(x=>x.result==="被ブロック").length;
   const okPct=total?Math.round(ok/total*100):0;
   const missPct=total?Math.round(miss/total*100):0;
@@ -276,15 +309,15 @@ function buildReportHero(){
 function buildResultSummary(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length || 0;
-  const labels=[
-    ["成功","success"],
-    ["ミス","miss"],
-    ["被ブロック","blocked"],
-    ["継続","cont"]
+  const groups=[
+    ["成功系","success",x=>isSuccessResult(x)],
+    ["失点系","miss",x=>isMissResult(x)],
+    ["被ブロック","blocked",x=>x.result==="被ブロック"],
+    ["継続","cont",x=>x.result==="継続"]
   ];
   return `<div class="resultSummary">${
-    labels.map(([label,cls])=>{
-      const count=actionLogs.filter(x=>x.result===label).length;
+    groups.map(([label,cls,fn])=>{
+      const count=actionLogs.filter(fn).length;
       const pct=total?Math.round(count/total*100):0;
       return `<div class="resultBox ${cls}"><div class="label">${label}</div><div class="pct">${pct}%</div><div class="metricSub">${count}/${total}</div></div>`;
     }).join("")
@@ -306,7 +339,7 @@ function buildSuccessPercentTable(){
   actionTypes.forEach(t=>{
     const a=s.logs.filter(x=>x.type===t);
     const total=a.length;
-    const ok=a.filter(x=>x.result==="成功").length;
+    const ok=a.filter(isSuccessResult).length;
     const miss=a.filter(x=>x.result==="ミス").length;
     const blocked=a.filter(x=>x.result==="被ブロック").length;
     const pct=total?Math.round(ok/total*100):0;
@@ -321,7 +354,7 @@ function buildPersonalSuccessTable(){
   nums.forEach(n=>{
     const a=s.logs.filter(x=>String(x.num)===String(n) && actionTypes.includes(x.type));
     const total=a.length;
-    const ok=a.filter(x=>x.result==="成功").length;
+    const ok=a.filter(isSuccessResult).length;
     const miss=a.filter(x=>x.result==="ミス").length;
     const blocked=a.filter(x=>x.result==="被ブロック").length;
     const pct=total?Math.round(ok/total*100):0;
@@ -402,8 +435,12 @@ document.addEventListener("DOMContentLoaded",()=>{
     save(); renderSetup(); renderMatchNumberBank(); render();
   }));
   document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>add(b.dataset.pos)));
-  document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{s.mode=b.dataset.mode;save();render();}));
-  document.querySelectorAll(".results button").forEach(b=>b.addEventListener("click",()=>{s.result=b.dataset.result;save();render();}));
+  document.querySelectorAll(".fastBtn").forEach(b=>b.addEventListener("click",()=>{
+    s.mode=b.dataset.type;
+    s.result=b.dataset.result;
+    save();
+    render();
+  }));
   if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
   renderSetup();
   render();

@@ -183,6 +183,68 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .nameSelect{font-size:12px;width:98%}
 }
 
+
+/* v8: プレー＋結果 一体型の高速入力 */
+.fastInput{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.fastGroup{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:10px;
+}
+.fastGroupTitle{
+  font-size:14px;
+  font-weight:1000;
+  color:var(--ink);
+  margin:0 0 8px;
+}
+.fastButtons{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.fastButtons.three{grid-template-columns:repeat(3,1fr)}
+.fastButtons.four{grid-template-columns:repeat(4,1fr)}
+.fastBtn{
+  min-height:48px;
+  font-size:13px;
+  padding:8px 6px;
+  box-shadow:none;
+  border:2px solid transparent;
+}
+.fastBtn.active{
+  outline:4px solid rgba(37,99,235,.22);
+  border-color:var(--blue);
+  transform:none;
+}
+.fastBtn.attack{background:#f97316}
+.fastBtn.good{background:var(--green)}
+.fastBtn.bad{background:var(--red)}
+.fastBtn.keep{background:var(--blue)}
+.fastBtn.blocked{background:#f59e0b}
+.fastBtn.toss{background:#7c3aed}
+.fastBtn.receive{background:#0ea5e9}
+.fastBtn.dig{background:#14b8a6}
+.fastBtn.block{background:#334155}
+.currentPlayBox{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:#eff6ff;
+  color:#1d4ed8;
+  font-weight:1000;
+  text-align:center;
+}
+#modeBadge{font-size:12px}
+@media(max-width:520px){
+  .fastButtons,.fastButtons.three,.fastButtons.four{grid-template-columns:repeat(2,1fr)}
+  .fastBtn{font-size:12px;min-height:44px}
+}
+
 </style>
 </head>
 <body>
@@ -293,6 +355,68 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
       <button class="purple" data-result="継続">継続</button>
     </div>
     <div class="helper">モードと結果を選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
+    
+    <div class="fastInput">
+      <div class="fastGroup">
+        <div class="fastGroupTitle">攻撃</div>
+        <div class="fastButtons four">
+          <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
+          <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
+          <button class="fastBtn blocked" data-type="スパイク" data-result="被ブロック">🚫 被ブロック</button>
+          <button class="fastBtn keep" data-type="スパイク" data-result="継続">🔄 継続</button>
+        </div>
+      </div>
+
+      <div class="fastGroup">
+        <div class="fastGroupTitle">サーブ</div>
+        <div class="fastButtons three">
+          <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
+          <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
+          <button class="fastBtn bad" data-type="サーブ" data-result="ミス">❌ サーブミス</button>
+        </div>
+      </div>
+
+      <div class="fastGroup">
+        <div class="fastGroupTitle">レセプション</div>
+        <div class="fastButtons four">
+          <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
+          <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
+          <button class="fastBtn attack" data-type="レセプ" data-result="Cパス">🟠 Cパス</button>
+          <button class="fastBtn bad" data-type="レセプ" data-result="ミス">❌ レセプミス</button>
+        </div>
+      </div>
+
+      <div class="fastGroup">
+        <div class="fastGroupTitle">トス（トス先を選択）</div>
+        <div class="fastButtons four">
+          <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
+          <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
+          <button class="fastBtn toss" data-type="トス" data-result="ライト">→ ライト</button>
+          <button class="fastBtn toss" data-type="トス" data-result="バック">↩ バック</button>
+        </div>
+      </div>
+
+      <div class="fastGroup">
+        <div class="fastGroupTitle">ディグ</div>
+        <div class="fastButtons">
+          <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
+          <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
+        </div>
+      </div>
+
+      <div class="fastGroup">
+        <div class="fastGroupTitle">ブロック</div>
+        <div class="fastButtons three">
+          <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
+          <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
+          <button class="fastBtn bad" data-type="ブロック" data-result="ミス">❌ ブロックミス</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="currentPlayBox">選択中：<span id="selectedPlayLabel">スパイク成功</span></div>
+    <div class="helper">プレーを選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
+
     <h3 style="margin-top:14px">背番号で入力</h3>
     <div class="matchNumberBank" id="matchNumberBank"></div>
   </div>
