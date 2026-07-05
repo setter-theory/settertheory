@@ -2,6 +2,7 @@ let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
   positions:["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"],
+  players:{"1":"","2":"","3":"","4":"","5":"","7":""},
   rot:1, my:0, op:0, serve:"mine",
   mode:"トス", result:"成功", logs:[], hist:[]
 };
@@ -31,6 +32,8 @@ function load(){
   if(!s.hist) s.hist=[];
   if(!s.logs) s.logs=[];
   if(!s.nums) s.nums=["1","2","3","4","5","7"];
+  if(!s.players) s.players={};
+  s.nums.forEach(n=>{ if(s.players[n]===undefined) s.players[n]=""; });
 }
 function snap(){
   s.hist.push(JSON.stringify({...s,hist:[]}));
@@ -49,18 +52,38 @@ function rotationNums(){
 }
 function rotatedSetterNum(){ return s.nums[s.setterIndex]; }
 function nextRot(){ s.rot=s.rot%6+1; }
+function getPlayerName(num){ return (s.players && s.players[String(num)]) ? s.players[String(num)] : ""; }
+function serverPos(){
+  // サーブ権ありのときは現在の右後衛(pos1)を赤枠にする
+  return s.serve==="mine" ? 1 : null;
+}
+function addPlayerName(){
+  const no=document.getElementById("newPlayerNo").value.trim();
+  const name=document.getElementById("newPlayerName").value.trim();
+  if(!no){ alert("背番号を入力してください"); return; }
+  if(!s.players) s.players={};
+  s.players[no]=name;
+  if(!numberPool.includes(no)) numberPool.push(no);
+  document.getElementById("newPlayerNo").value="";
+  document.getElementById("newPlayerName").value="";
+  save(); renderSetup(); renderMatchNumberBank(); render();
+}
 
 function renderSetup(){
   const spots=document.querySelectorAll(".setupSpot");
   spots.forEach((b,i)=>{
     b.classList.toggle("active", i===setupSelected);
     b.classList.toggle("setter", i===s.setterIndex);
+    const currentNum=s.nums[i] || "-";
     const num=b.querySelector(".num");
-    if(num) num.textContent=s.nums[i] || "-";
+    if(num) num.innerHTML=`<span>${currentNum}</span><span class="setupName">${getPlayerName(currentNum)}</span>`;
     const name=b.querySelector(".name");
     if(name) name.textContent=s.positions[i] || "";
-    const sel=b.querySelector(".posSelect");
-    if(sel) sel.value=s.positions[i] || sel.value;
+    const sel=b.querySelector(".nameSelect");
+    if(sel){
+      const pool=[...new Set([...numberPool,...s.nums,Object.keys(s.players||{})].flat().filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+      sel.innerHTML=pool.map(n=>`<option value="${n}" ${String(currentNum)===String(n)?"selected":""}>${n}${getPlayerName(n)?" "+getPlayerName(n):""}</option>`).join("");
+    }
   });
   const used=new Set(s.nums);
   const bank=document.getElementById("numberBank");
@@ -73,7 +96,7 @@ function renderSetup(){
       btn.textContent=n;
       if(used.has(n))btn.classList.add("used");
       if(s.nums[setupSelected]===n)btn.classList.add("active");
-      btn.onclick=()=>{s.nums[setupSelected]=n; save(); renderSetup(); renderMatchNumberBank();};
+      btn.onclick=()=>{s.nums[setupSelected]=n; if(!s.players) s.players={}; if(s.players[n]===undefined) s.players[n]=""; save(); renderSetup(); renderMatchNumberBank();};
       bank.appendChild(btn);
     });
   }
@@ -82,6 +105,8 @@ function addNumber(){
   const n=prompt("追加する背番号は？");
   if(!n)return;
   numberPool.push(n);
+  if(!s.players) s.players={};
+  if(s.players[n]===undefined) s.players[n]="";
   s.nums[setupSelected]=n;
   save(); renderSetup(); renderMatchNumberBank();
 }
@@ -112,7 +137,7 @@ function addByNumber(num, pos="-"){
   snap();
   const point=pointByResult(s.result);
   s.logs.push({
-    no:s.logs.length+1,set:s.setNo,rot:"P"+s.rot,type:s.mode,
+    no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:s.mode,
     num:String(num),pos:String(pos),result:s.result,point:point,
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
   });
@@ -123,10 +148,10 @@ function pointOnly(team){
   if(team==="my"){
     const before=s.serve; s.my++;
     if(before==="opp"){nextRot(); s.serve="mine";}
-    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"P"+s.rot,type:"得点",num:"-",pos:"-",result:"自チーム得点",point:"自",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
+    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:"得点",num:"-",pos:"-",result:"自チーム得点",point:"自",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
   }else{
     s.op++; s.serve="opp";
-    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"P"+s.rot,type:"得点",num:"-",pos:"-",result:"相手得点",point:"相",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
+    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:"得点",num:"-",pos:"-",result:"相手得点",point:"相",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
   }
   save(); render();
 }
@@ -272,8 +297,8 @@ function report(){
   s.logs.slice(-30).reverse().forEach(x=>{body.innerHTML+=`<tr><td>${x.no}</td><td>${x.rot}</td><td>${x.type}</td><td>${x.num}</td><td>${x.result}</td><td>${x.score}</td></tr>`;});
 }
 function downloadCSV(){
-  const rows=[["No","Set","Rotation","Type","Number","Position","Result","Point","Score","Time"]];
-  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,x.pos,x.result,x.point,x.score,x.time]));
+  const rows=[["No","Set","Rotation","Type","Number","Name","Position","Result","Point","Score","Time"]];
+  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.pos,x.result,x.point,x.score,x.time]));
   const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
@@ -284,11 +309,14 @@ document.addEventListener("DOMContentLoaded",()=>{
     b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
     b.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){setupSelected=Number(b.dataset.spot);renderSetup();}});
   });
-  document.querySelectorAll(".posSelect").forEach(sel=>sel.addEventListener("change",(e)=>{
-    const i=Number(e.target.dataset.posSelect);
-    s.positions[i]=e.target.value;
+  document.querySelectorAll(".nameSelect").forEach(sel=>sel.addEventListener("change",(e)=>{
+    const i=Number(e.target.dataset.nameSelect);
+    const no=e.target.value;
+    s.nums[i]=no;
+    if(!s.players) s.players={};
+    if(s.players[no]===undefined) s.players[no]="";
     setupSelected=i;
-    save(); renderSetup();
+    save(); renderSetup(); renderMatchNumberBank(); render();
   }));
   document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>add(b.dataset.pos)));
   document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{s.mode=b.dataset.mode;save();render();}));

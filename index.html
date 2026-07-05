@@ -153,6 +153,36 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 .barFill.person{background:linear-gradient(135deg,var(--green),#86efac)}
 .barNum{font-size:12px;text-align:right;color:var(--muted);white-space:nowrap}
 
+
+/* v6: S表示・サーバー赤枠・選手名選択 */
+.player.server{
+  outline:5px solid var(--red)!important;
+  box-shadow:0 0 0 4px rgba(220,38,38,.22),0 7px 18px rgba(0,0,0,.22);
+}
+.playerInner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.05}
+.playerNo{font-size:31px;font-weight:1000}
+.playerName{font-size:12px;font-weight:1000;opacity:.95;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.setupSpot .num{display:flex;flex-direction:column;align-items:center;gap:4px}
+.setupName{font-size:13px;color:var(--ink);font-weight:1000;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nameSelect{
+  width:92%;
+  min-height:36px;
+  padding:6px 8px;
+  border:2px solid var(--line);
+  border-radius:12px;
+  background:white;
+  color:var(--ink);
+  font-size:13px;
+  font-weight:1000;
+}
+.playerForm{display:grid;grid-template-columns:70px 1fr;gap:8px;align-items:end;margin-top:8px}
+.playerForm input{font-size:15px}
+@media(max-width:520px){
+  .playerNo{font-size:28px}
+  .playerName{font-size:10px}
+  .nameSelect{font-size:12px;width:98%}
+}
+
 </style>
 </head>
 <body>
@@ -187,18 +217,28 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
 
   <div class="card">
+    <h3>選手登録</h3>
+    <div class="playerForm">
+      <label>背番号<input id="newPlayerNo" placeholder="例 4"></label>
+      <label>選手名<input id="newPlayerName" placeholder="例 佐藤"></label>
+    </div>
+    <button class="whitebtn" style="width:100%;margin-top:10px" onclick="addPlayerName()">＋選手を登録</button>
+    <div class="help">💡 登録した選手名を、下の開始ローテで選択できます。</div>
+  </div>
+
+  <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
       <h2 style="margin:0">開始ローテ</h2>
-      <span class="badge">P1</span>
+      <span class="badge">S1</span>
     </div>
     <div class="court" id="setupCourt">
       <div class="line3"></div>
-      <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="posSelect" data-pos-select="0"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛" selected>ライト後衛</option></select></div>
-      <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="posSelect" data-pos-select="1"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛" selected>レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s3" data-spot="2" tabindex="0"><span class="name">レフト前衛</span><span class="num">3</span><select class="posSelect" data-pos-select="2"><option value="レフト前衛" selected>レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s4 setter" data-spot="3" tabindex="0"><span class="name">センター前衛</span><span class="num">4</span><select class="posSelect" data-pos-select="3"><option value="レフト前衛">レフト前衛</option><option value="センター前衛" selected>センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s5" data-spot="4" tabindex="0"><span class="name">ライト前衛</span><span class="num">5</span><select class="posSelect" data-pos-select="4"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛" selected>ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛">センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
-      <div class="setupSpot s6" data-spot="5" tabindex="0"><span class="name">センター後衛</span><span class="num">7</span><select class="posSelect" data-pos-select="5"><option value="レフト前衛">レフト前衛</option><option value="センター前衛">センター前衛</option><option value="ライト前衛">ライト前衛</option><option value="レフト後衛">レフト後衛</option><option value="センター後衛" selected>センター後衛</option><option value="ライト後衛">ライト後衛</option></select></div>
+      <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="nameSelect" data-name-select="0"></select></div>
+      <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="nameSelect" data-name-select="1"></select></div>
+      <div class="setupSpot s3" data-spot="2" tabindex="0"><span class="name">レフト前衛</span><span class="num">3</span><select class="nameSelect" data-name-select="2"></select></div>
+      <div class="setupSpot s4 setter" data-spot="3" tabindex="0"><span class="name">センター前衛</span><span class="num">4</span><select class="nameSelect" data-name-select="3"></select></div>
+      <div class="setupSpot s5" data-spot="4" tabindex="0"><span class="name">ライト前衛</span><span class="num">5</span><select class="nameSelect" data-name-select="4"></select></div>
+      <div class="setupSpot s6" data-spot="5" tabindex="0"><span class="name">センター後衛</span><span class="num">7</span><select class="nameSelect" data-name-select="5"></select></div>
     </div>
 
     <h3 style="margin-top:16px">背番号を選択</h3>
@@ -218,7 +258,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 <section id="match" class="screen">
   <div class="topbar">
     <div class="status">
-      <div class="pill">P<span id="rot">1</span></div>
+      <div class="pill">S<span id="rot">1</span></div>
       <div class="pill score"><span id="myScore">0</span> - <span id="opScore">0</span></div>
       <div class="pill" id="serveLabel">自サーブ</div>
     </div>
@@ -249,7 +289,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
     <div class="results">
       <button class="green active" data-result="成功">成功</button>
       <button class="red" data-result="ミス">ミス</button>
-      <button class="yellow" data-result="被ブロック">ブロック</button>
+      <button class="yellow" data-result="被ブロック">🚫 被ブロック</button>
       <button class="purple" data-result="継続">継続</button>
     </div>
     <div class="helper">モードと結果を選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
