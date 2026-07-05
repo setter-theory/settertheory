@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ff8a1d">
+<link rel="manifest" href="manifest.json">
+<title>Setter Theory</title>
+<style>
+:root{
+  --bg:#fff7ed;--card:#fff;--ink:#172033;--muted:#6b7280;--line:#e5e7eb;
+  --orange:#ff8a1d;--orange2:#ff9f3f;--blue:#2563eb;--green:#16a34a;--red:#dc2626;
+  --purple:#7c3aed;--yellow:#f59e0b;--dark:#111827;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+.screen{display:none;min-height:100vh;padding:18px 14px 104px;max-width:720px;margin:0 auto}
+.screen.active{display:block}
+.logo{text-align:center;margin:28px 0}
+.logo h1{font-size:36px;margin:0;font-weight:1000;letter-spacing:.3px}
+.logo p{color:var(--muted);font-weight:900;margin:8px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:16px;margin-bottom:14px;box-shadow:0 8px 24px rgba(31,41,55,.07)}
+h2,h3{margin:0 0 12px}
+button,input,select{font:inherit}
+button{border:0;border-radius:20px;min-height:56px;padding:13px 10px;color:white;background:var(--blue);font-size:17px;font-weight:1000;box-shadow:0 5px 13px rgba(0,0,0,.12)}
+button:active{transform:scale(.97)}
+.big{width:100%;min-height:68px;font-size:21px;background:linear-gradient(135deg,var(--orange2),var(--orange))}
+.whitebtn{background:white;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.green{background:var(--green)}.red{background:var(--red)}.purple{background:var(--purple)}.yellow{background:var(--yellow)}.orange{background:var(--orange)}.blue{background:var(--blue)}.gray{background:#64748b}.dark{background:var(--dark)}
+label{font-size:13px;color:var(--muted);font-weight:900}
+input,select{width:100%;border:2px solid var(--line);border-radius:16px;padding:12px;background:white;color:var(--ink);font-size:18px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.topbar{position:sticky;top:0;z-index:10;margin:-18px -14px 12px;padding:10px 12px;background:rgba(255,247,237,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.status{display:flex;gap:8px;justify-content:space-between;align-items:center}
+.pill{background:white;border:2px solid var(--line);border-radius:999px;padding:9px 12px;font-weight:1000}
+.score{font-size:24px}
+.court{position:relative;width:100%;aspect-ratio:1.38/1;background:linear-gradient(135deg,#ffab45,#ff7900);border:5px solid white;border-radius:24px;box-shadow:0 12px 26px rgba(255,122,0,.22);overflow:hidden;margin-top:8px}
+.court:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:4px solid rgba(255,255,255,.88)}
+.court:after{content:"";position:absolute;left:0;right:0;top:33.3%;border-top:3px solid rgba(255,255,255,.58)}
+.line3{position:absolute;left:0;right:0;top:66.6%;border-top:3px solid rgba(255,255,255,.58)}
+.player{position:absolute;width:23%;height:22%;border-radius:22px;background:var(--blue);color:#fff;border:4px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:31px;font-weight:1000;box-shadow:0 7px 18px rgba(0,0,0,.22)}
+.player.setter{background:var(--dark);outline:5px solid white}
+.pos1{left:62%;top:5%}.pos2{left:15%;top:5%}.pos3{left:15%;top:39%}.pos4{left:62%;top:39%}.pos5{left:62%;top:73%}.pos6{left:15%;top:73%}
+.setupSpot{position:absolute;width:28%;height:24%;border-radius:18px;background:rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 8px 18px rgba(0,0,0,.13);border:3px solid rgba(255,255,255,.7)}
+.setupSpot.active{outline:5px solid var(--blue)}
+.setupSpot .name{font-size:13px;font-weight:1000;color:#374151}
+.setupSpot .num{font-size:32px;line-height:1;font-weight:1000;color:var(--blue)}
+.setupSpot.setter .num{color:white;background:var(--dark);border-radius:12px;padding:3px 18px}
+.setupSpot.setter .name:after{content:"  (S)";color:#ea580c}
+.s1{left:58%;top:5%}.s2{left:14%;top:5%}.s3{left:14%;top:39%}.s4{left:58%;top:39%}.s5{left:58%;top:73%}.s6{left:14%;top:73%}
+.numberBank{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+.numBtn{background:white;color:var(--blue);border:2px solid var(--line);box-shadow:none;font-size:22px;min-height:52px}
+.numBtn.used{opacity:.38}
+.numBtn.active{background:var(--dark);color:white;border-color:var(--blue);opacity:1}
+.help{background:#fff3cd;color:#92400e;border-radius:16px;padding:11px;font-weight:900;font-size:14px;line-height:1.45;margin-top:12px}
+.tabs,.results{display:grid;gap:8px;margin-top:12px}
+.tabs{grid-template-columns:repeat(3,1fr)}
+.results{grid-template-columns:repeat(4,1fr)}
+.tabs button,.results button{font-size:14px;min-height:48px;padding:8px 4px;box-shadow:none}
+.tabs button:not(.active),.results button:not(.active){background:white;color:var(--ink);border:2px solid var(--line)}
+.helper{text-align:center;color:var(--muted);font-weight:900;margin-top:10px}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:20;background:white;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.bottom button{flex:1;min-height:52px;font-size:15px}
+table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden}
+td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:14px}
+.badge{display:inline-block;padding:7px 12px;border-radius:999px;background:#ffedd5;color:#9a3412;font-weight:1000;font-size:13px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<section id="home" class="screen active">
+  <div class="logo">
+    <h1>Setter Theory</h1>
+    <p>誰でも30秒で使える分析アプリ</p>
+  </div>
+  <button class="big" onclick="show('setup')">🏐 試合を始める</button>
+  <div class="card" style="margin-top:16px">
+    <h3>試作品 v2</h3>
+    <p style="color:var(--muted);font-weight:800;line-height:1.6">
+      最初にコート上で背番号を配置して、そのまま試合を記録できます。
+    </p>
+  </div>
+</section>
+
+<section id="setup" class="screen">
+  <div class="logo" style="margin:8px 0 16px">
+    <h1>ローテーション設定</h1>
+    <p>各ポジションに入る背番号を選んでください</p>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <label>自チーム<input id="team" value="自チーム"></label>
+      <label>相手<input id="oppTeam" value="相手"></label>
+      <label>開始サーブ<select id="startServe"><option value="mine">自チーム</option><option value="opp">相手</option></select></label>
+      <label>セット<select id="setNo"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2 style="margin:0">開始ローテ</h2>
+      <span class="badge">P1</span>
+    </div>
+    <div class="court" id="setupCourt">
+      <div class="line3"></div>
+      <button class="setupSpot s1" data-spot="0"><span class="name">ライト後衛</span><span class="num">1</span></button>
+      <button class="setupSpot s2" data-spot="1"><span class="name">レフト後衛</span><span class="num">2</span></button>
+      <button class="setupSpot s3" data-spot="2"><span class="name">レフト前衛</span><span class="num">3</span></button>
+      <button class="setupSpot s4 setter" data-spot="3"><span class="name">ライト前衛</span><span class="num">4</span></button>
+      <button class="setupSpot s5" data-spot="4"><span class="name">ライト後衛</span><span class="num">5</span></button>
+      <button class="setupSpot s6" data-spot="5"><span class="name">センター後衛</span><span class="num">7</span></button>
+    </div>
+
+    <h3 style="margin-top:16px">背番号を選択</h3>
+    <div class="numberBank" id="numberBank"></div>
+
+    <div class="grid" style="margin-top:12px">
+      <button class="whitebtn" onclick="addNumber()">＋背番号追加</button>
+      <button class="whitebtn" onclick="toggleSetter()">選択位置をSにする</button>
+    </div>
+    <div class="help">💡 コート上のポジションをタップ → 下の背番号をタップ。セッターは黒で表示されます。</div>
+  </div>
+
+  <button class="big" onclick="startMatch()">このローテーションで開始</button>
+  <button class="whitebtn" style="width:100%;margin-top:10px" onclick="show('home')">戻る</button>
+</section>
+
+<section id="match" class="screen">
+  <div class="topbar">
+    <div class="status">
+      <div class="pill">P<span id="rot">1</span></div>
+      <div class="pill score"><span id="myScore">0</span> - <span id="opScore">0</span></div>
+      <div class="pill" id="serveLabel">自サーブ</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h2 style="margin:0">コート入力</h2>
+      <span class="badge" id="modeBadge">トス / 成功</span>
+    </div>
+    <div class="court">
+      <div class="line3"></div>
+      <button class="player pos1" data-pos="1"></button>
+      <button class="player pos2" data-pos="2"></button>
+      <button class="player pos3" data-pos="3"></button>
+      <button class="player pos4" data-pos="4"></button>
+      <button class="player pos5" data-pos="5"></button>
+      <button class="player pos6" data-pos="6"></button>
+    </div>
+    <div class="tabs">
+      <button data-mode="トス" class="active">🏐 トス</button>
+      <button data-mode="レセプ">🤲 レセプ</button>
+      <button data-mode="ディグ">💪 ディグ</button>
+      <button data-mode="スパイク">💥 スパイク</button>
+      <button data-mode="ブロック">🧱 ブロック</button>
+      <button data-mode="サーブ">🎯 サーブ</button>
+    </div>
+    <div class="results">
+      <button class="green active" data-result="成功">成功</button>
+      <button class="red" data-result="ミス">ミス</button>
+      <button class="yellow" data-result="被ブロック">ブロック</button>
+      <button class="purple" data-result="継続">継続</button>
+    </div>
+    <div class="helper">モードと結果を選んで、背番号をタップ</div>
+  </div>
+
+  <div class="card">
+    <h3>その他</h3>
+    <div class="grid">
+      <button class="green" onclick="pointOnly('my')">自チーム得点</button>
+      <button class="red" onclick="pointOnly('op')">相手得点</button>
+      <button class="gray" onclick="manualRotate()">ローテ＋</button>
+      <button class="gray" onclick="toggleServe()">サーブ切替</button>
+    </div>
+  </div>
+
+  <div class="card"><h3>クイック集計</h3><div id="quick"></div></div>
+</section>
+
+<section id="report" class="screen">
+  <div class="logo" style="margin:8px 0 16px"><h1>試合レポート</h1><p>自動集計</p></div>
+  <div class="card"><h3>全体</h3><div id="reportAll"></div></div>
+  <div class="card"><h3>トス配分</h3><div id="reportToss"></div></div>
+  <div class="card"><h3>直近ログ</h3><table><thead><tr><th>#</th><th>R</th><th>項目</th><th>番</th><th>結果</th><th>点</th></tr></thead><tbody id="logRows"></tbody></table></div>
+  <button class="big" onclick="show('match')">試合画面に戻る</button>
+</section>
+
+<div class="bottom hidden" id="bottomBar">
+  <button class="red" onclick="goHome()">🏠 ホーム</button>
+  <button class="orange" onclick="showReport()">レポート</button>
+  <button class="blue" onclick="downloadCSV()">CSV</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
