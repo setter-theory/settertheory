@@ -258,6 +258,106 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   margin-bottom:8px;
 }
 
+
+/* v12: レポートを見本画像のようなダッシュボードに変更 */
+.reportScreen{
+  max-width:1180px;
+  padding:18px 14px 104px;
+}
+.reportHeader{
+  display:grid;
+  grid-template-columns:180px 1fr 180px;
+  align-items:center;
+  gap:12px;
+  margin:0 0 18px;
+}
+.reportTitle{text-align:center}
+.reportTitle h1{font-size:32px;margin:0;font-weight:1000}
+.reportTitle p{margin:6px 0 0;color:var(--muted);font-weight:900}
+.backLink,.csvBtn{
+  min-height:44px;
+  border-radius:12px;
+  box-shadow:none;
+  font-size:14px;
+  padding:8px 12px;
+}
+.backLink{background:transparent;color:var(--ink);text-align:left}
+.csvBtn{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+.reportGrid{display:grid;gap:14px}
+.summaryCards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.statCard{
+  background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:0 6px 18px rgba(15,23,42,.08);
+}
+.statTop{display:flex;align-items:center;gap:8px;font-weight:1000;font-size:15px}
+.statIcon{font-size:22px}
+.statValue{font-size:46px;font-weight:1000;line-height:1;margin:16px 0 8px}
+.statValue.blue{color:#2563eb}.statValue.red{color:#dc2626}.statValue.green{color:#16a34a}.statValue.orange{color:#f97316}.statValue.purple{color:#7c3aed}
+.statSub{font-size:13px;color:var(--muted);font-weight:900}
+.miniTrack{height:8px;background:#e5e7eb;border-radius:999px;margin-top:12px;overflow:hidden}
+.miniFill{height:100%;border-radius:999px;background:#2563eb}
+.panelGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.wideGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.bottomGrid{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+.reportPanel{
+  background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:0 6px 18px rgba(15,23,42,.08);
+}
+.reportPanel h3{font-size:19px;margin:0 0 14px;font-weight:1000}
+.donutWrap{display:grid;grid-template-columns:170px 1fr;align-items:center;gap:18px}
+.donut{
+  width:158px;height:158px;border-radius:50%;
+  display:grid;place-items:center;position:relative;
+}
+.donut:after{content:"";position:absolute;width:86px;height:86px;border-radius:50%;background:#fff}
+.donutCenter{position:relative;z-index:1;text-align:center;font-weight:1000}
+.donutCenter .label{font-size:13px;color:var(--muted)}
+.donutCenter .num{font-size:28px;color:var(--ink)}
+.legend{display:grid;gap:10px}
+.legendRow{display:grid;grid-template-columns:14px 1fr auto;align-items:center;gap:8px;font-size:14px;font-weight:900}
+.dot{width:13px;height:13px;border-radius:50%}
+.bigBars{display:grid;gap:11px}
+.bigBarRow{display:grid;grid-template-columns:88px 70px 1fr 68px;gap:10px;align-items:center}
+.bigBarName{font-size:14px;font-weight:1000}
+.bigBarPct{font-size:14px;font-weight:1000;color:var(--ink)}
+.bigBarTrack{height:22px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.bigBarFill{height:100%;border-radius:999px;background:#16a34a}
+.bigBarBadge{font-size:14px;font-weight:1000;text-align:center;border-radius:8px;padding:7px 8px;background:#dcfce7;color:#15803d}
+.bigBarBadge.mid{background:#ffedd5;color:#ea580c}.bigBarBadge.bad{background:#fee2e2;color:#dc2626}
+.rotationRow{display:grid;grid-template-columns:44px 92px 1fr;gap:10px;align-items:center;margin:10px 0}
+.rotationLabel{font-weight:1000}
+.rotationPct{font-weight:1000;text-align:right}
+.rotationTrack{height:24px;background:#f1f5f9;border-radius:999px;overflow:hidden}
+.rotationFill{height:100%;border-radius:999px;background:#16a34a}
+.rotationFill.mid{background:#f59e0b}.rotationFill.bad{background:#dc2626}
+.currentRotation{outline:2px solid #f87171;border-radius:12px;padding:6px;margin-left:-6px;margin-right:-6px}
+.timeline{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 12px}
+.timelineItem{min-width:46px;text-align:center;font-weight:900}
+.timelineNo{font-size:13px;margin-bottom:6px}
+.timelineIcon{
+  width:28px;height:28px;border-radius:50%;display:grid;place-items:center;margin:0 auto 6px;
+  color:white;font-size:15px;font-weight:1000;
+}
+.timelineText{font-size:11px;white-space:nowrap;color:var(--ink)}
+.tSuccess{background:#22c55e}.tMiss{background:#ef4444}.tCont{background:#2563eb}.tBlock{background:#f97316}
+.tossPanel{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center}
+.logLegend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px;font-weight:900}
+.logLegend span{display:inline-flex;gap:5px;align-items:center;font-size:13px}
+@media(max-width:900px){
+  .reportHeader{grid-template-columns:1fr;align-items:center}
+  .backLink{text-align:center}.csvBtn{width:100%}
+  .summaryCards{grid-template-columns:1fr 1fr}
+  .panelGrid,.wideGrid,.bottomGrid{grid-template-columns:1fr}
+  .donutWrap,.tossPanel{grid-template-columns:1fr}
+  .donut{margin:auto}
+}
+@media(max-width:520px){
+  .summaryCards{grid-template-columns:1fr}
+  .statValue{font-size:38px}
+  .bigBarRow{grid-template-columns:62px 56px 1fr 52px;gap:6px}
+  .reportTitle h1{font-size:26px}
+}
+
 </style>
 </head>
 <body>
@@ -449,13 +549,19 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   <div class="card"><h3>クイック集計</h3><div id="quick"></div></div>
 </section>
 
-<section id="report" class="screen">
-  <div class="logo" style="margin:8px 0 16px"><h1>試合レポート</h1><p>自動集計</p></div>
-  <div class="card"><h3>全体</h3><div id="reportAll"></div></div>
-  <div class="card"><h3>トス配分</h3><div id="reportToss"></div></div>
-  <div class="card"><h3>直近ログ</h3><table><thead><tr><th>#</th><th>R</th><th>項目</th><th>番</th><th>結果</th><th>点</th></tr></thead><tbody id="logRows"></tbody></table></div>
-  <button class="big" onclick="show('match')">試合画面に戻る</button>
+
+<section id="report" class="screen reportScreen">
+  <div class="reportHeader">
+    <button class="backLink" onclick="show('match')">← ホームに戻る</button>
+    <div class="reportTitle">
+      <h1>📊 試合レポート</h1>
+      <p id="reportSub">自動集計</p>
+    </div>
+    <button class="csvBtn" onclick="downloadCSV()">⬇ CSV出力</button>
+  </div>
+  <div id="reportDashboard"></div>
 </section>
+
 
 <div class="bottom hidden" id="bottomBar">
   <button class="red" onclick="goHome()">🏠 ホーム</button>
