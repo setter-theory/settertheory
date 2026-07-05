@@ -136,21 +136,30 @@ function startMatch(){
 function pointByResult(result){
   const before=s.serve;
 
-  // 得点になる結果
-  if(result==="成功" || result==="エース" || result==="シャット"){
+  // 得点になるプレーのみ
+  if(
+    (s.mode==="スパイク" && result==="成功") ||
+    (s.mode==="サーブ" && result==="エース") ||
+    (s.mode==="ブロック" && result==="シャット")
+  ){
     s.my++;
     if(before==="opp"){nextRot(); s.serve="mine";}
     return "自";
   }
 
-  // 失点になる結果
-  if(result==="ミス" || result==="被ブロック" || result==="レセプミス" || result==="ブロックミス"){
+  // 失点になるプレーのみ
+  if(
+    (s.mode==="スパイク" && (result==="ミス"||result==="被ブロック")) ||
+    (s.mode==="サーブ" && result==="ミス") ||
+    (s.mode==="レセプ" && result==="レセプミス") ||
+    (s.mode==="ブロック" && result==="ブロックミス")
+  ){
     s.op++;
     s.serve="opp";
     return "相";
   }
 
-  // B/Cパス・トス先・ワンタッチ・継続などはラリー継続扱い
+  // ディグ・トス・通常レセプ成功・継続などは得点なし
   return "継続";
 }
 function add(pos){
