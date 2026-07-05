@@ -423,6 +423,45 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .summaryCards .statValue{font-size:46px!important}
 }
 
+
+/* v16: 上部5項目の太い横線の中に数字を表示 */
+.summaryCards .statValue{
+  display:none!important;
+}
+.summaryCards .miniTrack{
+  height:42px!important;
+  border-radius:10px!important;
+  position:relative;
+  overflow:hidden;
+  background:#e5e7eb!important;
+}
+.summaryCards .miniFill{
+  height:100%!important;
+  border-radius:10px!important;
+}
+.summaryCards .barValue{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:26px;
+  font-weight:1000;
+  text-shadow:0 2px 4px rgba(0,0,0,.35);
+  z-index:2;
+  pointer-events:none;
+}
+.summaryCards .statCard{
+  min-height:132px;
+}
+.summaryCards .statSub{
+  margin-top:8px;
+}
+@media(max-width:900px){
+  .summaryCards .barValue{font-size:24px}
+}
+
 </style>
 </head>
 <body>

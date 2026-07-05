@@ -461,8 +461,11 @@ function metricCard(label,value,sub,color,icon,pct){
   return `<div class="statCard">
     <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
     <div class="statValue ${color}">${value}</div>
+    <div class="miniTrack">
+      <div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div>
+      <div class="barValue">${value}</div>
+    </div>
     <div class="statSub">${sub}</div>
-    <div class="miniTrack"><div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div></div>
   </div>`;
 }
 function rankConfig(type){
