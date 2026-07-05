@@ -100,13 +100,7 @@ function pointOnly(team){
 function manualRotate(){snap();nextRot();save();render();}
 function toggleServe(){snap();s.serve=s.serve==="mine"?"opp":"mine";save();render();}
 function undo(){const h=s.hist.pop();if(!h)return;s=JSON.parse(h);save();render();}
-
-function goHome(){
-  if(confirm("ホームへ戻りますか？\n試合データは保存されたままです。")){
-    show("home");
-  }
-}
-
+function goHome(){ if(confirm("ホームへ戻りますか？")){ show("home"); } }
 function render(){
   if(document.getElementById("setup").classList.contains("active")) renderSetup();
   if(!document.getElementById("match").classList.contains("active") && !document.getElementById("report").classList.contains("active")) return;
