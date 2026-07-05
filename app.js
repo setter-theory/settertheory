@@ -438,6 +438,84 @@ function metricCard(label,value,sub,color,icon,pct){
     <div class="miniTrack"><div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:var(--${color==='blue'?'blue':color==='red'?'red':color==='green'?'green':color==='orange'?'orange':'purple'})"></div></div>
   </div>`;
 }
+
+let reportRankType = localStorage.getItem("vollyzeReportRankType") || "スパイク";
+let reportSortType = localStorage.getItem("vollyzeReportSortType") || "rate";
+
+function safePct(part,total){ return total ? Math.round(part/total*100) : 0; }
+function cssClassByPct(pct){ if(pct>=70)return ""; if(pct>=50)return "mid"; return "bad"; }
+function donutStyle(items){
+  const total=items.reduce((a,x)=>a+x.count,0) || 1;
+  let deg=0;
+  const parts=items.map(x=>{const st=deg; deg += x.count/total*360; return `${x.color} ${st}deg ${deg}deg`;});
+  return `conic-gradient(${parts.join(",")})`;
+}
+function legendHtml(items,total){
+  return `<div class="legend">`+items.map(x=>{
+    const pct=safePct(x.count,total);
+    return `<div class="legendRow"><span class="dot" style="background:${x.color}"></span><span>${x.label}</span><span>${pct}% (${x.count})</span></div>`;
+  }).join("")+`</div>`;
+}
+function metricCard(label,value,sub,color,icon,pct){
+  const c=color==='blue'?'#2563eb':color==='red'?'#dc2626':color==='green'?'#16a34a':color==='orange'?'#f97316':'#7c3aed';
+  return `<div class="statCard">
+    <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
+    <div class="statValue ${color}">${value}</div>
+    <div class="statSub">${sub}</div>
+    <div class="miniTrack"><div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div></div>
+  </div>`;
+}
+function rankConfig(type){
+  const map={
+    "スパイク":{title:"スパイク決定率ランキング", success:"決定数", total:"打数", rate:"決定率", note:"決定率 ＝ スパイク成功 ÷ スパイク打数", ok:x=>x.type==="スパイク"&&x.result==="成功", all:x=>x.type==="スパイク"},
+    "サーブ":{title:"サーブ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ サーブ成功＋サービスエース ÷ サーブ総数", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース"), all:x=>x.type==="サーブ"},
+    "レセプ":{title:"レセプション成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ Aパス＋Bパス＋Cパス ÷ レセプ総数", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス"), all:x=>x.type==="レセプ"},
+    "トス":{title:"トス成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ レフト/センター/ライト/バックへ上げたトス ÷ トス総数", ok:x=>x.type==="トス", all:x=>x.type==="トス"},
+    "ディグ":{title:"ディグ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ ディグ成功 ÷ ディグ総数", ok:x=>x.type==="ディグ"&&x.result==="成功", all:x=>x.type==="ディグ"},
+    "ブロック":{title:"ブロック成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ シャット＋ワンタッチ ÷ ブロック総数", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ"), all:x=>x.type==="ブロック"}
+  };
+  return map[type] || map["スパイク"];
+}
+function buildPersonalRanking(){
+  const cfg=rankConfig(reportRankType);
+  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
+  let rows=nums.map(n=>{
+    const all=s.logs.filter(x=>String(x.num)===String(n) && cfg.all(x));
+    const ok=all.filter(cfg.ok).length;
+    const pct=safePct(ok,all.length);
+    return {n,name:getPlayerName(n)||`${n}番`, ok,total:all.length,pct};
+  });
+  rows.sort((a,b)=>{
+    if(reportSortType==="success") return b.ok-a.ok || b.pct-a.pct;
+    if(reportSortType==="tries") return b.total-a.total || b.pct-a.pct;
+    return b.pct-a.pct || b.ok-a.ok || b.total-a.total;
+  });
+  const list=rows.map((r,i)=>`
+    <div class="bigBarRow">
+      <div class="bigBarRank">${i+1}</div>
+      <div class="bigBarName">${r.n} ${r.name}</div>
+      <div class="bigBarNum">${r.ok}</div>
+      <div class="bigBarNum">${r.total}</div>
+      <div class="bigBarTrack"><div class="bigBarFill" style="width:${r.pct}%"></div></div>
+      <div class="bigBarBadge ${cssClassByPct(r.pct)}">${r.pct}%</div>
+    </div>`).join("");
+  return `<div class="rankControls">
+    <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="reportRankType=this.value;localStorage.setItem('vollyzeReportRankType',this.value);report();">
+      ${["スパイク","サーブ","レセプ","トス","ディグ","ブロック"].map(t=>`<option value="${t}" ${reportRankType===t?"selected":""}>${rankConfig(t).title}</option>`).join("")}
+    </select></div>
+    <div><label>並び替え</label><br><select id="rankSortSelect" onchange="reportSortType=this.value;localStorage.setItem('vollyzeReportSortType',this.value);report();">
+      <option value="rate" ${reportSortType==="rate"?"selected":""}>成功率順</option>
+      <option value="success" ${reportSortType==="success"?"selected":""}>成功数順</option>
+      <option value="tries" ${reportSortType==="tries"?"selected":""}>試行数順</option>
+    </select></div>
+  </div>
+  <h3>個人成績 <small>（${cfg.title}）</small></h3>
+  <div class="bigBarRow" style="font-size:12px;color:var(--muted);font-weight:1000">
+    <div>順位</div><div>選手</div><div>${cfg.success}</div><div>${cfg.total}</div><div></div><div>${cfg.rate}</div>
+  </div>
+  <div class="bigBars">${list}</div>
+  <div class="rankNote">※ ${cfg.note}</div>`;
+}
 function report(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length;
@@ -446,30 +524,22 @@ function report(){
   const myPts=s.logs.filter(x=>x.point==="自").length;
   const opPts=s.logs.filter(x=>x.point==="相").length;
   const serveLogs=s.logs.filter(x=>x.type==="サーブ");
-  const serveOk=serveLogs.filter(isSuccessResult).length;
+  const serveOk=serveLogs.filter(x=>x.result==="成功"||x.result==="エース").length;
   const spikeLogs=s.logs.filter(x=>x.type==="スパイク");
   const spikeKill=spikeLogs.filter(x=>x.result==="成功").length;
 
-  const successPct=safePct(success,total);
-  const lossPct=safePct(loss,total);
-  const servePct=safePct(serveOk,serveLogs.length);
-  const spikePct=safePct(spikeKill,spikeLogs.length);
-
-  const summary=`
-    <div class="summaryCards">
-      ${metricCard("成功率",successPct+"%",`成功 ${success} / 総数 ${total}`,"blue","🎯",successPct)}
-      ${metricCard("失点率",lossPct+"%",`失点 ${loss} / 総数 ${total}`,"red","🛡",lossPct)}
-      ${metricCard("サーブ成功率",servePct+"%",`成功 ${serveOk} / 総数 ${serveLogs.length}`,"green","🏐",servePct)}
-      ${metricCard("スパイク決定率",spikePct+"%",`決定 ${spikeKill} / 打数 ${spikeLogs.length}`,"orange","🏃",spikePct)}
-      ${metricCard("総プレー数",total,`総数 ${total}プレー`,"purple","〽",100)}
-    </div>`;
+  const successPct=safePct(success,total), lossPct=safePct(loss,total), servePct=safePct(serveOk,serveLogs.length), spikePct=safePct(spikeKill,spikeLogs.length);
+  const summary=`<div class="summaryCards">
+    ${metricCard("成功率",successPct+"%",`成功 ${success} / 総数 ${total}`,"blue","🎯",successPct)}
+    ${metricCard("失点率",lossPct+"%",`失点 ${loss} / 総数 ${total}`,"red","🛡",lossPct)}
+    ${metricCard("サーブ成功率",servePct+"%",`成功 ${serveOk} / 総数 ${serveLogs.length}`,"green","🏐",servePct)}
+    ${metricCard("スパイク決定率",spikePct+"%",`決定 ${spikeKill} / 打数 ${spikeLogs.length}`,"orange","🏃",spikePct)}
+    ${metricCard("総プレー数",total,`総数 ${total}プレー`,"purple","〽",100)}
+  </div>`;
 
   const playColors={"サーブ":"#ef4444","レセプ":"#2563eb","スパイク":"#22c55e","トス":"#f59e0b","ディグ":"#7c3aed","ブロック":"#334155"};
   const playItems=actionTypes.map(t=>({label:t,count:s.logs.filter(x=>x.type===t).length,color:playColors[t]})).filter(x=>x.count>0);
-  const playDonut=`<div class="donutWrap">
-    <div class="donut" style="background:${donutStyle(playItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>
-    ${legendHtml(playItems,total)}
-  </div>`;
+  const playDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(playItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(playItems,total)}</div>`;
 
   const resultGroups=[
     {label:"成功系",count:actionLogs.filter(isSuccessResult).length,color:"#22c55e"},
@@ -477,88 +547,45 @@ function report(){
     {label:"ミス",count:actionLogs.filter(x=>x.result==="ミス"||x.result==="レセプミス"||x.result==="ブロックミス").length,color:"#ef4444"},
     {label:"被ブロック",count:actionLogs.filter(x=>x.result==="被ブロック").length,color:"#f59e0b"},
   ].filter(x=>x.count>0);
-  const resultDonut=`<div class="donutWrap">
-    <div class="donut" style="background:${donutStyle(resultGroups)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>
-    ${legendHtml(resultGroups,total)}
-  </div>`;
+  const resultDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(resultGroups)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(resultGroups,total)}</div>`;
 
-  const pointItems=[
-    {label:"自チーム得点",count:myPts,color:"#22c55e"},
-    {label:"相手チーム得点",count:opPts,color:"#ef4444"}
-  ].filter(x=>x.count>0);
-  const pointTotal=myPts+opPts;
-  const pointDonut=`<div class="donutWrap">
-    <div class="donut" style="background:${donutStyle(pointItems)}"><div class="donutCenter"><div class="label">合計</div><div class="num">${pointTotal}</div></div></div>
-    ${legendHtml(pointItems,pointTotal)}
-  </div>`;
-
-  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
-  const personalRows=nums.map((n,i)=>{
-    const a=s.logs.filter(x=>String(x.num)===String(n) && actionTypes.includes(x.type));
-    const ok=a.filter(isSuccessResult).length;
-    const pct=safePct(ok,a.length);
-    const name=getPlayerName(n) || `${n}番`;
-    return `<div class="bigBarRow">
-      <div class="bigBarName">${n} ${name}</div>
-      <div class="bigBarPct">${ok}/${a.length}</div>
-      <div class="bigBarTrack"><div class="bigBarFill" style="width:${pct}%"></div></div>
-      <div class="bigBarBadge ${cssClassByPct(pct)}">${pct}%</div>
-    </div>`;
-  }).join("");
+  const pointItems=[{label:"自チーム得点",count:myPts,color:"#22c55e"},{label:"相手チーム得点",count:opPts,color:"#ef4444"}].filter(x=>x.count>0);
+  const pointDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(pointItems)}"><div class="donutCenter"><div class="label">合計</div><div class="num">${myPts+opPts}</div></div></div>${legendHtml(pointItems,myPts+opPts)}</div>`;
 
   const rotationRows=[1,2,3,4,5,6].map(r=>{
     const a=s.logs.filter(x=>x.rot==="S"+r);
     const ok=a.filter(isSuccessResult).length;
     const pct=safePct(ok,a.length);
-    return `<div class="rotationRow ${s.rot===r?"currentRotation":""}">
-      <div class="rotationLabel">S${r}</div>
-      <div class="rotationPct">${pct}% (${ok}/${a.length})</div>
-      <div class="rotationTrack"><div class="rotationFill ${cssClassByPct(pct)}" style="width:${pct}%"></div></div>
-    </div>`;
+    return `<div class="rotationRow ${s.rot===r?"currentRotation":""}"><div class="rotationLabel">S${r}</div><div class="rotationPct">${pct}% (${ok}/${a.length})</div><div class="rotationTrack"><div class="rotationFill ${cssClassByPct(pct)}" style="width:${pct}%"></div></div></div>`;
   }).join("");
 
   const tossLogs=s.logs.filter(x=>x.type==="トス");
   const tossLabels=["レフト","センター","ライト","バック"];
   const tossColors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b"};
   const tossItems=tossLabels.map(t=>({label:t,count:tossLogs.filter(x=>x.result===t).length,color:tossColors[t]})).filter(x=>x.count>0);
-  const tossDonut=`<div class="tossPanel">
-    <div class="donut" style="background:${donutStyle(tossItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${tossLogs.length}</div></div></div>
-    ${legendHtml(tossItems,tossLogs.length)}
+  const tossDonut=`<div class="tossPanel"><div class="donut" style="background:${donutStyle(tossItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${tossLogs.length}</div></div></div>${legendHtml(tossItems,tossLogs.length)}</div>`;
+
+  const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
+  const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}</div></div>`;}).join("");
+
+  const dashboard=`<div class="reportGrid">
+    ${summary}
+    <div class="panelGrid">
+      <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
+      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>
+      <div class="reportPanel"><h3>得点・失点</h3>${pointDonut}</div>
+    </div>
+    <div class="wideGrid">
+      <div class="reportPanel">${buildPersonalRanking()}</div>
+      <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
+    </div>
+    <div class="bottomGrid">
+      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}</div>
+      <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
+    </div>
   </div>`;
-
-  const iconFor=x=>{
-    if(isMissResult(x)) return ["×","tMiss"];
-    if(x.result==="被ブロック") return ["△","tBlock"];
-    if(x.result==="継続") return ["−","tCont"];
-    return ["○","tSuccess"];
-  };
-  const recent=s.logs.slice(-20).map(x=>{
-    const [ic,cls]=iconFor(x);
-    return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}</div></div>`;
-  }).join("");
-
-  const dashboard=`
-    <div class="reportGrid">
-      ${summary}
-      <div class="panelGrid">
-        <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
-        <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>
-        <div class="reportPanel"><h3>得点・失点</h3>${pointDonut}</div>
-      </div>
-      <div class="wideGrid">
-        <div class="reportPanel"><h3>個人成績 <small>（成功率）</small></h3><div class="bigBars">${personalRows}</div></div>
-        <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
-      </div>
-      <div class="bottomGrid">
-        <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}</div>
-        <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
-      </div>
-    </div>`;
-
-  const dash=document.getElementById("reportDashboard");
-  if(dash) dash.innerHTML=dashboard;
-  const sub=document.getElementById("reportSub");
-  if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
+  const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
+  const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
 }
 
 function downloadCSV(){
