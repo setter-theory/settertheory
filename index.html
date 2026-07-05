@@ -245,6 +245,19 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .fastBtn{font-size:12px;min-height:44px}
 }
 
+
+/* v9: 旧モード/結果ボタンを非表示。高速入力だけに統一 */
+.tabs,
+.results{
+  display:none!important;
+}
+.fastInput{
+  margin-top:8px;
+}
+.fastGroup{
+  margin-bottom:8px;
+}
+
 </style>
 </head>
 <body>
@@ -354,7 +367,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
       <button class="yellow" data-result="被ブロック">🚫 被ブロック</button>
       <button class="purple" data-result="継続">継続</button>
     </div>
-    <div class="helper">モードと結果を選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
+    <div class="helper">プレー内容を選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
     
     <div class="fastInput">
       <div class="fastGroup">
