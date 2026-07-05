@@ -136,22 +136,25 @@ function startMatch(){
 function pointByResult(result){
   const before=s.serve;
 
-  // 得点になるプレーのみ
+  // 自チーム得点になるもの
   if(
     (s.mode==="スパイク" && result==="成功") ||
     (s.mode==="サーブ" && result==="エース") ||
     (s.mode==="ブロック" && result==="シャット")
   ){
     s.my++;
-    if(before==="opp"){nextRot(); s.serve="mine";}
+    if(before==="opp"){ nextRot(); s.serve="mine"; }
     return "自";
   }
 
-  // 失点になるプレーのみ
+  // 相手得点になるもの
   if(
-    (s.mode==="スパイク" && (result==="ミス"||result==="被ブロック")) ||
+    (s.mode==="スパイク" && (result==="ミス" || result==="被ブロック")) ||
     (s.mode==="サーブ" && result==="ミス") ||
+    (s.mode==="レセプ" && result==="ミス") ||
     (s.mode==="レセプ" && result==="レセプミス") ||
+    (s.mode==="ディグ" && result==="ミス") ||
+    (s.mode==="ブロック" && result==="ミス") ||
     (s.mode==="ブロック" && result==="ブロックミス")
   ){
     s.op++;
@@ -159,9 +162,10 @@ function pointByResult(result){
     return "相";
   }
 
-  // ディグ・トス・通常レセプ成功・継続などは得点なし
+  // レセプA/B/C、ディグ成功、トス先、ワンタッチ、継続などは得点なし
   return "継続";
 }
+
 function add(pos){
   const nums=rotationNums();
   const num=nums[Number(pos)-1];
@@ -243,7 +247,13 @@ function isSuccessResult(x){
   return ["成功","エース","シャット","Aパス","Bパス","Cパス","レフト","センター","ライト","バック","ワンタッチ"].includes(x.result);
 }
 function isMissResult(x){
-  return ["ミス","レセプミス","ブロックミス","被ブロック"].includes(x.result);
+  return (
+    (x.type==="スパイク" && (x.result==="ミス" || x.result==="被ブロック")) ||
+    (x.type==="サーブ" && x.result==="ミス") ||
+    (x.type==="レセプ" && (x.result==="ミス" || x.result==="レセプミス")) ||
+    (x.type==="ディグ" && x.result==="ミス") ||
+    (x.type==="ブロック" && (x.result==="ミス" || x.result==="ブロックミス"))
+  );
 }
 
 function buildOverallTable(){
