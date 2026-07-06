@@ -598,6 +598,95 @@ function downloadCSV(){
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
 }
+
+
+// v18: CSV自動解析（Vollyze / Setter Theory CSV 両対応の簡易版）
+function normalizeKey(v){
+  return String(v||'').toLowerCase().replace(/[\s_\-・./()（）]/g,'');
+}
+function findHeader(headers, keywords){
+  const ns=headers.map(h=>[h, normalizeKey(h)]);
+  for(const kw of keywords){
+    const nkw=normalizeKey(kw);
+    const hit=ns.find(([h,n])=>n.includes(nkw));
+    if(hit) return hit[0];
+  }
+  return null;
+}
+function getCell(row, keys){
+  for(const k of keys){ if(k && row[k]!==undefined && String(row[k]).trim()!=='') return String(row[k]).trim(); }
+  return '';
+}
+function classifyTossTarget(value){
+  const v=String(value||'').trim();
+  const n=normalizeKey(v);
+  if(!v) return '未分類';
+  if(/[1１]|ライト|right|opposite|rs|pos1|p1/.test(n)) return 'ライト';
+  if(/[2２]|レフト|left|outside|oh|ls|pos2|p2|pos4|p4/.test(n)) return 'レフト';
+  if(/[3３]|センター|ミドル|middle|mb|quick|クイック|pos3|p3/.test(n)) return 'センター';
+  if(/[6６]|バック|back|pipe|bick|パイプ|pos6|p6/.test(n)) return 'バック';
+  return v;
+}
+function analyzeImportedCsv(parsed){
+  const headers=parsed?.headers||[];
+  const rows=parsed?.data||[];
+  const actionCol=findHeader(headers,['Type','Action','Skill','Play','プレー','項目','動作','種類']);
+  const targetCol=findHeader(headers,['Number','No','背番号','Player','選手','Target','Attack','Attacker','スパイカー','打者','トス先','Position','Zone','ゾーン','場所']);
+  const resultCol=findHeader(headers,['Result','結果','Outcome','評価','Eval','Grade']);
+  const setCol=findHeader(headers,['Set','セット']);
+  const rotCol=findHeader(headers,['Rotation','Rot','ローテ','S']);
+
+  const tossRows=rows.filter(r=>{
+    const a=getCell(r,[actionCol]);
+    const joined=headers.map(h=>String(r[h]||'')).join(' ');
+    return /トス|set|setter|toss/i.test(a) || /トス/.test(joined);
+  });
+  const base=tossRows.length ? tossRows : rows;
+  const counts={};
+  const rawTargets={};
+  base.forEach(r=>{
+    const raw=getCell(r,[targetCol]) || getCell(r,[findHeader(headers,['Position','Zone','場所','ポジション'])]) || '未分類';
+    const label=classifyTossTarget(raw);
+    counts[label]=(counts[label]||0)+1;
+    rawTargets[raw]=(rawTargets[raw]||0)+1;
+  });
+  const total=base.length;
+  const diversity=Object.keys(counts).filter(k=>k!=='未分類').length;
+  const max=Math.max(0,...Object.values(counts));
+  const sideDepend=total ? Math.round(max/total*100) : 0;
+  const setterIq=Math.max(40, Math.min(99, Math.round(100 - sideDepend*0.45 + diversity*7 + Math.min(total,40)*0.15)));
+  const items=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([label,count])=>({label,count,pct:safePct(count,total)}));
+  return {headers, rows, actionCol, targetCol, resultCol, setCol, rotCol, tossRows, total, items, setterIq, sideDepend, diversity, usedFallback:!tossRows.length};
+}
+function renderCsvAnalysis(parsed){
+  const box=document.getElementById('csvAnalysisBox');
+  if(!box) return;
+  if(!parsed || !(parsed.data||[]).length){ box.style.display='none'; box.innerHTML=''; return; }
+  const a=analyzeImportedCsv(parsed);
+  box.style.display='block';
+  const bars=a.items.map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">集計できるデータがありません。</div>';
+  const main=a.items[0];
+  let comment='CSVを読み込みました。トス先の偏りを確認して、次の試合で使う選択肢を増やしましょう。';
+  if(main && a.total){
+    comment=`一番多い配球は「${escapeHtml(main.label)}」で${main.pct}%です。${main.pct>=55?'少し偏りが強いので、序盤から別の選択肢を見せると相手ブロックを動かしやすくなります。':'大きな偏りは少なく、配球の幅を作れています。'}`;
+  }
+  box.innerHTML=`
+    <div class="csvAnalysisHead">
+      <div><div class="csvAnalysisTitle">📊 CSV自動解析 v18</div><div class="csvSmall">${a.usedFallback?'※ トス行を特定できなかったため、全行で仮集計しています。':'トス行を抽出して配球割合を集計しました。'}</div></div>
+      <div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div>
+    </div>
+    <div class="csvMetaGrid">
+      <div><b>${a.total}</b><span>解析対象</span></div>
+      <div><b>${a.diversity}</b><span>配球先</span></div>
+      <div><b>${a.sideDepend}%</b><span>最大依存率</span></div>
+    </div>
+    <div class="csvAnaBars">${bars}</div>
+    <div class="csvCoachComment"><b>AIコメント</b><br>${comment}</div>
+    <div class="csvSmall">検出列：${escapeHtml(a.actionCol||'未検出')} / ${escapeHtml(a.targetCol||'未検出')} / ${escapeHtml(a.resultCol||'未検出')}</div>
+  `;
+  renderCsvAnalysis(parsed);
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
   setupCsvImport();
   load();
@@ -740,6 +829,7 @@ function setupCsvImport(){
       if(input) input.value = "";
       if(status) status.textContent = "未読み込み";
       if(box){ box.style.display = "none"; box.innerHTML = ""; }
+      renderCsvAnalysis(null);
     });
   }
 

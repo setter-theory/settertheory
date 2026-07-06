@@ -551,6 +551,18 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   margin-top:6px;
 }
 
+
+/* v18: CSV自動解析 */
+.csvAnalysisBox{display:none;margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06)}
+.csvAnalysisHead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.csvAnalysisTitle{font-size:18px;font-weight:1000;color:var(--ink)}
+.csvIq{min-width:96px;text-align:center;background:#0f172a;color:white;border-radius:16px;padding:10px 12px}
+.csvIq span{display:block;font-size:11px;font-weight:900;opacity:.8}.csvIq b{font-size:34px;line-height:1}
+.csvMetaGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}.csvMetaGrid div{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}.csvMetaGrid b{display:block;font-size:22px}.csvMetaGrid span{font-size:11px;color:var(--muted);font-weight:900}
+.csvAnaBars{display:grid;gap:8px}.csvAnaRow{display:grid;grid-template-columns:72px 1fr 48px 48px;gap:8px;align-items:center}.csvAnaLabel{font-weight:1000;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.csvAnaTrack{height:16px;background:#e5e7eb;border-radius:999px;overflow:hidden}.csvAnaFill{height:100%;background:linear-gradient(135deg,#2563eb,#60a5fa);border-radius:999px}.csvAnaPct,.csvAnaCount{text-align:right;font-size:12px;font-weight:1000;color:var(--muted)}
+.csvCoachComment{margin-top:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:12px;line-height:1.55;font-weight:800;color:#7c2d12}
+@media(max-width:520px){.csvAnalysisHead{align-items:flex-start}.csvMetaGrid{grid-template-columns:1fr 1fr 1fr}.csvAnaRow{grid-template-columns:64px 1fr 42px 42px}}
+
 </style>
 </head>
 <body>
@@ -570,6 +582,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
     <button id="clearCsvBtn" class="ghostBtn" type="button">読み込み解除</button>
   </div>
   <div id="csvImportStatus" class="csvImportStatus">未読み込み</div>
+  <div id="csvAnalysisBox" class="csvAnalysisBox"></div>
   <div id="csvPreviewBox" class="csvPreviewBox"></div>
 </div>
 
@@ -578,9 +591,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v2</h3>
+    <h3>試作品 v18</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      最初にコート上で背番号を配置して、そのまま試合を記録できます。
+      CSVを読み込むと、配球割合とSetter IQを自動で仮解析できます。
     </p>
   </div>
 </section>
