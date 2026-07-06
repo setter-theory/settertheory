@@ -577,6 +577,18 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 .csvMemo{margin-top:12px;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px}.csvMemo textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;font-weight:800;resize:vertical}
 @media(max-width:900px){.csvScoreGrid{grid-template-columns:repeat(3,1fr)}.csvDual,.coachCards{grid-template-columns:1fr}.csvHeadActions{align-items:flex-end;flex-direction:column}}
 @media(max-width:520px){.csvScoreGrid{grid-template-columns:repeat(2,1fr)}.stackBar{min-width:120px}.csvMiniTable td{font-size:11px}}
+
+
+/* v21 match save */
+.savedMatchCard{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06)}
+.savedMatchHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.savedMatchHead h3{margin:0;font-size:17px}.savedMatchCount{font-size:12px;color:var(--muted);font-weight:900}
+.savedMatchList{display:grid;gap:8px}.savedMatchItem{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px}
+.savedMatchTitle{font-weight:1000;color:var(--ink);font-size:14px}.savedMatchMeta{font-size:12px;color:var(--muted);font-weight:800;margin-top:2px}.savedMatchIq{font-weight:1000;color:#0f172a;font-size:13px;margin-top:5px}
+.savedMatchActions{display:flex;gap:6px;align-items:center}.miniBtn{border:0;border-radius:10px;padding:8px 10px;font-weight:1000;cursor:pointer;background:#2563eb;color:#fff}.miniBtn.danger{background:#fee2e2;color:#991b1b}.miniBtn.gray{background:#e5e7eb;color:#334155}
+.saveCurrentBox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 0}.saveCurrentBox input{min-width:210px;flex:1;border:1px solid var(--line);border-radius:12px;padding:10px;font-weight:800}.saveCurrentBox button{min-height:42px}
+@media(max-width:560px){.savedMatchItem{grid-template-columns:1fr}.savedMatchActions{justify-content:flex-end}.saveCurrentBox{display:grid;grid-template-columns:1fr}}
+
 @media print{
   body{background:#fff!important}.bottom,.csvActions,#csvPreviewBox,.logo>p,.big,.card h3+div:not(#csvAnalysisBox){display:none!important}.screen{display:block!important}.csvImportCard{box-shadow:none!important;border:0!important}.csvAnalysisBox{display:block!important;box-shadow:none!important;border:0!important}.csvMemo textarea{border:1px solid #ccc!important}.coachCards,.csvSubGrid,.csvDual{break-inside:avoid}.csvAnalysisTitle:after{content:' / PDF Report';}
 }
@@ -604,14 +616,22 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   <div id="csvPreviewBox" class="csvPreviewBox"></div>
 </div>
 
+<div class="savedMatchCard" id="savedMatchesCard">
+  <div class="savedMatchHead">
+    <h3>💾 保存した試合</h3>
+    <span class="savedMatchCount" id="savedMatchCount">0件</span>
+  </div>
+  <div id="savedMatchList" class="savedMatchList">保存された試合はまだありません。</div>
+</div>
+
 
     <p>誰でも30秒で使える分析アプリ</p>
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v20 β</h3>
+    <h3>試作品 v21 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと、配球割合・セット別・ローテ別・得点差別・終盤分析・AIコメントまで自動解析できます。
+      CSVを読み込むと自動解析できます。v21では試合保存・試合一覧・再読み込みに対応しました。
     </p>
   </div>
 </section>

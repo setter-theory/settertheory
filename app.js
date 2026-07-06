@@ -787,6 +787,105 @@ function buildCoachCards(a){
     <div class="coachCard next"><b>💡 次の試合で意識</b><ul>${next.map(x=>`<li>${x}</li>`).join('')}</ul></div>
   </div>`;
 }
+
+function savedMatchesKey(){ return 'setterTheorySavedMatchesV21'; }
+function getSavedMatches(){
+  try{return JSON.parse(localStorage.getItem(savedMatchesKey())||'[]') || [];}catch(e){return [];}
+}
+function setSavedMatches(list){ localStorage.setItem(savedMatchesKey(), JSON.stringify(list)); }
+function suggestedMatchName(){
+  const d=new Date();
+  const day=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  const file=(importedCsv && importedCsv.fileName) ? importedCsv.fileName.replace(/\.csv$/i,'') : 'CSV解析';
+  return `${day} ${file}`;
+}
+function currentAnalysisSummary(){
+  if(!importedCsv) return null;
+  const a=analyzeImportedCsv(importedCsv);
+  return {
+    total:a.total, setterIq:a.setterIq, balance:a.balance, diversity:a.diversity, quick:a.quick,
+    clutch:a.clutch, foreshadow:a.foreshadow, items:a.items,
+    bySet:a.bySet, byRot:a.byRot, byScore:a.byScore, byPass:a.byPass,
+    terminalCounts:a.terminalCounts, usedFallback:a.usedFallback
+  };
+}
+function saveCurrentMatch(){
+  if(!importedCsv){ alert('CSVを読み込んでから保存してください。'); return; }
+  const nameInput=document.getElementById('matchSaveName');
+  const memoEl=document.getElementById('setterMemo');
+  const title=(nameInput && nameInput.value.trim()) || suggestedMatchName();
+  const list=getSavedMatches();
+  const summary=currentAnalysisSummary();
+  const saved={
+    id:`match_${Date.now()}`,
+    title,
+    fileName:importedCsv.fileName || 'CSV',
+    savedAt:new Date().toISOString(),
+    memo:memoEl ? memoEl.value : '',
+    csv:importedCsv,
+    summary
+  };
+  list.unshift(saved);
+  setSavedMatches(list.slice(0,50));
+  renderSavedMatches();
+  alert('試合を保存しました。');
+}
+function loadSavedMatch(id){
+  const m=getSavedMatches().find(x=>x.id===id);
+  if(!m){ alert('保存データが見つかりません。'); return; }
+  importedCsv=m.csv;
+  localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
+  renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
+  renderCsvAnalysis(importedCsv);
+  setTimeout(()=>{
+    const memo=document.getElementById('setterMemo');
+    if(memo) memo.value=m.memo || '';
+    const box=document.getElementById('csvAnalysisBox');
+    if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
+  },0);
+}
+function deleteSavedMatch(id){
+  if(!confirm('この保存試合を削除しますか？')) return;
+  setSavedMatches(getSavedMatches().filter(x=>x.id!==id));
+  renderSavedMatches();
+}
+function renameSavedMatch(id){
+  const list=getSavedMatches();
+  const m=list.find(x=>x.id===id);
+  if(!m) return;
+  const name=prompt('試合名を変更', m.title || '');
+  if(!name) return;
+  m.title=name.trim();
+  setSavedMatches(list);
+  renderSavedMatches();
+}
+function renderSavedMatches(){
+  const listEl=document.getElementById('savedMatchList');
+  const countEl=document.getElementById('savedMatchCount');
+  if(!listEl) return;
+  const list=getSavedMatches();
+  if(countEl) countEl.textContent=`${list.length}件`;
+  if(!list.length){ listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。CSV解析後に「この試合を保存」を押してください。</div>'; return; }
+  listEl.innerHTML=list.map(m=>{
+    const d=m.savedAt ? new Date(m.savedAt) : new Date();
+    const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    const iq=(m.summary && m.summary.setterIq) ? m.summary.setterIq : '-';
+    const total=(m.summary && m.summary.total) ? m.summary.total : 0;
+    return `<div class="savedMatchItem">
+      <div>
+        <div class="savedMatchTitle">${escapeHtml(m.title||'無題の試合')}</div>
+        <div class="savedMatchMeta">${escapeHtml(date)}　${escapeHtml(m.fileName||'CSV')}　トス${total}本</div>
+        <div class="savedMatchIq">Setter IQ ${iq}</div>
+      </div>
+      <div class="savedMatchActions">
+        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">開く</button>
+        <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
+        <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function printCsvReport(){
   if(!importedCsv){ alert('CSVを読み込んでからPDF出力してください。'); return; }
   window.print();
@@ -802,7 +901,7 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v20</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v21</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
     <div class="csvScoreGrid">
@@ -824,13 +923,15 @@ function renderCsvAnalysis(parsed){
       ${compactBreakdownTable('A/B/Cパス別 配球割合', a.byPass)}
     </div>
     ${buildCoachCards(a)}
-    <div class="csvMemo"><b>📝 セッター思考メモ</b><textarea id="setterMemo" placeholder="例：相手MBがライト寄りだったので、序盤にセンターを見せてからレフトを使った。"></textarea><div class="csvSmall">このメモはPDF印刷にも載せられます。</div></div>
+    <div class="saveCurrentBox"><input id="matchSaveName" value="${escapeHtml(suggestedMatchName())}" placeholder="試合名"><button class="csvFileBtn" type="button" onclick="saveCurrentMatch()">💾 この試合を保存</button></div>
+    <div class="csvMemo"><b>📝 セッター思考メモ</b><textarea id="setterMemo" placeholder="例：相手MBがライト寄りだったので、序盤にセンターを見せてからレフトを使った。"></textarea><div class="csvSmall">このメモは保存データとPDF印刷に載せられます。</div></div>
     <div class="csvSmall">検出列：Type=${escapeHtml(a.actionCol||'未検出')} / Result=${escapeHtml(a.resultCol||'未検出')} / Set=${escapeHtml(a.setCol||'未検出')} / Rotation=${escapeHtml(a.rotCol||'未検出')} / Score=${escapeHtml(a.scoreCol||'未検出')}</div>
   `;
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
   setupCsvImport();
+  renderSavedMatches();
   load();
   document.querySelectorAll(".setupSpot").forEach(b=>{
     b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
