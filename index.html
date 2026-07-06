@@ -552,7 +552,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 }
 
 
-/* v18: CSV自動解析 */
+/* v19: CSV自動解析 */
 .csvAnalysisBox{display:none;margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06)}
 .csvAnalysisHead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
 .csvAnalysisTitle{font-size:18px;font-weight:1000;color:var(--ink)}
@@ -562,6 +562,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 .csvAnaBars{display:grid;gap:8px}.csvAnaRow{display:grid;grid-template-columns:72px 1fr 48px 48px;gap:8px;align-items:center}.csvAnaLabel{font-weight:1000;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.csvAnaTrack{height:16px;background:#e5e7eb;border-radius:999px;overflow:hidden}.csvAnaFill{height:100%;background:linear-gradient(135deg,#2563eb,#60a5fa);border-radius:999px}.csvAnaPct,.csvAnaCount{text-align:right;font-size:12px;font-weight:1000;color:var(--muted)}
 .csvCoachComment{margin-top:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:12px;line-height:1.55;font-weight:800;color:#7c2d12}
 @media(max-width:520px){.csvAnalysisHead{align-items:flex-start}.csvMetaGrid{grid-template-columns:1fr 1fr 1fr}.csvAnaRow{grid-template-columns:64px 1fr 42px 42px}}
+.csvSubGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.csvSubPanel{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px;overflow:auto}.csvMiniTable td{font-size:12px;padding:7px}.csvMiniTable td:first-child{font-weight:1000;white-space:nowrap}.csvMiniTable td:last-child{text-align:right;color:var(--muted);white-space:nowrap}@media(max-width:720px){.csvSubGrid{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -591,9 +592,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v18</h3>
+    <h3>試作品 v19</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと、配球割合とSetter IQを自動で仮解析できます。
+      CSVを読み込むと、配球割合・セット別・ローテ別まで自動解析できます。
     </p>
   </div>
 </section>

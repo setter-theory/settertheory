@@ -600,7 +600,7 @@ function downloadCSV(){
 }
 
 
-// v18: CSV自動解析（Vollyze / Setter Theory CSV 両対応の簡易版）
+// v19: Vollyze CSV自動解析（実データ形式に対応）
 function normalizeKey(v){
   return String(v||'').toLowerCase().replace(/[\s_\-・./()（）]/g,'');
 }
@@ -608,55 +608,104 @@ function findHeader(headers, keywords){
   const ns=headers.map(h=>[h, normalizeKey(h)]);
   for(const kw of keywords){
     const nkw=normalizeKey(kw);
-    const hit=ns.find(([h,n])=>n.includes(nkw));
+    const hit=ns.find(([h,n])=>n===nkw || n.includes(nkw));
     if(hit) return hit[0];
   }
   return null;
 }
 function getCell(row, keys){
-  for(const k of keys){ if(k && row[k]!==undefined && String(row[k]).trim()!=='') return String(row[k]).trim(); }
+  for(const k of keys){
+    if(k && row[k]!==undefined && String(row[k]).trim()!=='') return String(row[k]).trim();
+  }
   return '';
 }
 function classifyTossTarget(value){
   const v=String(value||'').trim();
   const n=normalizeKey(v);
   if(!v) return '未分類';
-  if(/[1１]|ライト|right|opposite|rs|pos1|p1/.test(n)) return 'ライト';
-  if(/[2２]|レフト|left|outside|oh|ls|pos2|p2|pos4|p4/.test(n)) return 'レフト';
-  if(/[3３]|センター|ミドル|middle|mb|quick|クイック|pos3|p3/.test(n)) return 'センター';
-  if(/[6６]|バック|back|pipe|bick|パイプ|pos6|p6/.test(n)) return 'バック';
+  if(/レフト|left|outside|oh|ls/.test(n)) return 'レフト';
+  if(/センター|ミドル|middle|mb|quick|クイック/.test(n)) return 'センター';
+  if(/ライト|right|opposite|rs/.test(n)) return 'ライト';
+  if(/バック|back|pipe|bick|パイプ/.test(n)) return 'バック';
+  if(/^1$|^１$|pos1|p1/.test(n)) return 'ライト';
+  if(/^2$|^２$|^4$|^４$|pos2|p2|pos4|p4/.test(n)) return 'レフト';
+  if(/^3$|^３$|pos3|p3/.test(n)) return 'センター';
+  if(/^6$|^６$|pos6|p6/.test(n)) return 'バック';
   return v;
+}
+function addCount(obj,key){ obj[key]=(obj[key]||0)+1; }
+function pctText(count,total){ return total ? Math.round(count/total*100) : 0; }
+function analysisItemsFromCounts(counts,total){
+  const order=['レフト','センター','ライト','バック','未分類'];
+  return Object.entries(counts)
+    .sort((a,b)=>{
+      const ia=order.indexOf(a[0])>=0?order.indexOf(a[0]):99;
+      const ib=order.indexOf(b[0])>=0?order.indexOf(b[0]):99;
+      return ia===ib ? b[1]-a[1] : ia-ib;
+    })
+    .map(([label,count])=>({label,count,pct:pctText(count,total)}));
 }
 function analyzeImportedCsv(parsed){
   const headers=parsed?.headers||[];
   const rows=parsed?.data||[];
-  const actionCol=findHeader(headers,['Type','Action','Skill','Play','プレー','項目','動作','種類']);
-  const targetCol=findHeader(headers,['Number','No','背番号','Player','選手','Target','Attack','Attacker','スパイカー','打者','トス先','Position','Zone','ゾーン','場所']);
+  const actionCol=findHeader(headers,['Type','種類','Action','Skill','Play','プレー','項目','動作']);
   const resultCol=findHeader(headers,['Result','結果','Outcome','評価','Eval','Grade']);
   const setCol=findHeader(headers,['Set','セット']);
-  const rotCol=findHeader(headers,['Rotation','Rot','ローテ','S']);
+  const rotCol=findHeader(headers,['Rotation','ローテーション','Rot','ローテ']);
+  const numberCol=findHeader(headers,['Number','背番号','No','Player','選手']);
+  const scoreCol=findHeader(headers,['Score','スコア']);
 
+  // Vollyze/Setter Theory実データ：Type=トス、Result=レフト/センター/ライト
   const tossRows=rows.filter(r=>{
     const a=getCell(r,[actionCol]);
-    const joined=headers.map(h=>String(r[h]||'')).join(' ');
-    return /トス|set|setter|toss/i.test(a) || /トス/.test(joined);
+    return normalizeKey(a)==='トス' || /^set$|^toss$/.test(normalizeKey(a));
   });
-  const base=tossRows.length ? tossRows : rows;
-  const counts={};
-  const rawTargets={};
+  const base=tossRows.length ? tossRows : rows.filter(r=>/トス/.test(headers.map(h=>String(r[h]||'')).join(' ')));
+  const targetCounts={};
+  const bySet={};
+  const byRot={};
+  const bySetter={};
+
   base.forEach(r=>{
-    const raw=getCell(r,[targetCol]) || getCell(r,[findHeader(headers,['Position','Zone','場所','ポジション'])]) || '未分類';
-    const label=classifyTossTarget(raw);
-    counts[label]=(counts[label]||0)+1;
-    rawTargets[raw]=(rawTargets[raw]||0)+1;
+    const targetRaw=getCell(r,[resultCol]);
+    const label=classifyTossTarget(targetRaw);
+    addCount(targetCounts,label);
+
+    const setName=getCell(r,[setCol]) || '未設定';
+    bySet[setName]=bySet[setName] || {};
+    addCount(bySet[setName],label);
+
+    const rotName=getCell(r,[rotCol]) || '未設定';
+    byRot[rotName]=byRot[rotName] || {};
+    addCount(byRot[rotName],label);
+
+    const setterNo=getCell(r,[numberCol]) || '-';
+    bySetter[setterNo]=bySetter[setterNo] || 0;
+    bySetter[setterNo]++;
   });
+
   const total=base.length;
-  const diversity=Object.keys(counts).filter(k=>k!=='未分類').length;
-  const max=Math.max(0,...Object.values(counts));
-  const sideDepend=total ? Math.round(max/total*100) : 0;
-  const setterIq=Math.max(40, Math.min(99, Math.round(100 - sideDepend*0.45 + diversity*7 + Math.min(total,40)*0.15)));
-  const items=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([label,count])=>({label,count,pct:safePct(count,total)}));
-  return {headers, rows, actionCol, targetCol, resultCol, setCol, rotCol, tossRows, total, items, setterIq, sideDepend, diversity, usedFallback:!tossRows.length};
+  const items=analysisItemsFromCounts(targetCounts,total);
+  const max=Math.max(0,...Object.values(targetCounts));
+  const sideDepend=pctText(max,total);
+  const validTargets=Object.keys(targetCounts).filter(k=>k!=='未分類');
+  const diversity=validTargets.length;
+  const centerPct=pctText(targetCounts['センター']||0,total);
+  const leftRightBalance=100 - Math.abs((targetCounts['レフト']||0) - (targetCounts['ライト']||0)) / Math.max(1,total) * 100;
+  const setterIq=Math.max(40, Math.min(99, Math.round(50 + diversity*8 + centerPct*0.35 + leftRightBalance*0.18 - Math.max(0,sideDepend-50)*0.35)));
+
+  return {headers, rows, actionCol, resultCol, setCol, rotCol, numberCol, scoreCol, tossRows:base, total, items, setterIq, sideDepend, diversity, bySet, byRot, bySetter, usedFallback:!tossRows.length};
+}
+function compactBreakdownTable(title, data){
+  const keys=Object.keys(data).sort((a,b)=>String(a).localeCompare(String(b),'ja',{numeric:true}));
+  if(!keys.length) return `<div class="csvSubPanel"><b>${title}</b><div class="csvSmall">データなし</div></div>`;
+  const rows=keys.map(k=>{
+    const counts=data[k];
+    const total=Object.values(counts).reduce((a,b)=>a+b,0);
+    const items=analysisItemsFromCounts(counts,total).filter(x=>x.count>0);
+    return `<tr><td>${escapeHtml(k)}</td><td>${items.map(x=>`${escapeHtml(x.label)} ${x.pct}%`).join(' / ')}</td><td>${total}本</td></tr>`;
+  }).join('');
+  return `<div class="csvSubPanel"><b>${title}</b><table class="csvMiniTable"><tbody>${rows}</tbody></table></div>`;
 }
 function renderCsvAnalysis(parsed){
   const box=document.getElementById('csvAnalysisBox');
@@ -666,25 +715,29 @@ function renderCsvAnalysis(parsed){
   box.style.display='block';
   const bars=a.items.map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">集計できるデータがありません。</div>';
   const main=a.items[0];
-  let comment='CSVを読み込みました。トス先の偏りを確認して、次の試合で使う選択肢を増やしましょう。';
+  const center=a.items.find(x=>x.label==='センター');
+  let comment='CSVを読み込みました。Type=トスの行から、Resultに入っているトス先を集計しています。';
   if(main && a.total){
-    comment=`一番多い配球は「${escapeHtml(main.label)}」で${main.pct}%です。${main.pct>=55?'少し偏りが強いので、序盤から別の選択肢を見せると相手ブロックを動かしやすくなります。':'大きな偏りは少なく、配球の幅を作れています。'}`;
+    comment=`一番多い配球は「${escapeHtml(main.label)}」で${main.pct}%です。${main.pct>=55?'偏りが強めなので、序盤からセンターや逆サイドを見せると相手ブロックを動かしやすくなります。':'極端な偏りは少なく、配球の幅を作れています。'}${center && center.pct<18?' センター使用率が低めなので、Aパス時だけでも速攻を見せたいです。':''}`;
   }
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 CSV自動解析 v18</div><div class="csvSmall">${a.usedFallback?'※ トス行を特定できなかったため、全行で仮集計しています。':'トス行を抽出して配球割合を集計しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 CSV自動解析 v19</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、トスを含む行で仮集計しています。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div>
     </div>
     <div class="csvMetaGrid">
-      <div><b>${a.total}</b><span>解析対象</span></div>
+      <div><b>${a.total}</b><span>トス本数</span></div>
       <div><b>${a.diversity}</b><span>配球先</span></div>
       <div><b>${a.sideDepend}%</b><span>最大依存率</span></div>
     </div>
     <div class="csvAnaBars">${bars}</div>
+    <div class="csvSubGrid">
+      ${compactBreakdownTable('セット別 配球割合', a.bySet)}
+      ${compactBreakdownTable('ローテ別 配球割合', a.byRot)}
+    </div>
     <div class="csvCoachComment"><b>AIコメント</b><br>${comment}</div>
-    <div class="csvSmall">検出列：${escapeHtml(a.actionCol||'未検出')} / ${escapeHtml(a.targetCol||'未検出')} / ${escapeHtml(a.resultCol||'未検出')}</div>
+    <div class="csvSmall">検出列：Type=${escapeHtml(a.actionCol||'未検出')} / Result=${escapeHtml(a.resultCol||'未検出')} / Set=${escapeHtml(a.setCol||'未検出')} / Rotation=${escapeHtml(a.rotCol||'未検出')}</div>
   `;
-  renderCsvAnalysis(parsed);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -819,6 +872,7 @@ function setupCsvImport(){
       importedCsv = {fileName:file.name, ...parsed};
       localStorage.setItem("vollyzeImportedCsv", JSON.stringify(importedCsv));
       renderCsvPreview(importedCsv, file.name);
+      renderCsvAnalysis(importedCsv);
     });
   }
 
@@ -838,6 +892,7 @@ function setupCsvImport(){
     try{
       importedCsv = JSON.parse(saved);
       renderCsvPreview(importedCsv, importedCsv.fileName || "保存済みCSV");
+      renderCsvAnalysis(importedCsv);
     }catch(e){}
   }
 }
