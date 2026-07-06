@@ -590,7 +590,15 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 @media(max-width:560px){.savedMatchItem{grid-template-columns:1fr}.savedMatchActions{justify-content:flex-end}.saveCurrentBox{display:grid;grid-template-columns:1fr}}
 
 
-/* v26 AI総合診断 */
+/* v28: Aquila welcome */
+.aquilaWelcomeCard{display:grid;grid-template-columns:70px 1fr;gap:14px;align-items:center;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border:0;box-shadow:0 14px 30px rgba(15,23,42,.22)}
+.aquilaWelcomeCard .aquilaMark{width:62px;height:62px;border-radius:18px;background:#fff7ed;color:#f59e0b;display:grid;place-items:center;font-size:34px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.aquilaWelcomeCard .aquilaEyebrow{font-size:12px;font-weight:1000;color:#fbbf24;margin-bottom:4px;letter-spacing:.02em}
+.aquilaWelcomeCard h2{margin:0;font-size:20px;line-height:1.35}
+.aquilaWelcomeCard p{margin:6px 0 0;color:#dbeafe;font-weight:800;line-height:1.55}
+@media(max-width:520px){.aquilaWelcomeCard{grid-template-columns:1fr}.aquilaWelcomeCard .aquilaMark{width:54px;height:54px;font-size:30px}.aquilaWelcomeCard h2{font-size:18px}}
+
+/* v28 🦅 Aquilaブランド統合 */
 .overallDiagnosis{margin:12px 0;border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#ffffff);border-radius:18px;padding:14px;display:grid;gap:12px;box-shadow:0 8px 20px rgba(37,99,235,.08)}
 .overallDiagnosis.good{border-color:#bbf7d0;background:linear-gradient(135deg,#f0fdf4,#ffffff)}
 .overallDiagnosis.warn{border-color:#fed7aa;background:linear-gradient(135deg,#fff7ed,#ffffff)}
@@ -598,7 +606,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 @media(max-width:720px){.overallGrid{grid-template-columns:1fr}.overallTop h3{font-size:19px}.overallIq{font-size:26px}}
 @media print{.overallDiagnosis{break-inside:avoid;page-break-inside:avoid;background:#eff6ff!important;border:1px solid #93c5fd!important}.overallGrid{grid-template-columns:1fr 1fr!important}.priorityAction{background:#0f172a!important;color:#fff!important}.priorityAction p{color:#dbeafe!important}}
 
-/* v26: 試合比較AI強化 */
+/* v28: Aquilaブランド統合 */
 .compareCard{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06)}
 .compareControls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin:10px 0 12px}
 .compareControls label{display:grid;gap:6px;font-size:12px;color:var(--muted);font-weight:1000}
@@ -768,7 +776,16 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <section id="home" class="screen active">
   <div class="logo">
-    <h1>Setter Theory</h1>
+    <h1>SETTER THEORY</h1>
+
+<div class="card aquilaWelcomeCard">
+  <div class="aquilaMark">🦅</div>
+  <div>
+    <div class="aquilaEyebrow">Aquila / SETTER THEORY 公式コーチ</div>
+    <h2>おかえり。今日も一緒に試合を振り返ろう。</h2>
+    <p>自由な発想で、コート全体を見渡す。数字は答えじゃなく、考えるきっかけだよ。</p>
+  </div>
+</div>
 
 <div class="card csvImportCard" id="csvImportCard">
   <h2>📂 Vollyze CSV読み込み</h2>
@@ -795,7 +812,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v26</h3>
+    <h3>📈 試合比較 v28</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -811,9 +828,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v26 β</h3>
+    <h3>試作品 v28 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v26ではAI総合診断カードを追加し、次戦の最優先テーマまで表示します。
+      CSVを読み込むと自動解析できます。v28ではAquilaを公式コーチとして統合し、診断・アドバイス・PDFメッセージを統一しました。
     </p>
   </div>
 </section>

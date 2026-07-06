@@ -778,7 +778,7 @@ function buildOverallDiagnosis(a){
   else if(a.setterIq>=78){ grade='B+'; strengths.push('全体として良い内容です。細かい偏りを整える段階です。'); }
   else if(a.setterIq>=68){ grade='B'; issues.push('配球の偏りや勝負所の選択肢に改善余地があります。'); }
   else { grade='C'; tone='warn'; issues.push('まずは攻撃先を増やし、相手ブロックに的を絞らせないことが優先です。'); }
-  if(main.pct>=55){ issues.push(`${main.label}への配球が${main.pct}%と高く、相手に読まれやすい傾向があります。`); priority=`序盤にセンター・ライトを1〜2本見せて、終盤の${main.label}を生かす`; tone='warn'; }
+  if(main.pct>=55){ issues.push(`${main.label}への配球が${main.pct}%と高く、相手に読まれやすい傾向が見えます。`); priority=`序盤にセンター・ライトを1〜2本見せて、終盤の${main.label}を生かす`; tone='warn'; }
   else { strengths.push('極端な一方向依存は少なく、相手ブロックを分散しやすい配球です。'); }
   if(center.pct<15){ issues.push(`センター使用率が${center.pct}%で低めです。相手MBを中央に止める材料が不足しています。`); priority='A/Bパス時にセンターを必ず1本見せ、相手MBを固定させない展開を作る'; tone='warn'; }
   else if(center.pct>=22){ strengths.push('センターを一定数使えており、サイド攻撃を生かす伏線になっています。'); }
@@ -790,10 +790,10 @@ function buildOverallDiagnosis(a){
   const showStrengths=strengths.slice(0,3);
   const showIssues=issues.slice(0,3);
   return `<section class="overallDiagnosis ${tone}">
-    <div class="overallTop"><div><span>🏐 AI総合診断</span><h3>${escapeHtml(grade)} 評価</h3></div><div class="overallIq">${a.setterIq}<small>/100</small></div></div>
+    <div class="overallTop"><div><span>🏐 🦅 Aquilaの診断</span><h3>${escapeHtml(grade)} 評価</h3></div><div class="overallIq">${a.setterIq}<small>/100</small></div></div>
     <div class="overallGrid">
-      <div><b>良い点</b><ul>${(showStrengths.length?showStrengths:['トス傾向を可視化できています。次は意図と結果を結びつけて確認しましょう。']).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
-      <div><b>課題</b><ul>${(showIssues.length?showIssues:['大きな警戒ポイントは少なめです。ローテ別の細かい偏りを確認しましょう。']).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <div><b>良い点</b><ul>${(showStrengths.length?showStrengths:['トス傾向を可視化できています。次は意図と結果を結びつけて一緒に確認してみよう。']).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <div><b>課題</b><ul>${(showIssues.length?showIssues:['大きな警戒ポイントは少なめです。ローテ別の細かい偏りを一緒に確認してみよう。']).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
     </div>
     <div class="priorityAction"><b>次戦の最優先テーマ</b><p>${escapeHtml(priority)}</p></div>
   </section>`;
@@ -815,14 +815,14 @@ function buildCoachCards(a){
   if(main.pct>=55) improve.push(`${main.label}への配球が${main.pct}%と高く、終盤はブロックに読まれやすくなります。`);
   if(center.pct<18) improve.push(`センター使用率が${center.pct}%で低めです。Aパス時だけでも速攻を見せたいです。`);
   if(terminalMain && terminalMain.pct>=60) improve.push(`20点以降は${terminalMain.label}が${terminalMain.pct}%です。プレッシャー場面で選択が寄っています。`);
-  if(!improve.length) improve.push('大きな偏りは少ないです。次はローテ別に弱い場面を確認しましょう。');
+  if(!improve.length) improve.push('大きな偏りは少ないです。次はローテ別に弱い場面を一緒に確認してみよう。');
   next.push('ローテ別で偏りが強いSを確認し、練習で最初の1本目に別方向を使う約束を作る。');
   next.push('20点以降にセンターか逆サイドを1本見せる場面を、試合前に決めておく。');
   next.push('PDFに残すメモとして「なぜその配球にしたか」を試合後すぐ記録する。');
   return `<div class="coachCards">
-    <div class="coachCard good"><b>✅ 強み</b><ul>${good.map(x=>`<li>${x}</li>`).join('')}</ul></div>
-    <div class="coachCard warn"><b>⚠ 改善点</b><ul>${improve.map(x=>`<li>${x}</li>`).join('')}</ul></div>
-    <div class="coachCard next"><b>💡 次の試合で意識</b><ul>${next.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    <div class="coachCard good"><b>🦅 Aquilaが見つけた強み</b><ul>${good.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    <div class="coachCard warn"><b>🦅 Aquilaが気になった点</b><ul>${improve.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    <div class="coachCard next"><b>🦅 次の試合で考えること</b><ul>${next.map(x=>`<li>${x}</li>`).join('')}</ul></div>
   </div>`;
 }
 
@@ -981,27 +981,27 @@ function compareRow(label, fromSummary, toSummary, key, suffix='', reverse=false
 function compareAssessment(label, diff, type){
   const abs=Math.abs(diff);
   if(type==='left'){
-    if(diff>=10) return {tone:'warn',badge:'注意',title:`${label}が${abs}%増加`,body:'レフト依存が強くなっています。特に終盤で同じ傾向が出ると、相手ブロックに読まれやすくなります。',action:'次戦は序盤にセンター・ライトを1本ずつ見せて、レフトの価値を下げずに使いましょう。'};
+    if(diff>=10) return {tone:'warn',badge:'注意',title:`${label}が${abs}%増加`,body:'レフト依存が強くなっています。特に終盤で同じ傾向が出ると、相手ブロックに読まれやすくなるかもしれません。',action:'次戦は序盤にセンター・ライトを1本ずつ見せて、レフトの価値を下げずに見せてみよう。'};
     if(diff<=-8) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%減少`,body:'レフト偏重がやわらぎ、配球の選択肢が広がっています。相手MBを迷わせやすい状態です。',action:'このバランスを保ちながら、勝負所でも同じ選択肢を残しましょう。'};
   }
   if(type==='center'){
-    if(diff>=6) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%増加`,body:'センターを使う意識が上がっています。相手MBを中央に引きつけ、サイド攻撃を生かしやすくなります。',action:'A/Bパス時だけでなく、少し乱れた場面でもセンターを見せられるか確認しましょう。'};
-    if(diff<=-6) return {tone:'warn',badge:'注意',title:`${label}が${abs}%減少`,body:'センター使用率が下がっています。相手ブロックがサイドに寄りやすくなる可能性があります。',action:'序盤で1〜2本センターを使い、相手MBを固定させない展開を作りましょう。'};
+    if(diff>=6) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%増加`,body:'センターを使う意識が上がっています。相手MBを中央に引きつけ、サイド攻撃を生かしやすくなります。',action:'A/Bパス時だけでなく、少し乱れた場面でもセンターを見せられるか一緒に確認してみよう。'};
+    if(diff<=-6) return {tone:'warn',badge:'注意',title:`${label}が${abs}%減少`,body:'センター使用率が下がっています。相手ブロックがサイドに寄りやすくなる可能性があります。',action:'序盤で1〜2本センターを使い、相手MBを固定させない展開を作ってみよう。'};
   }
   if(type==='right'){
     if(diff>=6) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%増加`,body:'ライトへの展開が増えています。レフト以外の出口ができ、ブロック分散につながります。',action:'ライトを単発で終わらせず、センターを見せた後のライトも試しましょう。'};
-    if(diff<=-6) return {tone:'warn',badge:'注意',title:`${label}が${abs}%減少`,body:'ライトの選択肢が少なくなっています。レフト・センターに意識が偏る可能性があります。',action:'ローテ別にライトが使えていない場面を確認しましょう。'};
+    if(diff<=-6) return {tone:'warn',badge:'注意',title:`${label}が${abs}%減少`,body:'ライトの選択肢が少なくなっています。レフト・センターに意識が偏る可能性があります。',action:'ローテ別にライトが使えていない場面を一緒に確認してみよう。'};
   }
   if(type==='iq'){
     if(diff>0) return {tone:'good',badge:'成長',title:`Setter IQが${abs}上昇`,body:'全体として前回より良い内容です。配球判断・バランス・勝負所の質が改善しています。',action:'良かったローテを確認し、次戦でも再現できる形にしましょう。'};
-    if(diff<0) return {tone:'warn',badge:'確認',title:`Setter IQが${abs}低下`,body:'前回より評価が下がっています。配球の偏りや終盤の選択肢低下が影響している可能性があります。',action:'まずはレフト・センター・ライトの比率と20点以降の配球を確認しましょう。'};
+    if(diff<0) return {tone:'warn',badge:'確認',title:`Setter IQが${abs}低下`,body:'前回より評価が下がっています。配球の偏りや終盤の選択肢低下が影響している可能性があります。',action:'まずはレフト・センター・ライトの比率と20点以降の配球を一緒に確認してみよう。'};
   }
   if(type==='clutch'){
     if(diff>=8) return {tone:'good',badge:'GOOD',title:`終盤冷静度が${abs}上昇`,body:'勝負所でも選択肢を残せています。プレッシャー下での判断が改善しています。',action:'20点以降にセンター・ライトを使えた場面を次戦の基準にしましょう。'};
     if(diff<=-8) return {tone:'warn',badge:'注意',title:`終盤冷静度が${abs}低下`,body:'終盤で配球が偏った可能性があります。勝負所で相手に読まれやすくなる点に注意です。',action:'20点以降の1本目をどこに使うか、試合前に決めておきましょう。'};
   }
   if(type==='balance'){
-    if(diff>=8) return {tone:'good',badge:'GOOD',title:`配球バランスが${abs}上昇`,body:'前回より攻撃先の偏りが少なくなっています。相手ブロックを分散しやすい内容です。',action:'この配球をローテ別にも安定して出せるか確認しましょう。'};
+    if(diff>=8) return {tone:'good',badge:'GOOD',title:`配球バランスが${abs}上昇`,body:'前回より攻撃先の偏りが少なくなっています。相手ブロックを分散しやすい内容です。',action:'この配球をローテ別にも安定して出せるか一緒に確認してみよう。'};
     if(diff<=-8) return {tone:'warn',badge:'注意',title:`配球バランスが${abs}低下`,body:'攻撃先の偏りが強くなっています。得点できていても次戦では読まれる可能性があります。',action:'一番少ない攻撃先を、序盤に必ず1本使う設計にしましょう。'};
   }
   return null;
@@ -1034,16 +1034,16 @@ function buildCompareComment(fromMatch,toMatch){
   const balance=valueFromSummary(b,'balance')-valueFromSummary(a,'balance');
   const lines=[];
   if(iq>0) lines.push(`Setter IQが${iq}上がっています。全体として前回より改善傾向です。`);
-  else if(iq<0) lines.push(`Setter IQは${Math.abs(iq)}下がっています。偏りが出た場面を確認しましょう。`);
-  else lines.push('Setter IQは前回と同水準です。配球先だけでなく、終盤とローテ別の変化を確認しましょう。');
+  else if(iq<0) lines.push(`Setter IQは${Math.abs(iq)}下がっています。偏りが出た場面を一緒に確認してみよう。`);
+  else lines.push('Setter IQは前回と同水準です。配球先だけでなく、終盤とローテ別の変化を一緒に確認してみよう。');
   if(balance>0) lines.push(`配球バランスが${balance}上がっています。相手ブロックを分散しやすくなっています。`);
   if(center>0) lines.push(`センター使用率が${center}%増えています。相手MBを中央に引きつける材料になります。`);
   if(left<0) lines.push(`レフト使用率が${Math.abs(left)}%下がり、レフト依存は改善しています。`);
   if(left>8) lines.push(`レフト使用率が${left}%増えています。得点できていても、次戦で読まれやすくなる可能性があります。`);
-  if(right<-6) lines.push(`ライト使用率が${Math.abs(right)}%下がっています。サイドの選択肢が片寄らないよう確認しましょう。`);
+  if(right<-6) lines.push(`ライト使用率が${Math.abs(right)}%下がっています。サイドの選択肢が片寄らないよう一緒に確認してみよう。`);
   if(clutch>0) lines.push(`終盤冷静度が${clutch}上がっています。勝負所で選択肢を残せています。`);
   if(!lines.length) lines.push('大きな差は少ないです。ローテ別と得点差別で細部を見ていきましょう。');
-  return `<div class="compareComment"><b>AI比較コメント</b><ul>${lines.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
+  return `<div class="compareComment"><b>🦅 Aquilaのアドバイス</b><ul>${lines.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
 }
 function renderIqTrend(list){
   if(!list.length) return '';
@@ -1122,7 +1122,7 @@ function buildPlainDiagnosis(a){
   if(a.setterIq>=88) lines.push('総合評価は高く、安定した配球判断ができています。');
   else if(a.setterIq>=78) lines.push('総合評価は良好です。細かな偏りを調整するとさらに良くなります。');
   else lines.push('総合評価は改善余地があります。まず攻撃先の偏りを減らしましょう。');
-  if(main.pct>=55) lines.push(`${main.label}への配球が${main.pct}%と高く、相手に読まれやすい傾向があります。`);
+  if(main.pct>=55) lines.push(`${main.label}への配球が${main.pct}%と高く、相手に読まれやすい傾向が見えます。`);
   if(center.pct<15) lines.push(`センター使用率が${center.pct}%で低めです。序盤に1〜2本見せたいです。`);
   if(terminalMain && terminalMain.pct>=65) lines.push(`20点以降は${terminalMain.label}が${terminalMain.pct}%で、勝負所の選択が寄っています。`);
   if(!lines.length) lines.push('大きな偏りは少なく、ローテ別の細部確認に進めます。');
@@ -1144,11 +1144,11 @@ function printCsvReport(){
     <main class="page">
       <div class="header"><div><div class="brand">SETTER THEORY</div><div class="sub">MATCH ANALYSIS REPORT</div></div><div class="meta">${escapeHtml(date)}<br>${escapeHtml(importedCsv.fileName||'Vollyze CSV')}<br>データ行数 ${a.total}トス</div></div>
       <div class="hero"><div class="iq"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="scores"><div class="score"><b>${a.total}</b><span>トス本数</span></div><div class="score"><b>${a.balance}</b><span>配球バランス</span></div><div class="score"><b>${a.diversity}</b><span>多様性指数</span></div><div class="score"><b>${a.quick}</b><span>速攻活用指数</span></div><div class="score"><b>${a.clutch}</b><span>終盤冷静度</span></div><div class="score"><b>${a.foreshadow}</b><span>伏線指数</span></div></div></div>
-      <div class="panel"><h2>AI総合診断</h2>${buildPlainDiagnosis(a)}</div>
+      <div class="panel"><h2>🦅 Aquilaの診断</h2>${buildPlainDiagnosis(a)}</div>
       <div class="grid2"><section class="panel"><h2>配球割合（全体）</h2>${pdfBarRows(a.items)}</section><section class="panel"><h2>勝負所（20点以降）</h2>${pdfBarRows(terminalItems)}</section></div>
     </main>
     <main class="page"><div class="header"><div><div class="brand">DATA ANALYSIS</div><div class="sub">SET / ROTATION / SCORE / PASS</div></div><div class="meta">SETTER THEORY</div></div><div class="grid2">${pdfStackTable('セット別 配球割合',a.bySet)}${pdfStackTable('ローテ別 配球割合',a.byRot)}${pdfStackTable('得点差別 配球割合',a.byScore)}${pdfStackTable('A/B/Cパス別 配球割合',a.byPass)}</div></main>
-    <main class="page"><div class="header"><div><div class="brand">AI COACHING</div><div class="sub">GOOD / IMPROVE / NEXT ACTION</div></div><div class="meta">SETTER THEORY</div></div><div class="coach">${buildCoachCards(a)}</div><section class="panel" style="margin-top:5mm"><h2>セッター思考メモ</h2><div class="memo">${escapeHtml(memo||'メモは未入力です。')}</div></section></main>
+    <main class="page"><div class="header"><div><div class="brand">AQUILA COACHING</div><div class="sub">Aquila Advice / Good / Improve / Next</div></div><div class="meta">SETTER THEORY</div></div><div class="coach">${buildCoachCards(a)}</div><section class="panel" style="margin-top:5mm"><h2>セッター思考メモ</h2><div class="memo">${escapeHtml(memo||'メモは未入力です。')}</div></section><section class="panel" style="margin-top:5mm;background:#eff6ff"><h2>🦅 Aquilaからのメッセージ</h2><div class="pnote">自由な発想が、最高のセットをつくる。<br>数字を答えにするのではなく、次の選択肢を増やすために使っていこう。</div></section></main>
     <script>window.onload=()=>{setTimeout(()=>window.print(),300)};<\/script>
   </body></html>`;
   const w=window.open('', '_blank');
@@ -1168,7 +1168,7 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v26</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v28</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
     ${buildOverallDiagnosis(a)}
