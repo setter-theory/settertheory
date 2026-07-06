@@ -886,9 +886,51 @@ function renderSavedMatches(){
   }).join('');
 }
 
+function pdfBarRows(items){
+  return (items||[]).filter(x=>x.count>0).map(x=>`
+    <div class="pbarRow">
+      <div class="pbarLabel">${escapeHtml(x.label)}</div>
+      <div class="pbarTrack"><div class="pbarFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div>
+      <div class="pbarPct">${x.pct}%</div>
+      <div class="pbarCount">${x.count}本</div>
+    </div>`).join('') || '<div class="pnote">該当データがありません。</div>';
+}
+function pdfStackTable(title, groups){
+  const keys=Object.keys(groups||{});
+  if(!keys.length) return `<section class="panel"><h2>${escapeHtml(title)}</h2><div class="pnote">該当データがありません。</div></section>`;
+  return `<section class="panel"><h2>${escapeHtml(title)}</h2>${keys.map(k=>{
+    const counts=groups[k]||{};
+    const total=Object.values(counts).reduce((a,b)=>a+b,0);
+    const items=analysisItemsFromCounts(counts,total).filter(x=>x.count>0);
+    return `<div class="stackRow"><div class="stackKey">${escapeHtml(k)}<span>${total}本</span></div><div class="stackTrack">${items.map(x=>`<div class="stackSeg" style="width:${x.pct}%;background:${colorForLabel(x.label)}">${x.pct>=12?x.pct+'%':''}</div>`).join('')}</div><div class="stackTxt">${items.map(x=>`${escapeHtml(x.label)} ${x.pct}%`).join(' / ')}</div></div>`;
+  }).join('')}</section>`;
+}
 function printCsvReport(){
   if(!importedCsv){ alert('CSVを読み込んでからPDF出力してください。'); return; }
-  window.print();
+  const a=analyzeImportedCsv(importedCsv);
+  const memoEl=document.getElementById('setterMemo');
+  const memo=memoEl ? memoEl.value.trim() : '';
+  const terminalTotal=Object.values(a.terminalCounts||{}).reduce((x,y)=>x+y,0);
+  const terminalItems=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal);
+  const now=new Date();
+  const date=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+  const reportHtml=`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>SETTER THEORY Report</title><style>
+    @page{size:A4 portrait;margin:10mm;}*{box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{margin:0;background:#fff;color:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:11px}.page{width:190mm;min-height:277mm;padding:0;page-break-after:always}.page:last-child{page-break-after:auto}.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0f172a;padding-bottom:7mm;margin-bottom:6mm}.brand{font-size:22px;font-weight:1000;letter-spacing:.04em}.sub{font-size:10px;color:#64748b;font-weight:800;margin-top:1mm}.meta{text-align:right;font-size:10px;color:#334155;font-weight:800}.hero{display:grid;grid-template-columns:42mm 1fr;gap:6mm;margin-bottom:5mm}.iq{background:#0f172a;color:#fff;border-radius:5mm;padding:5mm;text-align:center}.iq span{display:block;font-size:10px;color:#bfdbfe;font-weight:900}.iq b{display:block;font-size:42px;line-height:1;margin:2mm 0}.iq small{font-size:10px;color:#e5e7eb}.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm}.score{border:1px solid #cbd5e1;border-radius:4mm;background:#f8fafc;padding:3.5mm;text-align:center}.score b{display:block;font-size:21px}.score span{font-size:9px;color:#64748b;font-weight:900}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm}.panel{border:1px solid #cbd5e1;border-radius:4mm;padding:4mm;background:#fff;margin-bottom:5mm;break-inside:avoid}.panel h2{font-size:14px;margin:0 0 3mm}.pbarRow{display:grid;grid-template-columns:24mm 1fr 13mm 13mm;gap:2mm;align-items:center;margin:0 0 2.3mm}.pbarLabel{font-weight:1000}.pbarTrack{height:6mm;background:#e5e7eb;border-radius:999px;overflow:hidden}.pbarFill{height:100%;border-radius:999px}.pbarPct,.pbarCount{text-align:right;font-weight:900}.pnote{color:#64748b;font-weight:800;line-height:1.6}.stackRow{display:grid;grid-template-columns:21mm 1fr;gap:3mm;align-items:center;margin:0 0 3mm}.stackKey{font-weight:1000}.stackKey span{display:block;font-size:9px;color:#64748b}.stackTrack{height:7mm;background:#e5e7eb;border-radius:999px;display:flex;overflow:hidden}.stackSeg{height:100%;color:#fff;font-size:8px;font-weight:1000;display:flex;align-items:center;justify-content:center}.stackTxt{grid-column:2;font-size:9px;color:#64748b;font-weight:800;margin-top:-2mm}.coach{display:grid;grid-template-columns:1fr;gap:4mm}.coachCard{border-radius:4mm;padding:4mm;border:1px solid #cbd5e1;line-height:1.55;font-weight:800;break-inside:avoid}.coachCard ul{margin:2mm 0 0;padding-left:5mm}.coachCard.good{background:#f0fdf4;border-color:#86efac;color:#14532d}.coachCard.warn{background:#fff7ed;border-color:#fdba74;color:#7c2d12}.coachCard.next{background:#eff6ff;border-color:#93c5fd;color:#1e3a8a}.memo{min-height:32mm;border:1px solid #cbd5e1;border-radius:4mm;background:#f8fafc;padding:4mm;font-weight:800;white-space:pre-wrap;line-height:1.6}.footer{position:fixed;bottom:0;left:0;right:0;text-align:center;color:#94a3b8;font-size:9px}@media screen{body{background:#e5e7eb;padding:18px}.page{background:#fff;margin:0 auto 18px;padding:10mm;box-shadow:0 6px 24px rgba(15,23,42,.18)}}@media print{.page{padding:0}.footer{display:none}}
+  </style></head><body>
+    <main class="page">
+      <div class="header"><div><div class="brand">SETTER THEORY</div><div class="sub">MATCH ANALYSIS REPORT</div></div><div class="meta">${escapeHtml(date)}<br>${escapeHtml(importedCsv.fileName||'Vollyze CSV')}<br>データ行数 ${a.total}トス</div></div>
+      <div class="hero"><div class="iq"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="scores"><div class="score"><b>${a.total}</b><span>トス本数</span></div><div class="score"><b>${a.balance}</b><span>配球バランス</span></div><div class="score"><b>${a.diversity}</b><span>多様性指数</span></div><div class="score"><b>${a.quick}</b><span>速攻活用指数</span></div><div class="score"><b>${a.clutch}</b><span>終盤冷静度</span></div><div class="score"><b>${a.foreshadow}</b><span>伏線指数</span></div></div></div>
+      <div class="grid2"><section class="panel"><h2>配球割合（全体）</h2>${pdfBarRows(a.items)}</section><section class="panel"><h2>勝負所（20点以降）</h2>${pdfBarRows(terminalItems)}</section></div>
+    </main>
+    <main class="page"><div class="header"><div><div class="brand">DATA ANALYSIS</div><div class="sub">SET / ROTATION / SCORE / PASS</div></div><div class="meta">SETTER THEORY</div></div><div class="grid2">${pdfStackTable('セット別 配球割合',a.bySet)}${pdfStackTable('ローテ別 配球割合',a.byRot)}${pdfStackTable('得点差別 配球割合',a.byScore)}${pdfStackTable('A/B/Cパス別 配球割合',a.byPass)}</div></main>
+    <main class="page"><div class="header"><div><div class="brand">AI COACHING</div><div class="sub">GOOD / IMPROVE / NEXT ACTION</div></div><div class="meta">SETTER THEORY</div></div><div class="coach">${buildCoachCards(a)}</div><section class="panel" style="margin-top:5mm"><h2>セッター思考メモ</h2><div class="memo">${escapeHtml(memo||'メモは未入力です。')}</div></section></main>
+    <script>window.onload=()=>{setTimeout(()=>window.print(),300)};<\/script>
+  </body></html>`;
+  const w=window.open('', '_blank');
+  if(!w){ alert('ポップアップがブロックされました。ブラウザの設定で許可してください。'); return; }
+  w.document.open();
+  w.document.write(reportHtml);
+  w.document.close();
 }
 function renderCsvAnalysis(parsed){
   const box=document.getElementById('csvAnalysisBox');
@@ -901,7 +943,7 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v21</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v23</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
     <div class="csvScoreGrid">
