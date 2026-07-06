@@ -940,20 +940,69 @@ function compareRow(label, fromSummary, toSummary, key, suffix='', reverse=false
   const d=b-a;
   return `<tr><td>${escapeHtml(label)}</td><td>${a}${suffix}</td><td>${b}${suffix}</td><td class="${diffClass(d,reverse)}">${diffText(d,suffix)}</td></tr>`;
 }
+function compareAssessment(label, diff, type){
+  const abs=Math.abs(diff);
+  if(type==='left'){
+    if(diff>=10) return {tone:'warn',badge:'注意',title:`${label}が${abs}%増加`,body:'レフト依存が強くなっています。特に終盤で同じ傾向が出ると、相手ブロックに読まれやすくなります。',action:'次戦は序盤にセンター・ライトを1本ずつ見せて、レフトの価値を下げずに使いましょう。'};
+    if(diff<=-8) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%減少`,body:'レフト偏重がやわらぎ、配球の選択肢が広がっています。相手MBを迷わせやすい状態です。',action:'このバランスを保ちながら、勝負所でも同じ選択肢を残しましょう。'};
+  }
+  if(type==='center'){
+    if(diff>=6) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%増加`,body:'センターを使う意識が上がっています。相手MBを中央に引きつけ、サイド攻撃を生かしやすくなります。',action:'A/Bパス時だけでなく、少し乱れた場面でもセンターを見せられるか確認しましょう。'};
+    if(diff<=-6) return {tone:'warn',badge:'注意',title:`${label}が${abs}%減少`,body:'センター使用率が下がっています。相手ブロックがサイドに寄りやすくなる可能性があります。',action:'序盤で1〜2本センターを使い、相手MBを固定させない展開を作りましょう。'};
+  }
+  if(type==='right'){
+    if(diff>=6) return {tone:'good',badge:'GOOD',title:`${label}が${abs}%増加`,body:'ライトへの展開が増えています。レフト以外の出口ができ、ブロック分散につながります。',action:'ライトを単発で終わらせず、センターを見せた後のライトも試しましょう。'};
+    if(diff<=-6) return {tone:'warn',badge:'注意',title:`${label}が${abs}%減少`,body:'ライトの選択肢が少なくなっています。レフト・センターに意識が偏る可能性があります。',action:'ローテ別にライトが使えていない場面を確認しましょう。'};
+  }
+  if(type==='iq'){
+    if(diff>0) return {tone:'good',badge:'成長',title:`Setter IQが${abs}上昇`,body:'全体として前回より良い内容です。配球判断・バランス・勝負所の質が改善しています。',action:'良かったローテを確認し、次戦でも再現できる形にしましょう。'};
+    if(diff<0) return {tone:'warn',badge:'確認',title:`Setter IQが${abs}低下`,body:'前回より評価が下がっています。配球の偏りや終盤の選択肢低下が影響している可能性があります。',action:'まずはレフト・センター・ライトの比率と20点以降の配球を確認しましょう。'};
+  }
+  if(type==='clutch'){
+    if(diff>=8) return {tone:'good',badge:'GOOD',title:`終盤冷静度が${abs}上昇`,body:'勝負所でも選択肢を残せています。プレッシャー下での判断が改善しています。',action:'20点以降にセンター・ライトを使えた場面を次戦の基準にしましょう。'};
+    if(diff<=-8) return {tone:'warn',badge:'注意',title:`終盤冷静度が${abs}低下`,body:'終盤で配球が偏った可能性があります。勝負所で相手に読まれやすくなる点に注意です。',action:'20点以降の1本目をどこに使うか、試合前に決めておきましょう。'};
+  }
+  if(type==='balance'){
+    if(diff>=8) return {tone:'good',badge:'GOOD',title:`配球バランスが${abs}上昇`,body:'前回より攻撃先の偏りが少なくなっています。相手ブロックを分散しやすい内容です。',action:'この配球をローテ別にも安定して出せるか確認しましょう。'};
+    if(diff<=-8) return {tone:'warn',badge:'注意',title:`配球バランスが${abs}低下`,body:'攻撃先の偏りが強くなっています。得点できていても次戦では読まれる可能性があります。',action:'一番少ない攻撃先を、序盤に必ず1本使う設計にしましょう。'};
+  }
+  return null;
+}
+function buildCompareInsightCards(fromMatch,toMatch){
+  const a=fromMatch.summary||{};
+  const b=toMatch.summary||{};
+  const checks=[
+    compareAssessment('Setter IQ', valueFromSummary(b,'setterIq')-valueFromSummary(a,'setterIq'),'iq'),
+    compareAssessment('配球バランス', valueFromSummary(b,'balance')-valueFromSummary(a,'balance'),'balance'),
+    compareAssessment('レフト使用率', valueFromSummary(b,'left')-valueFromSummary(a,'left'),'left'),
+    compareAssessment('センター使用率', valueFromSummary(b,'center')-valueFromSummary(a,'center'),'center'),
+    compareAssessment('ライト使用率', valueFromSummary(b,'right')-valueFromSummary(a,'right'),'right'),
+    compareAssessment('終盤冷静度', valueFromSummary(b,'clutch')-valueFromSummary(a,'clutch'),'clutch')
+  ].filter(Boolean);
+  const selected=checks.slice(0,4);
+  if(!selected.length){
+    selected.push({tone:'flat',badge:'確認',title:'大きな変化は少なめ',body:'全体の数値は前回と近い内容です。ローテ別・得点差別で細かい違いを見る段階です。',action:'同じ配球でも、どの場面で使えたかをメモに残しましょう。'});
+  }
+  return `<div class="compareInsights">${selected.map(x=>`<div class="insightCard ${x.tone}"><div class="insightBadge">${escapeHtml(x.badge)}</div><b>${escapeHtml(x.title)}</b><p>${escapeHtml(x.body)}</p><small>次の一手：${escapeHtml(x.action)}</small></div>`).join('')}</div>`;
+}
 function buildCompareComment(fromMatch,toMatch){
   const a=fromMatch.summary||{};
   const b=toMatch.summary||{};
   const center=valueFromSummary(b,'center')-valueFromSummary(a,'center');
   const left=valueFromSummary(b,'left')-valueFromSummary(a,'left');
+  const right=valueFromSummary(b,'right')-valueFromSummary(a,'right');
   const iq=valueFromSummary(b,'setterIq')-valueFromSummary(a,'setterIq');
   const clutch=valueFromSummary(b,'clutch')-valueFromSummary(a,'clutch');
+  const balance=valueFromSummary(b,'balance')-valueFromSummary(a,'balance');
   const lines=[];
-  if(iq>0) lines.push(`Setter IQが前回より${iq}上がっています。全体として改善傾向です。`);
-  else if(iq<0) lines.push(`Setter IQは前回より${Math.abs(iq)}下がっています。偏りが出た場面を確認しましょう。`);
-  else lines.push('Setter IQは前回と同水準です。細かい配球先の変化を確認しましょう。');
-  if(center>0) lines.push(`センター使用率が${center}%増えています。相手MBを動かす意識が出ています。`);
+  if(iq>0) lines.push(`Setter IQが${iq}上がっています。全体として前回より改善傾向です。`);
+  else if(iq<0) lines.push(`Setter IQは${Math.abs(iq)}下がっています。偏りが出た場面を確認しましょう。`);
+  else lines.push('Setter IQは前回と同水準です。配球先だけでなく、終盤とローテ別の変化を確認しましょう。');
+  if(balance>0) lines.push(`配球バランスが${balance}上がっています。相手ブロックを分散しやすくなっています。`);
+  if(center>0) lines.push(`センター使用率が${center}%増えています。相手MBを中央に引きつける材料になります。`);
   if(left<0) lines.push(`レフト使用率が${Math.abs(left)}%下がり、レフト依存は改善しています。`);
-  if(left>8) lines.push(`レフト使用率が${left}%増えています。終盤に読まれやすくならないか注意です。`);
+  if(left>8) lines.push(`レフト使用率が${left}%増えています。得点できていても、次戦で読まれやすくなる可能性があります。`);
+  if(right<-6) lines.push(`ライト使用率が${Math.abs(right)}%下がっています。サイドの選択肢が片寄らないよう確認しましょう。`);
   if(clutch>0) lines.push(`終盤冷静度が${clutch}上がっています。勝負所で選択肢を残せています。`);
   if(!lines.length) lines.push('大きな差は少ないです。ローテ別と得点差別で細部を見ていきましょう。');
   return `<div class="compareComment"><b>AI比較コメント</b><ul>${lines.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
@@ -1000,6 +1049,7 @@ function compareSavedMatches(){
       ${compareRow('ライト使用率',fs,ts,'right','%')}
       ${compareRow('バック使用率',fs,ts,'back','%')}
     </tbody></table>
+    ${buildCompareInsightCards(from,to)}
     ${buildCompareComment(from,to)}
     ${renderIqTrend(list)}
   `;
@@ -1062,7 +1112,7 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v24</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v25</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
     <div class="csvScoreGrid">
