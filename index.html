@@ -770,6 +770,34 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .csvAnalysisTitle:after{content:' / PDF Report';}
 }
 
+
+
+/* v30: 成長ダッシュボード */
+.growthCard{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:14px;
+  margin:14px 0;
+  box-shadow:0 8px 24px rgba(31,41,55,.07);
+}
+.growthDashboardBody{display:grid;gap:12px;color:var(--ink);font-weight:900}
+.growthSummary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.growthMetric{border:1px solid var(--line);border-radius:18px;padding:12px;background:#f8fafc}
+.growthMetric b{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.growthValue{font-size:30px;font-weight:1000;color:var(--dark);line-height:1}
+.growthDiff{font-size:13px;font-weight:1000;margin-top:6px}.growthDiff.up{color:#16a34a}.growthDiff.down{color:#dc2626}.growthDiff.flat{color:#64748b}
+.growthTrendPanel{border:1px solid var(--line);border-radius:18px;padding:12px;background:white}
+.growthTrendPanel h4{margin:0 0 10px;font-size:15px}
+.growthTrendRow{display:grid;grid-template-columns:90px 1fr 42px;gap:8px;align-items:center;margin:7px 0;font-size:12px;font-weight:1000}
+.growthTrendName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#334155}
+.growthTrendTrack{height:16px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.growthTrendFill{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:999px}
+.growthDistribution{display:grid;gap:8px}
+.growthAquila{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:18px;padding:13px;font-weight:1000;line-height:1.6}
+.growthBadges{display:flex;flex-wrap:wrap;gap:8px}.growthBadge{border-radius:999px;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;padding:7px 10px;font-size:12px;font-weight:1000}
+@media(min-width:720px){.growthSummary{grid-template-columns:repeat(4,1fr)}.growthDashboardBody{grid-template-columns:1fr 1fr}.growthAquila{grid-column:1/-1}}
+
 </style>
 </head>
 <body>
@@ -812,7 +840,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v28</h3>
+    <h3>📈 試合比較 v30</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -823,14 +851,24 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   <div id="compareResult" class="compareResult"><div class="csvSmall">保存した試合が2件以上あると比較できます。</div></div>
 </div>
 
+<div class="growthCard" id="growthDashboardCard">
+  <div class="savedMatchHead">
+    <h3>📈 成長ダッシュボード v30</h3>
+    <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
+  </div>
+  <div id="growthDashboardBody" class="growthDashboardBody">
+    保存した試合が2件以上あると、Setter IQや配球傾向の推移を表示できます。
+  </div>
+</div>
+
 
     <p>誰でも30秒で使える分析アプリ</p>
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v28 β</h3>
+    <h3>試作品 v30 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v28ではAquilaを公式コーチとして統合し、診断・アドバイス・PDFメッセージを統一しました。
+      CSVを読み込むと自動解析できます。v30では保存試合をもとに成長ダッシュボードを追加しました。Aquilaが直近の成長傾向を一緒に振り返ります。
     </p>
   </div>
 </section>

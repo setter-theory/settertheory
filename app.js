@@ -1093,6 +1093,85 @@ function compareSavedMatches(){
   `;
 }
 
+function summaryPctValue(summary,label){
+  const item=((summary&&summary.items)||[]).find(x=>x.label===label);
+  return item ? Number(item.pct||0) : 0;
+}
+function growthDiffHtml(diff, suffix='', reverse=false){
+  const cls=diff===0?'flat':((reverse?diff<0:diff>0)?'up':'down');
+  const mark=diff>0?`+${diff}`:diff<0?`${diff}`:'±0';
+  return `<div class="growthDiff ${cls}">${mark}${suffix}</div>`;
+}
+function growthMetricCard(label, current, diff, suffix='', reverse=false){
+  return `<div class="growthMetric"><b>${escapeHtml(label)}</b><div class="growthValue">${current}${suffix}</div>${growthDiffHtml(diff,suffix,reverse)}</div>`;
+}
+function growthTrendRows(list, key, label, suffix='', color=''){
+  const rows=list.map(m=>{
+    const s=m.summary||{};
+    const val= key==='left'?summaryPctValue(s,'レフト') : key==='center'?summaryPctValue(s,'センター') : key==='right'?summaryPctValue(s,'ライト') : key==='back'?summaryPctValue(s,'バック') : Number(s[key]||0);
+    const name=(m.title||m.fileName||'試合').replace(/^\d{4}\/\d{2}\/\d{2}\s*/, '');
+    return `<div class="growthTrendRow"><div class="growthTrendName">${escapeHtml(name)}</div><div class="growthTrendTrack"><div class="growthTrendFill" style="width:${Math.max(2,Math.min(100,val))}%;${color?`background:${color}`:''}"></div></div><div>${val}${suffix}</div></div>`;
+  }).join('');
+  return `<div class="growthTrendPanel"><h4>${escapeHtml(label)}</h4>${rows}</div>`;
+}
+function buildGrowthAquilaMessage(first,last){
+  const fs=first.summary||{}, ls=last.summary||{};
+  const iq=Number(ls.setterIq||0)-Number(fs.setterIq||0);
+  const center=summaryPctValue(ls,'センター')-summaryPctValue(fs,'センター');
+  const left=summaryPctValue(ls,'レフト')-summaryPctValue(fs,'レフト');
+  const clutch=Number(ls.clutch||0)-Number(fs.clutch||0);
+  const lines=[];
+  if(iq>0) lines.push(`Setter IQが${iq}上がっているよ。積み重ねが数字にも出てきているね。`);
+  else if(iq<0) lines.push(`Setter IQは${Math.abs(iq)}下がっているよ。悪いというより、次に確認する材料が増えたと考えよう。`);
+  else lines.push('Setter IQは大きく変わっていないよ。細かい配球の変化を一緒に見ていこう。');
+  if(center>0) lines.push(`センター使用率が${center}%増えているね。サイドを生かす伏線が増えてきているよ。`);
+  if(left>8) lines.push(`レフト使用率が${left}%増えているよ。得点できていても、相手に読まれない準備をしておこう。`);
+  if(clutch>0) lines.push(`終盤冷静度も${clutch}上がっているよ。勝負所で選択肢を残せているのは良い成長だね。`);
+  if(!lines.length) lines.push('大きな変化は少なめだね。次はローテ別に「どこで偏ったか」を見てみよう。');
+  return lines.slice(0,3);
+}
+function renderGrowthDashboard(){
+  const body=document.getElementById('growthDashboardBody');
+  const count=document.getElementById('growthMatchCount');
+  if(!body) return;
+  const saved=getSavedMatches();
+  if(count) count.textContent=`保存 ${saved.length}件`;
+  if(saved.length<2){
+    body.innerHTML='<div class="csvSmall">保存した試合が2件以上あると、成長推移を表示できます。</div>';
+    return;
+  }
+  const chronological=[...saved].reverse();
+  const recent=chronological.slice(-5);
+  const first=recent[0];
+  const last=recent[recent.length-1];
+  const fs=first.summary||{}, ls=last.summary||{};
+  const iqDiff=Number(ls.setterIq||0)-Number(fs.setterIq||0);
+  const centerDiff=summaryPctValue(ls,'センター')-summaryPctValue(fs,'センター');
+  const leftDiff=summaryPctValue(ls,'レフト')-summaryPctValue(fs,'レフト');
+  const clutchDiff=Number(ls.clutch||0)-Number(fs.clutch||0);
+  const badges=[];
+  if(iqDiff>=5) badges.push('🦅 成長中');
+  if(centerDiff>=5) badges.push('🏐 センター活用');
+  if(leftDiff<=-5) badges.push('⚖️ レフト依存改善');
+  if(clutchDiff>=5) badges.push('🔥 終盤の司令塔');
+  if(!badges.length) badges.push('🔍 継続観察');
+  const aquila=buildGrowthAquilaMessage(first,last);
+  body.innerHTML=`
+    <div class="growthSummary">
+      ${growthMetricCard('Setter IQ', Number(ls.setterIq||0), iqDiff)}
+      ${growthMetricCard('センター使用率', summaryPctValue(ls,'センター'), centerDiff, '%')}
+      ${growthMetricCard('レフト使用率', summaryPctValue(ls,'レフト'), leftDiff, '%', true)}
+      ${growthMetricCard('終盤冷静度', Number(ls.clutch||0), clutchDiff)}
+    </div>
+    <div class="growthAquila"><b>🦅 Aquilaの成長コメント</b><ul>${aquila.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul><div class="growthBadges">${badges.map(x=>`<span class="growthBadge">${escapeHtml(x)}</span>`).join('')}</div></div>
+    ${growthTrendRows(recent,'setterIq','Setter IQ 推移')}
+    <div class="growthDistribution">
+      ${growthTrendRows(recent,'center','センター使用率 推移','%','#f59e0b')}
+      ${growthTrendRows(recent,'left','レフト使用率 推移','%','#e11d48')}
+    </div>
+  `;
+}
+
 function pdfBarRows(items){
   return (items||[]).filter(x=>x.count>0).map(x=>`
     <div class="pbarRow">
@@ -1168,7 +1247,7 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v28</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v30</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
     ${buildOverallDiagnosis(a)}
