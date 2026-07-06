@@ -589,7 +589,16 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 .saveCurrentBox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 0}.saveCurrentBox input{min-width:210px;flex:1;border:1px solid var(--line);border-radius:12px;padding:10px;font-weight:800}.saveCurrentBox button{min-height:42px}
 @media(max-width:560px){.savedMatchItem{grid-template-columns:1fr}.savedMatchActions{justify-content:flex-end}.saveCurrentBox{display:grid;grid-template-columns:1fr}}
 
-/* v25: 試合比較AI強化 */
+
+/* v26 AI総合診断 */
+.overallDiagnosis{margin:12px 0;border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#ffffff);border-radius:18px;padding:14px;display:grid;gap:12px;box-shadow:0 8px 20px rgba(37,99,235,.08)}
+.overallDiagnosis.good{border-color:#bbf7d0;background:linear-gradient(135deg,#f0fdf4,#ffffff)}
+.overallDiagnosis.warn{border-color:#fed7aa;background:linear-gradient(135deg,#fff7ed,#ffffff)}
+.overallTop{display:flex;justify-content:space-between;gap:12px;align-items:center}.overallTop span{font-size:12px;color:var(--muted);font-weight:1000}.overallTop h3{margin:2px 0 0;font-size:22px}.overallIq{background:#0f172a;color:#fff;border-radius:16px;min-width:78px;text-align:center;padding:10px;font-size:30px;font-weight:1000;line-height:1}.overallIq small{font-size:12px;color:#dbeafe}.overallGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.overallGrid>div{background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:14px;padding:10px}.overallGrid b,.priorityAction b{display:block;margin-bottom:5px}.overallGrid ul{margin:0;padding-left:18px;font-weight:800;line-height:1.55}.priorityAction{background:#0f172a;color:#fff;border-radius:14px;padding:12px}.priorityAction p{margin:4px 0 0;font-weight:1000;line-height:1.5;color:#dbeafe}
+@media(max-width:720px){.overallGrid{grid-template-columns:1fr}.overallTop h3{font-size:19px}.overallIq{font-size:26px}}
+@media print{.overallDiagnosis{break-inside:avoid;page-break-inside:avoid;background:#eff6ff!important;border:1px solid #93c5fd!important}.overallGrid{grid-template-columns:1fr 1fr!important}.priorityAction{background:#0f172a!important;color:#fff!important}.priorityAction p{color:#dbeafe!important}}
+
+/* v26: 試合比較AI強化 */
 .compareCard{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06)}
 .compareControls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin:10px 0 12px}
 .compareControls label{display:grid;gap:6px;font-size:12px;color:var(--muted);font-weight:1000}
@@ -786,7 +795,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v25</h3>
+    <h3>📈 試合比較 v26</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -802,9 +811,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v25 β</h3>
+    <h3>試作品 v26 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v25では比較結果の意味と次の改善アクションまで表示します。
+      CSVを読み込むと自動解析できます。v26ではAI総合診断カードを追加し、次戦の最優先テーマまで表示します。
     </p>
   </div>
 </section>

@@ -761,6 +761,44 @@ function compactBreakdownTable(title, data){
   }).join('');
   return `<div class="csvSubPanel"><b>${title}</b><table class="csvMiniTable"><tbody>${rows}</tbody></table></div>`;
 }
+
+function buildOverallDiagnosis(a){
+  const main=a.items[0] || {label:'-',pct:0,count:0};
+  const center=a.items.find(x=>x.label==='センター') || {pct:0,count:0};
+  const right=a.items.find(x=>x.label==='ライト') || {pct:0,count:0};
+  const terminalTotal=Object.values(a.terminalCounts||{}).reduce((x,y)=>x+y,0);
+  const terminalItems=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0);
+  const terminalMain=terminalItems[0] || null;
+  const issues=[];
+  const strengths=[];
+  let priority='配球バランスを維持しながら、ローテ別に偏りが出る場面を確認する';
+  let grade='B';
+  let tone='normal';
+  if(a.setterIq>=88){ grade='A'; tone='good'; strengths.push('全体評価が高く、配球判断の安定感があります。'); }
+  else if(a.setterIq>=78){ grade='B+'; strengths.push('全体として良い内容です。細かい偏りを整える段階です。'); }
+  else if(a.setterIq>=68){ grade='B'; issues.push('配球の偏りや勝負所の選択肢に改善余地があります。'); }
+  else { grade='C'; tone='warn'; issues.push('まずは攻撃先を増やし、相手ブロックに的を絞らせないことが優先です。'); }
+  if(main.pct>=55){ issues.push(`${main.label}への配球が${main.pct}%と高く、相手に読まれやすい傾向があります。`); priority=`序盤にセンター・ライトを1〜2本見せて、終盤の${main.label}を生かす`; tone='warn'; }
+  else { strengths.push('極端な一方向依存は少なく、相手ブロックを分散しやすい配球です。'); }
+  if(center.pct<15){ issues.push(`センター使用率が${center.pct}%で低めです。相手MBを中央に止める材料が不足しています。`); priority='A/Bパス時にセンターを必ず1本見せ、相手MBを固定させない展開を作る'; tone='warn'; }
+  else if(center.pct>=22){ strengths.push('センターを一定数使えており、サイド攻撃を生かす伏線になっています。'); }
+  if(right.pct<10){ issues.push('ライト使用率が低く、サイドの出口が片寄る可能性があります。'); }
+  if(terminalMain && terminalMain.pct>=65){ issues.push(`20点以降は${terminalMain.label}が${terminalMain.pct}%です。勝負所で選択が寄っています。`); priority=`20点以降の最初の1本で${terminalMain.label}以外を見せ、終盤の選択肢を残す`; tone='warn'; }
+  else if(terminalTotal>0){ strengths.push('20点以降でも極端な偏りは抑えられています。'); }
+  if(a.balance>=85) strengths.push('配球バランス指数が高く、攻撃先の散らし方は良好です。');
+  if(a.clutch>=85) strengths.push('終盤冷静度が高く、プレッシャー下でも判断が崩れにくい内容です。');
+  const showStrengths=strengths.slice(0,3);
+  const showIssues=issues.slice(0,3);
+  return `<section class="overallDiagnosis ${tone}">
+    <div class="overallTop"><div><span>🏐 AI総合診断</span><h3>${escapeHtml(grade)} 評価</h3></div><div class="overallIq">${a.setterIq}<small>/100</small></div></div>
+    <div class="overallGrid">
+      <div><b>良い点</b><ul>${(showStrengths.length?showStrengths:['トス傾向を可視化できています。次は意図と結果を結びつけて確認しましょう。']).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <div><b>課題</b><ul>${(showIssues.length?showIssues:['大きな警戒ポイントは少なめです。ローテ別の細かい偏りを確認しましょう。']).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+    </div>
+    <div class="priorityAction"><b>次戦の最優先テーマ</b><p>${escapeHtml(priority)}</p></div>
+  </section>`;
+}
+
 function buildCoachCards(a){
   const main=a.items[0] || {label:'-',pct:0,count:0};
   const center=a.items.find(x=>x.label==='センター') || {pct:0,count:0};
@@ -804,7 +842,7 @@ function currentAnalysisSummary(){
   const a=analyzeImportedCsv(importedCsv);
   return {
     total:a.total, setterIq:a.setterIq, balance:a.balance, diversity:a.diversity, quick:a.quick,
-    clutch:a.clutch, foreshadow:a.foreshadow, items:a.items,
+    clutch:a.clutch, foreshadow:a.foreshadow, blockInduce:a.blockInduce, sideDepend:a.sideDepend, centerPct:a.centerPct, items:a.items,
     bySet:a.bySet, byRot:a.byRot, byScore:a.byScore, byPass:a.byPass,
     terminalCounts:a.terminalCounts, usedFallback:a.usedFallback
   };
@@ -1074,6 +1112,23 @@ function pdfStackTable(title, groups){
     return `<div class="stackRow"><div class="stackKey">${escapeHtml(k)}<span>${total}本</span></div><div class="stackTrack">${items.map(x=>`<div class="stackSeg" style="width:${x.pct}%;background:${colorForLabel(x.label)}">${x.pct>=12?x.pct+'%':''}</div>`).join('')}</div><div class="stackTxt">${items.map(x=>`${escapeHtml(x.label)} ${x.pct}%`).join(' / ')}</div></div>`;
   }).join('')}</section>`;
 }
+
+function buildPlainDiagnosis(a){
+  const main=a.items[0] || {label:'-',pct:0};
+  const center=a.items.find(x=>x.label==='センター') || {pct:0};
+  const terminalTotal=Object.values(a.terminalCounts||{}).reduce((x,y)=>x+y,0);
+  const terminalMain=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0)[0];
+  const lines=[];
+  if(a.setterIq>=88) lines.push('総合評価は高く、安定した配球判断ができています。');
+  else if(a.setterIq>=78) lines.push('総合評価は良好です。細かな偏りを調整するとさらに良くなります。');
+  else lines.push('総合評価は改善余地があります。まず攻撃先の偏りを減らしましょう。');
+  if(main.pct>=55) lines.push(`${main.label}への配球が${main.pct}%と高く、相手に読まれやすい傾向があります。`);
+  if(center.pct<15) lines.push(`センター使用率が${center.pct}%で低めです。序盤に1〜2本見せたいです。`);
+  if(terminalMain && terminalMain.pct>=65) lines.push(`20点以降は${terminalMain.label}が${terminalMain.pct}%で、勝負所の選択が寄っています。`);
+  if(!lines.length) lines.push('大きな偏りは少なく、ローテ別の細部確認に進めます。');
+  return `<div class="pnote">${lines.map(x=>`・${escapeHtml(x)}`).join('<br>')}</div>`;
+}
+
 function printCsvReport(){
   if(!importedCsv){ alert('CSVを読み込んでからPDF出力してください。'); return; }
   const a=analyzeImportedCsv(importedCsv);
@@ -1089,6 +1144,7 @@ function printCsvReport(){
     <main class="page">
       <div class="header"><div><div class="brand">SETTER THEORY</div><div class="sub">MATCH ANALYSIS REPORT</div></div><div class="meta">${escapeHtml(date)}<br>${escapeHtml(importedCsv.fileName||'Vollyze CSV')}<br>データ行数 ${a.total}トス</div></div>
       <div class="hero"><div class="iq"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="scores"><div class="score"><b>${a.total}</b><span>トス本数</span></div><div class="score"><b>${a.balance}</b><span>配球バランス</span></div><div class="score"><b>${a.diversity}</b><span>多様性指数</span></div><div class="score"><b>${a.quick}</b><span>速攻活用指数</span></div><div class="score"><b>${a.clutch}</b><span>終盤冷静度</span></div><div class="score"><b>${a.foreshadow}</b><span>伏線指数</span></div></div></div>
+      <div class="panel"><h2>AI総合診断</h2>${buildPlainDiagnosis(a)}</div>
       <div class="grid2"><section class="panel"><h2>配球割合（全体）</h2>${pdfBarRows(a.items)}</section><section class="panel"><h2>勝負所（20点以降）</h2>${pdfBarRows(terminalItems)}</section></div>
     </main>
     <main class="page"><div class="header"><div><div class="brand">DATA ANALYSIS</div><div class="sub">SET / ROTATION / SCORE / PASS</div></div><div class="meta">SETTER THEORY</div></div><div class="grid2">${pdfStackTable('セット別 配球割合',a.bySet)}${pdfStackTable('ローテ別 配球割合',a.byRot)}${pdfStackTable('得点差別 配球割合',a.byScore)}${pdfStackTable('A/B/Cパス別 配球割合',a.byPass)}</div></main>
@@ -1112,9 +1168,10 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v25</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v26</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
+    ${buildOverallDiagnosis(a)}
     <div class="csvScoreGrid">
       <div><b>${a.total}</b><span>トス本数</span></div>
       <div><b>${a.balance}</b><span>配球バランス</span></div>
