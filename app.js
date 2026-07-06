@@ -865,6 +865,7 @@ function renderSavedMatches(){
   if(!listEl) return;
   const list=getSavedMatches();
   if(countEl) countEl.textContent=`${list.length}件`;
+  renderCompareSelectors();
   if(!list.length){ listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。CSV解析後に「この試合を保存」を押してください。</div>'; return; }
   listEl.innerHTML=list.map(m=>{
     const d=m.savedAt ? new Date(m.savedAt) : new Date();
@@ -884,6 +885,124 @@ function renderSavedMatches(){
       </div>
     </div>`;
   }).join('');
+}
+
+function matchOptionLabel(m){
+  const d=m.savedAt ? new Date(m.savedAt) : new Date();
+  const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  const iq=(m.summary && m.summary.setterIq) ? m.summary.setterIq : '-';
+  return `${date}｜${m.title || m.fileName || '無題'}｜IQ ${iq}`;
+}
+function renderCompareSelectors(){
+  const from=document.getElementById('compareFrom');
+  const to=document.getElementById('compareTo');
+  const result=document.getElementById('compareResult');
+  const count=document.getElementById('compareMatchCount');
+  if(!from || !to) return;
+  const list=getSavedMatches();
+  if(count) count.textContent=`保存 ${list.length}件`;
+  const opts=list.map(m=>`<option value="${m.id}">${escapeHtml(matchOptionLabel(m))}</option>`).join('');
+  from.innerHTML=opts;
+  to.innerHTML=opts;
+  if(list.length>=2){
+    from.value=list[1].id;
+    to.value=list[0].id;
+    if(result && (!result.dataset.touched)) compareSavedMatches();
+  }else{
+    if(result) result.innerHTML='<div class="csvSmall">保存した試合が2件以上あると比較できます。まずCSV解析後に「この試合を保存」を押してください。</div>';
+  }
+}
+function pctFromSummary(summary,label){
+  const item=((summary&&summary.items)||[]).find(x=>x.label===label);
+  return item ? Number(item.pct||0) : 0;
+}
+function valueFromSummary(summary,key){
+  if(!summary) return 0;
+  if(key==='left') return pctFromSummary(summary,'レフト');
+  if(key==='center') return pctFromSummary(summary,'センター');
+  if(key==='right') return pctFromSummary(summary,'ライト');
+  if(key==='back') return pctFromSummary(summary,'バック');
+  return Number(summary[key]||0);
+}
+function diffClass(diff, reverse=false){
+  if(diff===0) return 'diffFlat';
+  const good=reverse ? diff<0 : diff>0;
+  return good ? 'diffUp' : 'diffDown';
+}
+function diffText(diff, suffix=''){
+  if(diff>0) return `+${diff}${suffix}`;
+  if(diff<0) return `${diff}${suffix}`;
+  return `±0${suffix}`;
+}
+function compareRow(label, fromSummary, toSummary, key, suffix='', reverse=false){
+  const a=valueFromSummary(fromSummary,key);
+  const b=valueFromSummary(toSummary,key);
+  const d=b-a;
+  return `<tr><td>${escapeHtml(label)}</td><td>${a}${suffix}</td><td>${b}${suffix}</td><td class="${diffClass(d,reverse)}">${diffText(d,suffix)}</td></tr>`;
+}
+function buildCompareComment(fromMatch,toMatch){
+  const a=fromMatch.summary||{};
+  const b=toMatch.summary||{};
+  const center=valueFromSummary(b,'center')-valueFromSummary(a,'center');
+  const left=valueFromSummary(b,'left')-valueFromSummary(a,'left');
+  const iq=valueFromSummary(b,'setterIq')-valueFromSummary(a,'setterIq');
+  const clutch=valueFromSummary(b,'clutch')-valueFromSummary(a,'clutch');
+  const lines=[];
+  if(iq>0) lines.push(`Setter IQが前回より${iq}上がっています。全体として改善傾向です。`);
+  else if(iq<0) lines.push(`Setter IQは前回より${Math.abs(iq)}下がっています。偏りが出た場面を確認しましょう。`);
+  else lines.push('Setter IQは前回と同水準です。細かい配球先の変化を確認しましょう。');
+  if(center>0) lines.push(`センター使用率が${center}%増えています。相手MBを動かす意識が出ています。`);
+  if(left<0) lines.push(`レフト使用率が${Math.abs(left)}%下がり、レフト依存は改善しています。`);
+  if(left>8) lines.push(`レフト使用率が${left}%増えています。終盤に読まれやすくならないか注意です。`);
+  if(clutch>0) lines.push(`終盤冷静度が${clutch}上がっています。勝負所で選択肢を残せています。`);
+  if(!lines.length) lines.push('大きな差は少ないです。ローテ別と得点差別で細部を見ていきましょう。');
+  return `<div class="compareComment"><b>AI比較コメント</b><ul>${lines.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
+}
+function renderIqTrend(list){
+  if(!list.length) return '';
+  const ordered=[...list].reverse().slice(-8);
+  return `<div class="panelLike"><h3>Setter IQ 推移</h3><div class="trendBars">${ordered.map(m=>{
+    const iq=(m.summary&&m.summary.setterIq)||0;
+    const name=(m.title||m.fileName||'試合').replace(/^\d{4}\/\d{2}\/\d{2}\s*/, '');
+    return `<div class="trendRow"><div class="trendName">${escapeHtml(name)}</div><div class="trendTrack"><div class="trendFill" style="width:${Math.max(3,Math.min(100,iq))}%"></div></div><div>${iq}</div></div>`;
+  }).join('')}</div></div>`;
+}
+function compareSavedMatches(){
+  const list=getSavedMatches();
+  const fromId=document.getElementById('compareFrom')?.value;
+  const toId=document.getElementById('compareTo')?.value;
+  const result=document.getElementById('compareResult');
+  if(result) result.dataset.touched='1';
+  if(!result) return;
+  if(list.length<2){ result.innerHTML='<div class="csvSmall">保存した試合が2件以上必要です。</div>'; return; }
+  if(fromId===toId){ result.innerHTML='<div class="csvSmall">別々の試合を選んでください。</div>'; return; }
+  const from=list.find(x=>x.id===fromId);
+  const to=list.find(x=>x.id===toId);
+  if(!from||!to){ result.innerHTML='<div class="csvSmall">比較対象が見つかりません。</div>'; return; }
+  const fs=from.summary||{};
+  const ts=to.summary||{};
+  const iqDiff=valueFromSummary(ts,'setterIq')-valueFromSummary(fs,'setterIq');
+  result.innerHTML=`
+    <div class="compareSummary">
+      <div><div class="compareMatchName">${escapeHtml(from.title||'比較元')}</div><div class="compareIq">${valueFromSummary(fs,'setterIq')}</div><div class="csvSmall">トス ${valueFromSummary(fs,'total')}本</div></div>
+      <div class="compareArrow">→ <span class="${diffClass(iqDiff)}">${diffText(iqDiff)}</span></div>
+      <div><div class="compareMatchName">${escapeHtml(to.title||'比較先')}</div><div class="compareIq">${valueFromSummary(ts,'setterIq')}</div><div class="csvSmall">トス ${valueFromSummary(ts,'total')}本</div></div>
+    </div>
+    <table class="compareTable"><thead><tr><th>項目</th><th>比較元</th><th>比較先</th><th>変化</th></tr></thead><tbody>
+      ${compareRow('Setter IQ',fs,ts,'setterIq')}
+      ${compareRow('配球バランス',fs,ts,'balance')}
+      ${compareRow('多様性指数',fs,ts,'diversity')}
+      ${compareRow('速攻活用指数',fs,ts,'quick')}
+      ${compareRow('終盤冷静度',fs,ts,'clutch')}
+      ${compareRow('伏線指数',fs,ts,'foreshadow')}
+      ${compareRow('レフト使用率',fs,ts,'left','%',true)}
+      ${compareRow('センター使用率',fs,ts,'center','%')}
+      ${compareRow('ライト使用率',fs,ts,'right','%')}
+      ${compareRow('バック使用率',fs,ts,'back','%')}
+    </tbody></table>
+    ${buildCompareComment(from,to)}
+    ${renderIqTrend(list)}
+  `;
 }
 
 function pdfBarRows(items){
@@ -943,7 +1062,7 @@ function renderCsvAnalysis(parsed){
   const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v23</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v24</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
       <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
     <div class="csvScoreGrid">
@@ -974,6 +1093,7 @@ function renderCsvAnalysis(parsed){
 document.addEventListener("DOMContentLoaded",()=>{
   setupCsvImport();
   renderSavedMatches();
+  renderCompareSelectors();
   load();
   document.querySelectorAll(".setupSpot").forEach(b=>{
     b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
