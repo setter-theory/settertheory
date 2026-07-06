@@ -462,6 +462,95 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .summaryCards .barValue{font-size:24px}
 }
 
+
+/* v17: CSV読み込み */
+.csvImportCard{
+  margin:14px auto;
+  max-width:760px;
+  padding:18px;
+}
+.csvImportCard h2{
+  margin:0 0 8px;
+  font-size:20px;
+  font-weight:1000;
+}
+.muted{
+  color:var(--muted);
+  font-weight:800;
+}
+.csvActions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.csvFileBtn,
+.ghostBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:10px 16px;
+  border-radius:14px;
+  font-weight:1000;
+  border:1px solid var(--line);
+  cursor:pointer;
+}
+.csvFileBtn{
+  background:var(--blue);
+  color:white;
+  box-shadow:0 6px 14px rgba(37,99,235,.22);
+}
+.ghostBtn{
+  background:#fff;
+  color:var(--ink);
+}
+.csvImportStatus{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#f8fafc;
+  color:var(--ink);
+  font-weight:1000;
+  border:1px solid var(--line);
+}
+.csvPreviewBox{
+  margin-top:12px;
+  overflow:auto;
+  max-height:280px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  display:none;
+}
+.csvPreviewBox table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+.csvPreviewBox th,
+.csvPreviewBox td{
+  border-bottom:1px solid #e5e7eb;
+  padding:8px;
+  text-align:left;
+  white-space:nowrap;
+}
+.csvPreviewBox th{
+  position:sticky;
+  top:0;
+  background:#f1f5f9;
+  font-weight:1000;
+}
+.csvPreviewBox tr:last-child td{
+  border-bottom:none;
+}
+.csvSmall{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:900;
+  margin-top:6px;
+}
+
 </style>
 </head>
 <body>
@@ -469,6 +558,22 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 <section id="home" class="screen active">
   <div class="logo">
     <h1>Setter Theory</h1>
+
+<div class="card csvImportCard" id="csvImportCard">
+  <h2>📂 Vollyze CSV読み込み</h2>
+  <p class="muted">Vollyzeから出力したCSVを選択すると、内容を読み込んで確認できます。</p>
+  <div class="csvActions">
+    <label class="csvFileBtn">
+      CSVを選択
+      <input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
+    </label>
+    <button id="clearCsvBtn" class="ghostBtn" type="button">読み込み解除</button>
+  </div>
+  <div id="csvImportStatus" class="csvImportStatus">未読み込み</div>
+  <div id="csvPreviewBox" class="csvPreviewBox"></div>
+</div>
+
+
     <p>誰でも30秒で使える分析アプリ</p>
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>

@@ -599,6 +599,7 @@ function downloadCSV(){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
 }
 document.addEventListener("DOMContentLoaded",()=>{
+  setupCsvImport();
   load();
   document.querySelectorAll(".setupSpot").forEach(b=>{
     b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
@@ -624,3 +625,130 @@ document.addEventListener("DOMContentLoaded",()=>{
   renderSetup();
   render();
 });
+
+
+// v17 CSV読み込み
+let importedCsv = null;
+
+function parseCSVText(text){
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quote = false;
+
+  for(let i=0; i<text.length; i++){
+    const ch = text[i];
+    const next = text[i+1];
+
+    if(ch === '"' && quote && next === '"'){
+      cell += '"';
+      i++;
+      continue;
+    }
+    if(ch === '"'){
+      quote = !quote;
+      continue;
+    }
+    if(ch === "," && !quote){
+      row.push(cell);
+      cell = "";
+      continue;
+    }
+    if((ch === "\n" || ch === "\r") && !quote){
+      if(ch === "\r" && next === "\n") i++;
+      row.push(cell);
+      if(row.some(v => String(v).trim() !== "")) rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+    cell += ch;
+  }
+  row.push(cell);
+  if(row.some(v => String(v).trim() !== "")) rows.push(row);
+
+  if(!rows.length) return {headers:[], data:[]};
+  const headers = rows[0].map((h,i)=>String(h || `列${i+1}`).trim());
+  const data = rows.slice(1).map(r=>{
+    const obj = {};
+    headers.forEach((h,i)=>obj[h] = (r[i] ?? "").trim());
+    return obj;
+  });
+  return {headers, data};
+}
+
+function renderCsvPreview(parsed, fileName){
+  const status = document.getElementById("csvImportStatus");
+  const box = document.getElementById("csvPreviewBox");
+  if(!status || !box) return;
+
+  const rows = parsed.data || [];
+  const headers = parsed.headers || [];
+
+  status.innerHTML = `✅ 読み込み完了：${fileName}<div class="csvSmall">列数 ${headers.length} / データ行 ${rows.length}</div>`;
+
+  if(!headers.length){
+    box.style.display = "block";
+    box.innerHTML = "<div style='padding:12px;font-weight:1000'>CSVの列を読み取れませんでした。</div>";
+    return;
+  }
+
+  const previewRows = rows.slice(0, 10);
+  box.style.display = "block";
+  box.innerHTML = `
+    <table>
+      <thead><tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${previewRows.map(r=>`<tr>${headers.map(h=>`<td>${escapeHtml(r[h] || "")}</td>`).join("")}</tr>`).join("")}
+      </tbody>
+    </table>
+    <div class="csvSmall" style="padding:10px 12px">先頭10行を表示中。次の版で、このデータから自動分析します。</div>
+  `;
+}
+
+function escapeHtml(v){
+  return String(v)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function setupCsvImport(){
+  const input = document.getElementById("csvFileInput");
+  const clear = document.getElementById("clearCsvBtn");
+  const status = document.getElementById("csvImportStatus");
+  const box = document.getElementById("csvPreviewBox");
+
+  if(input){
+    input.addEventListener("change", async (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const text = await file.text();
+      const parsed = parseCSVText(text);
+      importedCsv = {fileName:file.name, ...parsed};
+      localStorage.setItem("vollyzeImportedCsv", JSON.stringify(importedCsv));
+      renderCsvPreview(importedCsv, file.name);
+    });
+  }
+
+  if(clear){
+    clear.addEventListener("click", ()=>{
+      importedCsv = null;
+      localStorage.removeItem("vollyzeImportedCsv");
+      if(input) input.value = "";
+      if(status) status.textContent = "未読み込み";
+      if(box){ box.style.display = "none"; box.innerHTML = ""; }
+    });
+  }
+
+  const saved = localStorage.getItem("vollyzeImportedCsv");
+  if(saved){
+    try{
+      importedCsv = JSON.parse(saved);
+      renderCsvPreview(importedCsv, importedCsv.fileName || "保存済みCSV");
+    }catch(e){}
+  }
+}
+
