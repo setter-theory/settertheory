@@ -564,6 +564,23 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 @media(max-width:520px){.csvAnalysisHead{align-items:flex-start}.csvMetaGrid{grid-template-columns:1fr 1fr 1fr}.csvAnaRow{grid-template-columns:64px 1fr 42px 42px}}
 .csvSubGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.csvSubPanel{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px;overflow:auto}.csvMiniTable td{font-size:12px;padding:7px}.csvMiniTable td:first-child{font-weight:1000;white-space:nowrap}.csvMiniTable td:last-child{text-align:right;color:var(--muted);white-space:nowrap}@media(max-width:720px){.csvSubGrid{grid-template-columns:1fr}}
 
+
+
+/* v20 beta analysis */
+.csvHeadActions{display:flex;align-items:center;gap:10px}
+.csvScoreGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:12px 0}
+.csvScoreGrid div{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.csvScoreGrid b{display:block;font-size:24px;color:#0f172a}.csvScoreGrid span{font-size:11px;color:var(--muted);font-weight:900}
+.csvDual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}.csvDual>div{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}.csvDual h3{margin:0 0 10px;font-size:15px}
+.stackBar{height:22px;display:flex;border-radius:999px;overflow:hidden;background:#e5e7eb;min-width:170px}.stackBar span{height:100%;color:#fff;font-size:10px;font-weight:1000;display:flex;align-items:center;justify-content:center;white-space:nowrap}.stackBar.empty{background:#e5e7eb}
+.coachCards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.coachCard{border-radius:16px;padding:12px;border:1px solid var(--line);font-weight:800;line-height:1.55}.coachCard ul{margin:8px 0 0;padding-left:18px}.coachCard li{margin:4px 0}.coachCard.good{background:#f0fdf4;border-color:#bbf7d0;color:#14532d}.coachCard.warn{background:#fff7ed;border-color:#fed7aa;color:#7c2d12}.coachCard.next{background:#eff6ff;border-color:#bfdbfe;color:#1e3a8a}
+.csvMemo{margin-top:12px;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px}.csvMemo textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;font-weight:800;resize:vertical}
+@media(max-width:900px){.csvScoreGrid{grid-template-columns:repeat(3,1fr)}.csvDual,.coachCards{grid-template-columns:1fr}.csvHeadActions{align-items:flex-end;flex-direction:column}}
+@media(max-width:520px){.csvScoreGrid{grid-template-columns:repeat(2,1fr)}.stackBar{min-width:120px}.csvMiniTable td{font-size:11px}}
+@media print{
+  body{background:#fff!important}.bottom,.csvActions,#csvPreviewBox,.logo>p,.big,.card h3+div:not(#csvAnalysisBox){display:none!important}.screen{display:block!important}.csvImportCard{box-shadow:none!important;border:0!important}.csvAnalysisBox{display:block!important;box-shadow:none!important;border:0!important}.csvMemo textarea{border:1px solid #ccc!important}.coachCards,.csvSubGrid,.csvDual{break-inside:avoid}.csvAnalysisTitle:after{content:' / PDF Report';}
+}
+
 </style>
 </head>
 <body>
@@ -592,9 +609,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v19</h3>
+    <h3>試作品 v20 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと、配球割合・セット別・ローテ別まで自動解析できます。
+      CSVを読み込むと、配球割合・セット別・ローテ別・得点差別・終盤分析・AIコメントまで自動解析できます。
     </p>
   </div>
 </section>

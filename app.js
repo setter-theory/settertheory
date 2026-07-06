@@ -600,7 +600,8 @@ function downloadCSV(){
 }
 
 
-// v19: Vollyze CSV自動解析（実データ形式に対応）
+
+// v20: β版に向けたCSV完全解析（配球 / セット / ローテ / 得点差 / 終盤 / A・Bパス）
 function normalizeKey(v){
   return String(v||'').toLowerCase().replace(/[\s_\-・./()（）]/g,'');
 }
@@ -635,6 +636,27 @@ function classifyTossTarget(value){
 }
 function addCount(obj,key){ obj[key]=(obj[key]||0)+1; }
 function pctText(count,total){ return total ? Math.round(count/total*100) : 0; }
+function scoreParts(score){
+  const m=String(score||'').match(/(\d+)\s*[-―ー－]\s*(\d+)/);
+  if(!m) return null;
+  return {my:Number(m[1]), op:Number(m[2]), diff:Math.abs(Number(m[1])-Number(m[2])), high:Math.max(Number(m[1]),Number(m[2]))};
+}
+function scoreBucket(score){
+  const s=scoreParts(score);
+  if(!s) return '不明';
+  if(s.high>=20) return '20点以降';
+  if(s.diff<=5) return '〜5点差';
+  if(s.diff<=15) return '6〜15点差';
+  return '16点差以上';
+}
+function passGrade(v){
+  const n=normalizeKey(v);
+  if(/aパス|apass|areception|a$/.test(n)) return 'Aパス';
+  if(/bパス|bpass|breception|b$/.test(n)) return 'Bパス';
+  if(/cパス|cpass|creception|c$/.test(n)) return 'Cパス';
+  if(/ミス|miss/.test(n)) return 'ミス';
+  return '';
+}
 function analysisItemsFromCounts(counts,total){
   const order=['レフト','センター','ライト','バック','未分類'];
   return Object.entries(counts)
@@ -644,6 +666,24 @@ function analysisItemsFromCounts(counts,total){
       return ia===ib ? b[1]-a[1] : ia-ib;
     })
     .map(([label,count])=>({label,count,pct:pctText(count,total)}));
+}
+function calcScores(counts,total,terminalCounts){
+  const valid=['レフト','センター','ライト','バック'].filter(k=>(counts[k]||0)>0);
+  const max=Math.max(0,...Object.values(counts));
+  const sideDepend=pctText(max,total);
+  const centerPct=pctText(counts['センター']||0,total);
+  const backPct=pctText(counts['バック']||0,total);
+  const leftRightBalance=100 - Math.abs((counts['レフト']||0) - (counts['ライト']||0)) / Math.max(1,total) * 100;
+  const diversity=Math.min(100, valid.length*22 + Math.min(12,backPct));
+  const balance=Math.max(0, Math.round(100 - Math.max(0,sideDepend-35)*1.25));
+  const quick=Math.max(35, Math.min(99, Math.round(55 + centerPct*1.15 + backPct*.35 - Math.max(0,sideDepend-55)*.45)));
+  const terminalTotal=Object.values(terminalCounts||{}).reduce((a,b)=>a+b,0);
+  const terminalMax=Math.max(0,...Object.values(terminalCounts||{}));
+  const clutch=terminalTotal ? Math.max(35, Math.round(100 - Math.max(0,pctText(terminalMax,terminalTotal)-50)*1.15)) : 70;
+  const setterIq=Math.max(40, Math.min(99, Math.round(balance*.28 + diversity*.22 + quick*.24 + clutch*.16 + leftRightBalance*.10)));
+  const foreshadow=Math.max(40, Math.min(99, Math.round(diversity*.55 + quick*.25 + balance*.20)));
+  const blockInduce=Math.max(35, Math.min(99, Math.round(quick*.55 + diversity*.25 + (100-sideDepend)*.20)));
+  return {setterIq,balance,diversity,quick,clutch,foreshadow,blockInduce,sideDepend,centerPct,backPct};
 }
 function analyzeImportedCsv(parsed){
   const headers=parsed?.headers||[];
@@ -655,46 +695,60 @@ function analyzeImportedCsv(parsed){
   const numberCol=findHeader(headers,['Number','背番号','No','Player','選手']);
   const scoreCol=findHeader(headers,['Score','スコア']);
 
-  // Vollyze/Setter Theory実データ：Type=トス、Result=レフト/センター/ライト
-  const tossRows=rows.filter(r=>{
-    const a=getCell(r,[actionCol]);
-    return normalizeKey(a)==='トス' || /^set$|^toss$/.test(normalizeKey(a));
-  });
-  const base=tossRows.length ? tossRows : rows.filter(r=>/トス/.test(headers.map(h=>String(r[h]||'')).join(' ')));
-  const targetCounts={};
-  const bySet={};
-  const byRot={};
-  const bySetter={};
-
-  base.forEach(r=>{
-    const targetRaw=getCell(r,[resultCol]);
-    const label=classifyTossTarget(targetRaw);
-    addCount(targetCounts,label);
-
+  const tossRows=[];
+  const targetCounts={}, bySet={}, byRot={}, byScore={}, byPass={}, terminalCounts={}, bySetter={};
+  let currentPass='';
+  rows.forEach((r,idx)=>{
+    const type=getCell(r,[actionCol]);
+    const result=getCell(r,[resultCol]);
+    const ntype=normalizeKey(type);
+    if(ntype==='レセプ' || ntype==='レセプション' || ntype==='receive' || ntype==='reception'){
+      currentPass=passGrade(result) || result || currentPass;
+    }
+    const isToss = ntype==='トス' || ntype==='set' || ntype==='toss';
+    if(!isToss) return;
+    const label=classifyTossTarget(result);
+    const score=getCell(r,[scoreCol]);
     const setName=getCell(r,[setCol]) || '未設定';
-    bySet[setName]=bySet[setName] || {};
-    addCount(bySet[setName],label);
-
     const rotName=getCell(r,[rotCol]) || '未設定';
-    byRot[rotName]=byRot[rotName] || {};
-    addCount(byRot[rotName],label);
-
-    const setterNo=getCell(r,[numberCol]) || '-';
-    bySetter[setterNo]=bySetter[setterNo] || 0;
-    bySetter[setterNo]++;
+    const pass=currentPass || '不明';
+    const rec={row:r,idx,label,score,setName,rotName,pass};
+    tossRows.push(rec);
+    addCount(targetCounts,label);
+    bySet[setName]=bySet[setName] || {}; addCount(bySet[setName],label);
+    byRot[rotName]=byRot[rotName] || {}; addCount(byRot[rotName],label);
+    const bucket=scoreBucket(score); byScore[bucket]=byScore[bucket] || {}; addCount(byScore[bucket],label);
+    byPass[pass]=byPass[pass] || {}; addCount(byPass[pass],label);
+    const sc=scoreParts(score); if(sc && sc.high>=20) addCount(terminalCounts,label);
+    const setterNo=getCell(r,[numberCol]) || '-'; bySetter[setterNo]=bySetter[setterNo] || 0; bySetter[setterNo]++;
   });
 
+  let base=tossRows;
+  let usedFallback=false;
+  if(!base.length){
+    usedFallback=true;
+    base=rows.filter(r=>/トス/.test(headers.map(h=>String(r[h]||'')).join(' '))).map((r,idx)=>{
+      const label=classifyTossTarget(getCell(r,[resultCol]));
+      addCount(targetCounts,label);
+      return {row:r,idx,label,score:getCell(r,[scoreCol]),setName:getCell(r,[setCol])||'未設定',rotName:getCell(r,[rotCol])||'未設定',pass:'不明'};
+    });
+  }
   const total=base.length;
   const items=analysisItemsFromCounts(targetCounts,total);
-  const max=Math.max(0,...Object.values(targetCounts));
-  const sideDepend=pctText(max,total);
-  const validTargets=Object.keys(targetCounts).filter(k=>k!=='未分類');
-  const diversity=validTargets.length;
-  const centerPct=pctText(targetCounts['センター']||0,total);
-  const leftRightBalance=100 - Math.abs((targetCounts['レフト']||0) - (targetCounts['ライト']||0)) / Math.max(1,total) * 100;
-  const setterIq=Math.max(40, Math.min(99, Math.round(50 + diversity*8 + centerPct*0.35 + leftRightBalance*0.18 - Math.max(0,sideDepend-50)*0.35)));
-
-  return {headers, rows, actionCol, resultCol, setCol, rotCol, numberCol, scoreCol, tossRows:base, total, items, setterIq, sideDepend, diversity, bySet, byRot, bySetter, usedFallback:!tossRows.length};
+  const scores=calcScores(targetCounts,total,terminalCounts);
+  return {headers, rows, actionCol, resultCol, setCol, rotCol, numberCol, scoreCol, tossRows:base, total, items, bySet, byRot, byScore, byPass, terminalCounts, bySetter, usedFallback, ...scores};
+}
+function colorForLabel(label){
+  if(label==='レフト') return '#e11d48';
+  if(label==='センター') return '#f59e0b';
+  if(label==='ライト') return '#22c55e';
+  if(label==='バック') return '#2563eb';
+  return '#64748b';
+}
+function miniStack(counts){
+  const total=Object.values(counts||{}).reduce((a,b)=>a+b,0);
+  if(!total) return '<div class="stackBar empty"></div>';
+  return `<div class="stackBar">${analysisItemsFromCounts(counts,total).filter(x=>x.count>0).map(x=>`<span style="width:${x.pct}%;background:${colorForLabel(x.label)}">${x.pct>=12?x.pct+'%':''}</span>`).join('')}</div>`;
 }
 function compactBreakdownTable(title, data){
   const keys=Object.keys(data).sort((a,b)=>String(a).localeCompare(String(b),'ja',{numeric:true}));
@@ -703,9 +757,39 @@ function compactBreakdownTable(title, data){
     const counts=data[k];
     const total=Object.values(counts).reduce((a,b)=>a+b,0);
     const items=analysisItemsFromCounts(counts,total).filter(x=>x.count>0);
-    return `<tr><td>${escapeHtml(k)}</td><td>${items.map(x=>`${escapeHtml(x.label)} ${x.pct}%`).join(' / ')}</td><td>${total}本</td></tr>`;
+    return `<tr><td>${escapeHtml(k)}</td><td>${miniStack(counts)}</td><td>${items.map(x=>`${escapeHtml(x.label)} ${x.pct}%`).join(' / ')}</td><td>${total}本</td></tr>`;
   }).join('');
   return `<div class="csvSubPanel"><b>${title}</b><table class="csvMiniTable"><tbody>${rows}</tbody></table></div>`;
+}
+function buildCoachCards(a){
+  const main=a.items[0] || {label:'-',pct:0,count:0};
+  const center=a.items.find(x=>x.label==='センター') || {pct:0,count:0};
+  const terminalTotal=Object.values(a.terminalCounts||{}).reduce((x,y)=>x+y,0);
+  const terminalItems=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal);
+  const terminalMain=terminalItems[0];
+  const good=[];
+  const improve=[];
+  const next=[];
+  if(a.diversity>=80) good.push('配球先を複数使えていて、相手ブロックを絞らせにくい構成です。');
+  if(center.pct>=20) good.push('センターを一定数使えているため、サイド攻撃の価値を上げられています。');
+  if(a.clutch>=80) good.push('20点以降でも極端な偏りが少なく、勝負所で選択肢を残せています。');
+  if(!good.length) good.push(`トス総数${a.total}本の傾向を可視化できています。ここから改善点を絞れます。`);
+  if(main.pct>=55) improve.push(`${main.label}への配球が${main.pct}%と高く、終盤はブロックに読まれやすくなります。`);
+  if(center.pct<18) improve.push(`センター使用率が${center.pct}%で低めです。Aパス時だけでも速攻を見せたいです。`);
+  if(terminalMain && terminalMain.pct>=60) improve.push(`20点以降は${terminalMain.label}が${terminalMain.pct}%です。プレッシャー場面で選択が寄っています。`);
+  if(!improve.length) improve.push('大きな偏りは少ないです。次はローテ別に弱い場面を確認しましょう。');
+  next.push('ローテ別で偏りが強いSを確認し、練習で最初の1本目に別方向を使う約束を作る。');
+  next.push('20点以降にセンターか逆サイドを1本見せる場面を、試合前に決めておく。');
+  next.push('PDFに残すメモとして「なぜその配球にしたか」を試合後すぐ記録する。');
+  return `<div class="coachCards">
+    <div class="coachCard good"><b>✅ 強み</b><ul>${good.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    <div class="coachCard warn"><b>⚠ 改善点</b><ul>${improve.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    <div class="coachCard next"><b>💡 次の試合で意識</b><ul>${next.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+  </div>`;
+}
+function printCsvReport(){
+  if(!importedCsv){ alert('CSVを読み込んでからPDF出力してください。'); return; }
+  window.print();
 }
 function renderCsvAnalysis(parsed){
   const box=document.getElementById('csvAnalysisBox');
@@ -713,30 +797,35 @@ function renderCsvAnalysis(parsed){
   if(!parsed || !(parsed.data||[]).length){ box.style.display='none'; box.innerHTML=''; return; }
   const a=analyzeImportedCsv(parsed);
   box.style.display='block';
-  const bars=a.items.map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">集計できるデータがありません。</div>';
-  const main=a.items[0];
-  const center=a.items.find(x=>x.label==='センター');
-  let comment='CSVを読み込みました。Type=トスの行から、Resultに入っているトス先を集計しています。';
-  if(main && a.total){
-    comment=`一番多い配球は「${escapeHtml(main.label)}」で${main.pct}%です。${main.pct>=55?'偏りが強めなので、序盤からセンターや逆サイドを見せると相手ブロックを動かしやすくなります。':'極端な偏りは少なく、配球の幅を作れています。'}${center && center.pct<18?' センター使用率が低めなので、Aパス時だけでも速攻を見せたいです。':''}`;
-  }
+  const bars=a.items.map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">集計できるデータがありません。</div>';
+  const terminalTotal=Object.values(a.terminalCounts||{}).reduce((x,y)=>x+y,0);
+  const terminalBars=analysisItemsFromCounts(a.terminalCounts||{},terminalTotal).filter(x=>x.count>0).map(x=>`<div class="csvAnaRow"><div class="csvAnaLabel">${escapeHtml(x.label)}</div><div class="csvAnaTrack"><div class="csvAnaFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div><div class="csvAnaPct">${x.pct}%</div><div class="csvAnaCount">${x.count}本</div></div>`).join('') || '<div class="csvSmall">20点以降のトスがありません。</div>';
   box.innerHTML=`
     <div class="csvAnalysisHead">
-      <div><div class="csvAnalysisTitle">📊 CSV自動解析 v19</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、トスを含む行で仮集計しています。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
-      <div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div>
+      <div><div class="csvAnalysisTitle">📊 SETTER THEORY β解析 v20</div><div class="csvSmall">${a.usedFallback?'※ Type=トスを完全特定できなかったため、仮集計です。':'Type=トス / Result=トス先 として解析しました。'}</div></div>
+      <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.setterIq}</b></div></div>
     </div>
-    <div class="csvMetaGrid">
+    <div class="csvScoreGrid">
       <div><b>${a.total}</b><span>トス本数</span></div>
-      <div><b>${a.diversity}</b><span>配球先</span></div>
-      <div><b>${a.sideDepend}%</b><span>最大依存率</span></div>
+      <div><b>${a.balance}</b><span>配球バランス</span></div>
+      <div><b>${a.diversity}</b><span>多様性指数</span></div>
+      <div><b>${a.quick}</b><span>速攻活用指数</span></div>
+      <div><b>${a.clutch}</b><span>終盤冷静度</span></div>
+      <div><b>${a.foreshadow}</b><span>伏線指数</span></div>
     </div>
-    <div class="csvAnaBars">${bars}</div>
+    <div class="csvDual">
+      <div><h3>配球割合（全体）</h3><div class="csvAnaBars">${bars}</div></div>
+      <div><h3>勝負所（20点以降）</h3><div class="csvAnaBars">${terminalBars}</div></div>
+    </div>
     <div class="csvSubGrid">
       ${compactBreakdownTable('セット別 配球割合', a.bySet)}
       ${compactBreakdownTable('ローテ別 配球割合', a.byRot)}
+      ${compactBreakdownTable('得点差別 配球割合', a.byScore)}
+      ${compactBreakdownTable('A/B/Cパス別 配球割合', a.byPass)}
     </div>
-    <div class="csvCoachComment"><b>AIコメント</b><br>${comment}</div>
-    <div class="csvSmall">検出列：Type=${escapeHtml(a.actionCol||'未検出')} / Result=${escapeHtml(a.resultCol||'未検出')} / Set=${escapeHtml(a.setCol||'未検出')} / Rotation=${escapeHtml(a.rotCol||'未検出')}</div>
+    ${buildCoachCards(a)}
+    <div class="csvMemo"><b>📝 セッター思考メモ</b><textarea id="setterMemo" placeholder="例：相手MBがライト寄りだったので、序盤にセンターを見せてからレフトを使った。"></textarea><div class="csvSmall">このメモはPDF印刷にも載せられます。</div></div>
+    <div class="csvSmall">検出列：Type=${escapeHtml(a.actionCol||'未検出')} / Result=${escapeHtml(a.resultCol||'未検出')} / Set=${escapeHtml(a.setCol||'未検出')} / Rotation=${escapeHtml(a.rotCol||'未検出')} / Score=${escapeHtml(a.scoreCol||'未検出')}</div>
   `;
 }
 
