@@ -18,6 +18,8 @@ let s = {
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
 let setupSelected = 0;
+let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
+let openInputGroup = localStorage.getItem("setterTheoryOpenGroup") || "attack";
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
 const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
 const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
@@ -43,6 +45,33 @@ function menuGo(target){
     const el=document.getElementById(map[target]||"");
     if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
   },80);
+}
+
+function applyInputView(){
+  document.body.classList.toggle("inputSimple", inputView!=="list");
+  document.body.classList.toggle("inputList", inputView==="list");
+  const simple=document.getElementById("simpleModeBtn");
+  const list=document.getElementById("listModeBtn");
+  if(simple) simple.classList.toggle("active", inputView!=="list");
+  if(list) list.classList.toggle("active", inputView==="list");
+  document.querySelectorAll(".fastGroup").forEach(g=>{
+    const key=g.dataset.accGroup;
+    const open=inputView==="list" || key===openInputGroup;
+    g.classList.toggle("open", open);
+    const arrow=g.querySelector(".accArrow");
+    if(arrow) arrow.textContent=open?"⌃":"⌄";
+  });
+}
+function setInputView(view){
+  inputView=view==="list"?"list":"simple";
+  localStorage.setItem("setterTheoryInputView", inputView);
+  applyInputView();
+}
+function toggleInputGroup(group){
+  if(inputView==="list") return;
+  openInputGroup=group;
+  localStorage.setItem("setterTheoryOpenGroup", openInputGroup);
+  applyInputView();
 }
 
 function goHome(){
@@ -254,6 +283,7 @@ function render(){
     b.classList.toggle("setter", n===setterNum);
   });
   document.querySelectorAll(".fastBtn").forEach(b=>b.classList.toggle("active", b.dataset.type===s.mode && b.dataset.result===s.result));
+  applyInputView();
   renderMatchNumberBank();
   quick();
 }
@@ -1310,6 +1340,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   setupCsvImport();
   renderSavedMatches();
   renderCompareSelectors();
+  applyInputView();
   load();
   document.querySelectorAll(".setupSpot").forEach(b=>{
     b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
@@ -1328,6 +1359,11 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.querySelectorAll(".fastBtn").forEach(b=>b.addEventListener("click",()=>{
     s.mode=b.dataset.type;
     s.result=b.dataset.result;
+    const group=b.closest(".fastGroup");
+    if(group && group.dataset.accGroup){
+      openInputGroup=group.dataset.accGroup;
+      localStorage.setItem("setterTheoryOpenGroup", openInputGroup);
+    }
     save();
     render();
   }));

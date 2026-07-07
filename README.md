@@ -1,3 +1,1 @@
-Setter Theory v32
-
-横画面スマホでコートを縮小し、固定コートの背面に入力欄が潜り込む問題を軽減しました。
+Setter Theory β0.3.4 - Aquila input UI, accordion input, simple/list mode.

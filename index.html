@@ -967,6 +967,37 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
   .topbar{margin:-18px -14px 12px}.menuBtn{display:inline-grid;place-items:center}.matchStage{padding:14px}.matchInputPane{display:block}.matchCourtPane{display:block}.otherCompact{grid-template-columns:repeat(2,1fr)}
 }
 
+
+
+/* v34 beta0.3.4: Aquila入力UI・アコーディオン・モード切替 */
+.inputModeSwitch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 8px}
+.inputModeSwitch button{min-height:46px;border-radius:14px;font-size:14px;background:rgba(255,255,255,.08);color:#e5e7eb;border:1px solid rgba(255,255,255,.14);box-shadow:none}
+.inputModeSwitch button.active{background:linear-gradient(135deg,#f5b544,#ff8a1d);color:#101827;border-color:rgba(245,181,68,.7)}
+.modeHelp{color:#94a3b8;font-size:12px;font-weight:900;margin:0 0 10px;line-height:1.5}
+.fastGroupTitle{width:100%;min-height:42px;padding:8px 10px;border-radius:12px;background:transparent!important;color:#f8fafc!important;border:0!important;box-shadow:none!important;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:15px;font-weight:1000}
+.fastGroupTitle:active{transform:none}.accArrow{color:#fbbf24;font-size:20px;line-height:1}
+body.inputSimple .fastGroup:not(.open) .fastButtons{display:none!important}
+body.inputSimple .fastGroup:not(.open){padding:6px 8px}
+body.inputSimple .fastGroup.open{border-color:rgba(245,181,68,.28)}
+body.inputList .fastGroup .fastButtons{display:grid!important}
+body.inputList .fastGroup{padding:8px}
+body.inputList .accArrow{display:none}
+body.inputList .fastGroupTitle{pointer-events:none}
+#match.active{background:radial-gradient(circle at top,#152033 0,#07111f 56%,#030712 100%);color:#e5e7eb}
+#match.active .topbar{background:linear-gradient(180deg,rgba(7,17,31,.96),rgba(7,17,31,.86));border-bottom:1px solid rgba(245,181,68,.18)}
+#match.active .card{background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(30,41,59,.82));border-color:rgba(245,181,68,.18);box-shadow:0 18px 42px rgba(0,0,0,.24)}
+#match.active h2,#match.active h3{color:#f8fafc}#match.active .helper{color:#cbd5e1}
+#match.active .currentPlayBox{background:rgba(245,181,68,.14);border:1px solid rgba(245,181,68,.28);color:#fde68a}
+#match.active .matchNumberTitle{color:#fbbf24}
+#match.active .matchNumBtn{background:rgba(255,255,255,.06);color:#f8fafc;border-color:rgba(255,255,255,.14)}
+@media(max-width:767px){
+  #match.active{background:radial-gradient(circle at top,#172033 0,#07111f 55%,#030712 100%)}
+  #match.active .screen,#match.active{color:#e5e7eb}
+  #match .matchStage{background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(30,41,59,.82));border-color:rgba(245,181,68,.20)}
+  .inputModeSwitch button{min-height:42px;font-size:12px}.modeHelp{font-size:11px}
+  body.inputSimple .fastGroup:not(.open){margin-bottom:7px}
+}
+
 </style>
 </head>
 <body>
@@ -1009,7 +1040,7 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v33</h3>
+    <h3>📈 試合比較 β0.3.4</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -1022,7 +1053,7 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 
 <div class="growthCard" id="growthDashboardCard">
   <div class="savedMatchHead">
-    <h3>📈 成長ダッシュボード v33</h3>
+    <h3>📈 成長ダッシュボード β0.3.4</h3>
     <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
   </div>
   <div id="growthDashboardBody" class="growthDashboardBody">
@@ -1035,9 +1066,9 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v33 β</h3>
+    <h3>試作品 β0.3.4</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v33では横画面2カラム・ハンバーガーメニュー・Aquila UIの第一段階を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
+      CSVを読み込むと自動解析できます。β0.3.4ではAquila入力UI、シンプル／一覧モード、アコーディオン入力を追加しています。
     </p>
   </div>
 </section>
@@ -1126,6 +1157,11 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
     </div>
 
     <div class="matchInputPane">
+      <div class="inputModeSwitch" aria-label="入力モード切替">
+        <button type="button" id="simpleModeBtn" class="active" onclick="setInputView('simple')">☰ シンプルモード</button>
+        <button type="button" id="listModeBtn" onclick="setInputView('list')">☷ 一覧モード</button>
+      </div>
+      <div class="modeHelp">必要な項目だけ開いて入力できます。試合中はシンプルモードがおすすめ。</div>
       <div class="tabs">
         <button data-mode="トス" class="active">🏐 トス</button>
         <button data-mode="レセプ">🤲 レセプ</button>
@@ -1142,8 +1178,8 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
       </div>
 
       <div class="fastInput">
-        <div class="fastGroup">
-          <div class="fastGroupTitle">攻撃</div>
+        <div class="fastGroup open" data-acc-group="attack">
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="accArrow">⌃</span></button>
           <div class="fastButtons four">
             <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
             <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
@@ -1152,8 +1188,8 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
           </div>
         </div>
 
-        <div class="fastGroup">
-          <div class="fastGroupTitle">サーブ</div>
+        <div class="fastGroup" data-acc-group="serve">
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="accArrow">⌄</span></button>
           <div class="fastButtons three">
             <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
             <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
@@ -1161,8 +1197,8 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
           </div>
         </div>
 
-        <div class="fastGroup">
-          <div class="fastGroupTitle">レセプション</div>
+        <div class="fastGroup" data-acc-group="receive">
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('receive')"><span>🛡️ レセプション</span><span class="accArrow">⌄</span></button>
           <div class="fastButtons four">
             <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
             <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
@@ -1171,8 +1207,8 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
           </div>
         </div>
 
-        <div class="fastGroup">
-          <div class="fastGroupTitle">トス（トス先を選択）</div>
+        <div class="fastGroup" data-acc-group="toss">
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="accArrow">⌄</span></button>
           <div class="fastButtons five">
             <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
             <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
@@ -1182,16 +1218,16 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
           </div>
         </div>
 
-        <div class="fastGroup">
-          <div class="fastGroupTitle">ディグ</div>
+        <div class="fastGroup" data-acc-group="dig">
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="accArrow">⌄</span></button>
           <div class="fastButtons">
             <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
             <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
           </div>
         </div>
 
-        <div class="fastGroup">
-          <div class="fastGroupTitle">ブロック</div>
+        <div class="fastGroup" data-acc-group="block">
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="accArrow">⌄</span></button>
           <div class="fastButtons three">
             <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
             <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
