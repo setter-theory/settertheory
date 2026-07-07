@@ -1261,6 +1261,83 @@ body.inputList .accArrow{display:none!important;}
   #setup .big{min-height:48px!important;margin-top:8px!important;}
 }
 
+
+/* V36: Aquila theme polish */
+:root{
+  --aq-bg:#07111f;
+  --aq-panel:#0f1b2d;
+  --aq-panel2:#12233a;
+  --aq-border:rgba(96,165,250,.26);
+  --aq-blue:#38bdf8;
+  --aq-blue2:#2563eb;
+  --aq-yellow:#fbbf24;
+  --aq-ink:#f8fafc;
+  --aq-muted:#cbd5e1;
+}
+body{background:var(--aq-bg)!important;color:var(--aq-ink)!important;}
+.card,.quickCard,.fastGroup,.matchStage,.reportCard,.panel,.settingsPanel{
+  background:linear-gradient(135deg,rgba(15,27,45,.96),rgba(18,35,58,.88))!important;
+  border:1px solid var(--aq-border)!important;
+  box-shadow:0 14px 32px rgba(0,0,0,.26)!important;
+}
+button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
+  border-radius:12px!important;
+}
+.topbar .pill,.badge,.chip{
+  background:rgba(56,189,248,.12)!important;
+  color:var(--aq-ink)!important;
+  border:1px solid rgba(56,189,248,.28)!important;
+}
+.score,.scoreText,.topbar .score{
+  color:var(--aq-yellow)!important;
+  font-size:clamp(20px,5vw,30px)!important;
+  font-weight:900!important;
+  letter-spacing:.04em!important;
+}
+.matchNumBtn,.numberBtn,#matchCourt .player{
+  background:rgba(56,189,248,.12)!important;
+  color:var(--aq-ink)!important;
+  border:1px solid rgba(56,189,248,.28)!important;
+}
+.matchNumBtn.active,.numberBtn.active,#matchCourt .player.active,#matchCourt .player.selected{
+  background:linear-gradient(135deg,#fbbf24,#f59e0b)!important;
+  color:#111827!important;
+  border-color:rgba(251,191,36,.75)!important;
+  box-shadow:0 0 0 3px rgba(251,191,36,.20)!important;
+}
+.fastGroupTitle,.sectionTitle,.matchPaneHead h2{
+  color:var(--aq-ink)!important;
+  letter-spacing:.02em!important;
+}
+.fastBtn,.results button,.tabs button,.otherCompact button{
+  background:rgba(255,255,255,.07)!important;
+  color:var(--aq-ink)!important;
+  border:1px solid rgba(56,189,248,.20)!important;
+}
+.fastBtn:hover,.results button:hover,.tabs button:hover,.otherCompact button:hover{
+  border-color:rgba(251,191,36,.42)!important;
+}
+.tabs button.active,.modeBtn.active,.displayModeBtn.active{
+  background:linear-gradient(135deg,#38bdf8,#2563eb)!important;
+  color:#fff!important;
+  border-color:rgba(56,189,248,.65)!important;
+}
+.currentPlayBox{
+  background:linear-gradient(135deg,rgba(251,191,36,.16),rgba(56,189,248,.10))!important;
+  border:1px solid rgba(251,191,36,.32)!important;
+  color:#fde68a!important;
+  font-weight:800!important;
+}
+.reportHeader,.modalHeader{
+  background:linear-gradient(180deg,#07111f 0%,rgba(7,17,31,.98) 100%)!important;
+  border-bottom:1px solid rgba(56,189,248,.22)!important;
+}
+.quickSummary,.quickSummary *{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:normal!important;
+}
+
 </style>
 </head>
 <body>
