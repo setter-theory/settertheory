@@ -935,6 +935,38 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .fastBtn{min-height:44px;font-size:12px}
 }
 
+
+
+/* v33: Aquila UI Phase 1 - hamburger menu + landscape split input */
+:root{
+  --st-navy:#07111f;
+  --st-navy2:#0f1b2e;
+  --st-gold:#f5b544;
+  --st-gold2:#ff8a1d;
+  --st-glass:rgba(15,23,42,.78);
+}
+.menuBtn{
+  width:46px;min-width:46px;min-height:46px;padding:0;border-radius:14px;
+  background:linear-gradient(135deg,var(--st-navy),#172554);
+  color:#f8fafc;border:1px solid rgba(245,181,68,.45);
+  box-shadow:0 8px 20px rgba(15,23,42,.18);font-size:24px;line-height:1;
+}
+.topbar .status{justify-content:flex-start}.topbar .score{margin-left:auto}.topbar{background:rgba(255,247,237,.96)}
+.sideOverlay{position:fixed;inset:0;background:rgba(2,6,23,.55);z-index:80;opacity:0;pointer-events:none;transition:.2s ease}
+.sideMenu{position:fixed;left:0;top:0;bottom:0;width:min(82vw,330px);z-index:90;transform:translateX(-105%);transition:.22s ease;background:linear-gradient(180deg,#07111f,#0f172a 58%,#111827);color:#fff;padding:18px 14px calc(18px + env(safe-area-inset-bottom));box-shadow:18px 0 40px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:9px}
+body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu{transform:translateX(0)}
+.sideBrand{display:flex;align-items:center;gap:12px;padding:8px 4px 16px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:8px}.sideEagle{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--st-gold),var(--st-gold2));display:grid;place-items:center;font-size:28px;box-shadow:0 10px 24px rgba(245,181,68,.24)}.sideBrand b{display:block;font-size:18px;letter-spacing:.04em}.sideBrand span{display:block;color:#fbbf24;font-size:12px;font-weight:1000;margin-top:2px}.sideMenu button{text-align:left;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:none;color:#e5e7eb;min-height:52px;padding:12px 14px;font-size:15px}.sideMenu button:active{background:rgba(245,181,68,.18)}
+.bottom{display:none!important}.screen{padding-bottom:28px}.matchStage{overflow:visible}.matchPaneHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.matchPaneHead h2{margin:0}.matchNumberTitle{font-weight:1000;margin:12px 0 0;color:var(--muted);font-size:13px}.otherCompact{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.otherCompact button{min-height:52px;border-radius:12px;font-size:14px}.quickCard{margin-top:14px}.fastBtn{border-radius:14px!important;background-image:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,0))!important}.fastGroup{border:1px solid rgba(15,23,42,.10)}
+@media (orientation:landscape) and (max-height:620px){
+  body{background:#07111f;color:#e5e7eb;overflow:hidden}.screen{max-width:none;width:100%;height:100vh;min-height:100vh;padding:8px 10px 10px;overflow:hidden}.screen:not(.active){display:none!important}#match.active{display:flex;flex-direction:column}.topbar{position:relative;top:auto;margin:0 0 8px;padding:0;background:transparent;border:0;backdrop-filter:none}.topbar .pill{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(245,181,68,.28);border-radius:14px;padding:7px 10px;font-size:13px}.topbar .score{font-size:20px;color:#fbbf24}.menuBtn{min-height:42px;width:42px;min-width:42px;border-radius:12px}.matchStage{flex:1;display:grid;grid-template-columns:minmax(250px,42%) 1fr;gap:10px;margin:0;padding:10px;border-radius:20px;background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(30,41,59,.82));border:1px solid rgba(245,181,68,.22);box-shadow:0 18px 45px rgba(0,0,0,.28);min-height:0;overflow:hidden}.matchCourtPane{min-height:0;display:flex;flex-direction:column;position:sticky;left:0;top:0;align-self:start}.matchPaneHead h2{font-size:16px;color:#f8fafc}.matchPaneHead .badge{background:rgba(245,181,68,.18);color:#fbbf24;border:1px solid rgba(245,181,68,.35);font-size:12px}#matchCourt{position:relative!important;top:auto!important;z-index:1;width:100%;max-width:none;margin:0;aspect-ratio:3/1.65;border-width:3px;border-radius:16px;box-shadow:0 12px 26px rgba(0,0,0,.26)}#matchCourt .player{min-height:48px;border-radius:12px;margin:4px;font-size:22px}.matchNumberTitle{color:#fbbf24;font-size:12px;margin-top:8px}.matchNumberBank{grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.matchNumBtn{min-height:42px;border-radius:10px;font-size:18px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.16)}.matchInputPane{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}.tabs{grid-template-columns:repeat(3,1fr);gap:6px;margin-top:0}.tabs button{min-height:38px;border-radius:12px;font-size:12px;background:rgba(255,255,255,.08)!important;color:#e5e7eb!important;border:1px solid rgba(255,255,255,.12)!important}.tabs button.active{background:linear-gradient(135deg,#f5b544,#ff8a1d)!important;color:#111827!important}.results{grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}.results button{min-height:38px;border-radius:12px;font-size:12px}.fastInput{gap:8px;margin-top:8px}.fastGroup{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:8px}.fastGroupTitle{color:#f8fafc;font-size:13px;margin-bottom:6px}.fastButtons,.fastButtons.three,.fastButtons.four{grid-template-columns:repeat(2,1fr);gap:6px}.fastButtons.five{grid-template-columns:repeat(3,1fr)}.fastBtn{min-height:46px;border-radius:12px!important;font-size:12px;padding:8px 6px;border:1px solid rgba(255,255,255,.12)}.currentPlayBox{background:rgba(245,181,68,.14);border:1px solid rgba(245,181,68,.26);color:#fde68a;border-radius:12px;margin-top:8px}.helper{color:#cbd5e1;font-size:11px;margin-top:6px}.otherCompact{grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.otherCompact button{min-height:40px;border-radius:11px;font-size:12px;padding:7px 5px}.quickCard{display:none}.card{color:var(--ink)}
+}
+@media (orientation:landscape) and (max-height:430px){
+  .matchStage{grid-template-columns:minmax(230px,40%) 1fr;padding:8px;gap:8px}#matchCourt{aspect-ratio:3/1.5}#matchCourt .player{min-height:38px;font-size:18px;margin:3px}.fastBtn{min-height:40px;font-size:11px}.fastGroup{padding:7px}.otherCompact button{min-height:36px}.matchNumberBank{grid-template-columns:repeat(6,1fr)}.matchNumBtn{min-height:34px;font-size:15px}.tabs button,.results button{min-height:34px;font-size:11px}.topbar .pill{padding:5px 8px}
+}
+@media (orientation:portrait){
+  .topbar{margin:-18px -14px 12px}.menuBtn{display:inline-grid;place-items:center}.matchStage{padding:14px}.matchInputPane{display:block}.matchCourtPane{display:block}.otherCompact{grid-template-columns:repeat(2,1fr)}
+}
+
 </style>
 </head>
 <body>
@@ -977,7 +1009,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v32</h3>
+    <h3>📈 試合比較 v33</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -990,7 +1022,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="growthCard" id="growthDashboardCard">
   <div class="savedMatchHead">
-    <h3>📈 成長ダッシュボード v32</h3>
+    <h3>📈 成長ダッシュボード v33</h3>
     <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
   </div>
   <div id="growthDashboardBody" class="growthDashboardBody">
@@ -1003,9 +1035,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v32 β</h3>
+    <h3>試作品 v33 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v32では現場入力を改善しました。コート固定・ツー追加・連打ズーム対策を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
+      CSVを読み込むと自動解析できます。v33では横画面2カラム・ハンバーガーメニュー・Aquila UIの第一段階を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
     </p>
   </div>
 </section>
@@ -1067,123 +1099,123 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 <section id="match" class="screen">
   <div class="topbar">
     <div class="status">
+      <button class="menuBtn" type="button" onclick="openSideMenu()" aria-label="メニュー">☰</button>
       <div class="pill">S<span id="rot">1</span></div>
       <div class="pill score"><span id="myScore">0</span> - <span id="opScore">0</span></div>
       <div class="pill" id="serveLabel">自サーブ</div>
     </div>
   </div>
 
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h2 style="margin:0">コート入力</h2>
-      <span class="badge" id="modeBadge">トス / 成功</span>
-    </div>
-    <div class="court" id="matchCourt">
-      <div class="line3"></div>
-      <button class="player pos1" data-pos="1"></button>
-      <button class="player pos2" data-pos="2"></button>
-      <button class="player pos3" data-pos="3"></button>
-      <button class="player pos4" data-pos="4"></button>
-      <button class="player pos5" data-pos="5"></button>
-      <button class="player pos6" data-pos="6"></button>
-    </div>
-    <div class="tabs">
-      <button data-mode="トス" class="active">🏐 トス</button>
-      <button data-mode="レセプ">🤲 レセプ</button>
-      <button data-mode="ディグ">💪 ディグ</button>
-      <button data-mode="スパイク">💥 スパイク</button>
-      <button data-mode="ブロック">🧱 ブロック</button>
-      <button data-mode="サーブ">🎯 サーブ</button>
-    </div>
-    <div class="results">
-      <button class="green active" data-result="成功">成功</button>
-      <button class="red" data-result="ミス">ミス</button>
-      <button class="yellow" data-result="被ブロック">🚫 被ブロック</button>
-      <button class="purple" data-result="継続">継続</button>
-    </div>
-    <div class="helper">プレー内容を選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
-    
-    <div class="fastInput">
-      <div class="fastGroup">
-        <div class="fastGroupTitle">攻撃</div>
-        <div class="fastButtons four">
-          <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
-          <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
-          <button class="fastBtn blocked" data-type="スパイク" data-result="被ブロック">🚫 被ブロック</button>
-          <button class="fastBtn keep" data-type="スパイク" data-result="継続">🔄 継続</button>
-        </div>
+  <div class="matchStage card">
+    <div class="matchCourtPane">
+      <div class="matchPaneHead">
+        <h2>コート入力</h2>
+        <span class="badge" id="modeBadge">トス / 成功</span>
       </div>
-
-      <div class="fastGroup">
-        <div class="fastGroupTitle">サーブ</div>
-        <div class="fastButtons three">
-          <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
-          <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
-          <button class="fastBtn bad" data-type="サーブ" data-result="ミス">❌ サーブミス</button>
-        </div>
+      <div class="court" id="matchCourt">
+        <div class="line3"></div>
+        <button class="player pos1" data-pos="1"></button>
+        <button class="player pos2" data-pos="2"></button>
+        <button class="player pos3" data-pos="3"></button>
+        <button class="player pos4" data-pos="4"></button>
+        <button class="player pos5" data-pos="5"></button>
+        <button class="player pos6" data-pos="6"></button>
       </div>
-
-      <div class="fastGroup">
-        <div class="fastGroupTitle">レセプション</div>
-        <div class="fastButtons four">
-          <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
-          <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
-          <button class="fastBtn attack" data-type="レセプ" data-result="Cパス">🟠 Cパス</button>
-          <button class="fastBtn bad" data-type="レセプ" data-result="ミス">❌ レセプミス</button>
-        </div>
-      </div>
-
-      <div class="fastGroup">
-        <div class="fastGroupTitle">トス（トス先を選択）</div>
-        <div class="fastButtons five">
-          <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
-          <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
-          <button class="fastBtn toss" data-type="トス" data-result="ライト">→ ライト</button>
-          <button class="fastBtn toss" data-type="トス" data-result="バック">↩ バック</button>
-          <button class="fastBtn two" data-type="トス" data-result="ツー">⚡ ツー</button>
-        </div>
-      </div>
-
-      <div class="fastGroup">
-        <div class="fastGroupTitle">ディグ</div>
-        <div class="fastButtons">
-          <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
-          <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
-        </div>
-      </div>
-
-      <div class="fastGroup">
-        <div class="fastGroupTitle">ブロック</div>
-        <div class="fastButtons three">
-          <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
-          <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
-          <button class="fastBtn bad" data-type="ブロック" data-result="ミス">❌ ブロックミス</button>
-        </div>
-      </div>
+      <div class="matchNumberTitle">背番号で入力</div>
+      <div class="matchNumberBank" id="matchNumberBank"></div>
     </div>
 
-    <div class="currentPlayBox">選択中：<span id="selectedPlayLabel">スパイク成功</span></div>
-    <div class="helper">プレーを選んで、コート上か下の背番号をタップ。ローテーションは時計回り</div>
+    <div class="matchInputPane">
+      <div class="tabs">
+        <button data-mode="トス" class="active">🏐 トス</button>
+        <button data-mode="レセプ">🤲 レセプ</button>
+        <button data-mode="ディグ">💪 ディグ</button>
+        <button data-mode="スパイク">💥 スパイク</button>
+        <button data-mode="ブロック">🧱 ブロック</button>
+        <button data-mode="サーブ">🎯 サーブ</button>
+      </div>
+      <div class="results">
+        <button class="green active" data-result="成功">成功</button>
+        <button class="red" data-result="ミス">ミス</button>
+        <button class="yellow" data-result="被ブロック">🚫 被ブロック</button>
+        <button class="purple" data-result="継続">継続</button>
+      </div>
 
-    <h3 style="margin-top:14px">背番号で入力</h3>
-    <div class="matchNumberBank" id="matchNumberBank"></div>
+      <div class="fastInput">
+        <div class="fastGroup">
+          <div class="fastGroupTitle">攻撃</div>
+          <div class="fastButtons four">
+            <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
+            <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
+            <button class="fastBtn blocked" data-type="スパイク" data-result="被ブロック">🚫 被ブロック</button>
+            <button class="fastBtn keep" data-type="スパイク" data-result="継続">🔄 継続</button>
+          </div>
+        </div>
+
+        <div class="fastGroup">
+          <div class="fastGroupTitle">サーブ</div>
+          <div class="fastButtons three">
+            <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
+            <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
+            <button class="fastBtn bad" data-type="サーブ" data-result="ミス">❌ サーブミス</button>
+          </div>
+        </div>
+
+        <div class="fastGroup">
+          <div class="fastGroupTitle">レセプション</div>
+          <div class="fastButtons four">
+            <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
+            <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
+            <button class="fastBtn attack" data-type="レセプ" data-result="Cパス">🟠 Cパス</button>
+            <button class="fastBtn bad" data-type="レセプ" data-result="ミス">❌ レセプミス</button>
+          </div>
+        </div>
+
+        <div class="fastGroup">
+          <div class="fastGroupTitle">トス（トス先を選択）</div>
+          <div class="fastButtons five">
+            <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
+            <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
+            <button class="fastBtn toss" data-type="トス" data-result="ライト">→ ライト</button>
+            <button class="fastBtn toss" data-type="トス" data-result="バック">↩ バック</button>
+            <button class="fastBtn two" data-type="トス" data-result="ツー">⚡ ツー</button>
+          </div>
+        </div>
+
+        <div class="fastGroup">
+          <div class="fastGroupTitle">ディグ</div>
+          <div class="fastButtons">
+            <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
+            <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
+          </div>
+        </div>
+
+        <div class="fastGroup">
+          <div class="fastGroupTitle">ブロック</div>
+          <div class="fastButtons three">
+            <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
+            <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
+            <button class="fastBtn bad" data-type="ブロック" data-result="ミス">❌ ブロックミス</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="currentPlayBox">選択中：<span id="selectedPlayLabel">スパイク成功</span></div>
+      <div class="helper">プレーを選んで、コート上か背番号をタップ。ローテーションは時計回り</div>
+
+      <div class="otherCompact">
+        <button class="green" onclick="pointOnly('my')">自チーム得点</button>
+        <button class="red" onclick="pointOnly('op')">相手得点</button>
+        <button class="undoBtn" onclick="undo()">取り消し</button>
+        <button class="gray" onclick="manualRotate()">ローテ＋</button>
+        <button class="gray" onclick="toggleServe()">サーブ切替</button>
+        <button class="red" onclick="clearLogs()">ログ全消去</button>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>その他</h3>
-    <div class="grid">
-      <button class="green" onclick="pointOnly('my')">自チーム得点</button>
-      <button class="red" onclick="pointOnly('op')">相手得点</button>
-      <button class="undoBtn" onclick="undo()">取り消し</button>
-      <button class="gray" onclick="manualRotate()">ローテ＋</button>
-      <button class="gray" onclick="toggleServe()">サーブ切替</button>
-      <button class="red" onclick="clearLogs()">ログ全消去</button>
-    </div>
-  </div>
-
-  <div class="card"><h3>クイック集計</h3><div id="quick"></div></div>
+  <div class="card quickCard"><h3>クイック集計</h3><div id="quick"></div></div>
 </section>
-
 
 <section id="report" class="screen reportScreen">
   <div class="reportHeader">
@@ -1197,6 +1229,21 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   <div id="reportDashboard"></div>
 </section>
 
+
+<div class="sideOverlay" id="sideOverlay" onclick="closeSideMenu()"></div>
+<aside class="sideMenu" id="sideMenu" aria-hidden="true">
+  <div class="sideBrand">
+    <div class="sideEagle">🦅</div>
+    <div><b>SETTER THEORY</b><span>Aquila Menu</span></div>
+  </div>
+  <button onclick="menuGo('home')">🏠 ホーム</button>
+  <button onclick="menuGo('match')">🏐 試合入力</button>
+  <button onclick="menuGo('report')">📊 レポート</button>
+  <button onclick="menuGo('growth')">📈 成長ダッシュボード</button>
+  <button onclick="menuGo('csv')">📁 CSV管理</button>
+  <button onclick="menuGo('setup')">⚙️ ローテ設定</button>
+  <button onclick="menuGo('about')">ℹ️ アプリについて</button>
+</aside>
 
 <div class="bottom hidden" id="bottomBar">
   <button class="red" onclick="goHome()">🏠 ホーム</button>

@@ -23,11 +23,28 @@ const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック
 const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
 
 function show(id){
+  closeSideMenu && closeSideMenu();
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  document.getElementById("bottomBar").classList.toggle("hidden", id==="home" || id==="setup");
+  const bottom=document.getElementById("bottomBar");
+  if(bottom) bottom.classList.add("hidden");
   render();
 }
+function openSideMenu(){ document.body.classList.add("menuOpen"); }
+function closeSideMenu(){ document.body.classList.remove("menuOpen"); }
+function menuGo(target){
+  closeSideMenu();
+  if(target==="report"){ showReport(); return; }
+  if(target==="match"){ show("match"); return; }
+  if(target==="setup"){ show("setup"); return; }
+  show("home");
+  setTimeout(()=>{
+    const map={growth:"growthDashboardCard",csv:"csvImportCard",about:"growthDashboardCard"};
+    const el=document.getElementById(map[target]||"");
+    if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+  },80);
+}
+
 function goHome(){
   if(confirm("ホームへ戻りますか？\n試合中の記録は保存されています。")){
     show("home");
