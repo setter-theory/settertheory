@@ -653,6 +653,74 @@ function buildPersonalRanking(){
   <div class="bigBars">${list}</div>
   <div class="rankNote">※ ${cfg.note}</div>`;
 }
+
+
+function buildRotationPointAnalysis(){
+  const rows=[1,2,3,4,5,6].map(r=>{
+    const key="S"+r;
+    const logs=s.logs.filter(x=>x.rot===key);
+    const my=logs.filter(x=>x.point==="自").length;
+    const op=logs.filter(x=>x.point==="相").length;
+    const diff=my-op;
+    const toss=logs.filter(x=>x.type==="トス");
+    const dist={};
+    toss.forEach(x=>{ dist[x.result]=(dist[x.result]||0)+1; });
+    const top=Object.entries(dist).sort((a,b)=>b[1]-a[1])[0];
+    const topText=top ? `${top[0]} ${safePct(top[1],toss.length)}%` : "-";
+    return {key,logs,my,op,diff,toss,topText};
+  });
+  return `<div class="v37RotTable">
+    <div class="v37RotHead"><span>ローテ</span><span>自得点</span><span>失点</span><span>差</span><span>最多トス先</span></div>
+    ${rows.map(r=>`<div class="v37RotRow ${r.diff<0?'bad':r.diff>0?'good':''}">
+      <span class="rotBadge">${r.key}</span><span>${r.my}</span><span>${r.op}</span><span>${r.diff>0?'+':''}${r.diff}</span><span>${r.topText}</span>
+    </div>`).join("")}
+  </div>`;
+}
+
+function buildTossUsageAnalysis(){
+  const toss=s.logs.filter(x=>x.type==="トス");
+  const labels=["レフト","センター","ライト","バック","ツー"];
+  return `<div class="v37Bars">${labels.map(label=>{
+    const count=toss.filter(x=>x.result===label).length;
+    const pct=safePct(count,toss.length);
+    return `<div class="v37BarLine"><div class="v37BarLabel">${label}</div><div class="v37BarTrack"><div class="v37BarFill" style="width:${pct}%"></div></div><div class="v37BarNum">${pct}%<small>${count}</small></div></div>`;
+  }).join("")}</div>`;
+}
+
+function buildActionSuccessAnalysis(){
+  const cfgs=[
+    {label:"サーブ", all:x=>x.type==="サーブ", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース")},
+    {label:"レセプ", all:x=>x.type==="レセプ", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス")},
+    {label:"ディグ", all:x=>x.type==="ディグ", ok:x=>x.type==="ディグ"&&x.result==="成功"},
+    {label:"スパイク", all:x=>x.type==="スパイク", ok:x=>x.type==="スパイク"&&x.result==="成功"},
+    {label:"ブロック", all:x=>x.type==="ブロック", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ")},
+  ];
+  return `<div class="v37MiniCards">${cfgs.map(c=>{
+    const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); const pct=safePct(ok.length,all.length);
+    return `<div class="v37MiniCard"><div>${c.label}</div><b>${pct}%</b><small>${ok.length}/${all.length}</small></div>`;
+  }).join("")}</div>`;
+}
+
+function buildSetterInsight(){
+  const toss=s.logs.filter(x=>x.type==="トス");
+  const labels=["レフト","センター","ライト","バック","ツー"];
+  const counts=labels.map(label=>({label,count:toss.filter(x=>x.result===label).length,pct:safePct(toss.filter(x=>x.result===label).length,toss.length)}));
+  const top=counts.slice().sort((a,b)=>b.count-a.count)[0];
+  const center=counts.find(x=>x.label==="センター") || {pct:0,count:0};
+  const rotRows=[1,2,3,4,5,6].map(r=>{const logs=s.logs.filter(x=>x.rot==="S"+r); return {r,op:logs.filter(x=>x.point==="相").length,my:logs.filter(x=>x.point==="自").length,total:logs.length};}).sort((a,b)=>b.op-a.op);
+  const worst=rotRows[0] || {r:1,op:0,total:0};
+  const comments=[];
+  if(toss.length===0){
+    comments.push("トス記録がまだ少ないです。まずはトス先を入力すると配球分析が見えるようになります。");
+  }else{
+    if(top && top.pct>=50) comments.push(`${top.label}への配球が${top.pct}%です。相手ブロックに読まれやすい可能性があります。`);
+    else comments.push("配球の偏りは大きくありません。ローテ別にどこで崩れるかを見る段階です。");
+    if(center.pct<=15 && toss.length>=5) comments.push(`センター使用率が${center.pct}%です。ミドルを意識させる場面を作るとサイドが楽になります。`);
+  }
+  if(worst.total>0 && worst.op>=2) comments.push(`S${worst.r}で失点が${worst.op}点あります。このローテの1本目の入り方を確認しましょう。`);
+  return `<div class="v37Insight"><div class="v37InsightTitle">Setter Theory コメント</div><ul>${comments.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+}
+
 function report(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length;
@@ -712,12 +780,17 @@ function report(){
       <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>
       <div class="reportPanel"><h3>得点・失点</h3>${pointDonut}</div>
     </div>
+    <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
       <div class="reportPanel">${buildPersonalRanking()}</div>
       <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
     </div>
+    <div class="wideGrid">
+      <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
+      <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
+    </div>
     <div class="bottomGrid">
-      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}</div>
+      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${buildTossUsageAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
   </div>`;
