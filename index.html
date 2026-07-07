@@ -1813,3 +1813,38 @@ body.menuOpen #match .matchInputPane{
   pointer-events:none!important;
 }
 </style>
+<!-- V36.2 landscape menu scroll fix -->
+<style>
+/* V36.2: 横画面の≡メニュー内だけスクロール可能にする */
+.sideMenu{
+  max-height:100dvh!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+}
+body.menuOpen{
+  overflow:hidden!important;
+}
+body.menuOpen .sideOverlay{
+  touch-action:none!important;
+}
+@media (orientation:landscape){
+  .sideMenu{
+    height:100dvh!important;
+    max-height:100dvh!important;
+    padding-top:10px!important;
+    padding-bottom:calc(14px + env(safe-area-inset-bottom))!important;
+  }
+  .sideBrand{
+    padding-bottom:10px!important;
+    margin-bottom:6px!important;
+  }
+  .sideMenu button{
+    min-height:46px!important;
+    padding:10px 12px!important;
+    flex:0 0 auto!important;
+  }
+}
+</style>
