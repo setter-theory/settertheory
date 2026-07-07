@@ -1081,6 +1081,30 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
 .displayPanelNote{margin-top:8px;color:#cbd5e1;font-size:11px;}
 .fastGroup.filterHidden{display:none!important;}
 @media(max-width:780px){.displayFilterPanel{right:8px;top:50px}.paneActions{gap:5px}.displayToggle{padding:6px 8px;font-size:11px}}
+
+/* V35.1: 表示モード・複数アコーディオン・お気に入り */
+.titleTools{display:flex;align-items:center;gap:10px;}
+.favToggle{font-size:20px;color:#64748b;line-height:1;padding:4px 2px;min-width:26px;text-align:center;}
+.favToggle.active{color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,.35);}
+.currentPlayBoxTop{margin-top:10px!important;font-size:13px;font-weight:1000;padding:10px 12px;}
+.currentPlayBoxTop span{color:#fff;font-size:16px;}
+.displayFilterPanel .inputModeSwitch{grid-template-columns:1fr;gap:8px;margin:0;}
+.displayFilterPanel .inputModeSwitch button{min-height:40px;}
+.displayFilterActions{grid-template-columns:1fr!important;}
+body.inputFavorite .fastGroup.filterHidden{display:none!important;}
+body.inputFavorite .fastGroup.open .fastButtons{display:grid!important;}
+body.inputFavorite .fastGroup:not(.open) .fastButtons{display:none!important;}
+@media (orientation: portrait){
+  #match .matchCourtPane{top:86px!important;}
+  #matchCourt{width:100%!important;max-width:100%!important;margin-inline:auto!important;}
+  #match .matchNumberBank,.matchNumberTitle{display:none!important;}
+  #match .displayFilterPanel{position:fixed!important;left:14px!important;right:14px!important;top:auto!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;width:auto!important;z-index:120!important;max-height:55vh!important;overflow:auto!important;}
+  body.displayPanelOpen::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:110;pointer-events:none;}
+  body.displayPanelOpen .displayFilterPanel{z-index:121!important;}
+}
+
+body.inputList .fastGroupTitle{pointer-events:auto!important;}
+body.inputList .accArrow{display:none!important;}
 </style>
 </head>
 <body>
@@ -1224,7 +1248,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
     <div class="matchCourtPane">
       <div class="matchPaneHead">
         <h2>コート入力</h2>
-        <div class="paneActions"><span class="badge" id="modeBadge">トス / 成功</span><button type="button" class="displayToggle" onclick="toggleDisplayPanel()">👁 表示</button></div>
+        <div class="paneActions"><span class="badge" id="modeBadge">トス / 成功</span><button type="button" class="displayToggle" onclick="toggleDisplayPanel()">表示モード</button></div>
       </div>
       <div class="court" id="matchCourt">
         <div class="line3"></div>
@@ -1235,23 +1259,22 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         <button class="player pos5" data-pos="5"></button>
         <button class="player pos6" data-pos="6"></button>
       </div>
-      <div class="matchNumberTitle">背番号で入力</div>
-      <div class="matchNumberBank" id="matchNumberBank"></div>
-      <div class="inputModeSwitch inputModeSwitchSticky" aria-label="入力モード切替">
-        <button type="button" id="simpleModeBtn" class="active" onclick="setInputView('simple')">☰ シンプル</button>
-        <button type="button" id="listModeBtn" onclick="setInputView('list')">☷ 一覧</button>
-      </div>
-      <div class="modeHelp modeHelpSticky">シンプル＝開いた項目だけ表示 ／ 一覧＝全部表示</div>
+      <div class="currentPlayBox currentPlayBoxTop">現在の入力：<span id="selectedPlayLabel">スパイク成功</span></div>
+      <div class="modeHelp modeHelpSticky">コート上の選手をタップして記録</div>
     </div>
 
     <div class="displayFilterPanel" id="displayFilterPanel">
-        <div class="displayPanelTitle">表示する項目</div>
-        <div id="displayFilterChecks" class="displayFilterChecks"></div>
-        <div class="displayFilterActions">
-          <button type="button" onclick="setAllDisplayFilters(true)">全表示</button>
-          <button type="button" onclick="setAllDisplayFilters(false)">全解除</button>
+        <div class="displayPanelTitle">表示モード</div>
+        <div class="inputModeSwitch inputModeSwitchSticky" aria-label="表示モード切替">
+          <button type="button" id="simpleModeBtn" class="active" onclick="setInputView('simple')">☰ シンプル</button>
+          <button type="button" id="listModeBtn" onclick="setInputView('list')">☷ 一覧</button>
+          <button type="button" id="favoriteModeBtn" onclick="setInputView('favorite')">★ お気に入り</button>
         </div>
-        <div class="displayPanelNote">シンプル時だけ反映。一覧では全部表示。</div>
+        <div class="displayFilterActions">
+          <button type="button" onclick="resetFavoriteGroups()">今の開き方を★登録</button>
+          <button type="button" onclick="closeDisplayPanel()">閉じる</button>
+        </div>
+        <div class="displayPanelNote">シンプル＝複数アコーディオンを自由に開く／一覧＝全部展開／お気に入り＝★登録だけ表示</div>
       </div>
 
     <div class="matchInputPane">
@@ -1272,7 +1295,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
 
       <div class="fastInput">
         <div class="fastGroup open" data-acc-group="attack">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="accArrow">⌃</span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('attack', event)">☆</span><span class="accArrow">⌃</span></span></button>
           <div class="fastButtons four">
             <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
             <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
@@ -1282,7 +1305,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         </div>
 
         <div class="fastGroup" data-acc-group="serve">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="accArrow">⌄</span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('serve', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons three">
             <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
             <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
@@ -1291,7 +1314,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         </div>
 
         <div class="fastGroup" data-acc-group="receive">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('receive')"><span>🛡️ レセプション</span><span class="accArrow">⌄</span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('receive')"><span>🛡️ レセプション</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('receive', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons four">
             <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
             <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
@@ -1301,7 +1324,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         </div>
 
         <div class="fastGroup" data-acc-group="toss">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="accArrow">⌄</span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('toss', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons five">
             <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
             <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
@@ -1312,7 +1335,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         </div>
 
         <div class="fastGroup" data-acc-group="dig">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="accArrow">⌄</span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('dig', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons">
             <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
             <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
@@ -1320,7 +1343,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         </div>
 
         <div class="fastGroup" data-acc-group="block">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="accArrow">⌄</span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('block', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons three">
             <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
             <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
@@ -1329,8 +1352,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
         </div>
       </div>
 
-      <div class="currentPlayBox">選択中：<span id="selectedPlayLabel">スパイク成功</span></div>
-      <div class="helper">プレーを選んで、コート上か背番号をタップ。ローテーションは時計回り</div>
+      <div class="helper">プレーを選んで、コート上の選手をタップ。ローテーションは時計回り</div>
 
       <div class="otherCompact">
         <button class="green" onclick="pointOnly('my')">自チーム得点</button>

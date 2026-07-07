@@ -19,12 +19,13 @@ let s = {
 };
 let setupSelected = 0;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
-let openInputGroup = localStorage.getItem("setterTheoryOpenGroup") || "attack";
 const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
-let displayFilter = (()=>{
-  const def={トス:true, レセプ:true, ディグ:true, スパイク:true, ブロック:true, サーブ:true};
-  try{ return {...def, ...(JSON.parse(localStorage.getItem("setterTheoryDisplayFilter")||"{}"))}; }catch(e){ return def; }
-})();
+const groupOrder = ["attack","serve","receive","toss","dig","block"];
+function readJsonArray(key, fallback){
+  try{ const v=JSON.parse(localStorage.getItem(key)||"null"); return Array.isArray(v)?v:fallback; }catch(e){ return fallback; }
+}
+let openInputGroups = readJsonArray("setterTheoryOpenGroups", ["attack"]);
+let favoriteInputGroups = readJsonArray("setterTheoryFavoriteGroups", ["toss","dig"]);
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
 const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
 const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
@@ -52,59 +53,80 @@ function menuGo(target){
   },80);
 }
 
+function saveOpenInputGroups(){
+  localStorage.setItem("setterTheoryOpenGroups", JSON.stringify(openInputGroups));
+}
+function saveFavoriteInputGroups(){
+  localStorage.setItem("setterTheoryFavoriteGroups", JSON.stringify(favoriteInputGroups));
+}
 function applyInputView(){
-  document.body.classList.toggle("inputSimple", inputView!=="list");
+  document.body.classList.toggle("inputSimple", inputView==="simple" || inputView==="favorite");
   document.body.classList.toggle("inputList", inputView==="list");
-  const simple=document.getElementById("simpleModeBtn");
-  const list=document.getElementById("listModeBtn");
-  if(simple) simple.classList.toggle("active", inputView!=="list");
-  if(list) list.classList.toggle("active", inputView==="list");
+  document.body.classList.toggle("inputFavorite", inputView==="favorite");
+  ["simple","list","favorite"].forEach(v=>{
+    const btn=document.getElementById(v+"ModeBtn");
+    if(btn) btn.classList.toggle("active", inputView===v);
+  });
   document.querySelectorAll(".fastGroup").forEach(g=>{
     const key=g.dataset.accGroup;
-    const type=groupTypeMap[key];
-    const visible = inputView==="list" || displayFilter[type] !== false;
+    let visible=true;
+    let open=false;
+    if(inputView==="list"){
+      open=true;
+    }else if(inputView==="favorite"){
+      visible=favoriteInputGroups.includes(key);
+      open=visible;
+    }else{
+      open=openInputGroups.includes(key);
+    }
     g.classList.toggle("filterHidden", !visible);
-    const open=inputView==="list" || key===openInputGroup;
     g.classList.toggle("open", open);
     const arrow=g.querySelector(".accArrow");
     if(arrow) arrow.textContent=open?"⌃":"⌄";
+    const fav=g.querySelector(".favToggle");
+    if(fav){
+      const on=favoriteInputGroups.includes(key);
+      fav.textContent=on?"★":"☆";
+      fav.classList.toggle("active", on);
+      fav.setAttribute("aria-label", on?"お気に入り解除":"お気に入り登録");
+    }
   });
-  renderDisplayFilterPanel();
-}
-
-function saveDisplayFilter(){
-  localStorage.setItem("setterTheoryDisplayFilter", JSON.stringify(displayFilter));
 }
 function toggleDisplayPanel(){
   document.body.classList.toggle("displayPanelOpen");
 }
-function setDisplayFilter(type, checked){
-  displayFilter[type]=!!checked;
-  saveDisplayFilter();
-  applyInputView();
-}
-function setAllDisplayFilters(on){
-  actionTypes.forEach(t=>displayFilter[t]=!!on);
-  saveDisplayFilter();
-  applyInputView();
-}
-function renderDisplayFilterPanel(){
-  const wrap=document.getElementById("displayFilterChecks");
-  if(!wrap) return;
-  wrap.innerHTML=actionTypes.map(t=>`<label class="displayCheck"><input type="checkbox" ${displayFilter[t]!==false?"checked":""} onchange="setDisplayFilter('${t}', this.checked)"><span>${t}</span></label>`).join("");
-}
 function closeDisplayPanel(){ document.body.classList.remove("displayPanelOpen"); }
-
 function setInputView(view){
-  inputView=view==="list"?"list":"simple";
+  inputView=["simple","list","favorite"].includes(view)?view:"simple";
   localStorage.setItem("setterTheoryInputView", inputView);
+  if(inputView==="list") closeDisplayPanel();
   applyInputView();
 }
 function toggleInputGroup(group){
   if(inputView==="list") return;
-  openInputGroup=group;
-  localStorage.setItem("setterTheoryOpenGroup", openInputGroup);
+  if(inputView==="favorite") setInputView("simple");
+  if(openInputGroups.includes(group)){
+    openInputGroups=openInputGroups.filter(x=>x!==group);
+  }else{
+    openInputGroups.push(group);
+  }
+  saveOpenInputGroups();
   applyInputView();
+}
+function toggleFavoriteGroup(group, ev){
+  if(ev) ev.stopPropagation();
+  if(favoriteInputGroups.includes(group)){
+    favoriteInputGroups=favoriteInputGroups.filter(x=>x!==group);
+  }else{
+    favoriteInputGroups.push(group);
+  }
+  saveFavoriteInputGroups();
+  applyInputView();
+}
+function resetFavoriteGroups(){
+  favoriteInputGroups = openInputGroups.length ? openInputGroups.slice() : ["toss","dig"];
+  saveFavoriteInputGroups();
+  setInputView("favorite");
 }
 
 function goHome(){
@@ -1393,9 +1415,9 @@ document.addEventListener("DOMContentLoaded",()=>{
     s.mode=b.dataset.type;
     s.result=b.dataset.result;
     const group=b.closest(".fastGroup");
-    if(group && group.dataset.accGroup){
-      openInputGroup=group.dataset.accGroup;
-      localStorage.setItem("setterTheoryOpenGroup", openInputGroup);
+    if(group && group.dataset.accGroup && inputView==="simple" && !openInputGroups.includes(group.dataset.accGroup)){
+      openInputGroups.push(group.dataset.accGroup);
+      saveOpenInputGroups();
     }
     save();
     render();
