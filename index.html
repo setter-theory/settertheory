@@ -1793,3 +1793,23 @@ body{
   }
 }
 </style>
+<!-- V36.1 menu overlay fix -->
+<style>
+/* V36.1: メニュー表示中は入力画面の固定要素を隠し、メニュー操作を優先 */
+body.menuOpen .sideOverlay{
+  z-index:900!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+body.menuOpen .sideMenu{
+  z-index:910!important;
+}
+body.menuOpen #match .matchCourtPane,
+body.menuOpen #match .displayFilterPanel{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.menuOpen #match .matchInputPane{
+  pointer-events:none!important;
+}
+</style>
