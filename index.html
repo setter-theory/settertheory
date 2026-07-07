@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#ff8a1d">
 <link rel="manifest" href="manifest.json">
 <title>Setter Theory</title>
@@ -13,6 +13,9 @@
   --purple:#7c3aed;--yellow:#f59e0b;--dark:#111827;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{touch-action:manipulation;overscroll-behavior-y:none}
+body,button{user-select:none;-webkit-user-select:none}
+button{touch-action:manipulation}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
 .screen{display:none;min-height:100vh;padding:18px 14px 104px;max-width:720px;margin:0 auto}
 .screen.active{display:block}
@@ -798,6 +801,42 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 .growthBadges{display:flex;flex-wrap:wrap;gap:8px}.growthBadge{border-radius:999px;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;padding:7px 10px;font-size:12px;font-weight:1000}
 @media(min-width:720px){.growthSummary{grid-template-columns:repeat(4,1fr)}.growthDashboardBody{grid-template-columns:1fr 1fr}.growthAquila{grid-column:1/-1}}
 
+
+/* v31: 現場入力改善（コート固定・四角ボタン・連打ズーム対策） */
+#matchCourt{
+  position:sticky!important;
+  top:64px;
+  z-index:18;
+  margin-top:6px;
+  margin-bottom:12px;
+  box-shadow:0 10px 24px rgba(15,23,42,.22);
+}
+.fastButtons.five{grid-template-columns:repeat(5,1fr)}
+.fastBtn{
+  border-radius:12px;
+  min-height:62px;
+  font-size:15px;
+  letter-spacing:.02em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.fastBtn.two{background:#0f172a}
+.fastGroup{border-radius:16px;padding:12px;background:#fffdf8}
+.fastGroupTitle{font-size:15px}
+.matchNumBtn{border-radius:12px;min-height:56px;font-size:22px}
+.currentPlayBox{border-radius:12px}
+@media(max-width:520px){
+  .topbar{padding:8px 10px}
+  #matchCourt{top:58px;aspect-ratio:3/1.55;padding:5px}
+  #matchCourt .player{min-height:64px;border-radius:14px;margin:4px;font-size:28px}
+  .fastButtons,.fastButtons.three,.fastButtons.four,.fastButtons.five{grid-template-columns:repeat(2,1fr)}
+  .fastBtn{min-height:58px;font-size:14px;border-radius:10px;padding:9px 6px}
+  .fastGroup{padding:10px;border-radius:14px}
+  .matchNumBtn{min-height:54px;border-radius:10px}
+}
+
 </style>
 </head>
 <body>
@@ -840,7 +879,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v30</h3>
+    <h3>📈 試合比較 v31</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -853,7 +892,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="growthCard" id="growthDashboardCard">
   <div class="savedMatchHead">
-    <h3>📈 成長ダッシュボード v30</h3>
+    <h3>📈 成長ダッシュボード v31</h3>
     <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
   </div>
   <div id="growthDashboardBody" class="growthDashboardBody">
@@ -866,9 +905,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v30 β</h3>
+    <h3>試作品 v31 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v30では保存試合をもとに成長ダッシュボードを追加しました。Aquilaが直近の成長傾向を一緒に振り返ります。
+      CSVを読み込むと自動解析できます。v31では現場入力を改善しました。コート固定・ツー追加・連打ズーム対策を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
     </p>
   </div>
 </section>
@@ -998,11 +1037,12 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
       <div class="fastGroup">
         <div class="fastGroupTitle">トス（トス先を選択）</div>
-        <div class="fastButtons four">
+        <div class="fastButtons five">
           <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
           <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
           <button class="fastBtn toss" data-type="トス" data-result="ライト">→ ライト</button>
           <button class="fastBtn toss" data-type="トス" data-result="バック">↩ バック</button>
+          <button class="fastBtn two" data-type="トス" data-result="ツー">⚡ ツー</button>
         </div>
       </div>
 

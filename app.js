@@ -1,3 +1,14 @@
+
+// v31: スマホ連打時のダブルタップ拡大を防止
+(function preventDoubleTapZoom(){
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e){
+    const now = Date.now();
+    if(now - lastTouchEnd <= 300){ e.preventDefault(); }
+    lastTouchEnd = now;
+  }, {passive:false});
+  document.addEventListener('dblclick', function(e){ e.preventDefault(); }, {passive:false});
+})();
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
@@ -244,7 +255,7 @@ function renderMatchNumberBank(){
 }
 
 function isSuccessResult(x){
-  return ["成功","エース","シャット","Aパス","Bパス","Cパス","レフト","センター","ライト","バック","ワンタッチ"].includes(x.result);
+  return ["成功","エース","シャット","Aパス","Bパス","Cパス","レフト","センター","ライト","バック","ツー","ワンタッチ"].includes(x.result);
 }
 function isMissResult(x){
   return (
@@ -473,7 +484,7 @@ function rankConfig(type){
     "スパイク":{title:"スパイク決定率ランキング", success:"決定数", total:"打数", rate:"決定率", note:"決定率 ＝ スパイク成功 ÷ スパイク打数", ok:x=>x.type==="スパイク"&&x.result==="成功", all:x=>x.type==="スパイク"},
     "サーブ":{title:"サーブ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ サーブ成功＋サービスエース ÷ サーブ総数", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース"), all:x=>x.type==="サーブ"},
     "レセプ":{title:"レセプション成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ Aパス＋Bパス＋Cパス ÷ レセプ総数", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス"), all:x=>x.type==="レセプ"},
-    "トス":{title:"トス成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ レフト/センター/ライト/バックへ上げたトス ÷ トス総数", ok:x=>x.type==="トス", all:x=>x.type==="トス"},
+    "トス":{title:"トス成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ レフト/センター/ライト/バック/ツーの記録 ÷ トス総数", ok:x=>x.type==="トス", all:x=>x.type==="トス"},
     "ディグ":{title:"ディグ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ ディグ成功 ÷ ディグ総数", ok:x=>x.type==="ディグ"&&x.result==="成功", all:x=>x.type==="ディグ"},
     "ブロック":{title:"ブロック成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ シャット＋ワンタッチ ÷ ブロック総数", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ"), all:x=>x.type==="ブロック"}
   };
@@ -563,8 +574,8 @@ function report(){
   }).join("");
 
   const tossLogs=s.logs.filter(x=>x.type==="トス");
-  const tossLabels=["レフト","センター","ライト","バック"];
-  const tossColors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b"};
+  const tossLabels=["レフト","センター","ライト","バック","ツー"];
+  const tossColors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#0f172a"};
   const tossItems=tossLabels.map(t=>({label:t,count:tossLogs.filter(x=>x.result===t).length,color:tossColors[t]})).filter(x=>x.count>0);
   const tossDonut=`<div class="tossPanel"><div class="donut" style="background:${donutStyle(tossItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${tossLogs.length}</div></div></div>${legendHtml(tossItems,tossLogs.length)}</div>`;
 
@@ -628,6 +639,7 @@ function classifyTossTarget(value){
   if(/センター|ミドル|middle|mb|quick|クイック/.test(n)) return 'センター';
   if(/ライト|right|opposite|rs/.test(n)) return 'ライト';
   if(/バック|back|pipe|bick|パイプ/.test(n)) return 'バック';
+  if(/ツー|two|dump|setterattack|setter attack|second|2nd/.test(n)) return 'ツー';
   if(/^1$|^１$|pos1|p1/.test(n)) return 'ライト';
   if(/^2$|^２$|^4$|^４$|pos2|p2|pos4|p4/.test(n)) return 'レフト';
   if(/^3$|^３$|pos3|p3/.test(n)) return 'センター';
@@ -658,7 +670,7 @@ function passGrade(v){
   return '';
 }
 function analysisItemsFromCounts(counts,total){
-  const order=['レフト','センター','ライト','バック','未分類'];
+  const order=['レフト','センター','ライト','バック','ツー','未分類'];
   return Object.entries(counts)
     .sort((a,b)=>{
       const ia=order.indexOf(a[0])>=0?order.indexOf(a[0]):99;
@@ -668,7 +680,7 @@ function analysisItemsFromCounts(counts,total){
     .map(([label,count])=>({label,count,pct:pctText(count,total)}));
 }
 function calcScores(counts,total,terminalCounts){
-  const valid=['レフト','センター','ライト','バック'].filter(k=>(counts[k]||0)>0);
+  const valid=['レフト','センター','ライト','バック','ツー'].filter(k=>(counts[k]||0)>0);
   const max=Math.max(0,...Object.values(counts));
   const sideDepend=pctText(max,total);
   const centerPct=pctText(counts['センター']||0,total);
@@ -743,6 +755,7 @@ function colorForLabel(label){
   if(label==='センター') return '#f59e0b';
   if(label==='ライト') return '#22c55e';
   if(label==='バック') return '#2563eb';
+  if(label==='ツー') return '#0f172a';
   return '#64748b';
 }
 function miniStack(counts){
