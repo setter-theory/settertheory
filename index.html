@@ -1848,3 +1848,43 @@ body.menuOpen .sideOverlay{
   }
 }
 </style>
+
+<style>
+/* V36.3: 横画面レポートの固定ヘッダー解除 */
+@media (orientation: landscape) and (max-height: 560px){
+  #report.active,
+  .reportScreen.active{
+    height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding-top:8px!important;
+  }
+  #report .reportHeader{
+    position:relative!important;
+    top:auto!important;
+    z-index:1!important;
+    background:transparent!important;
+    border-bottom:0!important;
+    padding:6px 0 10px!important;
+    margin:0 0 10px!important;
+  }
+  #report .reportTitle h1{
+    font-size:22px!important;
+    line-height:1.1!important;
+    margin:0!important;
+  }
+  #report .reportTitle p{
+    font-size:14px!important;
+    margin-top:4px!important;
+  }
+  #report .backLink,
+  #report .csvBtn{
+    min-height:36px!important;
+    padding:8px 10px!important;
+    font-size:13px!important;
+    border-radius:12px!important;
+  }
+  #report .backLink::before{content:""!important;}
+}
+</style>
