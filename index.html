@@ -1903,3 +1903,135 @@ body.menuOpen .sideOverlay{
 .v37MiniCards{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.v37MiniCard{border-radius:14px;padding:10px;text-align:center;background:rgba(15,23,42,.06);border:1px solid rgba(15,23,42,.08);font-weight:900}.v37MiniCard b{display:block;font-size:22px;color:#2563eb}.v37MiniCard small{color:var(--muted)}
 @media(max-width:700px){.v37MiniCards{grid-template-columns:repeat(2,1fr)}.v37RotHead,.v37RotRow{grid-template-columns:56px 1fr 1fr 1fr 1.3fr;font-size:12px}.v37BarLine{grid-template-columns:60px 1fr 48px}}
 </style>
+
+<style>
+/* V37.1: Analytics mobile responsive + Aquila readable report */
+#report.reportScreen,
+#report.active{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:1180px!important;
+  margin:0 auto!important;
+  overflow-x:hidden!important;
+  color:#e5edf7!important;
+  background:#07111f!important;
+}
+#report.active{
+  height:100dvh!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:12px 12px calc(96px + env(safe-area-inset-bottom))!important;
+}
+#report .reportHeader{
+  position:relative!important;
+  top:auto!important;
+  z-index:1!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  margin:0 0 12px!important;
+  padding:14px!important;
+  background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.86))!important;
+  border:1px solid rgba(245,181,68,.24)!important;
+  border-radius:18px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.25)!important;
+}
+#report .reportTitle h1{color:#f8fafc!important;text-shadow:none!important;opacity:1!important;filter:none!important;}
+#report .reportTitle p{color:#cbd5e1!important;text-shadow:none!important;opacity:1!important;filter:none!important;}
+#report .backLink,
+#report .csvBtn{
+  width:100%!important;
+  justify-content:center!important;
+  text-align:center!important;
+  opacity:1!important;
+  color:#f8fafc!important;
+  background:rgba(15,23,42,.86)!important;
+  border:1px solid rgba(245,181,68,.28)!important;
+  box-shadow:none!important;
+}
+#report .csvBtn{background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;border-color:rgba(147,197,253,.55)!important;color:#fff!important;}
+#report .backLink::before{content:""!important;}
+#reportDashboard,
+#reportDashboard *{box-sizing:border-box!important;max-width:100%;}
+#reportDashboard{width:100%!important;overflow-x:hidden!important;}
+#report .reportGrid,
+#report .summaryCards,
+#report .panelGrid,
+#report .wideGrid,
+#report .bottomGrid{width:100%!important;min-width:0!important;}
+#report .summaryCards{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+#report .panelGrid,
+#report .wideGrid,
+#report .bottomGrid{grid-template-columns:1fr!important;}
+#report .statCard,
+#report .reportPanel{
+  min-width:0!important;
+  overflow:hidden!important;
+  background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.86))!important;
+  border:1px solid rgba(148,163,184,.22)!important;
+  color:#f8fafc!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.24)!important;
+}
+#report .reportPanel h3,
+#report .statTop,
+#report .bigBarName,
+#report .bigBarPct,
+#report .bigBarNum,
+#report .rotationLabel,
+#report .rotationPct,
+#report .legendRow,
+#report .timelineText,
+#report .v37BarLabel,
+#report .v37BarNum,
+#report .v37RotRow,
+#report .v37MiniCard{color:#f8fafc!important;opacity:1!important;text-shadow:none!important;}
+#report .reportPanel small,
+#report .statSub,
+#report .donutCenter .label,
+#report .v37BarNum small,
+#report .v37MiniCard small,
+#report .rankControls label,
+#report .rankNote,
+#report .v37RotHead{color:#cbd5e1!important;opacity:1!important;}
+#report .statValue,
+#report .donutCenter .num,
+#report .v37MiniCard b{opacity:1!important;text-shadow:none!important;filter:none!important;}
+#report .donutWrap,
+#report .tossPanel{grid-template-columns:1fr!important;justify-items:center!important;gap:12px!important;}
+#report .donut{width:min(58vw,150px)!important;height:min(58vw,150px)!important;margin:0 auto!important;flex:0 0 auto!important;}
+#report .donut:after{width:min(32vw,78px)!important;height:min(32vw,78px)!important;background:#0f172a!important;}
+#report .legend{width:100%!important;}
+#report .bigBars{width:100%!important;overflow:hidden!important;}
+#report .bigBarRow{grid-template-columns:34px minmax(72px,.9fr) 46px 46px minmax(92px,1.2fr) 52px!important;gap:6px!important;min-width:0!important;}
+#report .bigBarTrack,
+#report .rotationTrack,
+#report .v37BarTrack{min-width:0!important;background:rgba(226,232,240,.20)!important;}
+#report .rotationRow{grid-template-columns:42px 86px minmax(0,1fr)!important;}
+#report .v37RotTable{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:4px!important;}
+#report .v37RotHead,
+#report .v37RotRow{min-width:520px!important;color:#f8fafc!important;}
+#report .v37BarLine{grid-template-columns:68px minmax(0,1fr) 54px!important;}
+#report .timeline{max-width:100%!important;overflow-x:auto!important;}
+#report .v37InsightPanel{background:linear-gradient(135deg,rgba(245,181,68,.16),rgba(37,99,235,.14))!important;border-color:rgba(245,181,68,.36)!important;}
+#report .v37InsightTitle{color:#fbbf24!important;}
+#report .v37Insight ul{color:#f8fafc!important;}
+#report .rankControls select{background:#0f172a!important;color:#f8fafc!important;border-color:rgba(148,163,184,.28)!important;}
+@media(max-width:520px){
+  #report.active{padding:10px 10px calc(110px + env(safe-area-inset-bottom))!important;}
+  #report .reportHeader{padding:12px!important;border-radius:16px!important;}
+  #report .reportTitle h1{font-size:24px!important;line-height:1.15!important;}
+  #report .reportTitle p{font-size:14px!important;}
+  #report .summaryCards{grid-template-columns:1fr!important;gap:10px!important;}
+  #report .statCard{min-height:auto!important;padding:14px!important;}
+  #report .statValue{font-size:38px!important;}
+  #report .reportPanel{padding:14px!important;border-radius:16px!important;}
+  #report .reportPanel h3{font-size:17px!important;line-height:1.25!important;}
+  #report .bigBarRow{grid-template-columns:28px minmax(62px,.9fr) 40px 40px minmax(84px,1fr) 46px!important;font-size:12px!important;gap:5px!important;}
+  #report .bigBarName{font-size:12px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #report .bigBarNum{font-size:11px!important;}
+  #report .bigBarBadge{font-size:11px!important;padding:5px 4px!important;}
+  #report .rotationRow{grid-template-columns:38px 74px minmax(0,1fr)!important;font-size:12px!important;gap:6px!important;}
+  #report .v37BarLine{grid-template-columns:56px minmax(0,1fr) 44px!important;font-size:12px!important;}
+  #report .v37MiniCards{grid-template-columns:1fr 1fr!important;}
+}
+</style>
