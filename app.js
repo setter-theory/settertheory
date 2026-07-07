@@ -91,6 +91,23 @@ function applyInputView(){
       fav.setAttribute("aria-label", on?"お気に入り解除":"お気に入り登録");
     }
   });
+  renderDisplayModePanel();
+}
+function renderDisplayModePanel(){
+  const box=document.getElementById("simpleGroupSelector");
+  if(!box) return;
+  box.style.display = inputView === "simple" ? "grid" : "none";
+  box.innerHTML = groupOrder.map(key=>{
+    const label=groupTypeMap[key] || key;
+    const open=openInputGroups.includes(key);
+    const fav=favoriteInputGroups.includes(key);
+    return `<div class="simpleGroupRow ${open?'on':''}" data-group="${key}">
+      <button type="button" class="simpleGroupMain" onclick="toggleInputGroup('${key}')">
+        <span>${open?'☑':'□'} ${label}</span><small>${open?'開いています':'閉じています'}</small>
+      </button>
+      <button type="button" class="simpleGroupFav ${fav?'active':''}" onclick="toggleFavoriteGroup('${key}', event)" aria-label="${fav?'お気に入り解除':'お気に入り登録'}">${fav?'★':'☆'}</button>
+    </div>`;
+  }).join("");
 }
 function toggleDisplayPanel(){
   document.body.classList.toggle("displayPanelOpen");
@@ -114,7 +131,7 @@ function toggleInputGroup(group){
   applyInputView();
 }
 function toggleFavoriteGroup(group, ev){
-  if(ev) ev.stopPropagation();
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(favoriteInputGroups.includes(group)){
     favoriteInputGroups=favoriteInputGroups.filter(x=>x!==group);
   }else{

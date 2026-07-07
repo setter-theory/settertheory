@@ -1105,6 +1105,48 @@ body.inputFavorite .fastGroup:not(.open) .fastButtons{display:none!important;}
 
 body.inputList .fastGroupTitle{pointer-events:auto!important;}
 body.inputList .accArrow{display:none!important;}
+
+
+/* V35.2: 表示モード修正・視認性改善 */
+#match .topbar .pill{
+  background:rgba(15,23,42,.92)!important;
+  color:#f8fafc!important;
+  border:1px solid rgba(245,181,68,.48)!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.22)!important;
+}
+#match .topbar .score{
+  color:#fbbf24!important;
+  font-size:28px!important;
+  font-weight:1000!important;
+  letter-spacing:.04em!important;
+  padding:8px 16px!important;
+}
+#match #serveLabel,#match .topbar .pill:not(.score){
+  font-weight:1000!important;
+  color:#f8fafc!important;
+}
+#match .tabs,#match .results,#match .matchNumberTitle,#match .matchNumberBank{display:none!important;}
+#match .modeHelpSticky{font-weight:900!important;}
+.simpleGroupSelector{display:grid;gap:8px;margin-top:10px;}
+.simpleGroupRow{display:grid;grid-template-columns:1fr 44px;gap:8px;align-items:stretch;}
+.simpleGroupMain,.simpleGroupFav{
+  min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);color:#f8fafc;font-weight:1000;
+}
+.simpleGroupMain{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;text-align:left;}
+.simpleGroupMain small{font-size:10px;color:#cbd5e1;font-weight:900;}
+.simpleGroupRow.on .simpleGroupMain{background:rgba(139,92,246,.24);border-color:rgba(167,139,250,.60);}
+.simpleGroupFav{font-size:20px;color:#94a3b8;}
+.simpleGroupFav.active{color:#fbbf24;background:rgba(245,181,68,.16);border-color:rgba(245,181,68,.45);}
+#match .fastGroupTitle .favToggle{display:inline-grid;place-items:center;pointer-events:auto;}
+@media (orientation: portrait){
+  #match .matchCourtPane{position:relative!important;top:0!important;align-self:stretch!important;}
+  #match .matchStage{overflow-y:auto!important;}
+  #match .screen,#match.active{overflow:auto!important;}
+  #match .displayFilterPanel{max-height:64vh!important;}
+  #match .topbar .score{font-size:26px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1270,6 +1312,7 @@ body.inputList .accArrow{display:none!important;}
           <button type="button" id="listModeBtn" onclick="setInputView('list')">☷ 一覧</button>
           <button type="button" id="favoriteModeBtn" onclick="setInputView('favorite')">★ お気に入り</button>
         </div>
+        <div class="simpleGroupSelector" id="simpleGroupSelector" aria-label="シンプル項目選択"></div>
         <div class="displayFilterActions">
           <button type="button" onclick="resetFavoriteGroups()">今の開き方を★登録</button>
           <button type="button" onclick="closeDisplayPanel()">閉じる</button>
