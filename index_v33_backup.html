@@ -967,101 +967,6 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
   .topbar{margin:-18px -14px 12px}.menuBtn{display:inline-grid;place-items:center}.matchStage{padding:14px}.matchInputPane{display:block}.matchCourtPane{display:block}.otherCompact{grid-template-columns:repeat(2,1fr)}
 }
 
-
-
-/* v34 beta0.3.4: Aquila入力UI・アコーディオン・モード切替 */
-.inputModeSwitch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 8px}
-.inputModeSwitch button{min-height:46px;border-radius:14px;font-size:14px;background:rgba(255,255,255,.08);color:#e5e7eb;border:1px solid rgba(255,255,255,.14);box-shadow:none}
-.inputModeSwitch button.active{background:linear-gradient(135deg,#f5b544,#ff8a1d);color:#101827;border-color:rgba(245,181,68,.7)}
-.modeHelp{color:#94a3b8;font-size:12px;font-weight:900;margin:0 0 10px;line-height:1.5}
-.fastGroupTitle{width:100%;min-height:42px;padding:8px 10px;border-radius:12px;background:transparent!important;color:#f8fafc!important;border:0!important;box-shadow:none!important;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:15px;font-weight:1000}
-.fastGroupTitle:active{transform:none}.accArrow{color:#fbbf24;font-size:20px;line-height:1}
-body.inputSimple .fastGroup:not(.open) .fastButtons{display:none!important}
-body.inputSimple .fastGroup:not(.open){padding:6px 8px}
-body.inputSimple .fastGroup.open{border-color:rgba(245,181,68,.28)}
-body.inputList .fastGroup .fastButtons{display:grid!important}
-body.inputList .fastGroup{padding:8px}
-body.inputList .accArrow{display:none}
-body.inputList .fastGroupTitle{pointer-events:none}
-#match.active{background:radial-gradient(circle at top,#152033 0,#07111f 56%,#030712 100%);color:#e5e7eb}
-#match.active .topbar{background:linear-gradient(180deg,rgba(7,17,31,.96),rgba(7,17,31,.86));border-bottom:1px solid rgba(245,181,68,.18)}
-#match.active .card{background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(30,41,59,.82));border-color:rgba(245,181,68,.18);box-shadow:0 18px 42px rgba(0,0,0,.24)}
-#match.active h2,#match.active h3{color:#f8fafc}#match.active .helper{color:#cbd5e1}
-#match.active .currentPlayBox{background:rgba(245,181,68,.14);border:1px solid rgba(245,181,68,.28);color:#fde68a}
-#match.active .matchNumberTitle{color:#fbbf24}
-#match.active .matchNumBtn{background:rgba(255,255,255,.06);color:#f8fafc;border-color:rgba(255,255,255,.14)}
-@media(max-width:767px){
-  #match.active{background:radial-gradient(circle at top,#172033 0,#07111f 55%,#030712 100%)}
-  #match.active .screen,#match.active{color:#e5e7eb}
-  #match .matchStage{background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(30,41,59,.82));border-color:rgba(245,181,68,.20)}
-  .inputModeSwitch button{min-height:42px;font-size:12px}.modeHelp{font-size:11px}
-  body.inputSimple .fastGroup:not(.open){margin-bottom:7px}
-}
-
-
-
-/* v34.1 hotfix: 縦画面でもコート固定・表示切替を常に触れるようにする */
-@media (orientation: portrait){
-  body{background:#07111f!important;}
-  #match.active{background:#07111f!important;}
-  #match .topbar{
-    position:sticky!important;
-    top:0!important;
-    z-index:80!important;
-    background:linear-gradient(180deg,#07111f 0%,rgba(7,17,31,.96) 100%)!important;
-    border-bottom:1px solid rgba(245,181,68,.22)!important;
-  }
-  #match .matchStage{
-    background:#07111f!important;
-    border:1px solid rgba(245,181,68,.18)!important;
-    box-shadow:none!important;
-    overflow:visible!important;
-  }
-  #match .matchCourtPane{
-    position:sticky!important;
-    top:76px!important;
-    z-index:60!important;
-    background:linear-gradient(180deg,#07111f 0%,rgba(7,17,31,.98) 100%)!important;
-    border:1px solid rgba(245,181,68,.22)!important;
-    border-radius:18px!important;
-    padding:10px!important;
-    margin:0 0 12px!important;
-    box-shadow:0 18px 30px rgba(0,0,0,.20)!important;
-  }
-  #match .matchPaneHead h2{color:#f8fafc!important;}
-  #match .matchNumberTitle{color:#fbbf24!important;margin-top:8px!important;}
-  #match .matchNumberBank{grid-template-columns:repeat(6,1fr)!important;gap:6px!important;margin-top:6px!important;}
-  #match .matchNumBtn{min-height:36px!important;font-size:15px!important;border-radius:10px!important;}
-  #match .inputModeSwitchSticky{
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
-    margin:10px 0 0!important;
-    padding:0!important;
-    background:transparent!important;
-  }
-  #match .inputModeSwitchSticky button{
-    min-height:36px!important;
-    border-radius:12px!important;
-    font-size:13px!important;
-    font-weight:1000!important;
-    border:1px solid rgba(245,181,68,.35)!important;
-    background:rgba(255,255,255,.08)!important;
-    color:#e5e7eb!important;
-  }
-  #match .inputModeSwitchSticky button.active{
-    background:linear-gradient(135deg,#f5b544,#ff8a1d)!important;
-    color:#111827!important;
-  }
-  #match .modeHelpSticky{color:#cbd5e1!important;font-size:11px!important;margin:6px 0 0!important;}
-  #match .matchInputPane{overflow:visible!important;}
-  body.inputSimple .fastGroup:not(.open) .fastButtons{display:none!important;}
-  body.inputSimple .fastGroup:not(.open){background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.10)!important;}
-  body.inputSimple .fastGroup.open .fastButtons{display:grid!important;}
-  body.inputList .fastGroup .fastButtons{display:grid!important;}
-  body.inputList .fastGroupTitle{pointer-events:auto!important;}
-}
-
 </style>
 </head>
 <body>
@@ -1104,7 +1009,7 @@ body.inputList .fastGroupTitle{pointer-events:none}
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 β0.3.4.1</h3>
+    <h3>📈 試合比較 v33</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -1117,7 +1022,7 @@ body.inputList .fastGroupTitle{pointer-events:none}
 
 <div class="growthCard" id="growthDashboardCard">
   <div class="savedMatchHead">
-    <h3>📈 成長ダッシュボード β0.3.4.1</h3>
+    <h3>📈 成長ダッシュボード v33</h3>
     <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
   </div>
   <div id="growthDashboardBody" class="growthDashboardBody">
@@ -1130,9 +1035,9 @@ body.inputList .fastGroupTitle{pointer-events:none}
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 β0.3.4.1</h3>
+    <h3>試作品 v33 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。β0.3.4.1ではAquila入力UI、シンプル／一覧モード、アコーディオン入力を追加しています。
+      CSVを読み込むと自動解析できます。v33では横画面2カラム・ハンバーガーメニュー・Aquila UIの第一段階を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
     </p>
   </div>
 </section>
@@ -1218,11 +1123,6 @@ body.inputList .fastGroupTitle{pointer-events:none}
       </div>
       <div class="matchNumberTitle">背番号で入力</div>
       <div class="matchNumberBank" id="matchNumberBank"></div>
-      <div class="inputModeSwitch inputModeSwitchSticky" aria-label="入力モード切替">
-        <button type="button" id="simpleModeBtn" class="active" onclick="setInputView('simple')">☰ シンプル</button>
-        <button type="button" id="listModeBtn" onclick="setInputView('list')">☷ 一覧</button>
-      </div>
-      <div class="modeHelp modeHelpSticky">シンプル＝開いた項目だけ表示 ／ 一覧＝全部表示</div>
     </div>
 
     <div class="matchInputPane">
@@ -1242,8 +1142,8 @@ body.inputList .fastGroupTitle{pointer-events:none}
       </div>
 
       <div class="fastInput">
-        <div class="fastGroup open" data-acc-group="attack">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="accArrow">⌃</span></button>
+        <div class="fastGroup">
+          <div class="fastGroupTitle">攻撃</div>
           <div class="fastButtons four">
             <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
             <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
@@ -1252,8 +1152,8 @@ body.inputList .fastGroupTitle{pointer-events:none}
           </div>
         </div>
 
-        <div class="fastGroup" data-acc-group="serve">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="accArrow">⌄</span></button>
+        <div class="fastGroup">
+          <div class="fastGroupTitle">サーブ</div>
           <div class="fastButtons three">
             <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
             <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
@@ -1261,8 +1161,8 @@ body.inputList .fastGroupTitle{pointer-events:none}
           </div>
         </div>
 
-        <div class="fastGroup" data-acc-group="receive">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('receive')"><span>🛡️ レセプション</span><span class="accArrow">⌄</span></button>
+        <div class="fastGroup">
+          <div class="fastGroupTitle">レセプション</div>
           <div class="fastButtons four">
             <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
             <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
@@ -1271,8 +1171,8 @@ body.inputList .fastGroupTitle{pointer-events:none}
           </div>
         </div>
 
-        <div class="fastGroup" data-acc-group="toss">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="accArrow">⌄</span></button>
+        <div class="fastGroup">
+          <div class="fastGroupTitle">トス（トス先を選択）</div>
           <div class="fastButtons five">
             <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
             <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
@@ -1282,16 +1182,16 @@ body.inputList .fastGroupTitle{pointer-events:none}
           </div>
         </div>
 
-        <div class="fastGroup" data-acc-group="dig">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="accArrow">⌄</span></button>
+        <div class="fastGroup">
+          <div class="fastGroupTitle">ディグ</div>
           <div class="fastButtons">
             <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
             <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
           </div>
         </div>
 
-        <div class="fastGroup" data-acc-group="block">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="accArrow">⌄</span></button>
+        <div class="fastGroup">
+          <div class="fastGroupTitle">ブロック</div>
           <div class="fastButtons three">
             <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
             <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
