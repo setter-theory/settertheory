@@ -802,7 +802,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 @media(min-width:720px){.growthSummary{grid-template-columns:repeat(4,1fr)}.growthDashboardBody{grid-template-columns:1fr 1fr}.growthAquila{grid-column:1/-1}}
 
 
-/* v31: 現場入力改善（コート固定・四角ボタン・連打ズーム対策） */
+/* v32: 現場入力改善＋横画面最適化（コート固定・四角ボタン・連打ズーム対策） */
 #matchCourt{
   position:sticky!important;
   top:64px;
@@ -835,6 +835,104 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   .fastBtn{min-height:58px;font-size:14px;border-radius:10px;padding:9px 6px}
   .fastGroup{padding:10px;border-radius:14px}
   .matchNumBtn{min-height:54px;border-radius:10px}
+}
+
+
+/* v32: 横向きスマホ最適化（コート縮小・潜り込み防止） */
+@media (orientation: landscape) and (max-height: 540px){
+  body{
+    overscroll-behavior:none;
+  }
+  .topbar{
+    top:0;
+    z-index:40;
+    margin:-12px -10px 8px;
+    padding:5px 8px;
+    background:rgba(255,247,237,.98);
+  }
+  .topbar .pill{
+    padding:6px 10px;
+    font-size:13px;
+  }
+  #match .card{
+    padding:10px;
+    border-radius:18px;
+  }
+  #match .card > div:first-child{
+    margin-bottom:4px!important;
+  }
+  #match .card h2{
+    font-size:17px;
+  }
+  #matchCourt{
+    top:44px;
+    z-index:45;
+    width:min(72vw, 420px);
+    max-width:420px;
+    aspect-ratio:2.15/1;
+    margin:4px auto 18px;
+    border-width:3px;
+    border-radius:16px;
+    box-shadow:0 8px 18px rgba(15,23,42,.24), 0 0 0 10px rgba(255,247,237,.98);
+  }
+  #matchCourt .player{
+    min-height:44px;
+    border-radius:10px;
+    margin:3px;
+    font-size:22px;
+  }
+  .tabs{
+    gap:6px;
+    margin-top:4px;
+  }
+  .tabs button{
+    min-height:38px;
+    font-size:12px;
+    padding:7px 8px;
+  }
+  .results{
+    grid-template-columns:repeat(4,1fr);
+    gap:6px;
+  }
+  .results button{
+    min-height:42px;
+    border-radius:10px;
+    font-size:13px;
+  }
+  .fastGroup{
+    padding:9px;
+    margin-top:8px;
+  }
+  .fastBtn{
+    min-height:48px;
+    font-size:13px;
+  }
+  .fastButtons,.fastButtons.three,.fastButtons.four,.fastButtons.five{
+    grid-template-columns:repeat(4,1fr);
+  }
+  .fastButtons.five{
+    grid-template-columns:repeat(5,1fr);
+  }
+  .bottomNav{
+    padding:7px 8px;
+  }
+  .bottomNav button{
+    min-height:42px;
+    border-radius:10px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 430px){
+  #matchCourt{
+    width:min(58vw, 330px);
+    top:38px;
+    margin-bottom:14px;
+  }
+  #matchCourt .player{
+    min-height:36px;
+    font-size:18px;
+  }
+  .fastBtn{min-height:44px;font-size:12px}
 }
 
 </style>
@@ -879,7 +977,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="compareCard" id="matchCompareCard">
   <div class="savedMatchHead">
-    <h3>📈 試合比較 v31</h3>
+    <h3>📈 試合比較 v32</h3>
     <span class="savedMatchCount" id="compareMatchCount">保存試合から比較</span>
   </div>
   <div class="compareControls">
@@ -892,7 +990,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 
 <div class="growthCard" id="growthDashboardCard">
   <div class="savedMatchHead">
-    <h3>📈 成長ダッシュボード v31</h3>
+    <h3>📈 成長ダッシュボード v32</h3>
     <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
   </div>
   <div id="growthDashboardBody" class="growthDashboardBody">
@@ -905,9 +1003,9 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   </div>
   <button class="big" onclick="show('setup')">🏐 試合を始める</button>
   <div class="card" style="margin-top:16px">
-    <h3>試作品 v31 β</h3>
+    <h3>試作品 v32 β</h3>
     <p style="color:var(--muted);font-weight:800;line-height:1.6">
-      CSVを読み込むと自動解析できます。v31では現場入力を改善しました。コート固定・ツー追加・連打ズーム対策を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
+      CSVを読み込むと自動解析できます。v32では現場入力を改善しました。コート固定・ツー追加・連打ズーム対策を反映しています。Aquilaが直近の成長傾向を一緒に振り返ります。
     </p>
   </div>
 </section>
