@@ -20,6 +20,11 @@ let s = {
 let setupSelected = 0;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
 let openInputGroup = localStorage.getItem("setterTheoryOpenGroup") || "attack";
+const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
+let displayFilter = (()=>{
+  const def={トス:true, レセプ:true, ディグ:true, スパイク:true, ブロック:true, サーブ:true};
+  try{ return {...def, ...(JSON.parse(localStorage.getItem("setterTheoryDisplayFilter")||"{}"))}; }catch(e){ return def; }
+})();
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
 const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
 const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
@@ -56,12 +61,40 @@ function applyInputView(){
   if(list) list.classList.toggle("active", inputView==="list");
   document.querySelectorAll(".fastGroup").forEach(g=>{
     const key=g.dataset.accGroup;
+    const type=groupTypeMap[key];
+    const visible = inputView==="list" || displayFilter[type] !== false;
+    g.classList.toggle("filterHidden", !visible);
     const open=inputView==="list" || key===openInputGroup;
     g.classList.toggle("open", open);
     const arrow=g.querySelector(".accArrow");
     if(arrow) arrow.textContent=open?"⌃":"⌄";
   });
+  renderDisplayFilterPanel();
 }
+
+function saveDisplayFilter(){
+  localStorage.setItem("setterTheoryDisplayFilter", JSON.stringify(displayFilter));
+}
+function toggleDisplayPanel(){
+  document.body.classList.toggle("displayPanelOpen");
+}
+function setDisplayFilter(type, checked){
+  displayFilter[type]=!!checked;
+  saveDisplayFilter();
+  applyInputView();
+}
+function setAllDisplayFilters(on){
+  actionTypes.forEach(t=>displayFilter[t]=!!on);
+  saveDisplayFilter();
+  applyInputView();
+}
+function renderDisplayFilterPanel(){
+  const wrap=document.getElementById("displayFilterChecks");
+  if(!wrap) return;
+  wrap.innerHTML=actionTypes.map(t=>`<label class="displayCheck"><input type="checkbox" ${displayFilter[t]!==false?"checked":""} onchange="setDisplayFilter('${t}', this.checked)"><span>${t}</span></label>`).join("");
+}
+function closeDisplayPanel(){ document.body.classList.remove("displayPanelOpen"); }
+
 function setInputView(view){
   inputView=view==="list"?"list":"simple";
   localStorage.setItem("setterTheoryInputView", inputView);
