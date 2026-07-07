@@ -1261,6 +1261,87 @@ body.inputList .accArrow{display:none!important;}
   #setup .big{min-height:48px!important;margin-top:8px!important;}
 }
 
+
+/* V35.4: 横画面レポートスクロール・戻るボタン・クイック集計横書き修正 */
+#report.reportScreen{
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#report .reportHeader{
+  position:sticky!important;
+  top:0!important;
+  z-index:40!important;
+  background:rgba(255,255,255,.96)!important;
+  backdrop-filter:blur(10px)!important;
+  padding:8px 0 10px!important;
+  border-bottom:1px solid rgba(15,23,42,.08)!important;
+}
+#report .backLink{
+  background:#0f172a!important;
+  color:#f8fafc!important;
+  border:1px solid rgba(245,181,68,.38)!important;
+  text-align:center!important;
+}
+#report .csvBtn{
+  background:#eff6ff!important;
+  color:#2563eb!important;
+  border:1px solid #bfdbfe!important;
+}
+.quickCard .bigBarChart{display:grid!important;gap:8px!important;}
+.quickCard .bigBarRow{
+  display:grid!important;
+  grid-template-columns:minmax(64px,86px) 1fr minmax(42px,52px)!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.quickCard .bigBarLabel,
+.quickCard .bigBarName,
+.quickCard .bigBarPct,
+.quickCard .percentTable th,
+.quickCard .percentTable td{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+}
+.quickCard .bigBarLabel{font-weight:1000!important;font-size:13px!important;color:#f8fafc!important;}
+.quickCard .bigBarPct{font-weight:1000!important;text-align:right!important;color:#fbbf24!important;}
+.quickCard .percentTable{min-width:420px!important;table-layout:auto!important;}
+.quickCard .quickScroll{overflow-x:auto!important;}
+
+@media (orientation:landscape) and (max-height:620px){
+  #report.reportScreen.active{
+    display:block!important;
+    height:100vh!important;
+    min-height:100vh!important;
+    width:100%!important;
+    max-width:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:8px 10px 80px!important;
+    background:#f8fafc!important;
+    color:#0f172a!important;
+  }
+  #report.reportScreen.active .reportHeader{
+    grid-template-columns:170px 1fr 170px!important;
+    margin:0 0 12px!important;
+  }
+  #report.reportScreen.active .reportTitle h1{font-size:24px!important;}
+  #report.reportScreen.active .summaryCards{grid-template-columns:repeat(5,minmax(120px,1fr))!important;}
+  #report.reportScreen.active .panelGrid{grid-template-columns:repeat(3,minmax(220px,1fr))!important;}
+  #report.reportScreen.active .wideGrid{grid-template-columns:1.2fr 1fr!important;}
+  #report.reportScreen.active .bottomGrid{grid-template-columns:1fr 2fr!important;}
+  #report.reportScreen.active .reportPanel{padding:14px!important;}
+}
+
+@media(max-width:520px){
+  #report .reportHeader{grid-template-columns:1fr!important;gap:8px!important;}
+  #report .backLink,#report .csvBtn{width:100%!important;}
+  .quickCard .bigBarRow{grid-template-columns:70px 1fr 46px!important;}
+  .quickCard .percentTable{min-width:390px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1527,7 +1608,7 @@ body.inputList .accArrow{display:none!important;}
 
 <section id="report" class="screen reportScreen">
   <div class="reportHeader">
-    <button class="backLink" onclick="show('match')">← ホームに戻る</button>
+    <button class="backLink" onclick="show('match')">← 試合入力に戻る</button>
     <div class="reportTitle">
       <h1>📊 試合レポート</h1>
       <p id="reportSub">自動集計</p>
