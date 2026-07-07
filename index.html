@@ -1261,196 +1261,6 @@ body.inputList .accArrow{display:none!important;}
   #setup .big{min-height:48px!important;margin-top:8px!important;}
 }
 
-
-/* V35.4: 横画面レポートスクロール・戻るボタン・クイック集計横書き修正 */
-#report.reportScreen{
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch!important;
-}
-#report .reportHeader{
-  position:sticky!important;
-  top:0!important;
-  z-index:40!important;
-  background:rgba(255,255,255,.96)!important;
-  backdrop-filter:blur(10px)!important;
-  padding:8px 0 10px!important;
-  border-bottom:1px solid rgba(15,23,42,.08)!important;
-}
-#report .backLink{
-  background:#0f172a!important;
-  color:#f8fafc!important;
-  border:1px solid rgba(245,181,68,.38)!important;
-  text-align:center!important;
-}
-#report .csvBtn{
-  background:#eff6ff!important;
-  color:#2563eb!important;
-  border:1px solid #bfdbfe!important;
-}
-.quickCard .bigBarChart{display:grid!important;gap:8px!important;}
-.quickCard .bigBarRow{
-  display:grid!important;
-  grid-template-columns:minmax(64px,86px) 1fr minmax(42px,52px)!important;
-  align-items:center!important;
-  gap:8px!important;
-}
-.quickCard .bigBarLabel,
-.quickCard .bigBarName,
-.quickCard .bigBarPct,
-.quickCard .percentTable th,
-.quickCard .percentTable td{
-  writing-mode:horizontal-tb!important;
-  text-orientation:mixed!important;
-  white-space:nowrap!important;
-  word-break:keep-all!important;
-  overflow-wrap:normal!important;
-}
-.quickCard .bigBarLabel{font-weight:1000!important;font-size:13px!important;color:#f8fafc!important;}
-.quickCard .bigBarPct{font-weight:1000!important;text-align:right!important;color:#fbbf24!important;}
-.quickCard .percentTable{min-width:420px!important;table-layout:auto!important;}
-.quickCard .quickScroll{overflow-x:auto!important;}
-
-@media (orientation:landscape) and (max-height:620px){
-  #report.reportScreen.active{
-    display:block!important;
-    height:100vh!important;
-    min-height:100vh!important;
-    width:100%!important;
-    max-width:none!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    padding:8px 10px 80px!important;
-    background:#f8fafc!important;
-    color:#0f172a!important;
-  }
-  #report.reportScreen.active .reportHeader{
-    grid-template-columns:170px 1fr 170px!important;
-    margin:0 0 12px!important;
-  }
-  #report.reportScreen.active .reportTitle h1{font-size:24px!important;}
-  #report.reportScreen.active .summaryCards{grid-template-columns:repeat(5,minmax(120px,1fr))!important;}
-  #report.reportScreen.active .panelGrid{grid-template-columns:repeat(3,minmax(220px,1fr))!important;}
-  #report.reportScreen.active .wideGrid{grid-template-columns:1.2fr 1fr!important;}
-  #report.reportScreen.active .bottomGrid{grid-template-columns:1fr 2fr!important;}
-  #report.reportScreen.active .reportPanel{padding:14px!important;}
-}
-
-@media(max-width:520px){
-  #report .reportHeader{grid-template-columns:1fr!important;gap:8px!important;}
-  #report .backLink,#report .csvBtn{width:100%!important;}
-  .quickCard .bigBarRow{grid-template-columns:70px 1fr 46px!important;}
-  .quickCard .percentTable{min-width:390px!important;}
-}
-
-
-/* V35.5: スマホ縦画面のページ全体グラつき防止 */
-*,*::before,*::after{box-sizing:border-box;}
-html,body{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  overflow-x:hidden!important;
-  overscroll-behavior-x:none!important;
-}
-body{
-  position:relative!important;
-  margin:0!important;
-}
-.screen{
-  width:100%!important;
-  max-width:100vw!important;
-  min-width:0!important;
-  overflow-x:hidden!important;
-}
-.card,.topbar,.matchStage,.matchCourtPane,.matchInputPane,#setupCourt,#matchCourt{
-  max-width:100%!important;
-  min-width:0!important;
-}
-img,table{max-width:100%;}
-
-@media (orientation: portrait){
-  html,body{
-    overflow-x:hidden!important;
-    overscroll-behavior:none!important;
-    touch-action:pan-y!important;
-  }
-  body.menuOpen, body.displayPanelOpen{
-    overflow-x:hidden!important;
-  }
-  .screen.active{
-    overflow-x:hidden!important;
-    overscroll-behavior-x:none!important;
-    touch-action:pan-y!important;
-  }
-  #home.active,#setup.active,#match.active,#report.active{
-    width:100%!important;
-    max-width:100vw!important;
-    transform:none!important;
-    left:0!important;
-    right:0!important;
-  }
-  #match.active{
-    height:auto!important;
-    min-height:100dvh!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  #match .matchStage{
-    width:100%!important;
-    max-width:100%!important;
-    margin-left:0!important;
-    margin-right:0!important;
-    overflow-x:hidden!important;
-    touch-action:pan-y!important;
-  }
-  #match .matchCourtPane{
-    width:100%!important;
-    max-width:100%!important;
-    overflow:hidden!important;
-    transform:none!important;
-    touch-action:pan-y!important;
-  }
-  #matchCourt{
-    display:grid!important;
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    overflow:hidden!important;
-    touch-action:manipulation!important;
-    transform:none!important;
-  }
-  #match .matchInputPane{
-    width:100%!important;
-    max-width:100%!important;
-    overflow-x:hidden!important;
-    touch-action:pan-y!important;
-  }
-  .fastInput,.fastGroup,.fastButtons,.simpleGroupSelector,.quickCard{
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    overflow-x:hidden!important;
-  }
-  .sideOverlay{overscroll-behavior:none!important;}
-  .sideMenu{max-width:88vw!important;overflow-x:hidden!important;}
-  #setup.active{
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-  #setup .card,#setupCourt,.numberBank{
-    width:100%!important;
-    max-width:100%!important;
-    overflow-x:hidden!important;
-  }
-  #report.active{
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -1717,7 +1527,7 @@ img,table{max-width:100%;}
 
 <section id="report" class="screen reportScreen">
   <div class="reportHeader">
-    <button class="backLink" onclick="show('match')">← 試合入力に戻る</button>
+    <button class="backLink" onclick="show('match')">← ホームに戻る</button>
     <div class="reportTitle">
       <h1>📊 試合レポート</h1>
       <p id="reportSub">自動集計</p>
@@ -1753,3 +1563,156 @@ img,table{max-width:100%;}
 <script src="app.js"></script>
 </body>
 </html>
+
+<style>
+/* V35.4: レポート横画面スクロール・戻るボタン・クイック集計横書き */
+#report.active,
+.reportScreen.active{
+  height:100dvh!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:contain!important;
+}
+#report .reportHeader{
+  position:sticky!important;
+  top:0!important;
+  z-index:100!important;
+  background:rgba(255,247,237,.98)!important;
+  padding:10px 0!important;
+  border-bottom:1px solid var(--line)!important;
+}
+#report .backLink::before{content:"試合入力に戻る ";}
+#quick .barRow,
+.quickScroll .barRow{
+  grid-template-columns:minmax(76px,92px) 1fr 48px!important;
+}
+#quick .barLabel,
+.quickScroll .barLabel{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* V35.5/35.6: スマホ縦画面の全体グラつき防止 + コート入力固定復活 */
+html,body{
+  max-width:100%!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-x:none!important;
+}
+body{
+  touch-action:pan-y manipulation;
+}
+.screen{
+  max-width:100%!important;
+  overflow-x:hidden!important;
+}
+@media (orientation:portrait){
+  html,body{
+    width:100%!important;
+    height:100%!important;
+    overflow-x:hidden!important;
+  }
+  body{
+    overscroll-behavior:none!important;
+    background:#07111f!important;
+  }
+  #match.screen.active{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+    padding:0 10px 10px!important;
+    background:#07111f!important;
+  }
+  #match .topbar{
+    flex:0 0 auto!important;
+    position:relative!important;
+    top:auto!important;
+    z-index:200!important;
+    margin:0 -10px 8px!important;
+    padding:8px 10px!important;
+    background:linear-gradient(180deg,#07111f 0%,rgba(7,17,31,.97) 100%)!important;
+    border-bottom:1px solid rgba(245,181,68,.22)!important;
+  }
+  #match .matchStage{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    height:auto!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    margin:0!important;
+    padding:8px!important;
+    border-radius:18px!important;
+    background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.86))!important;
+  }
+  #match .matchCourtPane{
+    flex:0 0 auto!important;
+    position:relative!important;
+    top:auto!important;
+    z-index:150!important;
+    width:100%!important;
+    max-width:100%!important;
+    transform:none!important;
+    touch-action:manipulation!important;
+    background:linear-gradient(180deg,#07111f 0%,rgba(7,17,31,.98) 100%)!important;
+    border:1px solid rgba(245,181,68,.24)!important;
+    border-radius:16px!important;
+    padding:8px!important;
+    margin:0 0 8px!important;
+    box-shadow:0 10px 22px rgba(0,0,0,.24)!important;
+  }
+  #matchCourt{
+    width:100%!important;
+    max-width:100%!important;
+    aspect-ratio:3/1.55!important;
+    margin:6px auto 0!important;
+    transform:none!important;
+    touch-action:manipulation!important;
+  }
+  #matchCourt .player{
+    min-height:38px!important;
+    font-size:18px!important;
+    margin:3px!important;
+    border-radius:11px!important;
+    touch-action:manipulation!important;
+  }
+  #match .matchInputPane{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    padding:0 2px 12px!important;
+    touch-action:pan-y!important;
+  }
+  #match .fastInput,
+  #match .otherCompact{
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+  #match .quickCard{
+    display:none!important;
+  }
+  #match .displayFilterPanel{
+    position:fixed!important;
+    left:14px!important;
+    right:14px!important;
+    top:auto!important;
+    bottom:calc(14px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-height:62vh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    z-index:300!important;
+  }
+}
+</style>
