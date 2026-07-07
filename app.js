@@ -18,6 +18,7 @@ let s = {
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
 let setupSelected = 0;
+let selectedCourtNum = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
 const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
 const groupOrder = ["attack","serve","receive","toss","dig","block"];
@@ -301,6 +302,7 @@ function add(pos){
   addByNumber(num, pos);
 }
 function addByNumber(num, pos="-"){
+  selectedCourtNum = String(num);
   snap();
   const point=pointByResult(s.result);
   s.logs.push({
@@ -353,6 +355,7 @@ function render(){
     const n=nums[Number(b.dataset.pos)-1];
     b.textContent=n;
     b.classList.toggle("setter", n===setterNum);
+    b.classList.toggle("selected", String(n)===String(selectedCourtNum));
   });
   document.querySelectorAll(".fastBtn").forEach(b=>b.classList.toggle("active", b.dataset.type===s.mode && b.dataset.result===s.result));
   applyInputView();
@@ -368,6 +371,7 @@ function renderMatchNumberBank(){
     const btn=document.createElement("button");
     btn.className="matchNumBtn";
     btn.textContent=n;
+    btn.classList.toggle("selected", String(n)===String(selectedCourtNum));
     btn.onclick=()=>addByNumber(n);
     bank.appendChild(btn);
   });

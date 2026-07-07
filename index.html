@@ -1147,6 +1147,120 @@ body.inputList .accArrow{display:none!important;}
   #match .topbar .score{font-size:26px!important;}
 }
 
+
+/* V35.3: 縦画面コート固定復活・番号選択ハイライト・開始ローテ見切れ修正 */
+#matchCourt .player.setter{
+  background:var(--blue)!important;
+  outline:none!important;
+  border-color:rgba(255,255,255,.35)!important;
+}
+#matchCourt .player.selected{
+  background:#fbbf24!important;
+  color:#111827!important;
+  border-color:#fff7ed!important;
+  outline:4px solid rgba(251,191,36,.35)!important;
+  box-shadow:0 0 0 3px rgba(15,23,42,.25),0 10px 22px rgba(251,191,36,.26)!important;
+}
+#match .matchNumBtn.selected{
+  background:#fbbf24!important;
+  color:#111827!important;
+  border-color:#fde68a!important;
+}
+#setup .setupSpot.setter .num{
+  color:var(--blue)!important;
+  background:transparent!important;
+  padding:0!important;
+}
+#setup .setupSpot.active{
+  outline:5px solid #fbbf24!important;
+  background:#fff7cc!important;
+}
+#setup .numBtn.active{
+  background:#fbbf24!important;
+  color:#111827!important;
+  border-color:#fde68a!important;
+}
+#setup .help::after{content:"";}
+
+@media (orientation: portrait){
+  #match.active{
+    height:100vh!important;
+    min-height:100vh!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #match .topbar{
+    position:sticky!important;
+    top:0!important;
+    z-index:120!important;
+  }
+  #match .matchStage{
+    display:block!important;
+    height:auto!important;
+    min-height:0!important;
+    overflow:visible!important;
+    padding:8px!important;
+  }
+  #match .matchCourtPane{
+    position:sticky!important;
+    top:58px!important;
+    z-index:100!important;
+    align-self:start!important;
+    background:linear-gradient(180deg,#07111f 0%,rgba(7,17,31,.98) 100%)!important;
+    border:1px solid rgba(245,181,68,.24)!important;
+    border-radius:18px!important;
+    padding:9px!important;
+    margin:0 0 10px!important;
+    box-shadow:0 14px 28px rgba(0,0,0,.22)!important;
+  }
+  #matchCourt{
+    aspect-ratio:3/1.55!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:6px auto 0!important;
+  }
+  #matchCourt .player{
+    min-height:40px!important;
+    font-size:19px!important;
+    margin:3px!important;
+    border-radius:12px!important;
+  }
+  #match .matchInputPane{
+    overflow:visible!important;
+    padding-right:0!important;
+  }
+}
+
+@media (max-width:520px){
+  #setup.screen{overflow-y:auto!important;padding:10px!important;}
+  #setup .card{padding:12px!important;margin-bottom:10px!important;overflow:visible!important;}
+  #setupCourt{
+    aspect-ratio:3/1.52!important;
+    padding:5px!important;
+    border-width:3px!important;
+    border-radius:18px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  #setupCourt .setupSpot{
+    margin:3px!important;
+    padding:5px!important;
+    border-radius:12px!important;
+    min-width:0!important;
+  }
+  #setupCourt .setupSpot .num{font-size:25px!important;margin:0 0 4px!important;}
+  #setupCourt .setupSpot .setupName{font-size:10px!important;}
+  #setupCourt .setupSpot .nameSelect{
+    min-height:28px!important;
+    font-size:11px!important;
+    padding:3px 4px!important;
+    border-radius:8px!important;
+  }
+  #setup .numberBank{grid-template-columns:repeat(5,1fr)!important;gap:6px!important;}
+  #setup .numBtn{min-height:40px!important;font-size:17px!important;border-radius:10px!important;}
+  #setup .big{min-height:48px!important;margin-top:8px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1269,7 +1383,7 @@ body.inputList .accArrow{display:none!important;}
       <button class="whitebtn" onclick="addNumber()">＋背番号追加</button>
       <button class="whitebtn" onclick="toggleSetter()">選択位置をSにする</button>
     </div>
-    <div class="help">💡 コート上のポジションをタップ → 下の背番号をタップ。セッターは黒で表示されます。</div>
+    <div class="help">💡 コート上のポジションをタップ → 下の背番号をタップ。選択中の番号は黄色で表示されます。</div>
   </div>
 
   <button class="big" onclick="startMatch()">このローテーションで開始</button>
