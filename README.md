@@ -6,3 +6,9 @@
 - V38.1をベースにした修正版
 
 Summary: V38.2 - Landscape Court Status Layout Fix
+
+
+## V38.3 - Tablet Landscape Status Layout Fix
+- タブレット横画面でコート入力下の「現在入力中」が見切れないように修正
+- コートサイズとステータスエリアの高さ配分を調整
+- タブレット横では左のコート入力・右の入力項目を独立スクロールに調整
