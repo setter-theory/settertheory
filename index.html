@@ -2711,4 +2711,126 @@ body.menuOpen .sideOverlay{
 @media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
 @media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
 
+
+
+/* V38.2: Landscape Court Status Layout Fix */
+@media (orientation: landscape) and (max-height: 520px) {
+  #match.active .matchStage{
+    grid-template-columns:minmax(210px,38%) minmax(0,1fr)!important;
+    gap:8px!important;
+    padding:8px!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    padding:0 3px 10px 0!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #match.active .matchPaneHead{
+    margin-bottom:4px!important;
+  }
+  #match.active .matchPaneHead h2{
+    font-size:13px!important;
+    line-height:1.1!important;
+  }
+  #match.active .matchPaneHead .badge{
+    font-size:10px!important;
+    padding:3px 6px!important;
+  }
+  #match.active #matchCourt{
+    width:100%!important;
+    height:clamp(118px, 37vh, 168px)!important;
+    aspect-ratio:auto!important;
+    min-height:0!important;
+    margin-top:4px!important;
+    border-width:2px!important;
+    border-radius:14px!important;
+    flex:0 0 auto!important;
+  }
+  #match.active #matchCourt .player{
+    min-height:34px!important;
+    margin:3px!important;
+    border-radius:10px!important;
+    font-size:18px!important;
+  }
+  #match.active .matchNumberTitle{
+    margin-top:5px!important;
+    font-size:10px!important;
+    line-height:1.1!important;
+  }
+  #match.active .matchNumberBank{
+    gap:5px!important;
+    margin-top:4px!important;
+  }
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    border-radius:9px!important;
+    padding:4px!important;
+  }
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    display:grid!important;
+    gap:3px!important;
+    margin-top:6px!important;
+    padding:7px 9px!important;
+    border-radius:12px!important;
+    flex:0 0 auto!important;
+    min-height:auto!important;
+    overflow:visible!important;
+  }
+  #match.active .currentKicker{
+    font-size:10px!important;
+    line-height:1.1!important;
+  }
+  #match.active .currentMain{
+    min-height:24px!important;
+    gap:6px!important;
+  }
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:14px!important;
+    line-height:1.12!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+  #match.active .favoritePlayBtn{
+    min-width:34px!important;
+    min-height:30px!important;
+    font-size:20px!important;
+    border-radius:10px!important;
+    flex:0 0 auto!important;
+  }
+  #match.active .currentHint{
+    display:block!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+  #match.active .matchInputPane{
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 420px) {
+  #match.active #matchCourt{
+    height:clamp(102px, 34vh, 138px)!important;
+  }
+  #match.active .matchNumBtn{min-height:28px!important;font-size:14px!important;}
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{padding:6px 8px!important;margin-top:5px!important;}
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{font-size:13px!important;}
+}
 </style>
