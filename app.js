@@ -16,6 +16,7 @@ let s = {
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
   benchCount:6,
   lastSubstitution:null,
+  substitutionCounts:{},
   rot:1, my:0, op:0, serve:"mine",
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
@@ -254,6 +255,7 @@ function load(){
   if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
   s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
   if(s.lastSubstitution===undefined) s.lastSubstitution=null;
+  if(!s.substitutionCounts || typeof s.substitutionCounts!=="object" || Array.isArray(s.substitutionCounts)) s.substitutionCounts={};
   s.nums.forEach(n=>{ if(s.players[n]===undefined) s.players[n]=""; });
 }
 function snap(){
@@ -367,6 +369,14 @@ function applySubstitution(inNum){
   if(!s.players) s.players={};
   if(s.players[inNum]===undefined) s.players[inNum]='';
   const subTime=new Date().toLocaleTimeString();
+  const pair=[outNum,inNum].sort((a,b)=>(Number(a)||0)-(Number(b)||0));
+  const pairKey=pair.join('⇄');
+  if(!s.substitutionCounts) s.substitutionCounts={};
+  if(!s.substitutionCounts[pairKey]) s.substitutionCounts[pairKey]={a:pair[0], b:pair[1], count:0, lastTime:'', lastScore:'', lastRot:''};
+  s.substitutionCounts[pairKey].count+=1;
+  s.substitutionCounts[pairKey].lastTime=subTime;
+  s.substitutionCounts[pairKey].lastScore=s.my+'-'+s.op;
+  s.substitutionCounts[pairKey].lastRot='S'+s.rot;
   s.lastSubstitution={outNum, inNum, pos:String(idx+1), rot:'S'+s.rot, score:s.my+'-'+s.op, time:subTime};
   s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:subTime});
   selectedCourtNum=inNum;
@@ -431,7 +441,7 @@ function startMatch(){
   s.oppTeam=document.getElementById("oppTeam").value || "相手";
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
-  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; selectedCourtNum=null;
+  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
   save(); show("match");
 }
 function pointByResult(result){
@@ -510,24 +520,28 @@ function undo(){
 function clearLogs(){
   if(!confirm("すべての記録を消しますか？")) return;
   snap();
-  s.logs=[]; s.my=0; s.op=0; s.rot=1; s.serve="mine";
+  s.logs=[]; s.my=0; s.op=0; s.rot=1; s.serve="mine"; s.lastSubstitution=null; s.substitutionCounts={};
   save(); render();
 }
 function renderLastSubstitution(){
   const box=document.getElementById('lastSubstitutionBox');
   if(!box) return;
-  const sub=s.lastSubstitution;
-  if(!sub || !sub.outNum || !sub.inNum){
+  const counts=s.substitutionCounts || {};
+  const rows=Object.values(counts).filter(x=>x && x.a && x.b && Number(x.count)>0)
+    .sort((x,y)=>Number(y.count)-Number(x.count) || Number(x.a)-Number(y.a) || Number(x.b)-Number(y.b));
+  if(!rows.length){
     box.classList.remove('show');
     box.innerHTML='';
     return;
   }
-  const outName=getPlayerName(sub.outNum);
-  const inName=getPlayerName(sub.inNum);
-  const outLabel=`${sub.outNum}番${outName?' '+outName:''}`;
-  const inLabel=`${sub.inNum}番${inName?' '+inName:''}`;
   box.classList.add('show');
-  box.innerHTML=`<div class="lastSubTitle">直近の選手交代</div><div class="lastSubMain"><b>${escapeHtml(outLabel)}</b><span>⇄</span><b>${escapeHtml(inLabel)}</b></div><div class="lastSubMeta">${escapeHtml(sub.rot||'')} / ${escapeHtml(sub.score||'')} / ${escapeHtml(sub.time||'')}</div>`;
+  box.innerHTML=`<div class="lastSubTitle">選手交代回数</div>${rows.map(r=>{
+    const aName=getPlayerName(r.a);
+    const bName=getPlayerName(r.b);
+    const aLabel=`${r.a}番${aName?' '+aName:''}`;
+    const bLabel=`${r.b}番${bName?' '+bName:''}`;
+    return `<div class="lastSubRow"><div class="lastSubMain"><b>${escapeHtml(aLabel)}</b><span>⇄</span><b>${escapeHtml(bLabel)}</b><em>${Number(r.count)}回</em></div><div class="lastSubMeta">最終：${escapeHtml(r.lastRot||'')} / ${escapeHtml(r.lastScore||'')} / ${escapeHtml(r.lastTime||'')}</div></div>`;
+  }).join('')}`;
 }
 
 function render(){
