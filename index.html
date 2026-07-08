@@ -1613,6 +1613,103 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
 </style>
 
+
+
+<!-- V38.1: 横画面ホーム・開始ローテ画面スクロール修正 -->
+<style>
+@media (orientation: landscape){
+  /* 横画面でホーム・開始ローテ画面が見切れても画面内スクロールできるようにする */
+  #home.screen.active,
+  #setup.screen.active{
+    display:block!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    touch-action:pan-y!important;
+    padding:10px 14px calc(24px + env(safe-area-inset-bottom))!important;
+  }
+  #home.screen.active{
+    max-width:980px!important;
+    margin:0 auto!important;
+  }
+  #setup.screen.active{
+    max-width:860px!important;
+    margin:0 auto!important;
+  }
+  #home .logo,
+  #setup .logo{
+    margin:8px 0 12px!important;
+  }
+  #home .logo h1,
+  #setup .logo h1{
+    font-size:clamp(24px,4vw,34px)!important;
+  }
+  #home .card,
+  #setup .card{
+    overflow:visible!important;
+  }
+  #setupCourt{
+    width:100%!important;
+    max-width:720px!important;
+    margin:8px auto 0!important;
+    aspect-ratio:3/1.48!important;
+  }
+}
+
+@media (orientation: landscape) and (max-height:520px){
+  #home.screen.active,
+  #setup.screen.active{
+    padding:8px 10px calc(18px + env(safe-area-inset-bottom))!important;
+  }
+  #home .card,
+  #setup .card{
+    padding:12px!important;
+    margin-bottom:10px!important;
+    border-radius:18px!important;
+  }
+  #setup .grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  #setup .playerForm{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  #setupCourt{
+    max-width:560px!important;
+    border-width:3px!important;
+    border-radius:16px!important;
+    padding:5px!important;
+  }
+  #setupCourt .setupSpot{
+    min-height:44px!important;
+    border-radius:12px!important;
+  }
+  #setupCourt .setupSpot .name{
+    font-size:10px!important;
+  }
+  #setupCourt .setupSpot .num{
+    font-size:22px!important;
+  }
+  #setup .numberBank{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  #setup .numBtn{
+    min-height:40px!important;
+    font-size:18px!important;
+    border-radius:12px!important;
+  }
+  #setup button.big{
+    min-height:54px!important;
+    font-size:18px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 

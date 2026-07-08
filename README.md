@@ -11,3 +11,9 @@
 
 ## Commit Summary
 V38 - Speed Input Upgrade
+
+
+## V38.1 - Landscape Screen Scroll Fix
+- 横画面のホーム画面をスクロール可能に修正
+- 横画面の開始ローテーション画面をスクロール可能に修正
+- 縦画面と試合入力画面の挙動は維持
