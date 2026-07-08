@@ -15,6 +15,7 @@ let s = {
   positions:["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"],
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
   benchCount:6,
+  lastSubstitution:null,
   rot:1, my:0, op:0, serve:"mine",
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
@@ -252,6 +253,7 @@ function load(){
   if(!s.players) s.players={};
   if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
   s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
+  if(s.lastSubstitution===undefined) s.lastSubstitution=null;
   s.nums.forEach(n=>{ if(s.players[n]===undefined) s.players[n]=""; });
 }
 function snap(){
@@ -364,7 +366,9 @@ function applySubstitution(inNum){
   s.nums[idx]=inNum;
   if(!s.players) s.players={};
   if(s.players[inNum]===undefined) s.players[inNum]='';
-  s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:new Date().toLocaleTimeString()});
+  const subTime=new Date().toLocaleTimeString();
+  s.lastSubstitution={outNum, inNum, pos:String(idx+1), rot:'S'+s.rot, score:s.my+'-'+s.op, time:subTime};
+  s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:subTime});
   selectedCourtNum=inNum;
   save();
   closeSubModal();
@@ -427,7 +431,7 @@ function startMatch(){
   s.oppTeam=document.getElementById("oppTeam").value || "相手";
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
-  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[];
+  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; selectedCourtNum=null;
   save(); show("match");
 }
 function pointByResult(result){
@@ -509,6 +513,23 @@ function clearLogs(){
   s.logs=[]; s.my=0; s.op=0; s.rot=1; s.serve="mine";
   save(); render();
 }
+function renderLastSubstitution(){
+  const box=document.getElementById('lastSubstitutionBox');
+  if(!box) return;
+  const sub=s.lastSubstitution;
+  if(!sub || !sub.outNum || !sub.inNum){
+    box.classList.remove('show');
+    box.innerHTML='';
+    return;
+  }
+  const outName=getPlayerName(sub.outNum);
+  const inName=getPlayerName(sub.inNum);
+  const outLabel=`${sub.outNum}番${outName?' '+outName:''}`;
+  const inLabel=`${sub.inNum}番${inName?' '+inName:''}`;
+  box.classList.add('show');
+  box.innerHTML=`<div class="lastSubTitle">直近の選手交代</div><div class="lastSubMain"><b>${escapeHtml(outLabel)}</b><span>⇄</span><b>${escapeHtml(inLabel)}</b></div><div class="lastSubMeta">${escapeHtml(sub.rot||'')} / ${escapeHtml(sub.score||'')} / ${escapeHtml(sub.time||'')}</div>`;
+}
+
 function render(){
   if(document.getElementById("setup").classList.contains("active")) renderSetup();
   if(!document.getElementById("match").classList.contains("active") && !document.getElementById("report").classList.contains("active")) return;
@@ -519,6 +540,7 @@ function render(){
   document.getElementById("modeBadge").textContent=playLabel();
   const spl=document.getElementById("selectedPlayLabel"); if(spl) spl.textContent=playLabel();
   const fpb=document.getElementById("favoritePlayBtn"); if(fpb){ const fav=isCurrentFavoritePlay(); fpb.textContent=fav?"★":"☆"; fpb.classList.toggle("active", fav); }
+  renderLastSubstitution();
   renderFavoritePlayBar();
   const nums=rotationNums();
   const setterNum=rotatedSetterNum();

@@ -1666,6 +1666,17 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 
 
+
+/* V44: 直近の選手交代表示 */
+.lastSubstitutionBox{display:none;margin-top:8px;border-radius:14px;border:1px solid rgba(245,181,68,.28);background:rgba(15,23,42,.68);color:#e5e7eb;padding:9px 10px;font-weight:900;line-height:1.35}
+.lastSubstitutionBox.show{display:block}
+.lastSubTitle{font-size:11px;color:#fde68a;margin-bottom:4px}
+.lastSubMain{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;flex-wrap:wrap}
+.lastSubMain b{color:#fff;max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lastSubMain span{color:#fbbf24;font-size:18px;font-weight:1000}
+.lastSubMeta{font-size:10px;color:#cbd5e1;text-align:center;margin-top:4px}
+@media (orientation: landscape) and (min-width:768px){.lastSubstitutionBox{padding:7px 9px}.lastSubMain{font-size:12px}.lastSubMeta{font-size:9px}}
+
 /* V41: 選手交代モーダル */
 .subQuickBtn{width:100%;margin-top:8px;min-height:42px;border-radius:12px;border:1px solid rgba(245,181,68,.35);background:rgba(245,181,68,.16);color:#fde68a;font-weight:1000}
 .subModal{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:9999;display:none;align-items:center;justify-content:center;padding:14px}
@@ -2718,6 +2729,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       </div>
       <div class="modeHelp modeHelpSticky">よく使う入力は☆登録 → 上部から1タップ選択</div>
       <button type="button" class="subQuickBtn" onclick="openSubModal(selectedCourtNum)">🔁 選手交代</button>
+      <div id="lastSubstitutionBox" class="lastSubstitutionBox" aria-live="polite"></div>
     </div>
 
     <div class="displayFilterPanel" id="displayFilterPanel">
