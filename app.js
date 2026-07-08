@@ -19,6 +19,7 @@ let s = {
 };
 let setupSelected = 0;
 let selectedCourtNum = null;
+let subOutNum = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
 const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
 const groupOrder = ["attack","serve","receive","toss","dig","block"];
@@ -295,6 +296,59 @@ function addPlayerName(){
   save(); renderSetup(); renderMatchNumberBank(); render();
 }
 
+
+function allRegisteredNumbers(){
+  const vals=[...numberPool,...(s.nums||[]),...Object.keys(s.players||{})].filter(Boolean).map(String);
+  return [...new Set(vals)].sort((a,b)=>Number(a)-Number(b));
+}
+function benchNumbers(){
+  const court=new Set((s.nums||[]).map(String));
+  return allRegisteredNumbers().filter(n=>!court.has(String(n)));
+}
+function openSubModal(outNum){
+  subOutNum = outNum ? String(outNum) : null;
+  const modal=document.getElementById('subModal');
+  if(!modal) return;
+  modal.classList.add('show');
+  renderSubModal();
+}
+function closeSubModal(){
+  const modal=document.getElementById('subModal');
+  if(modal) modal.classList.remove('show');
+  subOutNum=null;
+}
+function renderSubModal(){
+  const outBox=document.getElementById('subOutList');
+  const inBox=document.getElementById('subInList');
+  const confirmBtn=document.getElementById('subConfirmBtn');
+  if(!outBox || !inBox) return;
+  const courtNums=(s.nums||[]).map(String);
+  outBox.innerHTML=courtNums.map(n=>`<button type="button" class="subChoice ${String(subOutNum)===String(n)?'active':''}" onclick="subOutNum='${escapeAttr(n)}'; renderSubModal();"><b>${escapeHtml(n)}</b><span>${escapeHtml(getPlayerName(n)||'コート上')}</span></button>`).join('');
+  const bench=benchNumbers();
+  inBox.innerHTML=bench.length ? bench.map(n=>`<button type="button" class="subChoice" onclick="applySubstitution('${escapeAttr(n)}')"><b>${escapeHtml(n)}</b><span>${escapeHtml(getPlayerName(n)||'ベンチ')}</span></button>`).join('') : '<div class="subEmpty">ベンチ候補がありません。ローテ設定の「選手登録」で背番号を追加してください。</div>';
+  const label=document.getElementById('subSelectedLabel');
+  if(label) label.textContent = subOutNum ? `${subOutNum}番を交代` : '交代するコート上の選手を選択';
+  if(confirmBtn) confirmBtn.disabled = !subOutNum;
+}
+function applySubstitution(inNum){
+  if(!subOutNum){ showInputToast('交代する選手を選んでください'); return; }
+  inNum=String(inNum);
+  const idx=(s.nums||[]).map(String).findIndex(n=>n===String(subOutNum));
+  if(idx<0){ showInputToast('コート上の選手が見つかりません'); return; }
+  if(String(subOutNum)===inNum){ closeSubModal(); return; }
+  snap();
+  const outNum=String(subOutNum);
+  s.nums[idx]=inNum;
+  if(!s.players) s.players={};
+  if(s.players[inNum]===undefined) s.players[inNum]='';
+  s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:new Date().toLocaleTimeString()});
+  selectedCourtNum=inNum;
+  save();
+  closeSubModal();
+  render();
+  showInputToast(`交代：${outNum}番 → ${inNum}番`);
+}
+
 function renderSetup(){
   const spots=document.querySelectorAll(".setupSpot");
   spots.forEach((b,i)=>{
@@ -442,7 +496,7 @@ function render(){
   const setterNum=rotatedSetterNum();
   document.querySelectorAll(".player").forEach(b=>{
     const n=nums[Number(b.dataset.pos)-1];
-    b.textContent=n;
+    b.innerHTML=`<span class="playerInner"><span class="playerNo">${escapeHtml(n)}</span><span class="playerName">${escapeHtml(getPlayerName(n))}</span></span>`;
     b.classList.toggle("setter", n===setterNum);
     b.classList.toggle("selected", String(n)===String(selectedCourtNum));
   });

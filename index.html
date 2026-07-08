@@ -1665,6 +1665,19 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   }
 }
 
+
+/* V41: 選手交代モーダル */
+.subQuickBtn{width:100%;margin-top:8px;min-height:42px;border-radius:12px;border:1px solid rgba(245,181,68,.35);background:rgba(245,181,68,.16);color:#fde68a;font-weight:1000}
+.subModal{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:9999;display:none;align-items:center;justify-content:center;padding:14px}
+.subModal.show{display:flex}
+.subPanel{width:min(720px,96vw);max-height:92vh;overflow:auto;background:#0f172a;color:#e5e7eb;border:1px solid rgba(245,181,68,.35);border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.45);padding:14px}
+.subHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.subHead h2{margin:0;font-size:20px;color:#fbbf24}.subClose{min-width:44px;min-height:40px;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:1000}
+.subStep{font-weight:1000;color:#fde68a;margin:10px 0 6px}.subHint{font-size:12px;color:#cbd5e1;margin-bottom:8px}.subGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.subChoice{min-height:58px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:1000}
+.subChoice b{font-size:24px;color:#fbbf24}.subChoice span{font-size:11px;color:#cbd5e1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.subChoice.active{background:linear-gradient(135deg,#f5b544,#ff8a1d);color:#111827}.subChoice.active b,.subChoice.active span{color:#111827}.subEmpty{grid-column:1/-1;background:rgba(255,255,255,.06);border-radius:14px;padding:14px;color:#cbd5e1;font-weight:800}.subFooter{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;color:#cbd5e1;font-size:12px}
+@media (max-width:700px){.subGrid{grid-template-columns:repeat(2,1fr)}.subPanel{padding:12px}.subChoice{min-height:52px}.subChoice b{font-size:22px}}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -2670,6 +2683,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         <div class="currentHint">次はコート上の選手をタップ</div>
       </div>
       <div class="modeHelp modeHelpSticky">よく使う入力は☆登録 → 上部から1タップ選択</div>
+      <button type="button" class="subQuickBtn" onclick="openSubModal(selectedCourtNum)">🔁 選手交代</button>
     </div>
 
     <div class="displayFilterPanel" id="displayFilterPanel">
