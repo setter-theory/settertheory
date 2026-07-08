@@ -1544,6 +1544,127 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   }
 }
 
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
+  }
+}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -1903,6 +2024,127 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   }
 }
 
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
+  }
+}
+
 </style>
 
 
@@ -2143,6 +2385,127 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     min-height:78px!important;
     padding:8px 10px!important;
     margin-top:6px!important;
+  }
+}
+
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
   }
 }
 
@@ -2813,6 +3176,127 @@ body{
   }
 }
 
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
+  }
+}
+
 </style>
 <!-- V36.1 menu overlay fix -->
 <style>
@@ -3036,6 +3520,127 @@ body.menuOpen #match .matchInputPane{
     min-height:78px!important;
     padding:8px 10px!important;
     margin-top:6px!important;
+  }
+}
+
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
   }
 }
 
@@ -3277,6 +3882,127 @@ body.menuOpen .sideOverlay{
     min-height:78px!important;
     padding:8px 10px!important;
     margin-top:6px!important;
+  }
+}
+
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
   }
 }
 
@@ -3538,6 +4264,127 @@ body.menuOpen .sideOverlay{
     min-height:78px!important;
     padding:8px 10px!important;
     margin-top:6px!important;
+  }
+}
+
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
   }
 }
 
@@ -3998,6 +4845,127 @@ body.menuOpen .sideOverlay{
     min-height:78px!important;
     padding:8px 10px!important;
     margin-top:6px!important;
+  }
+}
+
+
+/* V38.4: iPad landscape layout fix (keep smartphone landscape unchanged) */
+@media (orientation: landscape) and (min-width: 900px) and (max-width: 1366px) {
+  #match.active,
+  .screen#match.active{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchStage{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    grid-template-columns:minmax(320px,44%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:8px!important;
+    overflow:hidden!important;
+  }
+
+  #match.active .matchCourtPane{
+    height:100%!important;
+    max-height:100%!important;
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 6px 18px 0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #match.active .matchPaneHead{
+    flex:0 0 auto!important;
+    margin-bottom:4px!important;
+  }
+
+  #match.active #matchCourt{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:clamp(180px, 31dvh, 240px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    margin-top:3px!important;
+  }
+
+  #match.active #matchCourt .player{
+    min-height:42px!important;
+    font-size:19px!important;
+    border-radius:11px!important;
+  }
+
+  #match.active .matchNumberTitle{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    font-size:11px!important;
+    line-height:1.1!important;
+  }
+
+  #match.active .matchNumberBank{
+    flex:0 0 auto!important;
+    margin-top:5px!important;
+    gap:5px!important;
+  }
+
+  #match.active .matchNumBtn{
+    min-height:32px!important;
+    font-size:15px!important;
+    padding:4px!important;
+  }
+
+  #match.active .speedCurrentBox,
+  #match.active .currentPlayBoxTop{
+    flex:0 0 auto!important;
+    display:grid!important;
+    gap:4px!important;
+    margin-top:6px!important;
+    margin-bottom:14px!important;
+    padding:8px 10px!important;
+    min-height:88px!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+
+  #match.active .currentKicker{
+    font-size:11px!important;
+    line-height:1.15!important;
+  }
+
+  #match.active .currentMain{
+    min-height:27px!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{
+    font-size:15px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .currentHint{
+    display:block!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #match.active .favoritePlayBtn{
+    min-width:36px!important;
+    min-height:32px!important;
+    font-size:21px!important;
+    flex:0 0 auto!important;
   }
 }
 
