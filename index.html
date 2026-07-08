@@ -1688,6 +1688,9 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .rosterItem b{font-size:17px;color:var(--blue)}
 .rosterItem span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rosterEmpty{font-size:13px;color:var(--muted);font-weight:900;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:10px;line-height:1.45}
+.benchCountRow{margin-top:10px}
+.benchCountRow label{display:block;font-weight:1000;color:var(--ink)}
+.benchCountRow select{width:100%;margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:14px;font-weight:1000;background:#fff;color:var(--ink)}
 @media(max-width:520px){.rosterGrid{grid-template-columns:1fr}.rosterItem{padding:7px 9px}}
 
 </style>
@@ -2632,7 +2635,16 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <label>選手名<input id="newPlayerName" placeholder="例 佐藤"></label>
     </div>
     <button class="whitebtn" style="width:100%;margin-top:10px" onclick="addPlayerName()">＋選手を登録</button>
-    <div class="help">💡 開始ローテに入っている6人がスタメン、それ以外の登録選手がベンチになります。試合中の選手交代は、このベンチから選べます。</div>
+    <div class="benchCountRow">
+      <label>ベンチ人数
+        <select id="benchCount" onchange="setBenchCount(this.value)">
+          <option value="0">0人</option><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option>
+          <option value="4">4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option>
+          <option value="8">8人</option><option value="9">9人</option><option value="10">10人</option><option value="11">11人</option><option value="12">12人</option>
+        </select>
+      </label>
+    </div>
+    <div class="help">💡 開始ローテに入っている6人がスタメン、ベンチ人数で選んだ人数分がベンチになります。試合中の選手交代は、このベンチから選べます。</div>
   <div class="rosterGrid">
     <div class="rosterBox">
       <h4>スタメン6人</h4>
@@ -2849,6 +2861,25 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   <button class="undoBtn" onclick="undo()">取り消し</button>
   <button class="orange" onclick="showReport()">レポート</button>
   <button class="blue" onclick="downloadCSV()">CSV</button>
+</div>
+
+<div id="subModal" class="subModal" role="dialog" aria-modal="true" aria-label="選手交代">
+  <div class="subPanel">
+    <div class="subHead">
+      <h2>🔁 選手交代</h2>
+      <button type="button" class="subClose" onclick="closeSubModal()">×</button>
+    </div>
+    <div class="subStep">1. 下げる選手を選択</div>
+    <div class="subHint">コート上の6人から選んでください。</div>
+    <div id="subOutList" class="subGrid"></div>
+    <div class="subStep">2. 入る選手を選択</div>
+    <div class="subHint">ローテーション設定画面のベンチ人数で表示された選手から選びます。</div>
+    <div id="subInList" class="subGrid"></div>
+    <div class="subFooter">
+      <span id="subSelectedLabel">交代するコート上の選手を選択</span>
+      <button type="button" class="subClose" onclick="closeSubModal()">閉じる</button>
+    </div>
+  </div>
 </div>
 
 <script src="app.js"></script>

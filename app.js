@@ -14,6 +14,7 @@ let s = {
   nums:["1","2","3","4","5","7"], setterIndex:3,
   positions:["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"],
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
+  benchCount:6,
   rot:1, my:0, op:0, serve:"mine",
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
@@ -249,6 +250,8 @@ function load(){
   if(!s.logs) s.logs=[];
   if(!s.nums) s.nums=["1","2","3","4","5","7"];
   if(!s.players) s.players={};
+  if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
+  s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
   s.nums.forEach(n=>{ if(s.players[n]===undefined) s.players[n]=""; });
 }
 function snap(){
@@ -303,7 +306,15 @@ function allRegisteredNumbers(){
 }
 function benchNumbers(){
   const court=new Set((s.nums||[]).map(String));
-  return allRegisteredNumbers().filter(n=>!court.has(String(n)));
+  const pool=allRegisteredNumbers().filter(n=>!court.has(String(n)));
+  const count=Math.max(0, Math.min(12, Number(s.benchCount)||0));
+  return pool.slice(0,count);
+}
+function setBenchCount(v){
+  s.benchCount=Math.max(0, Math.min(12, Number(v)||0));
+  save();
+  renderSetup();
+  renderSubModal();
 }
 function rosterItemHtml(n, fallback){
   return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span>${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span></div>`;
@@ -315,7 +326,7 @@ function renderRosterPanel(){
   const starters=(s.nums||[]).filter(Boolean).map(String);
   starterBox.innerHTML=starters.length ? starters.map(n=>rosterItemHtml(n,'スタメン')).join('') : '<div class="rosterEmpty">開始ローテの6人を選ぶと、ここにスタメンとして表示されます。</div>';
   const bench=benchNumbers();
-  benchBox.innerHTML=bench.length ? bench.map(n=>rosterItemHtml(n,'ベンチ')).join('') : '<div class="rosterEmpty">ベンチ選手が未登録です。上の選手登録で背番号と名前を追加してください。</div>';
+  benchBox.innerHTML=bench.length ? bench.map(n=>rosterItemHtml(n,'ベンチ')).join('') : '<div class="rosterEmpty">ベンチ人数が0人、またはベンチ候補がありません。ベンチ人数を増やしてください。</div>';
 }
 function openSubModal(outNum){
   subOutNum = outNum ? String(outNum) : null;
@@ -377,6 +388,8 @@ function renderSetup(){
       sel.innerHTML=pool.map(n=>`<option value="${n}" ${String(currentNum)===String(n)?"selected":""}>${n}${getPlayerName(n)?" "+getPlayerName(n):""}</option>`).join("");
     }
   });
+  const bc=document.getElementById("benchCount");
+  if(bc) bc.value=String(Math.max(0, Math.min(12, Number(s.benchCount)||0)));
   renderRosterPanel();
   const used=new Set(s.nums);
   const bank=document.getElementById("numberBank");
