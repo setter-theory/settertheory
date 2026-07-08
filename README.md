@@ -17,3 +17,8 @@ Summary: V38.2 - Landscape Court Status Layout Fix
 ## V38.5
 - iPad横画面で「現在入力中」が見切れる問題を再修正
 - iPad横では背番号バンクを非表示にしてステータス表示を優先
+
+
+## V40 iPad current input overlap fix
+- iPad横画面で「🏐 現在入力中」がコート入力枠・スパイク成功枠と重なって見切れる問題を修正。
+- コート下余白、現在入力カード上余白、ヘッダー表示のz-index/overflowを調整。

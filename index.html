@@ -5093,4 +5093,44 @@ body.menuOpen .sideOverlay{
     font-size:18px!important;
   }
 }
+
+
+/* V40 iPad landscape fix: prevent Current Input header from being hidden by court/card borders */
+@media (orientation: landscape){
+  #match.active .matchCourtPane{
+    overflow: visible !important;
+  }
+  #match.active #matchCourt{
+    margin-bottom: 14px !important;
+  }
+  #match.active .currentPlayBoxTop,
+  #match.active .speedCurrentBox{
+    position: relative !important;
+    z-index: 3 !important;
+    margin-top: 14px !important;
+    padding-top: 14px !important;
+    overflow: visible !important;
+  }
+  #match.active .currentKicker{
+    display: block !important;
+    position: relative !important;
+    z-index: 4 !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+    line-height: 1.35 !important;
+    overflow: visible !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 760px){
+  #match.active #matchCourt{
+    margin-bottom: 16px !important;
+  }
+  #match.active .currentPlayBoxTop,
+  #match.active .speedCurrentBox{
+    margin-top: 16px !important;
+    padding-top: 16px !important;
+    min-height: 86px !important;
+  }
+}
 </style>
