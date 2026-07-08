@@ -1338,6 +1338,44 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   white-space:normal!important;
 }
 
+
+
+/* V37.2: Analytics Enhancement */
+#report .v372RateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RateCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:12px;min-width:0;}
+#report .v372RateCard.good{border-color:rgba(34,197,94,.42);background:rgba(22,163,74,.12);}
+#report .v372RateCard.bad{border-color:rgba(239,68,68,.46);background:rgba(239,68,68,.12);}
+#report .v372RateLabel{font-weight:1000;color:#f8fafc;font-size:13px;}
+#report .v372RateValue{font-size:30px;font-weight:1000;color:#fbbf24;line-height:1.1;margin-top:4px;}
+#report .v372RateSub{font-size:12px;color:#cbd5e1;font-weight:900;margin:2px 0 8px;}
+#report .v372MiniTrack{height:8px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;}
+#report .v372MiniTrack span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#fbbf24);border-radius:999px;}
+#report .v372TossList{display:grid;gap:10px;margin-top:14px;}
+#report .v372TossRow{display:grid;grid-template-columns:70px minmax(0,1fr) 58px;gap:10px;align-items:center;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;}
+#report .v372TossRow.warn{border-color:rgba(251,191,36,.44);background:rgba(251,191,36,.10);}
+#report .v372TossName{color:#f8fafc;font-weight:1000;white-space:nowrap;}
+#report .v372TossTrack{height:10px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;min-width:0;}
+#report .v372TossTrack span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px;}
+#report .v372TossPct{color:#f8fafc;font-weight:1000;text-align:right;line-height:1.05;}
+#report .v372TossPct small{display:block;color:#cbd5e1;font-size:10px;margin-top:3px;}
+#report .v372RotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RotCard{background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.20);border-radius:16px;padding:12px;}
+#report .v372RotCard.good{border-color:rgba(34,197,94,.38);}.v372RotCard.bad{border-color:rgba(239,68,68,.44)!important;}
+#report .v372RotMain{display:flex;align-items:center;justify-content:space-between;color:#f8fafc;font-weight:1000;font-size:16px;margin-bottom:8px;}
+#report .v372RotMain span{color:#fbbf24;}
+#report .v372RotMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;color:#cbd5e1;font-size:11px;font-weight:900;margin-bottom:8px;}
+#report .v372RotCard small{display:block;color:#cbd5e1;font-weight:900;margin-top:8px;}
+#report .v372InsightChips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 12px;}
+#report .v372InsightChip{background:rgba(15,23,42,.68);border:1px solid rgba(245,181,68,.24);border-radius:13px;padding:8px;text-align:center;}
+#report .v372InsightChip span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;}
+#report .v372InsightChip b{display:block;color:#fbbf24;font-size:18px;margin-top:2px;}
+@media(max-width:520px){
+  #report .v372RateGrid,#report .v372RotList{grid-template-columns:1fr!important;}
+  #report .v372InsightChips{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
+  #report .v372RotMeta{font-size:10px!important;}
+}
+
 </style>
 </head>
 <body>
@@ -1792,6 +1830,44 @@ body{
     z-index:300!important;
   }
 }
+
+
+/* V37.2: Analytics Enhancement */
+#report .v372RateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RateCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:12px;min-width:0;}
+#report .v372RateCard.good{border-color:rgba(34,197,94,.42);background:rgba(22,163,74,.12);}
+#report .v372RateCard.bad{border-color:rgba(239,68,68,.46);background:rgba(239,68,68,.12);}
+#report .v372RateLabel{font-weight:1000;color:#f8fafc;font-size:13px;}
+#report .v372RateValue{font-size:30px;font-weight:1000;color:#fbbf24;line-height:1.1;margin-top:4px;}
+#report .v372RateSub{font-size:12px;color:#cbd5e1;font-weight:900;margin:2px 0 8px;}
+#report .v372MiniTrack{height:8px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;}
+#report .v372MiniTrack span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#fbbf24);border-radius:999px;}
+#report .v372TossList{display:grid;gap:10px;margin-top:14px;}
+#report .v372TossRow{display:grid;grid-template-columns:70px minmax(0,1fr) 58px;gap:10px;align-items:center;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;}
+#report .v372TossRow.warn{border-color:rgba(251,191,36,.44);background:rgba(251,191,36,.10);}
+#report .v372TossName{color:#f8fafc;font-weight:1000;white-space:nowrap;}
+#report .v372TossTrack{height:10px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;min-width:0;}
+#report .v372TossTrack span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px;}
+#report .v372TossPct{color:#f8fafc;font-weight:1000;text-align:right;line-height:1.05;}
+#report .v372TossPct small{display:block;color:#cbd5e1;font-size:10px;margin-top:3px;}
+#report .v372RotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RotCard{background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.20);border-radius:16px;padding:12px;}
+#report .v372RotCard.good{border-color:rgba(34,197,94,.38);}.v372RotCard.bad{border-color:rgba(239,68,68,.44)!important;}
+#report .v372RotMain{display:flex;align-items:center;justify-content:space-between;color:#f8fafc;font-weight:1000;font-size:16px;margin-bottom:8px;}
+#report .v372RotMain span{color:#fbbf24;}
+#report .v372RotMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;color:#cbd5e1;font-size:11px;font-weight:900;margin-bottom:8px;}
+#report .v372RotCard small{display:block;color:#cbd5e1;font-weight:900;margin-top:8px;}
+#report .v372InsightChips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 12px;}
+#report .v372InsightChip{background:rgba(15,23,42,.68);border:1px solid rgba(245,181,68,.24);border-radius:13px;padding:8px;text-align:center;}
+#report .v372InsightChip span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;}
+#report .v372InsightChip b{display:block;color:#fbbf24;font-size:18px;margin-top:2px;}
+@media(max-width:520px){
+  #report .v372RateGrid,#report .v372RotList{grid-template-columns:1fr!important;}
+  #report .v372InsightChips{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
+  #report .v372RotMeta{font-size:10px!important;}
+}
+
 </style>
 <!-- V36.1 menu overlay fix -->
 <style>
@@ -1812,6 +1888,44 @@ body.menuOpen #match .displayFilterPanel{
 body.menuOpen #match .matchInputPane{
   pointer-events:none!important;
 }
+
+
+/* V37.2: Analytics Enhancement */
+#report .v372RateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RateCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:12px;min-width:0;}
+#report .v372RateCard.good{border-color:rgba(34,197,94,.42);background:rgba(22,163,74,.12);}
+#report .v372RateCard.bad{border-color:rgba(239,68,68,.46);background:rgba(239,68,68,.12);}
+#report .v372RateLabel{font-weight:1000;color:#f8fafc;font-size:13px;}
+#report .v372RateValue{font-size:30px;font-weight:1000;color:#fbbf24;line-height:1.1;margin-top:4px;}
+#report .v372RateSub{font-size:12px;color:#cbd5e1;font-weight:900;margin:2px 0 8px;}
+#report .v372MiniTrack{height:8px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;}
+#report .v372MiniTrack span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#fbbf24);border-radius:999px;}
+#report .v372TossList{display:grid;gap:10px;margin-top:14px;}
+#report .v372TossRow{display:grid;grid-template-columns:70px minmax(0,1fr) 58px;gap:10px;align-items:center;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;}
+#report .v372TossRow.warn{border-color:rgba(251,191,36,.44);background:rgba(251,191,36,.10);}
+#report .v372TossName{color:#f8fafc;font-weight:1000;white-space:nowrap;}
+#report .v372TossTrack{height:10px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;min-width:0;}
+#report .v372TossTrack span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px;}
+#report .v372TossPct{color:#f8fafc;font-weight:1000;text-align:right;line-height:1.05;}
+#report .v372TossPct small{display:block;color:#cbd5e1;font-size:10px;margin-top:3px;}
+#report .v372RotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RotCard{background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.20);border-radius:16px;padding:12px;}
+#report .v372RotCard.good{border-color:rgba(34,197,94,.38);}.v372RotCard.bad{border-color:rgba(239,68,68,.44)!important;}
+#report .v372RotMain{display:flex;align-items:center;justify-content:space-between;color:#f8fafc;font-weight:1000;font-size:16px;margin-bottom:8px;}
+#report .v372RotMain span{color:#fbbf24;}
+#report .v372RotMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;color:#cbd5e1;font-size:11px;font-weight:900;margin-bottom:8px;}
+#report .v372RotCard small{display:block;color:#cbd5e1;font-weight:900;margin-top:8px;}
+#report .v372InsightChips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 12px;}
+#report .v372InsightChip{background:rgba(15,23,42,.68);border:1px solid rgba(245,181,68,.24);border-radius:13px;padding:8px;text-align:center;}
+#report .v372InsightChip span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;}
+#report .v372InsightChip b{display:block;color:#fbbf24;font-size:18px;margin-top:2px;}
+@media(max-width:520px){
+  #report .v372RateGrid,#report .v372RotList{grid-template-columns:1fr!important;}
+  #report .v372InsightChips{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
+  #report .v372RotMeta{font-size:10px!important;}
+}
+
 </style>
 <!-- V36.2 landscape menu scroll fix -->
 <style>
@@ -1847,6 +1961,44 @@ body.menuOpen .sideOverlay{
     flex:0 0 auto!important;
   }
 }
+
+
+/* V37.2: Analytics Enhancement */
+#report .v372RateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RateCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:12px;min-width:0;}
+#report .v372RateCard.good{border-color:rgba(34,197,94,.42);background:rgba(22,163,74,.12);}
+#report .v372RateCard.bad{border-color:rgba(239,68,68,.46);background:rgba(239,68,68,.12);}
+#report .v372RateLabel{font-weight:1000;color:#f8fafc;font-size:13px;}
+#report .v372RateValue{font-size:30px;font-weight:1000;color:#fbbf24;line-height:1.1;margin-top:4px;}
+#report .v372RateSub{font-size:12px;color:#cbd5e1;font-weight:900;margin:2px 0 8px;}
+#report .v372MiniTrack{height:8px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;}
+#report .v372MiniTrack span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#fbbf24);border-radius:999px;}
+#report .v372TossList{display:grid;gap:10px;margin-top:14px;}
+#report .v372TossRow{display:grid;grid-template-columns:70px minmax(0,1fr) 58px;gap:10px;align-items:center;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;}
+#report .v372TossRow.warn{border-color:rgba(251,191,36,.44);background:rgba(251,191,36,.10);}
+#report .v372TossName{color:#f8fafc;font-weight:1000;white-space:nowrap;}
+#report .v372TossTrack{height:10px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;min-width:0;}
+#report .v372TossTrack span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px;}
+#report .v372TossPct{color:#f8fafc;font-weight:1000;text-align:right;line-height:1.05;}
+#report .v372TossPct small{display:block;color:#cbd5e1;font-size:10px;margin-top:3px;}
+#report .v372RotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RotCard{background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.20);border-radius:16px;padding:12px;}
+#report .v372RotCard.good{border-color:rgba(34,197,94,.38);}.v372RotCard.bad{border-color:rgba(239,68,68,.44)!important;}
+#report .v372RotMain{display:flex;align-items:center;justify-content:space-between;color:#f8fafc;font-weight:1000;font-size:16px;margin-bottom:8px;}
+#report .v372RotMain span{color:#fbbf24;}
+#report .v372RotMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;color:#cbd5e1;font-size:11px;font-weight:900;margin-bottom:8px;}
+#report .v372RotCard small{display:block;color:#cbd5e1;font-weight:900;margin-top:8px;}
+#report .v372InsightChips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 12px;}
+#report .v372InsightChip{background:rgba(15,23,42,.68);border:1px solid rgba(245,181,68,.24);border-radius:13px;padding:8px;text-align:center;}
+#report .v372InsightChip span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;}
+#report .v372InsightChip b{display:block;color:#fbbf24;font-size:18px;margin-top:2px;}
+@media(max-width:520px){
+  #report .v372RateGrid,#report .v372RotList{grid-template-columns:1fr!important;}
+  #report .v372InsightChips{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
+  #report .v372RotMeta{font-size:10px!important;}
+}
+
 </style>
 
 <style>
@@ -1902,6 +2054,44 @@ body.menuOpen .sideOverlay{
 .v37Bars{display:grid;gap:8px;margin-top:12px}.v37BarLine{display:grid;grid-template-columns:68px 1fr 58px;gap:8px;align-items:center}.v37BarLabel{font-weight:1000}.v37BarTrack{height:12px;border-radius:999px;background:rgba(148,163,184,.25);overflow:hidden}.v37BarFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#fbbf24)}.v37BarNum{font-weight:1000;text-align:right}.v37BarNum small{display:block;font-size:10px;color:var(--muted)}
 .v37MiniCards{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.v37MiniCard{border-radius:14px;padding:10px;text-align:center;background:rgba(15,23,42,.06);border:1px solid rgba(15,23,42,.08);font-weight:900}.v37MiniCard b{display:block;font-size:22px;color:#2563eb}.v37MiniCard small{color:var(--muted)}
 @media(max-width:700px){.v37MiniCards{grid-template-columns:repeat(2,1fr)}.v37RotHead,.v37RotRow{grid-template-columns:56px 1fr 1fr 1fr 1.3fr;font-size:12px}.v37BarLine{grid-template-columns:60px 1fr 48px}}
+
+
+/* V37.2: Analytics Enhancement */
+#report .v372RateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RateCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:12px;min-width:0;}
+#report .v372RateCard.good{border-color:rgba(34,197,94,.42);background:rgba(22,163,74,.12);}
+#report .v372RateCard.bad{border-color:rgba(239,68,68,.46);background:rgba(239,68,68,.12);}
+#report .v372RateLabel{font-weight:1000;color:#f8fafc;font-size:13px;}
+#report .v372RateValue{font-size:30px;font-weight:1000;color:#fbbf24;line-height:1.1;margin-top:4px;}
+#report .v372RateSub{font-size:12px;color:#cbd5e1;font-weight:900;margin:2px 0 8px;}
+#report .v372MiniTrack{height:8px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;}
+#report .v372MiniTrack span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#fbbf24);border-radius:999px;}
+#report .v372TossList{display:grid;gap:10px;margin-top:14px;}
+#report .v372TossRow{display:grid;grid-template-columns:70px minmax(0,1fr) 58px;gap:10px;align-items:center;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;}
+#report .v372TossRow.warn{border-color:rgba(251,191,36,.44);background:rgba(251,191,36,.10);}
+#report .v372TossName{color:#f8fafc;font-weight:1000;white-space:nowrap;}
+#report .v372TossTrack{height:10px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;min-width:0;}
+#report .v372TossTrack span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px;}
+#report .v372TossPct{color:#f8fafc;font-weight:1000;text-align:right;line-height:1.05;}
+#report .v372TossPct small{display:block;color:#cbd5e1;font-size:10px;margin-top:3px;}
+#report .v372RotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RotCard{background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.20);border-radius:16px;padding:12px;}
+#report .v372RotCard.good{border-color:rgba(34,197,94,.38);}.v372RotCard.bad{border-color:rgba(239,68,68,.44)!important;}
+#report .v372RotMain{display:flex;align-items:center;justify-content:space-between;color:#f8fafc;font-weight:1000;font-size:16px;margin-bottom:8px;}
+#report .v372RotMain span{color:#fbbf24;}
+#report .v372RotMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;color:#cbd5e1;font-size:11px;font-weight:900;margin-bottom:8px;}
+#report .v372RotCard small{display:block;color:#cbd5e1;font-weight:900;margin-top:8px;}
+#report .v372InsightChips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 12px;}
+#report .v372InsightChip{background:rgba(15,23,42,.68);border:1px solid rgba(245,181,68,.24);border-radius:13px;padding:8px;text-align:center;}
+#report .v372InsightChip span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;}
+#report .v372InsightChip b{display:block;color:#fbbf24;font-size:18px;margin-top:2px;}
+@media(max-width:520px){
+  #report .v372RateGrid,#report .v372RotList{grid-template-columns:1fr!important;}
+  #report .v372InsightChips{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
+  #report .v372RotMeta{font-size:10px!important;}
+}
+
 </style>
 
 <style>
@@ -2034,4 +2224,42 @@ body.menuOpen .sideOverlay{
   #report .v37BarLine{grid-template-columns:56px minmax(0,1fr) 44px!important;font-size:12px!important;}
   #report .v37MiniCards{grid-template-columns:1fr 1fr!important;}
 }
+
+
+/* V37.2: Analytics Enhancement */
+#report .v372RateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RateCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.22);border-radius:16px;padding:12px;min-width:0;}
+#report .v372RateCard.good{border-color:rgba(34,197,94,.42);background:rgba(22,163,74,.12);}
+#report .v372RateCard.bad{border-color:rgba(239,68,68,.46);background:rgba(239,68,68,.12);}
+#report .v372RateLabel{font-weight:1000;color:#f8fafc;font-size:13px;}
+#report .v372RateValue{font-size:30px;font-weight:1000;color:#fbbf24;line-height:1.1;margin-top:4px;}
+#report .v372RateSub{font-size:12px;color:#cbd5e1;font-weight:900;margin:2px 0 8px;}
+#report .v372MiniTrack{height:8px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;}
+#report .v372MiniTrack span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#fbbf24);border-radius:999px;}
+#report .v372TossList{display:grid;gap:10px;margin-top:14px;}
+#report .v372TossRow{display:grid;grid-template-columns:70px minmax(0,1fr) 58px;gap:10px;align-items:center;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px;}
+#report .v372TossRow.warn{border-color:rgba(251,191,36,.44);background:rgba(251,191,36,.10);}
+#report .v372TossName{color:#f8fafc;font-weight:1000;white-space:nowrap;}
+#report .v372TossTrack{height:10px;background:rgba(226,232,240,.18);border-radius:999px;overflow:hidden;min-width:0;}
+#report .v372TossTrack span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px;}
+#report .v372TossPct{color:#f8fafc;font-weight:1000;text-align:right;line-height:1.05;}
+#report .v372TossPct small{display:block;color:#cbd5e1;font-size:10px;margin-top:3px;}
+#report .v372RotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#report .v372RotCard{background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.20);border-radius:16px;padding:12px;}
+#report .v372RotCard.good{border-color:rgba(34,197,94,.38);}.v372RotCard.bad{border-color:rgba(239,68,68,.44)!important;}
+#report .v372RotMain{display:flex;align-items:center;justify-content:space-between;color:#f8fafc;font-weight:1000;font-size:16px;margin-bottom:8px;}
+#report .v372RotMain span{color:#fbbf24;}
+#report .v372RotMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;color:#cbd5e1;font-size:11px;font-weight:900;margin-bottom:8px;}
+#report .v372RotCard small{display:block;color:#cbd5e1;font-weight:900;margin-top:8px;}
+#report .v372InsightChips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0 12px;}
+#report .v372InsightChip{background:rgba(15,23,42,.68);border:1px solid rgba(245,181,68,.24);border-radius:13px;padding:8px;text-align:center;}
+#report .v372InsightChip span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;}
+#report .v372InsightChip b{display:block;color:#fbbf24;font-size:18px;margin-top:2px;}
+@media(max-width:520px){
+  #report .v372RateGrid,#report .v372RotList{grid-template-columns:1fr!important;}
+  #report .v372InsightChips{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
+  #report .v372RotMeta{font-size:10px!important;}
+}
+
 </style>

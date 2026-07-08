@@ -798,6 +798,88 @@ function report(){
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
 }
 
+
+/* V37.2: Analytics Enhancement - Setter Theory rule-based insights */
+function v372ActionStats(){
+  const cfgs=[
+    {label:"サーブ", all:x=>x.type==="サーブ", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース")},
+    {label:"レセプ", all:x=>x.type==="レセプ", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス")},
+    {label:"ディグ", all:x=>x.type==="ディグ", ok:x=>x.type==="ディグ"&&x.result==="成功"},
+    {label:"トス", all:x=>x.type==="トス", ok:x=>x.type==="トス"},
+    {label:"スパイク", all:x=>x.type==="スパイク", ok:x=>x.type==="スパイク"&&x.result==="成功"},
+    {label:"ブロック", all:x=>x.type==="ブロック", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ")}
+  ];
+  return cfgs.map(c=>{ const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); return {...c,total:all.length,ok:ok.length,pct:safePct(ok.length,all.length)}; });
+}
+function buildActionSuccessAnalysis(){
+  const stats=v372ActionStats();
+  return `<div class="v372RateGrid">${stats.map(c=>`<div class="v372RateCard ${c.pct>=70?'good':c.pct<45&&c.total>0?'bad':''}">
+    <div class="v372RateLabel">${c.label}</div><div class="v372RateValue">${c.pct}%</div><div class="v372RateSub">${c.ok}/${c.total}</div>
+    <div class="v372MiniTrack"><span style="width:${c.pct}%"></span></div>
+  </div>`).join("")}</div>`;
+}
+function buildTossUsageAnalysis(){
+  const toss=s.logs.filter(x=>x.type==="トス");
+  const labels=["レフト","センター","ライト","バック","ツー"];
+  return `<div class="v372TossList">${labels.map(label=>{
+    const count=toss.filter(x=>x.result===label).length;
+    const pct=safePct(count,toss.length);
+    const warn=(label==="センター"&&toss.length>=5&&pct<=15)||(pct>=50&&count>=3);
+    return `<div class="v372TossRow ${warn?'warn':''}"><div class="v372TossName">${label}</div><div class="v372TossTrack"><span style="width:${pct}%"></span></div><div class="v372TossPct">${pct}%<small>${count}本</small></div></div>`;
+  }).join("")}</div>`;
+}
+function buildRotationPointAnalysis(){
+  const rows=[1,2,3,4,5,6].map(r=>{
+    const key="S"+r;
+    const logs=s.logs.filter(x=>x.rot===key);
+    const my=logs.filter(x=>x.point==="自").length;
+    const op=logs.filter(x=>x.point==="相").length;
+    const total=my+op;
+    const diff=my-op;
+    const gain=safePct(my,total);
+    const toss=logs.filter(x=>x.type==="トス");
+    const dist={}; toss.forEach(x=>{dist[x.result]=(dist[x.result]||0)+1;});
+    const top=Object.entries(dist).sort((a,b)=>b[1]-a[1])[0];
+    const topText=top?`${top[0]} ${safePct(top[1],toss.length)}%`:"-";
+    return {key,my,op,total,diff,gain,topText};
+  });
+  return `<div class="v372RotList">${rows.map(r=>`<div class="v372RotCard ${r.diff>0?'good':r.diff<0?'bad':''}">
+    <div class="v372RotMain"><b>${r.key}</b><span>${r.diff>0?'+':''}${r.diff}</span></div>
+    <div class="v372RotMeta"><span>得点 ${r.my}</span><span>失点 ${r.op}</span><span>得点率 ${r.gain}%</span></div>
+    <div class="v372MiniTrack"><span style="width:${r.gain}%"></span></div>
+    <small>最多トス先：${r.topText}</small>
+  </div>`).join("")}</div>`;
+}
+function buildSetterInsight(){
+  const toss=s.logs.filter(x=>x.type==="トス");
+  const labels=["レフト","センター","ライト","バック","ツー"];
+  const counts=labels.map(label=>{ const count=toss.filter(x=>x.result===label).length; return {label,count,pct:safePct(count,toss.length)}; });
+  const top=counts.slice().sort((a,b)=>b.count-a.count)[0] || {label:"-",count:0,pct:0};
+  const center=counts.find(x=>x.label==="センター") || {pct:0,count:0};
+  const action=v372ActionStats();
+  const low=action.filter(x=>x.total>=3).sort((a,b)=>a.pct-b.pct)[0];
+  const rotRows=[1,2,3,4,5,6].map(r=>{const logs=s.logs.filter(x=>x.rot==="S"+r); return {r,my:logs.filter(x=>x.point==="自").length,op:logs.filter(x=>x.point==="相").length,total:logs.length};}).filter(x=>x.total>0);
+  const worst=rotRows.slice().sort((a,b)=>(b.op-b.my)-(a.op-a.my))[0];
+  const myPts=s.logs.filter(x=>x.point==="自").length, opPts=s.logs.filter(x=>x.point==="相").length;
+  const comments=[];
+  if(!s.logs.length){ comments.push("まだ記録がありません。1セット入力すると分析コメントが表示されます。"); }
+  if(toss.length){
+    if(top.pct>=50 && top.count>=3) comments.push(`${top.label}への配球が${top.pct}%です。相手ブロックに読まれやすいので、同じフォームから別方向を見せたいです。`);
+    else comments.push("配球の偏りは大きくありません。次はローテ別の得失点差を見て、崩れる並びを探しましょう。");
+    if(center.pct<=15 && toss.length>=5) comments.push(`センター使用率が${center.pct}%です。乱れた場面でもミドルを意識させると、サイドの決定率が上がる可能性があります。`);
+  }else{
+    comments.push("トス記録が少ないため配球分析はまだ弱いです。トス先を入れるとセッター視点のコメントが増えます。");
+  }
+  if(worst && worst.op>worst.my) comments.push(`S${worst.r}は得失点差が${worst.my-worst.op}です。サーブレシーブの入り方、1本目のトス先を確認しましょう。`);
+  if(low && low.pct<50) comments.push(`${low.label}成功率が${low.pct}%です。試合後の振り返り優先度が高い項目です。`);
+  if(myPts+opPts>=5){ comments.push(`得点 ${myPts} / 失点 ${opPts}。流れを見るときは、連続失点の直前のプレー種別を確認しましょう。`); }
+  const tossSummary=counts.map(x=>`<div class="v372InsightChip"><span>${x.label}</span><b>${x.pct}%</b></div>`).join("");
+  return `<div class="v37Insight v372Insight"><div class="v37InsightTitle">Setter Theory 分析コメント</div>
+    <div class="v372InsightChips">${tossSummary}</div>
+    <ul>${comments.map(x=>`<li>${x}</li>`).join("")}</ul>
+  </div>`;
+}
+
 function downloadCSV(){
   const rows=[["No","Set","Rotation","Type","Number","Name","Position","Result","Point","Score","Time"]];
   s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.pos,x.result,x.point,x.score,x.time]));
