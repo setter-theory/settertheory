@@ -1376,6 +1376,28 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   #report .v372RotMeta{font-size:10px!important;}
 }
 
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -1567,6 +1589,28 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     z-index:160!important;
   }
 }
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
+
 </style>
 
 </head>
@@ -1722,8 +1766,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         <button class="player pos5" data-pos="5"></button>
         <button class="player pos6" data-pos="6"></button>
       </div>
-      <div class="currentPlayBox currentPlayBoxTop">現在の入力：<span id="selectedPlayLabel">スパイク成功</span></div>
-      <div class="modeHelp modeHelpSticky">コート上の選手をタップして記録</div>
+      <div class="currentPlayBox currentPlayBoxTop speedCurrentBox">
+        <div class="currentKicker">🏐 現在入力中</div>
+        <div class="currentMain"><span id="selectedPlayLabel">スパイク成功</span><button type="button" id="favoritePlayBtn" class="favoritePlayBtn" onclick="toggleFavoritePlay()" aria-label="現在の入力をお気に入り登録">☆</button></div>
+        <div class="currentHint">次はコート上の選手をタップ</div>
+      </div>
+      <div class="modeHelp modeHelpSticky">よく使う入力は☆登録 → 上部から1タップ選択</div>
     </div>
 
     <div class="displayFilterPanel" id="displayFilterPanel">
@@ -1756,6 +1804,8 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         <button class="yellow" data-result="被ブロック">🚫 被ブロック</button>
         <button class="purple" data-result="継続">継続</button>
       </div>
+
+      <div class="favoritePlayBar" id="favoritePlayBar" aria-label="お気に入り入力"></div>
 
       <div class="fastInput">
         <div class="fastGroup open" data-acc-group="attack">
@@ -2060,6 +2110,28 @@ body{
   #report .v372RotMeta{font-size:10px!important;}
 }
 
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
+
 </style>
 <!-- V36.1 menu overlay fix -->
 <style>
@@ -2117,6 +2189,28 @@ body.menuOpen #match .matchInputPane{
   #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
   #report .v372RotMeta{font-size:10px!important;}
 }
+
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
 
 </style>
 <!-- V36.2 landscape menu scroll fix -->
@@ -2190,6 +2284,28 @@ body.menuOpen .sideOverlay{
   #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
   #report .v372RotMeta{font-size:10px!important;}
 }
+
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
 
 </style>
 
@@ -2283,6 +2399,28 @@ body.menuOpen .sideOverlay{
   #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
   #report .v372RotMeta{font-size:10px!important;}
 }
+
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
 
 </style>
 
@@ -2453,5 +2591,27 @@ body.menuOpen .sideOverlay{
   #report .v372TossRow{grid-template-columns:58px minmax(0,1fr) 52px!important;gap:8px!important;padding:9px!important;}
   #report .v372RotMeta{font-size:10px!important;}
 }
+
+
+
+/* V38: Speed Input Upgrade */
+.speedCurrentBox{display:grid!important;gap:5px!important;padding:12px 14px!important;border-radius:16px!important;}
+.currentKicker{font-size:12px;font-weight:1000;color:#fbbf24;letter-spacing:.05em;}
+.currentMain{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.currentMain span{font-size:20px!important;font-weight:1000;color:#fff!important;line-height:1.2;}
+.currentHint{font-size:12px;font-weight:900;color:#cbd5e1;}
+.favoritePlayBtn{min-width:44px;min-height:38px;border-radius:12px;border:1px solid rgba(251,191,36,.42);background:rgba(251,191,36,.10);color:#fbbf24;font-size:24px;font-weight:1000;}
+.favoritePlayBtn.active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111827;border-color:#fde68a;box-shadow:0 0 0 3px rgba(251,191,36,.20);}
+.favoritePlayBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px;}
+.favoritePlayBar.empty{display:none;}
+.favoritePlayChip{min-height:46px;border-radius:14px;border:1px solid rgba(251,191,36,.28);background:rgba(251,191,36,.10);color:#f8fafc;font-weight:1000;font-size:13px;padding:8px 9px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;}
+.favoritePlayChip.active{background:linear-gradient(135deg,#fbbf24,#f97316)!important;color:#111827!important;border-color:#fde68a!important;}
+.favoritePlayChip .removeFav{font-size:14px;opacity:.8;margin-left:auto;}
+.fastBtn.pulseTap,.matchNumBtn.pulseTap,#matchCourt .player.pulseTap{animation:v38TapPulse .28s ease-out;}
+@keyframes v38TapPulse{0%{transform:scale(.96);filter:brightness(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+.inputSavedToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);z-index:999;background:rgba(15,23,42,.96);color:#f8fafc;border:1px solid rgba(251,191,36,.42);border-radius:999px;padding:10px 16px;font-size:13px;font-weight:1000;box-shadow:0 16px 40px rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:.22s ease;}
+.inputSavedToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:520px){.favoritePlayBar{grid-template-columns:1fr 1fr;gap:6px}.favoritePlayChip{font-size:12px;min-height:42px}.currentMain span{font-size:17px!important}.favoritePlayBtn{min-height:36px;min-width:40px}}
+@media(orientation:landscape) and (max-height:520px){.speedCurrentBox{padding:8px 10px!important}.currentKicker,.currentHint{font-size:10px}.currentMain span{font-size:15px!important}.favoritePlayBar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0}.favoritePlayChip{min-height:34px;font-size:11px;border-radius:10px}}
 
 </style>

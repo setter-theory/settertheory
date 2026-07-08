@@ -27,6 +27,12 @@ function readJsonArray(key, fallback){
 }
 let openInputGroups = readJsonArray("setterTheoryOpenGroups", ["attack"]);
 let favoriteInputGroups = readJsonArray("setterTheoryFavoriteGroups", ["toss","dig"]);
+let favoritePlays = readJsonArray("setterTheoryFavoritePlays", [
+  {mode:"スパイク", result:"成功"},
+  {mode:"レセプ", result:"Aパス"},
+  {mode:"ディグ", result:"成功"},
+  {mode:"サーブ", result:"ミス"}
+]);
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
 const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
 const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
@@ -145,6 +151,85 @@ function resetFavoriteGroups(){
   favoriteInputGroups = openInputGroups.length ? openInputGroups.slice() : ["toss","dig"];
   saveFavoriteInputGroups();
   setInputView("favorite");
+}
+
+
+function normalizeFavoritePlays(){
+  favoritePlays = (Array.isArray(favoritePlays)?favoritePlays:[]).filter(x=>x && x.mode && x.result)
+    .filter((x,i,arr)=>arr.findIndex(y=>y.mode===x.mode && y.result===x.result)===i)
+    .slice(0,8);
+}
+function saveFavoritePlays(){
+  normalizeFavoritePlays();
+  localStorage.setItem("setterTheoryFavoritePlays", JSON.stringify(favoritePlays));
+}
+function isCurrentFavoritePlay(){
+  normalizeFavoritePlays();
+  return favoritePlays.some(x=>x.mode===s.mode && x.result===s.result);
+}
+function playText(mode,result){
+  const before={"スパイク":"💥","レセプ":"🤲","ディグ":"💪","サーブ":"🎯","トス":"⚡","ブロック":"🧱"}[mode] || "🏐";
+  if(mode==="トス") return `${before} トス→${result}`;
+  if(result==="エース") return `${before} サービスエース`;
+  if(result==="シャット") return `${before} ブロックシャット`;
+  if(result==="ワンタッチ") return `${before} ワンタッチ`;
+  if(result==="被ブロック") return `🚫 被ブロック`;
+  return `${before} ${mode}${result}`;
+}
+function setPlay(mode,result){
+  s.mode=mode; s.result=result; save(); render();
+}
+
+function toggleFavoritePlay(){
+  const idx=favoritePlays.findIndex(x=>x.mode===s.mode && x.result===s.result);
+  if(idx>=0){
+    favoritePlays.splice(idx,1);
+    showInputToast("★ お気に入り解除");
+  }else{
+    favoritePlays.unshift({mode:s.mode,result:s.result});
+    showInputToast("★ お気に入り登録しました");
+  }
+  saveFavoritePlays();
+  renderFavoritePlayBar();
+}
+function removeFavoritePlay(mode,result,ev){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  favoritePlays=favoritePlays.filter(x=>!(x.mode===mode && x.result===result));
+  saveFavoritePlays();
+  renderFavoritePlayBar();
+  showInputToast("★ お気に入り解除");
+}
+function renderFavoritePlayBar(){
+  const bar=document.getElementById("favoritePlayBar");
+  if(!bar) return;
+  normalizeFavoritePlays();
+  bar.classList.toggle("empty", favoritePlays.length===0);
+  bar.innerHTML = favoritePlays.map(x=>{
+    const active=x.mode===s.mode && x.result===s.result;
+    return `<button type="button" class="favoritePlayChip ${active?'active':''}" onclick="setPlay('${escapeAttr(x.mode)}','${escapeAttr(x.result)}')"><span>${escapeHtml(playText(x.mode,x.result))}</span><span class="removeFav" onclick="removeFavoritePlay('${escapeAttr(x.mode)}','${escapeAttr(x.result)}', event)">×</span></button>`;
+  }).join("");
+}
+function showInputToast(msg){
+  let el=document.getElementById("inputSavedToast");
+  if(!el){
+    el=document.createElement("div");
+    el.id="inputSavedToast";
+    el.className="inputSavedToast";
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;
+  el.classList.add("show");
+  clearTimeout(showInputToast._t);
+  showInputToast._t=setTimeout(()=>el.classList.remove("show"),1100);
+}
+function pulseElement(el){
+  if(!el) return;
+  el.classList.remove("pulseTap");
+  void el.offsetWidth;
+  el.classList.add("pulseTap");
+}
+function vibrateTap(){
+  try{ if(navigator.vibrate) navigator.vibrate(18); }catch(e){}
 }
 
 function goHome(){
@@ -303,6 +388,7 @@ function add(pos){
 }
 function addByNumber(num, pos="-"){
   selectedCourtNum = String(num);
+  vibrateTap();
   snap();
   const point=pointByResult(s.result);
   s.logs.push({
@@ -311,6 +397,7 @@ function addByNumber(num, pos="-"){
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
   });
   save(); render();
+  showInputToast("記録しました：" + playLabel() + " / " + num + "番");
 }
 function pointOnly(team){
   snap();
@@ -349,6 +436,8 @@ function render(){
   document.getElementById("serveLabel").textContent=s.serve==="mine"?"自サーブ":"相手サーブ";
   document.getElementById("modeBadge").textContent=playLabel();
   const spl=document.getElementById("selectedPlayLabel"); if(spl) spl.textContent=playLabel();
+  const fpb=document.getElementById("favoritePlayBtn"); if(fpb){ const fav=isCurrentFavoritePlay(); fpb.textContent=fav?"★":"☆"; fpb.classList.toggle("active", fav); }
+  renderFavoritePlayBar();
   const nums=rotationNums();
   const setterNum=rotatedSetterNum();
   document.querySelectorAll(".player").forEach(b=>{
@@ -1586,8 +1675,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     setupSelected=i;
     save(); renderSetup(); renderMatchNumberBank(); render();
   }));
-  document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>add(b.dataset.pos)));
+  document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>{ pulseElement(b); add(b.dataset.pos); }));
   document.querySelectorAll(".fastBtn").forEach(b=>b.addEventListener("click",()=>{
+    pulseElement(b);
+    vibrateTap();
     s.mode=b.dataset.type;
     s.result=b.dataset.result;
     const group=b.closest(".fastGroup");
@@ -1683,6 +1774,8 @@ function renderCsvPreview(parsed, fileName){
   `;
 }
 
+
+function escapeAttr(v){ return String(v).replace(/\\/g,"\\\\").replace(/\'/g,"\\\'").replace(/"/g,"&quot;"); }
 function escapeHtml(v){
   return String(v)
     .replaceAll("&","&amp;")
@@ -1731,4 +1824,3 @@ function setupCsvImport(){
     }catch(e){}
   }
 }
-
