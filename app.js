@@ -305,6 +305,18 @@ function benchNumbers(){
   const court=new Set((s.nums||[]).map(String));
   return allRegisteredNumbers().filter(n=>!court.has(String(n)));
 }
+function rosterItemHtml(n, fallback){
+  return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span>${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span></div>`;
+}
+function renderRosterPanel(){
+  const starterBox=document.getElementById('starterRoster');
+  const benchBox=document.getElementById('benchRoster');
+  if(!starterBox || !benchBox) return;
+  const starters=(s.nums||[]).filter(Boolean).map(String);
+  starterBox.innerHTML=starters.length ? starters.map(n=>rosterItemHtml(n,'スタメン')).join('') : '<div class="rosterEmpty">開始ローテの6人を選ぶと、ここにスタメンとして表示されます。</div>';
+  const bench=benchNumbers();
+  benchBox.innerHTML=bench.length ? bench.map(n=>rosterItemHtml(n,'ベンチ')).join('') : '<div class="rosterEmpty">ベンチ選手が未登録です。上の選手登録で背番号と名前を追加してください。</div>';
+}
 function openSubModal(outNum){
   subOutNum = outNum ? String(outNum) : null;
   const modal=document.getElementById('subModal');
@@ -365,11 +377,12 @@ function renderSetup(){
       sel.innerHTML=pool.map(n=>`<option value="${n}" ${String(currentNum)===String(n)?"selected":""}>${n}${getPlayerName(n)?" "+getPlayerName(n):""}</option>`).join("");
     }
   });
+  renderRosterPanel();
   const used=new Set(s.nums);
   const bank=document.getElementById("numberBank");
   if(bank){
     bank.innerHTML="";
-    const pool=[...new Set([...numberPool,...s.nums].filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+    const pool=allRegisteredNumbers();
     pool.forEach(n=>{
       const btn=document.createElement("button");
       btn.className="numBtn";
@@ -395,6 +408,8 @@ function toggleSetter(){
   save(); renderSetup(); render();
 }
 function startMatch(){
+  const starters=(s.nums||[]).filter(Boolean).map(String);
+  if(starters.length!==6 || new Set(starters).size!==6){ alert("スタメン6人の背番号を重複なく設定してください"); return; }
   s.team=document.getElementById("team").value || "自チーム";
   s.oppTeam=document.getElementById("oppTeam").value || "相手";
   s.setNo=document.getElementById("setNo").value;

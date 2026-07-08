@@ -1678,6 +1678,18 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .subChoice b{font-size:24px;color:#fbbf24}.subChoice span{font-size:11px;color:#cbd5e1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.subChoice.active{background:linear-gradient(135deg,#f5b544,#ff8a1d);color:#111827}.subChoice.active b,.subChoice.active span{color:#111827}.subEmpty{grid-column:1/-1;background:rgba(255,255,255,.06);border-radius:14px;padding:14px;color:#cbd5e1;font-weight:800}.subFooter{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;color:#cbd5e1;font-size:12px}
 @media (max-width:700px){.subGrid{grid-template-columns:repeat(2,1fr)}.subPanel{padding:12px}.subChoice{min-height:52px}.subChoice b{font-size:22px}}
 
+
+/* v42: スタメン・ベンチ登録パネル */
+.rosterGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.rosterBox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px}
+.rosterBox h4{margin:0 0 8px;font-size:14px;font-weight:1000;color:var(--ink)}
+.rosterList{display:grid;gap:7px}
+.rosterItem{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:8px 10px;font-weight:1000}
+.rosterItem b{font-size:17px;color:var(--blue)}
+.rosterItem span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rosterEmpty{font-size:13px;color:var(--muted);font-weight:900;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:10px;line-height:1.45}
+@media(max-width:520px){.rosterGrid{grid-template-columns:1fr}.rosterItem{padding:7px 9px}}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -2620,7 +2632,17 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <label>選手名<input id="newPlayerName" placeholder="例 佐藤"></label>
     </div>
     <button class="whitebtn" style="width:100%;margin-top:10px" onclick="addPlayerName()">＋選手を登録</button>
-    <div class="help">💡 登録した選手名を、下の開始ローテで選択できます。</div>
+    <div class="help">💡 開始ローテに入っている6人がスタメン、それ以外の登録選手がベンチになります。試合中の選手交代は、このベンチから選べます。</div>
+  <div class="rosterGrid">
+    <div class="rosterBox">
+      <h4>スタメン6人</h4>
+      <div id="starterRoster" class="rosterList"></div>
+    </div>
+    <div class="rosterBox">
+      <h4>ベンチ</h4>
+      <div id="benchRoster" class="rosterList"></div>
+    </div>
+  </div>
   </div>
 
   <div class="card">
