@@ -2715,9 +2715,15 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
   <div class="card">
     <h3>選手登録</h3>
-    <div class="playerForm">
-      <label>背番号<input id="newPlayerNo" placeholder="例 4"></label>
-      <label>選手名<input id="newPlayerName" placeholder="例 佐藤"></label>
+    <div class="playerForm playerRegisterForm" id="playerRegisterForm">
+      <div class="playerField">
+        <div class="fieldTitle">背番号</div>
+        <input id="newPlayerNo" name="newPlayerNo" type="tel" inputmode="numeric" autocomplete="off" placeholder="例 4">
+      </div>
+      <div class="playerField">
+        <div class="fieldTitle">選手名</div>
+        <input id="newPlayerName" name="newPlayerName" type="text" autocomplete="off" placeholder="例 佐藤">
+      </div>
     </div>
     <button class="whitebtn" style="width:100%;margin-top:10px" onclick="addPlayerName()">＋選手を登録</button>
     <div class="benchCountRow">
@@ -2970,6 +2976,103 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 </div>
 
 <script src="app.js"></script>
+
+<style>
+/* V50.4: 選手登録欄を label 内 input から独立させ、iPadでも確実に入力可能にする */
+#setup .playerRegisterForm{
+  display:grid!important;
+  grid-template-columns:90px 1fr!important;
+  gap:8px!important;
+  align-items:end!important;
+  position:relative!important;
+  z-index:100000!important;
+  isolation:isolate!important;
+  pointer-events:auto!important;
+}
+#setup .playerField{
+  display:block!important;
+  position:relative!important;
+  z-index:100001!important;
+  pointer-events:auto!important;
+}
+#setup .playerField .fieldTitle{
+  font-size:12px!important;
+  font-weight:1000!important;
+  color:#334155!important;
+  margin-bottom:4px!important;
+}
+#setup .playerRegisterForm input#newPlayerNo,
+#setup .playerRegisterForm input#newPlayerName{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  min-height:46px!important;
+  padding:10px 12px!important;
+  border:2px solid #cbd5e1!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#111827!important;
+  font-size:16px!important;
+  font-weight:900!important;
+  line-height:1.2!important;
+  opacity:1!important;
+  position:relative!important;
+  z-index:100002!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  caret-color:#111827!important;
+}
+#setup .playerRegisterForm input#newPlayerNo:focus,
+#setup .playerRegisterForm input#newPlayerName:focus{
+  outline:3px solid rgba(245,181,68,.35)!important;
+  border-color:#f59e0b!important;
+}
+</style>
+<script>
+/* V50.4: 「＋選手を登録」の上の背番号・選手名だけを直接復旧 */
+(function(){
+  function fixPlayerRegisterInputs(){
+    var no=document.getElementById('newPlayerNo');
+    var name=document.getElementById('newPlayerName');
+    [no,name].forEach(function(el){
+      if(!el) return;
+      el.disabled=false;
+      el.readOnly=false;
+      el.removeAttribute('disabled');
+      el.removeAttribute('readonly');
+      el.style.pointerEvents='auto';
+      el.style.webkitUserSelect='text';
+      el.style.userSelect='text';
+      el.style.zIndex='100002';
+      ['touchstart','touchend','mousedown','mouseup','click'].forEach(function(type){
+        if(el.__v504Bound) return;
+      });
+      if(!el.__v504Bound){
+        ['touchstart','mousedown'].forEach(function(type){
+          el.addEventListener(type,function(ev){ ev.stopPropagation(); }, true);
+        });
+        ['touchend','mouseup','click'].forEach(function(type){
+          el.addEventListener(type,function(ev){ ev.stopPropagation(); setTimeout(function(){ el.focus(); },0); }, true);
+        });
+        el.__v504Bound=true;
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded',fixPlayerRegisterInputs);
+  window.addEventListener('load',fixPlayerRegisterInputs);
+  window.addEventListener('pageshow',fixPlayerRegisterInputs);
+  document.addEventListener('click',function(){
+    var setup=document.getElementById('setup');
+    if(setup && setup.classList.contains('active')) setTimeout(fixPlayerRegisterInputs,0);
+  }, true);
+  window.fixPlayerRegisterInputs=fixPlayerRegisterInputs;
+})();
+</script>
+
 </body>
 </html>
 
