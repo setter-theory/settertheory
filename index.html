@@ -3073,6 +3073,109 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 })();
 </script>
 
+
+
+<!-- V50.5: iPad横画面で「＋選手を登録」上の背番号・選手名入力欄を完全復旧 -->
+<style>
+/* iPad/Safariで上に被る透明要素・メニュー系が入力を奪わないようにする */
+body:not(.menuOpen) .sideOverlay,
+body:not(.menuOpen) .sideMenu{
+  pointer-events:none!important;
+}
+#setup.screen.active{
+  position:relative!important;
+  z-index:1!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:auto!important;
+}
+#setup.screen.active .card,
+#setup.screen.active .playerRegisterForm,
+#setup.screen.active .playerField{
+  position:relative!important;
+  z-index:2147483000!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  overflow:visible!important;
+  transform:none!important;
+}
+#setup.screen.active #newPlayerNo,
+#setup.screen.active #newPlayerName{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  width:100%!important;
+  min-height:48px!important;
+  background:#fff!important;
+  color:#111827!important;
+  border:2px solid #cbd5e1!important;
+  border-radius:14px!important;
+  padding:10px 12px!important;
+  font-size:16px!important;
+  font-weight:900!important;
+  position:relative!important;
+  z-index:2147483001!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-touch-callout:default!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  caret-color:#111827!important;
+}
+#setup.screen.active #newPlayerNo:focus,
+#setup.screen.active #newPlayerName:focus{
+  outline:3px solid rgba(245,181,68,.45)!important;
+  border-color:#f59e0b!important;
+}
+</style>
+<script>
+/* 入力欄をクローンで再生成して、古いイベント/readonly/disabled/タップ妨害をリセット */
+(function(){
+  function hardResetPlayerRegisterInputs(){
+    if(!document.getElementById('setup')) return;
+    ['newPlayerNo','newPlayerName'].forEach(function(id){
+      var old=document.getElementById(id);
+      if(!old) return;
+      var val=old.value || '';
+      var clone=document.createElement('input');
+      clone.id=id;
+      clone.name=id;
+      clone.value=val;
+      clone.autocomplete='off';
+      clone.placeholder = id==='newPlayerNo' ? '例 4' : '例 佐藤';
+      clone.type = id==='newPlayerNo' ? 'text' : 'text';
+      if(id==='newPlayerNo') clone.setAttribute('inputmode','numeric');
+      clone.removeAttribute('disabled');
+      clone.removeAttribute('readonly');
+      clone.disabled=false;
+      clone.readOnly=false;
+      clone.style.pointerEvents='auto';
+      clone.style.webkitUserSelect='text';
+      clone.style.userSelect='text';
+      old.parentNode.replaceChild(clone, old);
+      ['touchstart','touchend','pointerup','mousedown','click'].forEach(function(type){
+        clone.addEventListener(type,function(e){
+          e.stopPropagation();
+          setTimeout(function(){ clone.focus(); },0);
+        }, type==='touchstart'||type==='touchend' ? {passive:true} : false);
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(hardResetPlayerRegisterInputs,50); });
+  var oldShow=window.show;
+  if(typeof oldShow==='function'){
+    window.show=function(name){
+      var r=oldShow.apply(this,arguments);
+      if(name==='setup') setTimeout(hardResetPlayerRegisterInputs,80);
+      return r;
+    };
+  }
+  window.hardResetPlayerRegisterInputs=hardResetPlayerRegisterInputs;
+})();
+</script>
+
 </body>
 </html>
 
