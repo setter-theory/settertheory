@@ -1144,7 +1144,7 @@ function printMatchPdfReport(){
     #report .reportHeader{position:static!important;top:auto!important;display:grid!important;}
     #report .reportActions{display:none!important;}
     #report .backLink{display:none!important;}
-    #report .card,#report .quickCard,#report .fastGroup,#report .matchStage,#report .reportCard,#report .panel,#report .settingsPanel,#report .reportPanel{break-inside:avoid;page-break-inside:avoid;}
+    #report .card,#report .quickCard,#report .fastGroup,#report .matchStage,#report .reportCard,#report .panel,#report .settingsPanel,#report .reportPanel{break-inside:auto;page-break-inside:auto;}
     #report *{max-height:none!important;}
     @media print{
       html,body{background:#fff!important;padding:0!important;overflow:visible!important;color:#0f172a!important;}
@@ -1155,11 +1155,29 @@ function printMatchPdfReport(){
       #report .reportHeader{margin-bottom:10px!important;background:#fff!important;}
       #report .reportTitle h1{font-size:22px!important;color:#0f172a!important;}
       #report .reportTitle p{font-size:11px!important;color:#475569!important;}
-      #report .reportGrid,#report .panelGrid,#report .wideGrid,#report .bottomGrid{gap:8px!important;}
-      #report .reportPanel,#report .panel,#report .reportCard,#report .card{background:#fff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;margin-bottom:8px!important;}
+      #report .reportGrid,#report .panelGrid,#report .wideGrid,#report .bottomGrid{display:block!important;gap:0!important;}
+      #report .summaryCards{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:6px!important;margin-bottom:8px!important;}
+      #report .statCard{min-height:auto!important;padding:8px!important;margin-bottom:0!important;break-inside:avoid;page-break-inside:avoid;}
+      #report .statTop{font-size:11px!important;}
+      #report .statValue{font-size:24px!important;margin:5px 0!important;}
+      #report .statSub{font-size:10px!important;}
+      #report .miniTrack{height:5px!important;margin-top:5px!important;}
+      #report .reportPanel,#report .panel,#report .reportCard,#report .card{background:#fff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;margin:0 0 8px!important;padding:9px!important;break-inside:auto!important;page-break-inside:auto!important;overflow:visible!important;}
+      #report .reportPanel h3{font-size:14px!important;margin:0 0 6px!important;}
+      #report table{width:100%!important;border-collapse:collapse!important;page-break-inside:auto!important;}
+      #report thead{display:table-header-group!important;}
+      #report tr{page-break-inside:avoid!important;break-inside:avoid!important;}
       #report table,#report tr,#report td,#report th{background:#fff!important;color:#0f172a!important;border-color:#cbd5e1!important;}
+      #report td,#report th{font-size:9px!important;padding:4px!important;}
       #report .muted,#report small{color:#475569!important;}
       #report .barFill,#report .v372MiniTrack span,#report .v372TossTrack span{background:#fbbf24!important;}
+      #report .donutWrap,#report .tossPanel{display:block!important;}
+      #report .donut{width:92px!important;height:92px!important;margin:0 auto 6px!important;}
+      #report .donut:after{width:52px!important;height:52px!important;}
+      #report .donutCenter .num{font-size:18px!important;}
+      #report .legendRow,#report .bigBarRow,#report .rotationRow{font-size:10px!important;gap:5px!important;}
+      #report .timeline{overflow:visible!important;display:flex!important;flex-wrap:wrap!important;gap:6px!important;padding:0!important;}
+      #report .timelineItem{min-width:34px!important;}
     }
   </style></head><body>
     <div class="pdfTopBar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
