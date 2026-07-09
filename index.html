@@ -1707,6 +1707,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .benchCountRow select{width:100%;margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:14px;font-weight:1000;background:#fff;color:var(--ink)}
 @media(max-width:520px){.rosterGrid{grid-template-columns:1fr}.rosterItem{padding:7px 9px}}
 
+
+/* V46: PDF出力ボタン */
+.reportActions{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.reportActions button{min-height:52px;white-space:nowrap}
+.pdfBtn{background:#0f172a;color:#fff}
+@media(max-width:640px){.reportActions{justify-content:center;flex-wrap:wrap}.reportActions button{flex:1;min-width:130px}}
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -2850,7 +2856,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <h1>📊 試合レポート</h1>
       <p id="reportSub">自動集計</p>
     </div>
-    <button class="csvBtn" onclick="downloadCSV()">⬇ CSV出力</button>
+    <div class="reportActions"><button class="pdfBtn" onclick="printMatchPdfReport()">📄 PDF出力</button><button class="csvBtn" onclick="downloadCSV()">⬇ CSV出力</button></div>
   </div>
   <div id="reportDashboard"></div>
 </section>
