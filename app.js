@@ -39,6 +39,7 @@ let favoritePlays = readJsonArray("setterTheoryFavoritePlays", [
 ]);
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
 const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
+const rateActionTypes=["スパイク","サーブ","レセプ","ディグ","ブロック"];
 const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
 
 function show(id){
@@ -585,7 +586,15 @@ function renderMatchNumberBank(){
 }
 
 function isSuccessResult(x){
-  return ["成功","エース","シャット","Aパス","Bパス","Cパス","レフト","センター","ライト","バック","ツー","ワンタッチ"].includes(x.result);
+  if(!x || x.type === "トス") return false;
+  return ["成功","エース","シャット","Aパス","Bパス","Cパス","ワンタッチ"].includes(x.result);
+}
+function effectRate(logs){
+  const total=logs.length;
+  if(!total) return 0;
+  const plus=logs.filter(isSuccessResult).length;
+  const minus=logs.filter(isMissResult).length + logs.filter(x=>x.result==="被ブロック").length;
+  return Math.round((plus-minus)/total*100);
 }
 function isMissResult(x){
   return (
@@ -598,13 +607,14 @@ function isMissResult(x){
 }
 
 function buildOverallTable(){
-  let html="<table><tr><th>項目</th><th>本数</th><th>成功</th><th>ミス</th><th>成功率</th></tr>";
-  actionTypes.forEach(t=>{
+  let html="<table><tr><th>項目</th><th>本数</th><th>成功</th><th>ミス</th><th>成功率</th><th>効果率</th></tr>";
+  rateActionTypes.forEach(t=>{
     const a=s.logs.filter(x=>x.type===t);
     const ok=a.filter(isSuccessResult).length;
     const miss=a.filter(isMissResult).length;
     const pct=a.length?Math.round(ok/a.length*100):0;
-    html+=`<tr><td>${t}</td><td>${a.length}</td><td>${ok}</td><td>${miss}</td><td>${pct}%</td></tr>`;
+    const eff=effectRate(a);
+    html+=`<tr><td>${t}</td><td>${a.length}</td><td>${ok}</td><td>${miss}</td><td>${pct}%</td><td>${eff}%</td></tr>`;
   });
   html+="</table>";
   return html;
@@ -652,7 +662,7 @@ function pctClass(pct){
   return "bad";
 }
 function buildReportHero(){
-  const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
+  const actionLogs=s.logs.filter(x=>rateActionTypes.includes(x.type));
   const total=actionLogs.length;
   const ok=actionLogs.filter(isSuccessResult).length;
   const miss=actionLogs.filter(isMissResult).length;
@@ -663,11 +673,11 @@ function buildReportHero(){
   return `<div class="reportHero">
     <div class="metricCard"><div class="metricLabel">総入力</div><div class="metricValue">${total}</div><div class="metricSub">本</div></div>
     <div class="metricCard"><div class="metricLabel">成功率</div><div class="metricValue">${okPct}%</div><div class="metricSub">${ok}/${total}</div></div>
-    <div class="metricCard"><div class="metricLabel">失点系</div><div class="metricValue">${missPct+blockPct}%</div><div class="metricSub">ミス＋被ブロック</div></div>
+    <div class="metricCard"><div class="metricLabel">効果率</div><div class="metricValue">${effectRate(actionLogs)}%</div><div class="metricSub">成功−失点系 ÷ 対象本数</div></div>
   </div>`;
 }
 function buildResultSummary(){
-  const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
+  const actionLogs=s.logs.filter(x=>rateActionTypes.includes(x.type));
   const total=actionLogs.length || 0;
   const groups=[
     ["成功系","success",x=>isSuccessResult(x)],
@@ -695,31 +705,33 @@ function buildActionPercentBars(){
   return html;
 }
 function buildSuccessPercentTable(){
-  let html="<table class='percentTable'><tr><th>項目</th><th>成功率</th><th>成功/本数</th><th>ミス</th><th>被ブロック</th></tr>";
-  actionTypes.forEach(t=>{
+  let html="<table class='percentTable'><tr><th>項目</th><th>成功率</th><th>効果率</th><th>成功/本数</th><th>ミス</th><th>被ブロック</th></tr>";
+  rateActionTypes.forEach(t=>{
     const a=s.logs.filter(x=>x.type===t);
     const total=a.length;
     const ok=a.filter(isSuccessResult).length;
     const miss=a.filter(x=>x.result==="ミス").length;
     const blocked=a.filter(x=>x.result==="被ブロック").length;
     const pct=total?Math.round(ok/total*100):0;
-    html+=`<tr><td>${t}</td><td><span class="percentCell ${pctClass(pct)}">${pct}%</span></td><td>${ok}/${total}</td><td>${miss}</td><td>${blocked}</td></tr>`;
+    const eff=effectRate(a);
+    html+=`<tr><td>${t}</td><td><span class="percentCell ${pctClass(pct)}">${pct}%</span></td><td><span class="percentCell ${pctClass(eff)}">${eff}%</span></td><td>${ok}/${total}</td><td>${miss}</td><td>${blocked}</td></tr>`;
   });
   html+="</table>";
   return html;
 }
 function buildPersonalSuccessTable(){
   const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
-  let html="<table class='percentTable'><tr><th>選手</th><th>成功率</th><th>成功/本数</th><th>ミス</th><th>被ブロック</th></tr>";
+  let html="<table class='percentTable'><tr><th>選手</th><th>成功率</th><th>効果率</th><th>成功/本数</th><th>ミス</th><th>被ブロック</th></tr>";
   nums.forEach(n=>{
-    const a=s.logs.filter(x=>String(x.num)===String(n) && actionTypes.includes(x.type));
+    const a=s.logs.filter(x=>String(x.num)===String(n) && rateActionTypes.includes(x.type));
     const total=a.length;
     const ok=a.filter(isSuccessResult).length;
     const miss=a.filter(x=>x.result==="ミス").length;
     const blocked=a.filter(x=>x.result==="被ブロック").length;
     const pct=total?Math.round(ok/total*100):0;
     const name=getPlayerName(n);
-    html+=`<tr><td>${n}${name?`<br><small>${name}</small>`:""}</td><td><span class="percentCell ${pctClass(pct)}">${pct}%</span></td><td>${ok}/${total}</td><td>${miss}</td><td>${blocked}</td></tr>`;
+    const eff=effectRate(a);
+    html+=`<tr><td>${n}${name?`<br><small>${name}</small>`:""}</td><td><span class="percentCell ${pctClass(pct)}">${pct}%</span></td><td><span class="percentCell ${pctClass(eff)}">${eff}%</span></td><td>${ok}/${total}</td><td>${miss}</td><td>${blocked}</td></tr>`;
   });
   html+="</table>";
   return html;
@@ -781,6 +793,7 @@ function metricCard(label,value,sub,color,icon,pct){
 }
 
 let reportRankType = localStorage.getItem("vollyzeReportRankType") || "スパイク";
+if(reportRankType === "トス") reportRankType = "スパイク";
 let reportSortType = localStorage.getItem("vollyzeReportSortType") || "rate";
 
 function safePct(part,total){ return total ? Math.round(part/total*100) : 0; }
@@ -814,7 +827,6 @@ function rankConfig(type){
     "スパイク":{title:"スパイク決定率ランキング", success:"決定数", total:"打数", rate:"決定率", note:"決定率 ＝ スパイク成功 ÷ スパイク打数", ok:x=>x.type==="スパイク"&&x.result==="成功", all:x=>x.type==="スパイク"},
     "サーブ":{title:"サーブ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ サーブ成功＋サービスエース ÷ サーブ総数", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース"), all:x=>x.type==="サーブ"},
     "レセプ":{title:"レセプション成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ Aパス＋Bパス＋Cパス ÷ レセプ総数", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス"), all:x=>x.type==="レセプ"},
-    "トス":{title:"トス成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ レフト/センター/ライト/バック/ツーの記録 ÷ トス総数", ok:x=>x.type==="トス", all:x=>x.type==="トス"},
     "ディグ":{title:"ディグ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ ディグ成功 ÷ ディグ総数", ok:x=>x.type==="ディグ"&&x.result==="成功", all:x=>x.type==="ディグ"},
     "ブロック":{title:"ブロック成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ シャット＋ワンタッチ ÷ ブロック総数", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ"), all:x=>x.type==="ブロック"}
   };
@@ -845,7 +857,7 @@ function buildPersonalRanking(){
     </div>`).join("");
   return `<div class="rankControls">
     <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="reportRankType=this.value;localStorage.setItem('vollyzeReportRankType',this.value);report();">
-      ${["スパイク","サーブ","レセプ","トス","ディグ","ブロック"].map(t=>`<option value="${t}" ${reportRankType===t?"selected":""}>${rankConfig(t).title}</option>`).join("")}
+      ${["スパイク","サーブ","レセプ","ディグ","ブロック"].map(t=>`<option value="${t}" ${reportRankType===t?"selected":""}>${rankConfig(t).title}</option>`).join("")}
     </select></div>
     <div><label>並び替え</label><br><select id="rankSortSelect" onchange="reportSortType=this.value;localStorage.setItem('vollyzeReportSortType',this.value);report();">
       <option value="rate" ${reportSortType==="rate"?"selected":""}>成功率順</option>
@@ -1012,16 +1024,15 @@ function v372ActionStats(){
     {label:"サーブ", all:x=>x.type==="サーブ", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース")},
     {label:"レセプ", all:x=>x.type==="レセプ", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス")},
     {label:"ディグ", all:x=>x.type==="ディグ", ok:x=>x.type==="ディグ"&&x.result==="成功"},
-    {label:"トス", all:x=>x.type==="トス", ok:x=>x.type==="トス"},
     {label:"スパイク", all:x=>x.type==="スパイク", ok:x=>x.type==="スパイク"&&x.result==="成功"},
     {label:"ブロック", all:x=>x.type==="ブロック", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ")}
   ];
-  return cfgs.map(c=>{ const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); return {...c,total:all.length,ok:ok.length,pct:safePct(ok.length,all.length)}; });
+  return cfgs.map(c=>{ const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); return {...c,total:all.length,ok:ok.length,pct:safePct(ok.length,all.length),eff:effectRate(all)}; });
 }
 function buildActionSuccessAnalysis(){
   const stats=v372ActionStats();
   return `<div class="v372RateGrid">${stats.map(c=>`<div class="v372RateCard ${c.pct>=70?'good':c.pct<45&&c.total>0?'bad':''}">
-    <div class="v372RateLabel">${c.label}</div><div class="v372RateValue">${c.pct}%</div><div class="v372RateSub">${c.ok}/${c.total}</div>
+    <div class="v372RateLabel">${c.label}</div><div class="v372RateValue">${c.pct}%</div><div class="v372RateSub">成功 ${c.ok}/${c.total}　効果率 ${c.eff}%</div>
     <div class="v372MiniTrack"><span style="width:${c.pct}%"></span></div>
   </div>`).join("")}</div>`;
 }
