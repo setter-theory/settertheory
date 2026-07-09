@@ -1119,76 +1119,109 @@ function v46BuildSubstitutionRows(){
   return v46PrintableRows(rows);
 }
 function printMatchPdfReport(){
-  const report=document.getElementById('report');
-  const dashboard=document.getElementById('reportDashboard');
-  if(!report || !dashboard){ alert('レポート画面が見つかりません。'); return; }
+  // V48: PDF専用レイアウト。
+  // 画面表示をそのまま印刷せず、A4縦で安定するHTMLを別生成する。
+  const esc = escapeHtml;
+  const today = new Date().toLocaleDateString();
+  const actionLogs = s.logs.filter(x=>rateActionTypes.includes(x.type));
+  const total = actionLogs.length;
+  const okTotal = actionLogs.filter(isSuccessResult).length;
+  const effTotal = effectRate(actionLogs);
+  const myPts = s.logs.filter(x=>x.point==='自').length;
+  const opPts = s.logs.filter(x=>x.point==='相').length;
 
-  // 画面に表示しているレポートとPDFのデザインを統一するため、
-  // 現在のレポートHTMLとCSSをそのまま印刷用ウィンドウへコピーする。
-  const styles=[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n');
-  const reportSub=document.getElementById('reportSub')?.textContent || '自動集計';
+  function table(headers, rows, emptyText){
+    const body = rows && rows.length ? rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${headers.length}" class="empty">${esc(emptyText||'記録がありません。')}</td></tr>`;
+    return `<table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`;
+  }
+  function pct(part, all){ return all ? Math.round(part/all*100) : 0; }
+
+  const actionRows = rateActionTypes.map(t=>{
+    const a=s.logs.filter(x=>x.type===t);
+    const ok=a.filter(isSuccessResult).length;
+    const miss=a.filter(isMissResult).length;
+    const blocked=a.filter(x=>x.result==='被ブロック').length;
+    return [t, `${a.length}`, `${ok}`, `${miss}`, `${blocked}`, `${pct(ok,a.length)}%`, `${effectRate(a)}%`];
+  });
+
+  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=='-'))].sort((a,b)=>Number(a)-Number(b));
+  const playerRows=nums.map(n=>{
+    const a=s.logs.filter(x=>String(x.num)===String(n) && rateActionTypes.includes(x.type));
+    const ok=a.filter(isSuccessResult).length;
+    const miss=a.filter(isMissResult).length;
+    const blocked=a.filter(x=>x.result==='被ブロック').length;
+    return [`${n}番`, getPlayerName(n)||'-', `${a.length}`, `${ok}`, `${miss}`, `${blocked}`, `${pct(ok,a.length)}%`, `${effectRate(a)}%`];
+  }).filter(r=>Number(r[2])>0);
+
+  const rotRows=[1,2,3,4,5,6].map(r=>{
+    const a=s.logs.filter(x=>x.rot===`S${r}`);
+    const ok=a.filter(isSuccessResult).length;
+    const my=a.filter(x=>x.point==='自').length;
+    const op=a.filter(x=>x.point==='相').length;
+    return [`S${r}`, `${a.length}`, `${ok}`, `${pct(ok,a.length)}%`, `${my}`, `${op}`, `${my-op}`];
+  });
+
+  const tossLogs=s.logs.filter(x=>x.type==='トス');
+  const tossLabels=['レフト','センター','ライト','バック','ツー'];
+  const tossRows=tossLabels.map(label=>{
+    const count=tossLogs.filter(x=>x.result===label).length;
+    return [label, `${count}`, `${pct(count,tossLogs.length)}%`];
+  }).filter(r=>Number(r[1])>0);
+
+  const subCounts=s.substitutionCounts || {};
+  const subRows=Object.values(subCounts).sort((a,b)=>(b.count||0)-(a.count||0)).map(x=>[
+    `${x.a}番 ⇄ ${x.b}番`, `${x.count||0}回`, x.lastScore || '-', x.lastRot || '-', x.lastTime || '-'
+  ]);
+
+  const recentRows=s.logs.slice(-30).reverse().map(x=>[
+    `${x.no}`, x.set || '-', x.rot || '-', x.type || '-', x.num && x.num!=='-' ? `${x.num}番` : '-', x.result || '-', x.point || '-', x.score || '-', x.time || '-'
+  ]);
+
+  const playRows=actionTypes.map(t=>{
+    const count=s.logs.filter(x=>x.type===t).length;
+    return [t, `${count}`, `${pct(count,s.logs.filter(x=>actionTypes.includes(x.type)).length)}%`];
+  }).filter(r=>Number(r[1])>0);
+
   const html=`<!doctype html><html lang="ja"><head><meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Setter Theory Report</title>
-  <style>${styles}</style>
   <style>
-    @page{size:A4 portrait;margin:8mm;}
-    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box;}
-    html,body{margin:0!important;min-height:0!important;background:#0f172a!important;overflow:visible!important;}
-    body{padding:14px!important;}
-    .pdfTopBar{position:sticky;top:0;z-index:9999;display:flex;gap:10px;align-items:center;justify-content:space-between;background:rgba(15,23,42,.96);border:1px solid rgba(245,181,68,.32);border-radius:14px;padding:10px 12px;margin:0 auto 12px;max-width:1180px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .pdfTopBar b{color:#f8fafc;font-size:14px;}.pdfTopBar div{display:flex;gap:8px;}
-    .pdfTopBar button{border:0;border-radius:12px;padding:10px 14px;font-weight:1000;cursor:pointer;background:#fbbf24;color:#0f172a;}
-    .pdfTopBar button.secondary{background:#334155;color:#f8fafc;}
-    #report{display:block!important;position:static!important;visibility:visible!important;opacity:1!important;transform:none!important;max-width:1180px!important;margin:0 auto!important;padding:18px 14px!important;min-height:0!important;height:auto!important;overflow:visible!important;}
-    #report .reportHeader{position:static!important;top:auto!important;display:grid!important;}
-    #report .reportActions{display:none!important;}
-    #report .backLink{display:none!important;}
-    #report .card,#report .quickCard,#report .fastGroup,#report .matchStage,#report .reportCard,#report .panel,#report .settingsPanel,#report .reportPanel{break-inside:auto;page-break-inside:auto;}
-    #report *{max-height:none!important;}
-    @media print{
-      html,body{background:#fff!important;padding:0!important;overflow:visible!important;color:#0f172a!important;}
-      body *{visibility:visible!important;}
-      .pdfTopBar{display:none!important;}
-      #report{max-width:none!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#0f172a!important;box-shadow:none!important;}
-      #report,#report *{color:#0f172a!important;text-shadow:none!important;}
-      #report .reportHeader{margin-bottom:10px!important;background:#fff!important;}
-      #report .reportTitle h1{font-size:22px!important;color:#0f172a!important;}
-      #report .reportTitle p{font-size:11px!important;color:#475569!important;}
-      #report .reportGrid,#report .panelGrid,#report .wideGrid,#report .bottomGrid{display:block!important;gap:0!important;}
-      #report .summaryCards{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:6px!important;margin-bottom:8px!important;}
-      #report .statCard{min-height:auto!important;padding:8px!important;margin-bottom:0!important;break-inside:avoid;page-break-inside:avoid;}
-      #report .statTop{font-size:11px!important;}
-      #report .statValue{font-size:24px!important;margin:5px 0!important;}
-      #report .statSub{font-size:10px!important;}
-      #report .miniTrack{height:5px!important;margin-top:5px!important;}
-      #report .reportPanel,#report .panel,#report .reportCard,#report .card{background:#fff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;margin:0 0 8px!important;padding:9px!important;break-inside:auto!important;page-break-inside:auto!important;overflow:visible!important;}
-      #report .reportPanel h3{font-size:14px!important;margin:0 0 6px!important;}
-      #report table{width:100%!important;border-collapse:collapse!important;page-break-inside:auto!important;}
-      #report thead{display:table-header-group!important;}
-      #report tr{page-break-inside:avoid!important;break-inside:avoid!important;}
-      #report table,#report tr,#report td,#report th{background:#fff!important;color:#0f172a!important;border-color:#cbd5e1!important;}
-      #report td,#report th{font-size:9px!important;padding:4px!important;}
-      #report .muted,#report small{color:#475569!important;}
-      #report .barFill,#report .v372MiniTrack span,#report .v372TossTrack span{background:#fbbf24!important;}
-      #report .donutWrap,#report .tossPanel{display:block!important;}
-      #report .donut{width:92px!important;height:92px!important;margin:0 auto 6px!important;}
-      #report .donut:after{width:52px!important;height:52px!important;}
-      #report .donutCenter .num{font-size:18px!important;}
-      #report .legendRow,#report .bigBarRow,#report .rotationRow{font-size:10px!important;gap:5px!important;}
-      #report .timeline{overflow:visible!important;display:flex!important;flex-wrap:wrap!important;gap:6px!important;padding:0!important;}
-      #report .timelineItem{min-width:34px!important;}
-    }
+    @page{size:A4 portrait;margin:10mm;}
+    *{box-sizing:border-box;}
+    html,body{margin:0;background:#eef2f7;color:#111827;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+    .topbar{position:sticky;top:0;z-index:10;background:#0f172a;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .topbar b{font-size:14px}.topbar div{display:flex;gap:8px;flex-wrap:wrap}.topbar button{border:0;border-radius:10px;padding:9px 12px;font-weight:800;background:#fbbf24;color:#111827}.topbar .secondary{background:#334155;color:#fff;}
+    .sheet{width:190mm;max-width:calc(100vw - 20px);margin:12px auto;background:#fff;padding:12mm;box-shadow:0 10px 28px rgba(15,23,42,.16);}
+    .brand{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #f4b63f;padding-bottom:10px;margin-bottom:12px;}
+    .brand h1{margin:0;font-size:25px;letter-spacing:.02em;color:#0f172a}.brand p{margin:4px 0 0;color:#64748b;font-size:12px}.badge{font-weight:900;background:#0f172a;color:#fbbf24;border-radius:999px;padding:7px 10px;font-size:11px;white-space:nowrap;}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
+    .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
+    .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
+    table{width:100%;border-collapse:collapse;margin:0;font-size:10px;table-layout:auto;}th,td{border:1px solid #cbd5e1;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e2e8f0;color:#0f172a;font-weight:900;}td{background:#fff}.empty{text-align:center;color:#64748b;padding:12px!important;}
+    .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}.note{font-size:10px;color:#64748b;line-height:1.55;margin-top:5px}.footer{border-top:1px solid #cbd5e1;margin-top:12px;padding-top:8px;color:#64748b;font-size:10px;display:flex;justify-content:space-between;gap:8px;}
+    @media print{html,body{background:#fff!important}.topbar{display:none!important}.sheet{width:auto;max-width:none;margin:0;padding:0;box-shadow:none}.section{break-inside:avoid;page-break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}.twoCol{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(4,1fr)} }
+    @media (max-width:760px){.sheet{padding:14px}.summary{grid-template-columns:repeat(2,1fr)}.twoCol{grid-template-columns:1fr}.brand{display:block}.badge{display:inline-block;margin-top:8px}}
   </style></head><body>
-    <div class="pdfTopBar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
-    <section id="report" class="screen reportScreen active">
-      <div class="reportHeader">
-        <button class="backLink">← ホームに戻る</button>
-        <div class="reportTitle"><h1>📊 試合レポート</h1><p>${escapeHtml(reportSub)}</p></div>
-        <div class="reportActions"></div>
+    <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
+    <main class="sheet">
+      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}</p></div><div class="badge">Aquila Report</div></header>
+      <div class="summary">
+        <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
+        <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>
+        <div class="metric"><div class="label">効果率</div><div class="value">${effTotal}%</div><div class="sub">成功−ミス系 ÷ 対象</div></div>
+        <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">記録上の得失点</div></div>
       </div>
-      <div id="reportDashboard">${dashboard.innerHTML}</div>
-    </section>
+      <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トスはトスミス入力がないため、成功率・効果率の対象外です。</div></section>
+      <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
+      <div class="twoCol">
+        <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
+        <section class="section"><h2>プレー割合</h2>${table(['項目','本数','割合'], playRows, '記録がありません。')}</section>
+      </div>
+      <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}<div class="note">※Version 1.0ではトス先の配分のみ表示します。オープン・平行・A/B/Cなどの詳細分類は詳細分析モードで追加予定です。</div></section>
+      <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
+      <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
+      <footer class="footer"><span>Setter Theory</span><span>Generated by Aquila</span></footer>
+    </main>
   </body></html>`;
   const w=window.open('', '_blank');
   if(!w){ alert('ポップアップがブロックされました。ブラウザの設定で許可してください。'); return; }
