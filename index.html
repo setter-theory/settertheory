@@ -5383,3 +5383,24 @@ body.menuOpen .sideOverlay{
   window.enableSetupInputs = enableSetupInputs;
 })();
 </script>
+<style>
+/* V50.2: ローテーション選択の背番号・選手名入力欄を最前面＆入力可能に固定 */
+#setup .playerForm input,
+#setup input#newPlayerNo,
+#setup input#newPlayerName{
+  position:relative!important;
+  z-index:99999!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  caret-color:#111827!important;
+  background:#fff!important;
+}
+#setup .playerForm,
+#setup .playerForm label{
+  position:relative!important;
+  z-index:99998!important;
+  pointer-events:auto!important;
+}
+</style>

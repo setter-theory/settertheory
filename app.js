@@ -2114,3 +2114,25 @@ function setupCsvImport(){
     }catch(e){}
   }
 }
+
+// V50.2: ローテーション設定画面の入力欄がiPad/Safariで反応しない問題を修正
+// 画面全体のタップ/ダブルタップ抑制が input まで伝わると、フォーカスや文字入力を邪魔する場合があるため、
+// 設定画面の入力系だけはイベントを保護して必ずフォーカスできるようにする。
+(function setupInputFocusFix(){
+  function isSetupFormEl(el){
+    return el && el.closest && el.closest('#setup') && el.matches && el.matches('input, textarea, select');
+  }
+  ['touchstart','touchend','pointerdown','mousedown','click','dblclick','keydown','input'].forEach(function(type){
+    document.addEventListener(type, function(e){
+      if(isSetupFormEl(e.target)){
+        e.stopPropagation();
+        // 入力欄の標準動作は止めない
+      }
+    }, true);
+  });
+  document.addEventListener('click', function(e){
+    if(isSetupFormEl(e.target) && e.target.focus){
+      e.target.focus({preventScroll:false});
+    }
+  }, true);
+})();
