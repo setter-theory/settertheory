@@ -23,6 +23,7 @@ let s = {
 let setupSelected = 0;
 let selectedCourtNum = null;
 let subOutNum = null;
+let previousPlaySelection = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
 const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
 const groupOrder = ["attack","serve","receive","toss","dig","block"];
@@ -182,7 +183,24 @@ function playText(mode,result){
   return `${before} ${mode}${result}`;
 }
 function setPlay(mode,result){
+  if(s.mode!==mode || s.result!==result){
+    previousPlaySelection={mode:s.mode, result:s.result};
+  }
   s.mode=mode; s.result=result; save(); render();
+}
+function clearGroupPlay(groupKey, ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  const type=groupTypeMap[groupKey];
+  if(!type || s.mode!==type) return;
+  if(previousPlaySelection && previousPlaySelection.mode && previousPlaySelection.result){
+    const prev=previousPlaySelection;
+    previousPlaySelection={mode:s.mode, result:s.result};
+    s.mode=prev.mode;
+    s.result=prev.result;
+    save();
+    render();
+    showInputToast("入力を1つ戻しました：" + playLabel());
+  }
 }
 
 function toggleFavoritePlay(){
@@ -1933,6 +1951,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.querySelectorAll(".fastBtn").forEach(b=>b.addEventListener("click",()=>{
     pulseElement(b);
     vibrateTap();
+    if(s.mode!==b.dataset.type || s.result!==b.dataset.result){
+      previousPlaySelection={mode:s.mode, result:s.result};
+    }
     s.mode=b.dataset.type;
     s.result=b.dataset.result;
     const group=b.closest(".fastGroup");
