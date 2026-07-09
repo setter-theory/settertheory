@@ -5288,3 +5288,98 @@ body.menuOpen .sideOverlay{
   }
 }
 </style>
+
+<style>
+/* V50.1: input focus fix + right panel compact fit */
+#setup.screen.active{
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#setup .card,
+#setup .grid,
+#setup .playerForm,
+#setup label{
+  position:relative!important;
+  z-index:20!important;
+  pointer-events:auto!important;
+}
+#setup input,
+#setup select,
+#setup textarea,
+#newPlayerNo,
+#newPlayerName,
+#team,
+#oppTeam{
+  position:relative!important;
+  z-index:30!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  opacity:1!important;
+}
+#setup .setupSpot{z-index:5!important;pointer-events:auto!important;}
+#setup .setupSpot .nameSelect{z-index:8!important;pointer-events:auto!important;}
+#setup .logo{pointer-events:none!important;}
+#setup .logo *{pointer-events:none!important;}
+
+@media (orientation:landscape){
+  #match.screen.active{height:100vh!important;overflow:hidden!important;padding:6px 8px!important;}
+  #match.active .topbar{margin:0 0 5px!important;min-height:34px!important;}
+  #match.active .matchStage{grid-template-columns:minmax(250px,38%) minmax(0,1fr)!important;gap:7px!important;padding:7px!important;overflow:hidden!important;min-height:0!important;}
+  #match.active .matchCourtPane{overflow:hidden!important;min-height:0!important;}
+  #match.active .matchInputPane{overflow:hidden!important;min-height:0!important;display:flex!important;flex-direction:column!important;padding-right:0!important;}
+  #match.active .tabs,
+  #match.active .results,
+  #match.active .helper{display:none!important;}
+  #match.active .favoritePlayBar{display:none!important;}
+  #match.active .fastInput{display:grid!important;grid-template-columns:1fr!important;gap:4px!important;margin-top:0!important;overflow:hidden!important;flex:1 1 auto!important;min-height:0!important;}
+  #match.active .fastGroup{padding:4px 6px!important;border-radius:12px!important;margin:0!important;min-height:0!important;}
+  #match.active .fastGroupTitle{min-height:22px!important;font-size:11px!important;line-height:1.05!important;margin:0 0 3px!important;}
+  #match.active .titleTools{gap:4px!important;}
+  #match.active .favToggle{font-size:14px!important;}
+  #match.active .groupUndoBtn{font-size:10px!important;padding:3px 6px!important;min-height:22px!important;}
+  #match.active .accArrow{font-size:13px!important;}
+  #match.active .fastButtons,
+  #match.active .fastButtons.three,
+  #match.active .fastButtons.four,
+  #match.active .fastButtons.five{gap:4px!important;}
+  #match.active .fastButtons{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #match.active .fastButtons.three{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  #match.active .fastButtons.four{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #match.active .fastButtons.five{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+  #match.active .fastBtn{min-height:28px!important;font-size:10px!important;line-height:1.05!important;padding:3px 3px!important;border-radius:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  #match.active #matchCourt{aspect-ratio:3/1.48!important;margin-bottom:5px!important;border-width:3px!important;}
+  #match.active #matchCourt .player{min-height:36px!important;font-size:18px!important;margin:3px!important;}
+  #match.active .currentPlayBoxTop{margin-top:5px!important;padding:6px 8px!important;min-height:54px!important;}
+  #match.active .currentKicker{font-size:10px!important;margin-bottom:2px!important;}
+  #match.active .currentMain span,
+  #match.active #selectedPlayLabel{font-size:13px!important;}
+  #match.active .currentHint{font-size:9px!important;}
+  #match.active .modeHelpSticky{display:none!important;}
+  #match.active .subQuickBtn{min-height:30px!important;margin-top:5px!important;font-size:11px!important;}
+  #match.active .lastSubstitutionBox{display:none!important;}
+  #match.active .leftActionPanel{gap:4px!important;margin-top:5px!important;grid-template-columns:repeat(3,1fr)!important;}
+  #match.active .leftActionPanel button{min-height:30px!important;font-size:10px!important;padding:4px 3px!important;border-radius:9px!important;}
+}
+</style>
+<script>
+/* V50.1: iPad/PWAで入力欄に確実にフォーカスさせる */
+(function(){
+  function enableSetupInputs(){
+    ['newPlayerNo','newPlayerName','team','oppTeam'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el) return;
+      el.removeAttribute('disabled');
+      el.removeAttribute('readonly');
+      el.style.pointerEvents='auto';
+      el.style.webkitUserSelect='text';
+      el.addEventListener('touchend', function(ev){ ev.stopPropagation(); setTimeout(function(){ el.focus(); },0); }, {passive:true});
+      el.addEventListener('click', function(ev){ ev.stopPropagation(); });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', enableSetupInputs);
+  document.addEventListener('click', function(){ if(document.getElementById('setup') && document.getElementById('setup').classList.contains('active')) enableSetupInputs(); }, true);
+  window.enableSetupInputs = enableSetupInputs;
+})();
+</script>
