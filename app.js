@@ -1108,60 +1108,60 @@ function v46BuildSubstitutionRows(){
   return v46PrintableRows(rows);
 }
 function printMatchPdfReport(){
-  const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
-  const total=actionLogs.length;
-  const success=actionLogs.filter(isSuccessResult).length;
-  const miss=actionLogs.filter(isMissResult).length;
-  const blocked=actionLogs.filter(x=>x.result==='被ブロック').length;
-  const successPct=v46Percent(success,total);
-  const effectPct=v46Percent(success-miss-blocked,total);
-  const myPts=s.logs.filter(x=>x.point==='自').length;
-  const opPts=s.logs.filter(x=>x.point==='相').length;
-  const now=new Date();
-  const date=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const rotRows=[1,2,3,4,5,6].map(r=>{
-    const key='S'+r;
-    const logs=s.logs.filter(x=>x.rot===key);
-    const my=logs.filter(x=>x.point==='自').length;
-    const op=logs.filter(x=>x.point==='相').length;
-    const ok=logs.filter(isSuccessResult).length;
-    return [key, `${my}-${op}`, String(my-op), `${v46Percent(ok,logs.length)}%`, `${ok}/${logs.length}`, ''];
-  });
-  const actionRows=actionTypes.map(t=>{
-    const logs=s.logs.filter(x=>x.type===t);
-    const ok=logs.filter(isSuccessResult).length;
-    const m=logs.filter(isMissResult).length;
-    const b=logs.filter(x=>x.result==='被ブロック').length;
-    return [t, String(logs.length), `${v46Percent(ok,logs.length)}%`, `${v46Percent(ok-m-b,logs.length)}%`, `${ok}/${logs.length}`, `失点系${m+b}`];
-  });
-  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=='-'))].sort((a,b)=>Number(a)-Number(b));
-  const playerRows=nums.map(n=>{
-    const logs=s.logs.filter(x=>String(x.num)===String(n) && actionTypes.includes(x.type));
-    const ok=logs.filter(isSuccessResult).length;
-    const m=logs.filter(isMissResult).length;
-    const b=logs.filter(x=>x.result==='被ブロック').length;
-    return [`${n}番${getPlayerName(n)?' / '+getPlayerName(n):''}`, String(logs.length), `${v46Percent(ok,logs.length)}%`, `${v46Percent(ok-m-b,logs.length)}%`, `${ok}/${logs.length}`, `失点系${m+b}`];
-  });
-  const recentRows=s.logs.slice(-30).map(x=>[x.no,x.set,x.rot,x.type,`${x.num}${getPlayerName(x.num)?' / '+getPlayerName(x.num):''}`,x.result,x.score,x.time]);
-  const html=`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Setter Theory PDF</title><style>
-    @page{size:A4 portrait;margin:10mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{margin:0;background:#fff;color:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:10.5px}.page{width:190mm;min-height:277mm;page-break-after:always}.page:last-child{page-break-after:auto}.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0f172a;padding-bottom:6mm;margin-bottom:5mm}.brand{font-size:24px;font-weight:1000;letter-spacing:.04em}.sub{font-size:10px;color:#64748b;font-weight:900;margin-top:1mm}.meta{text-align:right;color:#334155;font-weight:900;line-height:1.55}.hero{display:grid;grid-template-columns:repeat(5,1fr);gap:3mm;margin-bottom:5mm}.metric{border:1px solid #cbd5e1;border-radius:4mm;background:#f8fafc;padding:3.5mm;text-align:center}.metric b{display:block;font-size:22px;line-height:1.05}.metric span{display:block;color:#64748b;font-size:9px;font-weight:900;margin-top:1mm}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4mm}.panel{border:1px solid #cbd5e1;border-radius:4mm;padding:3.5mm;background:#fff;margin-bottom:4mm;break-inside:avoid}.panel h2{font-size:13px;margin:0 0 2.5mm}.note{color:#475569;font-weight:800;line-height:1.55}table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:3mm}th,td{border-bottom:1px solid #e2e8f0;padding:2mm 1.5mm;text-align:left;vertical-align:top}th{background:#0f172a;color:#fff;font-size:9px}td{font-weight:800}.aquila{background:#eff6ff;border-color:#93c5fd}.aquila h2{color:#1e3a8a}.footer{text-align:center;color:#94a3b8;font-size:9px;margin-top:4mm}@media screen{body{background:#e5e7eb;padding:18px}.page{background:#fff;margin:0 auto 18px;padding:10mm;box-shadow:0 6px 24px rgba(15,23,42,.18)}}@media print{.page{padding:0}}
+  const report=document.getElementById('report');
+  const dashboard=document.getElementById('reportDashboard');
+  if(!report || !dashboard){ alert('レポート画面が見つかりません。'); return; }
+
+  // 画面に表示しているレポートとPDFのデザインを統一するため、
+  // 現在のレポートHTMLとCSSをそのまま印刷用ウィンドウへコピーする。
+  const styles=[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n');
+  const reportSub=document.getElementById('reportSub')?.textContent || '自動集計';
+  const html=`<!doctype html><html lang="ja"><head><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Setter Theory Report</title>
+  <style>${styles}</style>
+  <style>
+    @page{size:A4 portrait;margin:8mm;}
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box;}
+    html,body{margin:0!important;min-height:0!important;background:#0f172a!important;overflow:visible!important;}
+    body{padding:14px!important;}
+    .pdfTopBar{position:sticky;top:0;z-index:9999;display:flex;gap:10px;align-items:center;justify-content:space-between;background:rgba(15,23,42,.96);border:1px solid rgba(245,181,68,.32);border-radius:14px;padding:10px 12px;margin:0 auto 12px;max-width:1180px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .pdfTopBar b{color:#f8fafc;font-size:14px;}.pdfTopBar div{display:flex;gap:8px;}
+    .pdfTopBar button{border:0;border-radius:12px;padding:10px 14px;font-weight:1000;cursor:pointer;background:#fbbf24;color:#0f172a;}
+    .pdfTopBar button.secondary{background:#334155;color:#f8fafc;}
+    #report{display:block!important;position:static!important;visibility:visible!important;opacity:1!important;transform:none!important;max-width:1180px!important;margin:0 auto!important;padding:18px 14px!important;min-height:0!important;height:auto!important;overflow:visible!important;}
+    #report .reportHeader{position:static!important;top:auto!important;display:grid!important;}
+    #report .reportActions{display:none!important;}
+    #report .backLink{display:none!important;}
+    #report .card,#report .quickCard,#report .fastGroup,#report .matchStage,#report .reportCard,#report .panel,#report .settingsPanel,#report .reportPanel{break-inside:avoid;page-break-inside:avoid;}
+    #report *{max-height:none!important;}
+    @media print{
+      html,body{background:#fff!important;padding:0!important;overflow:visible!important;}
+      .pdfTopBar{display:none!important;}
+      #report{max-width:none!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#0f172a!important;box-shadow:none!important;}
+      #report .reportHeader{margin-bottom:10px!important;}
+      #report .reportTitle h1{font-size:22px!important;}
+      #report .reportTitle p{font-size:11px!important;}
+      #report .reportGrid,#report .panelGrid,#report .wideGrid,#report .bottomGrid{gap:8px!important;}
+      #report .reportPanel,#report .panel,#report .reportCard{box-shadow:none!important;margin-bottom:8px!important;}
+    }
   </style></head><body>
-    <main class="page">
-      <div class="header"><div><div class="brand">SETTER THEORY</div><div class="sub">MATCH INPUT REPORT / V46</div></div><div class="meta">${escapeHtml(date)}<br>対戦相手：${escapeHtml(s.oppTeam||'相手')}<br>Set ${escapeHtml(s.setNo)} / Score ${s.my}-${s.op}</div></div>
-      <div class="hero"><div class="metric"><b>${myPts}-${opPts}</b><span>得失点</span></div><div class="metric"><b>${total}</b><span>総入力</span></div><div class="metric"><b>${successPct}%</b><span>成功率</span></div><div class="metric"><b>${effectPct}%</b><span>効果率</span></div><div class="metric"><b>S${s.rot}</b><span>現在ローテ</span></div></div>
-      <section class="panel aquila"><h2>🦅 Aquila's Note</h2><div class="note">数字は答えではなく、次の選択肢を増やすための材料。得失点差が大きいローテと、効果率が低い項目から振り返ろう。</div></section>
-      <div class="grid2"><section class="panel"><h2>ローテーション別</h2><table><thead><tr><th>Rot</th><th>得失点</th><th>差</th><th>成功率</th><th>成功/本数</th><th></th></tr></thead><tbody>${v46PrintableRows(rotRows)}</tbody></table></section><section class="panel"><h2>プレー別 成功率・効果率</h2><table><thead><tr><th>項目</th><th>本数</th><th>成功率</th><th>効果率</th><th>成功/本数</th><th>失点系</th></tr></thead><tbody>${v46PrintableRows(actionRows)}</tbody></table></section></div>
-      <section class="panel"><h2>交代履歴</h2><table><thead><tr><th>ペア</th><th>回数</th><th>最終スコア</th><th>最終ローテ</th><th>時刻</th><th></th></tr></thead><tbody>${v46BuildSubstitutionRows()}</tbody></table></section>
-      <div class="footer">Setter Theory / Aquila</div>
-    </main>
-    <main class="page"><div class="header"><div><div class="brand">PLAYER ANALYSIS</div><div class="sub">SUCCESS RATE / EFFECT RATE</div></div><div class="meta">SETTER THEORY</div></div><section class="panel"><h2>選手別 成功率・効果率</h2><table><thead><tr><th>選手</th><th>本数</th><th>成功率</th><th>効果率</th><th>成功/本数</th><th>失点系</th></tr></thead><tbody>${v46PrintableRows(playerRows)}</tbody></table></section><section class="panel"><h2>直近ログ（最新30件）</h2><table><thead><tr><th>No</th><th>Set</th><th>Rot</th><th>項目</th><th>選手</th><th>結果</th><th>Score</th><th>Time</th></tr></thead><tbody>${v46PrintableRows(recentRows)}</tbody></table></section></main>
-    <script>window.onload=()=>{setTimeout(()=>window.print(),300)};<\/script>
+    <div class="pdfTopBar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
+    <section id="report" class="screen reportScreen active">
+      <div class="reportHeader">
+        <button class="backLink">← ホームに戻る</button>
+        <div class="reportTitle"><h1>📊 試合レポート</h1><p>${escapeHtml(reportSub)}</p></div>
+        <div class="reportActions"></div>
+      </div>
+      <div id="reportDashboard">${dashboard.innerHTML}</div>
+    </section>
   </body></html>`;
   const w=window.open('', '_blank');
   if(!w){ alert('ポップアップがブロックされました。ブラウザの設定で許可してください。'); return; }
   w.document.open();
   w.document.write(html);
   w.document.close();
+  setTimeout(()=>{ try{ w.focus(); }catch(e){} },200);
 }
 
 
