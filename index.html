@@ -1085,7 +1085,7 @@ body.displayPanelOpen .displayFilterPanel{display:block;}
 
 /* V35.1: 表示モード・複数アコーディオン・お気に入り */
 .titleTools{display:flex;align-items:center;gap:10px;}
-.groupUndoBtn{min-height:30px;padding:5px 10px;border-radius:10px;border:1px solid rgba(245,181,68,.55);background:rgba(245,181,68,.10);color:#fbbf24;font-size:12px;font-weight:1000;line-height:1;box-shadow:none}
+.groupUndoBtn{min-height:30px;padding:5px 12px;border-radius:10px;border:1px solid rgba(245,181,68,.55);background:rgba(245,181,68,.10);color:#fbbf24;font-size:12px;font-weight:1000;line-height:1;box-shadow:none}
 .groupUndoBtn:active{transform:scale(.98)}
 .favToggle{font-size:20px;color:#64748b;line-height:1;padding:4px 2px;min-width:26px;text-align:center;}
 .favToggle.active{color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,.35);}
@@ -2783,7 +2783,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
       <div class="fastInput">
         <div class="fastGroup open" data-acc-group="attack">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('attack', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('attack', event)">↩</span><span class="accArrow">⌃</span></span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('attack', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('attack', event)">↩ 戻す</span><span class="accArrow">⌃</span></span></button>
           <div class="fastButtons four">
             <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
             <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
@@ -2793,7 +2793,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         </div>
 
         <div class="fastGroup" data-acc-group="serve">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('serve', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('serve', event)">↩</span><span class="accArrow">⌄</span></span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('serve', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('serve', event)">↩ 戻す</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons three">
             <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
             <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
@@ -2802,7 +2802,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         </div>
 
         <div class="fastGroup" data-acc-group="receive">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('receive')"><span>🛡️ レセプション</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('receive', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('receive', event)">↩</span><span class="accArrow">⌄</span></span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('receive')"><span>🛡️ レセプション</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('receive', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('receive', event)">↩ 戻す</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons four">
             <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
             <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
@@ -2812,7 +2812,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         </div>
 
         <div class="fastGroup" data-acc-group="toss">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('toss', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('toss', event)">↩</span><span class="accArrow">⌄</span></span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('toss', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('toss', event)">↩ 戻す</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons five">
             <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
             <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
@@ -2823,7 +2823,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         </div>
 
         <div class="fastGroup" data-acc-group="dig">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('dig', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('dig', event)">↩</span><span class="accArrow">⌄</span></span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('dig', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('dig', event)">↩ 戻す</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons">
             <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
             <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
@@ -2831,7 +2831,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         </div>
 
         <div class="fastGroup" data-acc-group="block">
-          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('block', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('block', event)">↩</span><span class="accArrow">⌄</span></span></button>
+          <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('block', event)">☆</span><span class="groupUndoBtn" onclick="clearGroupPlay('block', event)">↩ 戻す</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons three">
             <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
             <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>

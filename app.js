@@ -191,16 +191,23 @@ function setPlay(mode,result){
 function clearGroupPlay(groupKey, ev){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   const type=groupTypeMap[groupKey];
-  if(!type || s.mode!==type) return;
-  if(previousPlaySelection && previousPlaySelection.mode && previousPlaySelection.result){
-    const prev=previousPlaySelection;
-    previousPlaySelection={mode:s.mode, result:s.result};
-    s.mode=prev.mode;
-    s.result=prev.result;
-    save();
-    render();
-    showInputToast("入力を1つ戻しました：" + playLabel());
+  if(!type) return;
+  const last=(s.logs||[])[(s.logs||[]).length-1];
+  if(!last || last.type!==type){
+    showInputToast(type + "の直近記録がありません");
+    return;
   }
+  const h=s.hist && s.hist.pop ? s.hist.pop() : null;
+  if(!h){
+    showInputToast("戻せる記録がありません");
+    return;
+  }
+  const keep=s.hist;
+  s=JSON.parse(h);
+  s.hist=keep;
+  save();
+  render();
+  showInputToast(type + "の直近記録を戻しました");
 }
 
 function toggleFavoritePlay(){
