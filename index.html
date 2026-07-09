@@ -3176,6 +3176,120 @@ body:not(.menuOpen) .sideMenu{
 })();
 </script>
 
+
+
+<!-- V50.6: iPad専用の入力欄修正。inputを直接タップできない場合でもcontenteditableで入力できるようにする -->
+<style>
+#setup .ipadEditableInput{
+  width:100%!important;
+  min-height:48px!important;
+  box-sizing:border-box!important;
+  border:2px solid #cbd5e1!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#111827!important;
+  padding:10px 12px!important;
+  font-size:16px!important;
+  font-weight:900!important;
+  line-height:1.35!important;
+  outline:none!important;
+  position:relative!important;
+  z-index:2147483640!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#setup .ipadEditableInput:focus{
+  border-color:#f59e0b!important;
+  box-shadow:0 0 0 3px rgba(245,181,68,.35)!important;
+}
+#setup .ipadEditableInput.isPlaceholder{
+  color:#94a3b8!important;
+}
+#setup input.ipadHiddenRealInput{
+  position:absolute!important;
+  left:-9999px!important;
+  width:1px!important;
+  height:1px!important;
+  opacity:.01!important;
+  pointer-events:none!important;
+}
+</style>
+<script>
+(function(){
+  var targets={
+    team:{placeholder:'自チーム'},
+    oppTeam:{placeholder:'相手'},
+    newPlayerNo:{placeholder:'例 4', numeric:true},
+    newPlayerName:{placeholder:'例 佐藤'}
+  };
+  function makeEditable(id){
+    var real=document.getElementById(id);
+    if(!real || real.dataset.v506Done==='1') return;
+    real.dataset.v506Done='1';
+    var box=document.createElement('div');
+    box.className='ipadEditableInput';
+    box.setAttribute('contenteditable','true');
+    box.setAttribute('role','textbox');
+    box.setAttribute('aria-label', id);
+    box.dataset.targetInput=id;
+    function paint(){
+      var v=real.value || '';
+      if(v){ box.textContent=v; box.classList.remove('isPlaceholder'); }
+      else{ box.textContent=targets[id].placeholder || ''; box.classList.add('isPlaceholder'); }
+    }
+    function sync(){
+      var text=box.textContent || '';
+      if(box.classList.contains('isPlaceholder')) text='';
+      if(targets[id].numeric) text=text.replace(/[^0-9]/g,'').slice(0,3);
+      real.value=text;
+      real.dispatchEvent(new Event('input',{bubbles:true}));
+      real.dispatchEvent(new Event('change',{bubbles:true}));
+      if(box.textContent!==text) box.textContent=text;
+    }
+    box.addEventListener('focus',function(){
+      if(box.classList.contains('isPlaceholder')){ box.textContent=''; box.classList.remove('isPlaceholder'); }
+    });
+    box.addEventListener('blur',function(){ sync(); paint(); });
+    box.addEventListener('input',sync);
+    box.addEventListener('paste',function(e){
+      e.preventDefault();
+      var t=(e.clipboardData||window.clipboardData).getData('text');
+      document.execCommand('insertText',false,t);
+    });
+    ['touchstart','touchend','pointerdown','pointerup','click'].forEach(function(type){
+      box.addEventListener(type,function(e){
+        e.stopPropagation();
+        setTimeout(function(){ box.focus(); },0);
+      }, {passive:true});
+    });
+    real.classList.add('ipadHiddenRealInput');
+    real.tabIndex=-1;
+    real.parentNode.insertBefore(box, real);
+    paint();
+    real.addEventListener('input', paint);
+  }
+  function install(){
+    Object.keys(targets).forEach(makeEditable);
+  }
+  document.addEventListener('DOMContentLoaded', install);
+  window.addEventListener('load', install);
+  window.addEventListener('pageshow', install);
+  var oldShow=window.show;
+  if(typeof oldShow==='function'){
+    window.show=function(name){
+      var r=oldShow.apply(this,arguments);
+      if(name==='setup') setTimeout(install,50);
+      return r;
+    };
+  }
+  window.installIpadEditableInputsV506=install;
+})();
+</script>
+
 </body>
 </html>
 
