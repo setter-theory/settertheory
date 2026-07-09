@@ -1147,14 +1147,19 @@ function printMatchPdfReport(){
     #report .card,#report .quickCard,#report .fastGroup,#report .matchStage,#report .reportCard,#report .panel,#report .settingsPanel,#report .reportPanel{break-inside:avoid;page-break-inside:avoid;}
     #report *{max-height:none!important;}
     @media print{
-      html,body{background:#fff!important;padding:0!important;overflow:visible!important;}
+      html,body{background:#fff!important;padding:0!important;overflow:visible!important;color:#0f172a!important;}
+      body *{visibility:visible!important;}
       .pdfTopBar{display:none!important;}
       #report{max-width:none!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#0f172a!important;box-shadow:none!important;}
-      #report .reportHeader{margin-bottom:10px!important;}
-      #report .reportTitle h1{font-size:22px!important;}
-      #report .reportTitle p{font-size:11px!important;}
+      #report,#report *{color:#0f172a!important;text-shadow:none!important;}
+      #report .reportHeader{margin-bottom:10px!important;background:#fff!important;}
+      #report .reportTitle h1{font-size:22px!important;color:#0f172a!important;}
+      #report .reportTitle p{font-size:11px!important;color:#475569!important;}
       #report .reportGrid,#report .panelGrid,#report .wideGrid,#report .bottomGrid{gap:8px!important;}
-      #report .reportPanel,#report .panel,#report .reportCard{box-shadow:none!important;margin-bottom:8px!important;}
+      #report .reportPanel,#report .panel,#report .reportCard,#report .card{background:#fff!important;border:1px solid #cbd5e1!important;box-shadow:none!important;margin-bottom:8px!important;}
+      #report table,#report tr,#report td,#report th{background:#fff!important;color:#0f172a!important;border-color:#cbd5e1!important;}
+      #report .muted,#report small{color:#475569!important;}
+      #report .barFill,#report .v372MiniTrack span,#report .v372TossTrack span{background:#fbbf24!important;}
     }
   </style></head><body>
     <div class="pdfTopBar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
