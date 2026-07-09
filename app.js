@@ -2,12 +2,19 @@
 // v31: スマホ連打時のダブルタップ拡大を防止
 (function preventDoubleTapZoom(){
   let lastTouchEnd = 0;
+  function isEditableTarget(t){
+    return t && t.closest && t.closest('input, textarea, select, [contenteditable=\"true\"]');
+  }
   document.addEventListener('touchend', function(e){
+    if(isEditableTarget(e.target)) return;
     const now = Date.now();
     if(now - lastTouchEnd <= 300){ e.preventDefault(); }
     lastTouchEnd = now;
   }, {passive:false});
-  document.addEventListener('dblclick', function(e){ e.preventDefault(); }, {passive:false});
+  document.addEventListener('dblclick', function(e){
+    if(isEditableTarget(e.target)) return;
+    e.preventDefault();
+  }, {passive:false});
 })();
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
@@ -2115,24 +2122,34 @@ function setupCsvImport(){
   }
 }
 
-// V50.2: ローテーション設定画面の入力欄がiPad/Safariで反応しない問題を修正
-// 画面全体のタップ/ダブルタップ抑制が input まで伝わると、フォーカスや文字入力を邪魔する場合があるため、
-// 設定画面の入力系だけはイベントを保護して必ずフォーカスできるようにする。
-(function setupInputFocusFix(){
-  function isSetupFormEl(el){
-    return el && el.closest && el.closest('#setup') && el.matches && el.matches('input, textarea, select');
-  }
-  ['touchstart','touchend','pointerdown','mousedown','click','dblclick','keydown','input'].forEach(function(type){
-    document.addEventListener(type, function(e){
-      if(isSetupFormEl(e.target)){
-        e.stopPropagation();
-        // 入力欄の標準動作は止めない
+// V50.3: ローテーション設定「＋選手を登録」の上にある背番号・選手名入力欄を確実に入力可能にする
+// 重要: capture段階で stopPropagation すると input 本体にイベントが届かず入力不能になるため使わない。
+(function setupPlayerRegisterInputFix(){
+  function enable(){
+    ['newPlayerNo','newPlayerName'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el) return;
+      el.disabled=false;
+      el.readOnly=false;
+      el.setAttribute('autocomplete','off');
+      el.style.pointerEvents='auto';
+      el.style.webkitUserSelect='text';
+      el.style.userSelect='text';
+      if(id==='newPlayerNo'){
+        el.setAttribute('type','text');
+        el.setAttribute('inputmode','numeric');
+      }else{
+        el.setAttribute('type','text');
+        el.removeAttribute('inputmode');
       }
-    }, true);
-  });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', enable);
+  window.addEventListener('pageshow', enable);
   document.addEventListener('click', function(e){
-    if(isSetupFormEl(e.target) && e.target.focus){
-      e.target.focus({preventScroll:false});
+    if(e.target && (e.target.id==='newPlayerNo' || e.target.id==='newPlayerName')){
+      enable();
+      setTimeout(function(){ e.target.focus(); }, 0);
     }
-  }, true);
+  }, false);
 })();

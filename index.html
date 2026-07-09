@@ -5374,8 +5374,8 @@ body.menuOpen .sideOverlay{
       el.removeAttribute('readonly');
       el.style.pointerEvents='auto';
       el.style.webkitUserSelect='text';
-      el.addEventListener('touchend', function(ev){ ev.stopPropagation(); setTimeout(function(){ el.focus(); },0); }, {passive:true});
-      el.addEventListener('click', function(ev){ ev.stopPropagation(); });
+      el.addEventListener('touchend', function(ev){ setTimeout(function(){ el.focus(); },0); }, {passive:true});
+      el.addEventListener('click', function(ev){ setTimeout(function(){ el.focus(); },0); });
     });
   }
   document.addEventListener('DOMContentLoaded', enableSetupInputs);
@@ -5384,7 +5384,7 @@ body.menuOpen .sideOverlay{
 })();
 </script>
 <style>
-/* V50.2: ローテーション選択の背番号・選手名入力欄を最前面＆入力可能に固定 */
+/* V50.3: ＋選手を登録の上の背番号・選手名入力欄を入力可能に固定 */
 #setup .playerForm input,
 #setup input#newPlayerNo,
 #setup input#newPlayerName{
