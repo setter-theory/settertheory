@@ -2699,82 +2699,75 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 </section>
 
 <section id="setup" class="screen">
-  <div class="logo" style="margin:8px 0 16px">
+  <div class="logo" style="margin:6px 0 10px">
     <h1>ローテーション設定</h1>
-    <p>各ポジションに入る背番号を選んでください</p>
+    <p>チーム名・選手を登録して、スタメン6人を選んでください</p>
   </div>
 
-  <div class="card">
-    <div class="grid">
-      <label>自チーム<input id="team" value="自チーム"></label>
-      <label>相手<input id="oppTeam" value="相手"></label>
-      <label>開始サーブ<select id="startServe"><option value="mine">自チーム</option><option value="opp">相手</option></select></label>
-      <label>セット<select id="setNo"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>選手登録</h3>
-    <div class="playerForm playerRegisterForm" id="playerRegisterForm">
-      <div class="playerField">
-        <div class="fieldTitle">背番号</div>
-        <input id="newPlayerNo" name="newPlayerNo" type="tel" inputmode="numeric" autocomplete="off" placeholder="例 4">
+  <div class="setupCompact">
+    <div class="setupTop card">
+      <div class="setupField">
+        <div class="setupLabel">自チーム</div>
+        <input id="team" type="text" value="自チーム" autocomplete="off">
       </div>
-      <div class="playerField">
-        <div class="fieldTitle">選手名</div>
-        <input id="newPlayerName" name="newPlayerName" type="text" autocomplete="off" placeholder="例 佐藤">
+      <div class="setupField">
+        <div class="setupLabel">相手</div>
+        <input id="oppTeam" type="text" value="相手" autocomplete="off">
+      </div>
+      <div class="setupField">
+        <div class="setupLabel">開始サーブ</div>
+        <select id="startServe"><option value="mine">自チーム</option><option value="opp">相手</option></select>
+      </div>
+      <div class="setupField">
+        <div class="setupLabel">セット</div>
+        <select id="setNo"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
     </div>
-    <button class="whitebtn" style="width:100%;margin-top:10px" onclick="addPlayerName()">＋選手を登録</button>
-    <div class="benchCountRow">
-      <label>ベンチ人数
-        <select id="benchCount" onchange="setBenchCount(this.value)">
-          <option value="0">0人</option><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option>
-          <option value="4">4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option>
-          <option value="8">8人</option><option value="9">9人</option><option value="10">10人</option><option value="11">11人</option><option value="12">12人</option>
-        </select>
-      </label>
+
+    <div class="setupPlayers card">
+      <h3>選手登録</h3>
+      <div class="playerRegisterClean">
+        <div class="setupField smallNo">
+          <div class="setupLabel">背番号</div>
+          <input id="newPlayerNo" name="newPlayerNo" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="例 4">
+        </div>
+        <div class="setupField">
+          <div class="setupLabel">選手名</div>
+          <input id="newPlayerName" name="newPlayerName" type="text" autocomplete="off" placeholder="例 佐藤">
+        </div>
+        <button type="button" class="whitebtn registerBtn" onclick="addPlayerName()">＋選手を登録</button>
+      </div>
+      <div class="benchCountRow">
+        <div class="setupField benchSelectField">
+          <div class="setupLabel">ベンチ人数</div>
+          <select id="benchCount" onchange="setBenchCount(this.value)">
+            <option value="0">0人</option><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option>
+            <option value="4">4人</option><option value="5">5人</option><option value="6">6人</option><option value="7">7人</option>
+            <option value="8">8人</option><option value="9">9人</option><option value="10">10人</option><option value="11">11人</option><option value="12">12人</option>
+          </select>
+        </div>
+      </div>
+      <div class="help">開始ローテに入っている6人がスタメン、ベンチ人数で選んだ人数分がベンチになります。試合中の選手交代でベンチから選べます。</div>
     </div>
-    <div class="help">💡 開始ローテに入っている6人がスタメン、ベンチ人数で選んだ人数分がベンチになります。試合中の選手交代は、このベンチから選べます。</div>
-  <div class="rosterGrid">
-    <div class="rosterBox">
-      <h4>スタメン6人</h4>
-      <div id="starterRoster" class="rosterList"></div>
+
+    <div class="setupRoster card">
+      <div id="lineupSummary" class="lineupSummary"></div>
+      <div class="numberBank" id="numberBank"></div>
     </div>
-    <div class="rosterBox">
-      <h4>ベンチ</h4>
-      <div id="benchRoster" class="rosterList"></div>
+
+    <div class="setupCourtCard card">
+      <div class="court" id="setupCourt">
+        <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="nameSelect" data-name-select="0"></select></div>
+        <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="nameSelect" data-name-select="1"></select></div>
+        <div class="setupSpot s3" data-spot="2" tabindex="0"><span class="name">レフト前衛</span><span class="num">3</span><select class="nameSelect" data-name-select="2"></select></div>
+        <div class="setupSpot s4 setter" data-spot="3" tabindex="0"><span class="name">センター前衛</span><span class="num">4</span><select class="nameSelect" data-name-select="3"></select></div>
+        <div class="setupSpot s5" data-spot="4" tabindex="0"><span class="name">ライト前衛</span><span class="num">5</span><select class="nameSelect" data-name-select="4"></select></div>
+        <div class="setupSpot s6" data-spot="5" tabindex="0"><span class="name">センター後衛</span><span class="num">7</span><select class="nameSelect" data-name-select="5"></select></div>
+      </div>
     </div>
+
+    <button class="big startMatchBtn" onclick="startMatch()">試合開始</button>
   </div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <h2 style="margin:0">開始ローテ</h2>
-      <span class="badge">S1</span>
-    </div>
-    <div class="court" id="setupCourt">
-      <div class="line3"></div>
-      <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="nameSelect" data-name-select="0"></select></div>
-      <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="nameSelect" data-name-select="1"></select></div>
-      <div class="setupSpot s3" data-spot="2" tabindex="0"><span class="name">レフト前衛</span><span class="num">3</span><select class="nameSelect" data-name-select="2"></select></div>
-      <div class="setupSpot s4 setter" data-spot="3" tabindex="0"><span class="name">センター前衛</span><span class="num">4</span><select class="nameSelect" data-name-select="3"></select></div>
-      <div class="setupSpot s5" data-spot="4" tabindex="0"><span class="name">ライト前衛</span><span class="num">5</span><select class="nameSelect" data-name-select="4"></select></div>
-      <div class="setupSpot s6" data-spot="5" tabindex="0"><span class="name">センター後衛</span><span class="num">7</span><select class="nameSelect" data-name-select="5"></select></div>
-    </div>
-
-    <h3 style="margin-top:16px">背番号を選択</h3>
-    <div class="numberBank" id="numberBank"></div>
-
-    <div class="grid" style="margin-top:12px">
-      <button class="whitebtn" onclick="addNumber()">＋背番号追加</button>
-      <button class="whitebtn" onclick="toggleSetter()">選択位置をSにする</button>
-    </div>
-    <div class="help">💡 コート上のポジションをタップ → 下の背番号をタップ。選択中の番号は黄色で表示されます。</div>
-  </div>
-
-  <button class="big" onclick="startMatch()">このローテーションで開始</button>
-  <button class="whitebtn" style="width:100%;margin-top:10px" onclick="show('home')">戻る</button>
 </section>
 
 <section id="match" class="screen">
@@ -2977,318 +2970,57 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
 <script src="app.js"></script>
 
+
+
 <style>
-/* V50.4: 選手登録欄を label 内 input から独立させ、iPadでも確実に入力可能にする */
-#setup .playerRegisterForm{
-  display:grid!important;
-  grid-template-columns:90px 1fr!important;
-  gap:8px!important;
-  align-items:end!important;
-  position:relative!important;
-  z-index:100000!important;
-  isolation:isolate!important;
-  pointer-events:auto!important;
-}
-#setup .playerField{
-  display:block!important;
-  position:relative!important;
-  z-index:100001!important;
-  pointer-events:auto!important;
-}
-#setup .playerField .fieldTitle{
-  font-size:12px!important;
-  font-weight:1000!important;
-  color:#334155!important;
-  margin-bottom:4px!important;
-}
-#setup .playerRegisterForm input#newPlayerNo,
-#setup .playerRegisterForm input#newPlayerName{
-  display:block!important;
-  width:100%!important;
-  box-sizing:border-box!important;
-  min-height:46px!important;
-  padding:10px 12px!important;
-  border:2px solid #cbd5e1!important;
-  border-radius:14px!important;
-  background:#fff!important;
-  color:#111827!important;
-  font-size:16px!important;
-  font-weight:900!important;
-  line-height:1.2!important;
-  opacity:1!important;
-  position:relative!important;
-  z-index:100002!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  -webkit-appearance:none!important;
-  appearance:none!important;
-  caret-color:#111827!important;
-}
-#setup .playerRegisterForm input#newPlayerNo:focus,
-#setup .playerRegisterForm input#newPlayerName:focus{
-  outline:3px solid rgba(245,181,68,.35)!important;
-  border-color:#f59e0b!important;
+/* V52: ローテーション設定画面を通常inputで再構築 */
+#setup.screen.active{overflow:auto!important;-webkit-overflow-scrolling:touch!important;touch-action:auto!important;}
+#setup .setupCompact{display:grid;grid-template-columns:1fr;gap:10px;max-width:1100px;margin:0 auto;}
+#setup .card{overflow:visible!important;}
+#setup .setupTop{display:grid;grid-template-columns:1.4fr 1.4fr .9fr .6fr;gap:10px;padding:12px!important;}
+#setup .setupField{display:flex;flex-direction:column;gap:4px;position:relative;z-index:1;}
+#setup .setupLabel{font-size:12px;font-weight:1000;color:var(--muted);line-height:1.2;}
+#setup input,#setup select{position:relative!important;z-index:2!important;pointer-events:auto!important;touch-action:auto!important;-webkit-user-select:text!important;user-select:text!important;background:#fff!important;color:#111827!important;border:2px solid var(--line)!important;border-radius:14px!important;min-height:44px!important;padding:9px 12px!important;font-size:16px!important;font-weight:900!important;box-sizing:border-box!important;-webkit-appearance:none;appearance:none;}
+#setup input:focus,#setup select:focus{outline:3px solid rgba(245,181,68,.38)!important;border-color:#f59e0b!important;}
+#setup .playerRegisterClean{display:grid;grid-template-columns:90px 1fr 1.1fr;gap:8px;align-items:end;}
+#setup .registerBtn{min-height:44px!important;margin:0!important;}
+#setup .benchCountRow{margin-top:10px;}
+#setup .benchSelectField{max-width:180px;}
+#setup .help{margin-top:8px;font-size:12px;line-height:1.45;}
+#setup .lineupSummary{font-size:13px;font-weight:1000;color:var(--muted);margin-bottom:8px;}
+#setup .numberBank{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+#setup .numBtn{min-height:38px!important;font-size:15px!important;border-radius:10px!important;}
+#setup .setupCourtCard{padding:10px!important;}
+#setupCourt{max-height:300px;margin:0 auto;}
+#setup .startMatchBtn{margin-top:0!important;}
+@media (orientation:landscape){
+  #setup.screen.active{height:100vh!important;padding:6px 10px!important;overflow:hidden!important;}
+  #setup .logo{margin:0 0 6px!important;}
+  #setup .logo h1{font-size:28px!important;margin:0!important;}
+  #setup .logo p{font-size:12px!important;margin:2px 0 0!important;}
+  #setup .setupCompact{grid-template-columns:minmax(430px, .9fr) minmax(340px, .75fr);grid-template-areas:'top court' 'players court' 'roster start';gap:7px;height:calc(100vh - 82px);max-width:none;}
+  #setup .setupTop{grid-area:top;grid-template-columns:1.25fr 1.25fr .85fr .5fr;gap:6px;padding:8px!important;}
+  #setup .setupPlayers{grid-area:players;padding:8px!important;}
+  #setup .setupPlayers h3{font-size:16px!important;margin:0 0 5px!important;}
+  #setup .setupRoster{grid-area:roster;padding:8px!important;min-height:0;overflow:hidden;}
+  #setup .setupCourtCard{grid-area:court;padding:8px!important;min-height:0;overflow:hidden;}
+  #setup .startMatchBtn{grid-area:start;min-height:44px!important;margin:0!important;align-self:end;}
+  #setup input,#setup select{min-height:38px!important;font-size:14px!important;padding:6px 9px!important;border-radius:12px!important;}
+  #setup .setupLabel{font-size:11px!important;}
+  #setup .playerRegisterClean{grid-template-columns:76px 1fr .95fr;gap:6px;}
+  #setup .registerBtn{min-height:38px!important;font-size:13px!important;}
+  #setup .benchCountRow{margin-top:6px!important;}
+  #setup .benchSelectField{max-width:150px;}
+  #setup .help{font-size:11px!important;margin-top:5px!important;}
+  #setup .numberBank{grid-template-columns:repeat(5,1fr)!important;gap:5px!important;}
+  #setup .numBtn{min-height:34px!important;font-size:14px!important;}
+  #setupCourt{height:100%!important;max-height:none!important;aspect-ratio:3/1.75!important;}
+  #setupCourt .setupSpot{min-height:42px!important;}
+  #setupCourt .setupSpot .num{font-size:24px!important;}
+  #setupCourt .setupSpot .setupName{font-size:10px!important;}
+  #setupCourt .setupSpot .nameSelect{font-size:11px!important;padding:4px!important;}
 }
 </style>
-<script>
-/* V50.4: 「＋選手を登録」の上の背番号・選手名だけを直接復旧 */
-(function(){
-  function fixPlayerRegisterInputs(){
-    var no=document.getElementById('newPlayerNo');
-    var name=document.getElementById('newPlayerName');
-    [no,name].forEach(function(el){
-      if(!el) return;
-      el.disabled=false;
-      el.readOnly=false;
-      el.removeAttribute('disabled');
-      el.removeAttribute('readonly');
-      el.style.pointerEvents='auto';
-      el.style.webkitUserSelect='text';
-      el.style.userSelect='text';
-      el.style.zIndex='100002';
-      ['touchstart','touchend','mousedown','mouseup','click'].forEach(function(type){
-        if(el.__v504Bound) return;
-      });
-      if(!el.__v504Bound){
-        ['touchstart','mousedown'].forEach(function(type){
-          el.addEventListener(type,function(ev){ ev.stopPropagation(); }, true);
-        });
-        ['touchend','mouseup','click'].forEach(function(type){
-          el.addEventListener(type,function(ev){ ev.stopPropagation(); setTimeout(function(){ el.focus(); },0); }, true);
-        });
-        el.__v504Bound=true;
-      }
-    });
-  }
-  document.addEventListener('DOMContentLoaded',fixPlayerRegisterInputs);
-  window.addEventListener('load',fixPlayerRegisterInputs);
-  window.addEventListener('pageshow',fixPlayerRegisterInputs);
-  document.addEventListener('click',function(){
-    var setup=document.getElementById('setup');
-    if(setup && setup.classList.contains('active')) setTimeout(fixPlayerRegisterInputs,0);
-  }, true);
-  window.fixPlayerRegisterInputs=fixPlayerRegisterInputs;
-})();
-</script>
-
-
-
-<!-- V50.5: iPad横画面で「＋選手を登録」上の背番号・選手名入力欄を完全復旧 -->
-<style>
-/* iPad/Safariで上に被る透明要素・メニュー系が入力を奪わないようにする */
-body:not(.menuOpen) .sideOverlay,
-body:not(.menuOpen) .sideMenu{
-  pointer-events:none!important;
-}
-#setup.screen.active{
-  position:relative!important;
-  z-index:1!important;
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch!important;
-  touch-action:auto!important;
-}
-#setup.screen.active .card,
-#setup.screen.active .playerRegisterForm,
-#setup.screen.active .playerField{
-  position:relative!important;
-  z-index:2147483000!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  overflow:visible!important;
-  transform:none!important;
-}
-#setup.screen.active #newPlayerNo,
-#setup.screen.active #newPlayerName{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  width:100%!important;
-  min-height:48px!important;
-  background:#fff!important;
-  color:#111827!important;
-  border:2px solid #cbd5e1!important;
-  border-radius:14px!important;
-  padding:10px 12px!important;
-  font-size:16px!important;
-  font-weight:900!important;
-  position:relative!important;
-  z-index:2147483001!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  -webkit-touch-callout:default!important;
-  -webkit-appearance:none!important;
-  appearance:none!important;
-  caret-color:#111827!important;
-}
-#setup.screen.active #newPlayerNo:focus,
-#setup.screen.active #newPlayerName:focus{
-  outline:3px solid rgba(245,181,68,.45)!important;
-  border-color:#f59e0b!important;
-}
-</style>
-<script>
-/* 入力欄をクローンで再生成して、古いイベント/readonly/disabled/タップ妨害をリセット */
-(function(){
-  function hardResetPlayerRegisterInputs(){
-    if(!document.getElementById('setup')) return;
-    ['newPlayerNo','newPlayerName'].forEach(function(id){
-      var old=document.getElementById(id);
-      if(!old) return;
-      var val=old.value || '';
-      var clone=document.createElement('input');
-      clone.id=id;
-      clone.name=id;
-      clone.value=val;
-      clone.autocomplete='off';
-      clone.placeholder = id==='newPlayerNo' ? '例 4' : '例 佐藤';
-      clone.type = id==='newPlayerNo' ? 'text' : 'text';
-      if(id==='newPlayerNo') clone.setAttribute('inputmode','numeric');
-      clone.removeAttribute('disabled');
-      clone.removeAttribute('readonly');
-      clone.disabled=false;
-      clone.readOnly=false;
-      clone.style.pointerEvents='auto';
-      clone.style.webkitUserSelect='text';
-      clone.style.userSelect='text';
-      old.parentNode.replaceChild(clone, old);
-      ['touchstart','touchend','pointerup','mousedown','click'].forEach(function(type){
-        clone.addEventListener(type,function(e){
-          e.stopPropagation();
-          setTimeout(function(){ clone.focus(); },0);
-        }, type==='touchstart'||type==='touchend' ? {passive:true} : false);
-      });
-    });
-  }
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(hardResetPlayerRegisterInputs,50); });
-  var oldShow=window.show;
-  if(typeof oldShow==='function'){
-    window.show=function(name){
-      var r=oldShow.apply(this,arguments);
-      if(name==='setup') setTimeout(hardResetPlayerRegisterInputs,80);
-      return r;
-    };
-  }
-  window.hardResetPlayerRegisterInputs=hardResetPlayerRegisterInputs;
-})();
-</script>
-
-
-
-<!-- V50.6: iPad専用の入力欄修正。inputを直接タップできない場合でもcontenteditableで入力できるようにする -->
-<style>
-#setup .ipadEditableInput{
-  width:100%!important;
-  min-height:48px!important;
-  box-sizing:border-box!important;
-  border:2px solid #cbd5e1!important;
-  border-radius:14px!important;
-  background:#fff!important;
-  color:#111827!important;
-  padding:10px 12px!important;
-  font-size:16px!important;
-  font-weight:900!important;
-  line-height:1.35!important;
-  outline:none!important;
-  position:relative!important;
-  z-index:2147483640!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-}
-#setup .ipadEditableInput:focus{
-  border-color:#f59e0b!important;
-  box-shadow:0 0 0 3px rgba(245,181,68,.35)!important;
-}
-#setup .ipadEditableInput.isPlaceholder{
-  color:#94a3b8!important;
-}
-#setup input.ipadHiddenRealInput{
-  position:absolute!important;
-  left:-9999px!important;
-  width:1px!important;
-  height:1px!important;
-  opacity:.01!important;
-  pointer-events:none!important;
-}
-</style>
-<script>
-(function(){
-  var targets={
-    team:{placeholder:'自チーム'},
-    oppTeam:{placeholder:'相手'},
-    newPlayerNo:{placeholder:'例 4', numeric:true},
-    newPlayerName:{placeholder:'例 佐藤'}
-  };
-  function makeEditable(id){
-    var real=document.getElementById(id);
-    if(!real || real.dataset.v506Done==='1') return;
-    real.dataset.v506Done='1';
-    var box=document.createElement('div');
-    box.className='ipadEditableInput';
-    box.setAttribute('contenteditable','true');
-    box.setAttribute('role','textbox');
-    box.setAttribute('aria-label', id);
-    box.dataset.targetInput=id;
-    function paint(){
-      var v=real.value || '';
-      if(v){ box.textContent=v; box.classList.remove('isPlaceholder'); }
-      else{ box.textContent=targets[id].placeholder || ''; box.classList.add('isPlaceholder'); }
-    }
-    function sync(){
-      var text=box.textContent || '';
-      if(box.classList.contains('isPlaceholder')) text='';
-      if(targets[id].numeric) text=text.replace(/[^0-9]/g,'').slice(0,3);
-      real.value=text;
-      real.dispatchEvent(new Event('input',{bubbles:true}));
-      real.dispatchEvent(new Event('change',{bubbles:true}));
-      if(box.textContent!==text) box.textContent=text;
-    }
-    box.addEventListener('focus',function(){
-      if(box.classList.contains('isPlaceholder')){ box.textContent=''; box.classList.remove('isPlaceholder'); }
-    });
-    box.addEventListener('blur',function(){ sync(); paint(); });
-    box.addEventListener('input',sync);
-    box.addEventListener('paste',function(e){
-      e.preventDefault();
-      var t=(e.clipboardData||window.clipboardData).getData('text');
-      document.execCommand('insertText',false,t);
-    });
-    ['touchstart','touchend','pointerdown','pointerup','click'].forEach(function(type){
-      box.addEventListener(type,function(e){
-        e.stopPropagation();
-        setTimeout(function(){ box.focus(); },0);
-      }, {passive:true});
-    });
-    real.classList.add('ipadHiddenRealInput');
-    real.tabIndex=-1;
-    real.parentNode.insertBefore(box, real);
-    paint();
-    real.addEventListener('input', paint);
-  }
-  function install(){
-    Object.keys(targets).forEach(makeEditable);
-  }
-  document.addEventListener('DOMContentLoaded', install);
-  window.addEventListener('load', install);
-  window.addEventListener('pageshow', install);
-  var oldShow=window.show;
-  if(typeof oldShow==='function'){
-    window.show=function(name){
-      var r=oldShow.apply(this,arguments);
-      if(name==='setup') setTimeout(install,50);
-      return r;
-    };
-  }
-  window.installIpadEditableInputsV506=install;
-})();
-</script>
 
 </body>
 </html>
@@ -5611,38 +5343,6 @@ body.menuOpen .sideOverlay{
 
 <style>
 /* V50.1: input focus fix + right panel compact fit */
-#setup.screen.active{
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch!important;
-}
-#setup .card,
-#setup .grid,
-#setup .playerForm,
-#setup label{
-  position:relative!important;
-  z-index:20!important;
-  pointer-events:auto!important;
-}
-#setup input,
-#setup select,
-#setup textarea,
-#newPlayerNo,
-#newPlayerName,
-#team,
-#oppTeam{
-  position:relative!important;
-  z-index:30!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  opacity:1!important;
-}
-#setup .setupSpot{z-index:5!important;pointer-events:auto!important;}
-#setup .setupSpot .nameSelect{z-index:8!important;pointer-events:auto!important;}
-#setup .logo{pointer-events:none!important;}
-#setup .logo *{pointer-events:none!important;}
-
 @media (orientation:landscape){
   #match.screen.active{height:100vh!important;overflow:hidden!important;padding:6px 8px!important;}
   #match.active .topbar{margin:0 0 5px!important;min-height:34px!important;}
@@ -5681,46 +5381,5 @@ body.menuOpen .sideOverlay{
   #match.active .lastSubstitutionBox{display:none!important;}
   #match.active .leftActionPanel{gap:4px!important;margin-top:5px!important;grid-template-columns:repeat(3,1fr)!important;}
   #match.active .leftActionPanel button{min-height:30px!important;font-size:10px!important;padding:4px 3px!important;border-radius:9px!important;}
-}
-</style>
-<script>
-/* V50.1: iPad/PWAで入力欄に確実にフォーカスさせる */
-(function(){
-  function enableSetupInputs(){
-    ['newPlayerNo','newPlayerName','team','oppTeam'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(!el) return;
-      el.removeAttribute('disabled');
-      el.removeAttribute('readonly');
-      el.style.pointerEvents='auto';
-      el.style.webkitUserSelect='text';
-      el.addEventListener('touchend', function(ev){ setTimeout(function(){ el.focus(); },0); }, {passive:true});
-      el.addEventListener('click', function(ev){ setTimeout(function(){ el.focus(); },0); });
-    });
-  }
-  document.addEventListener('DOMContentLoaded', enableSetupInputs);
-  document.addEventListener('click', function(){ if(document.getElementById('setup') && document.getElementById('setup').classList.contains('active')) enableSetupInputs(); }, true);
-  window.enableSetupInputs = enableSetupInputs;
-})();
-</script>
-<style>
-/* V50.3: ＋選手を登録の上の背番号・選手名入力欄を入力可能に固定 */
-#setup .playerForm input,
-#setup input#newPlayerNo,
-#setup input#newPlayerName{
-  position:relative!important;
-  z-index:99999!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  caret-color:#111827!important;
-  background:#fff!important;
-}
-#setup .playerForm,
-#setup .playerForm label{
-  position:relative!important;
-  z-index:99998!important;
-  pointer-events:auto!important;
 }
 </style>

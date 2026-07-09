@@ -1,7 +1,4 @@
-V50.4
-- 「＋選手を登録」の上の背番号・選手名入力欄を作り直し
-- label内inputを廃止し、iPad/Safariでもフォーカス・入力できる形に変更
-- キャッシュ名更新
-
-
-V50.5: iPad landscape player register input hard reset fix.
+Setter Theory V52
+- ローテーション設定画面を通常inputで再構築
+- iPadで自チーム・相手・背番号・選手名が入力できない問題を根本修正
+- コート入力画面の左下操作列・右側入力レイアウトは維持

@@ -2122,34 +2122,3 @@ function setupCsvImport(){
   }
 }
 
-// V50.3: ローテーション設定「＋選手を登録」の上にある背番号・選手名入力欄を確実に入力可能にする
-// 重要: capture段階で stopPropagation すると input 本体にイベントが届かず入力不能になるため使わない。
-(function setupPlayerRegisterInputFix(){
-  function enable(){
-    ['newPlayerNo','newPlayerName'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(!el) return;
-      el.disabled=false;
-      el.readOnly=false;
-      el.setAttribute('autocomplete','off');
-      el.style.pointerEvents='auto';
-      el.style.webkitUserSelect='text';
-      el.style.userSelect='text';
-      if(id==='newPlayerNo'){
-        el.setAttribute('type','text');
-        el.setAttribute('inputmode','numeric');
-      }else{
-        el.setAttribute('type','text');
-        el.removeAttribute('inputmode');
-      }
-    });
-  }
-  document.addEventListener('DOMContentLoaded', enable);
-  window.addEventListener('pageshow', enable);
-  document.addEventListener('click', function(e){
-    if(e.target && (e.target.id==='newPlayerNo' || e.target.id==='newPlayerName')){
-      enable();
-      setTimeout(function(){ e.target.focus(); }, 0);
-    }
-  }, false);
-})();
