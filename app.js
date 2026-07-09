@@ -533,6 +533,14 @@ function pointOnly(team){
   }
   save(); render();
 }
+function opponentMist(){
+  snap();
+  const before=s.serve;
+  s.my++;
+  if(before==="opp"){ nextRot(); s.serve="mine"; }
+  s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:"得点",num:"-",pos:"-",result:"相手ミス",point:"自",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
+  save(); render();
+}
 function manualRotate(){snap();nextRot();save();render();}
 function toggleServe(){snap();s.serve=s.serve==="mine"?"opp":"mine";save();render();}
 function undo(){

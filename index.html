@@ -1716,6 +1716,64 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .reportActions button{min-height:52px;white-space:nowrap}
 .pdfBtn{background:#0f172a;color:#fff}
 @media(max-width:640px){.reportActions{justify-content:center;flex-wrap:wrap}.reportActions button{flex:1;min-width:130px}}
+
+
+/* V50: iPad横画面で左＝コート＋操作列、右＝入力項目に整理 */
+#setup input,
+#setup select,
+#setup button{
+  position:relative!important;
+  z-index:5!important;
+  pointer-events:auto!important;
+  -webkit-user-select:text;
+  user-select:text;
+}
+#setup .playerForm,
+#setup .playerForm label{
+  position:relative!important;
+  z-index:6!important;
+  pointer-events:auto!important;
+}
+#setup .card{
+  pointer-events:auto!important;
+}
+.leftActionPanel{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:6px!important;margin-top:8px!important;flex-shrink:0!important;}
+.leftActionPanel button{min-height:36px!important;border-radius:11px!important;font-size:11px!important;padding:6px 4px!important;line-height:1.15!important;}
+.leftActionPanel .wideAction{grid-column:1 / -1!important;min-height:34px!important;}
+.orange{background:linear-gradient(135deg,#f59e0b,#f97316)!important;color:white!important;border-color:rgba(255,255,255,.22)!important;}
+@media (orientation: landscape){
+  #match.active .matchStage{grid-template-columns:minmax(255px,39%) 1fr!important;gap:8px!important;padding:8px!important;overflow:hidden!important;}
+  #match.active .matchCourtPane{height:100%!important;min-height:0!important;overflow:hidden!important;align-self:stretch!important;}
+  #match.active .matchInputPane{height:100%!important;min-height:0!important;overflow:hidden!important;padding-right:0!important;display:flex!important;flex-direction:column!important;}
+  #match.active #matchCourt{margin-bottom:6px!important;aspect-ratio:3/1.52!important;flex-shrink:0!important;}
+  #match.active .currentPlayBoxTop{margin-top:6px!important;padding:8px 10px!important;min-height:auto!important;flex-shrink:0!important;}
+  #match.active .modeHelpSticky{margin-top:4px!important;font-size:10px!important;line-height:1.15!important;flex-shrink:0!important;}
+  #match.active .subQuickBtn{min-height:34px!important;margin-top:6px!important;font-size:12px!important;flex-shrink:0!important;}
+  #match.active .lastSubstitutionBox{font-size:10px!important;line-height:1.2!important;margin-top:4px!important;max-height:28px!important;overflow:hidden!important;flex-shrink:0!important;}
+  #match.active .tabs{display:none!important;}
+  #match.active .results{display:none!important;}
+  #match.active .favoritePlayBar{flex-shrink:0!important;max-height:34px!important;overflow:hidden!important;}
+  #match.active .fastInput{margin-top:0!important;gap:6px!important;overflow:hidden!important;flex:1!important;min-height:0!important;}
+  #match.active .fastGroup{padding:6px!important;border-radius:13px!important;margin:0!important;}
+  #match.active .fastGroupTitle{font-size:12px!important;min-height:28px!important;margin-bottom:4px!important;line-height:1.1!important;}
+  #match.active .fastBtn{min-height:36px!important;font-size:11px!important;padding:6px 4px!important;line-height:1.12!important;}
+  #match.active .fastButtons,.fastButtons.three,.fastButtons.four{gap:5px!important;}
+  #match.active .helper{display:none!important;}
+}
+@media (orientation: landscape) and (max-height:760px){
+  #match.active .topbar{margin-bottom:5px!important;}
+  #match.active .topbar .pill{padding:5px 8px!important;font-size:12px!important;}
+  #match.active .menuBtn{min-height:34px!important;width:34px!important;min-width:34px!important;}
+  #match.active .matchPaneHead{margin-bottom:5px!important;}
+  #match.active .matchPaneHead h2{font-size:13px!important;}
+  #match.active #matchCourt .player{min-height:34px!important;font-size:18px!important;margin:3px!important;}
+  #match.active .currentKicker{font-size:10px!important;margin-bottom:2px!important;}
+  #match.active #selectedPlayLabel{font-size:12px!important;}
+  #match.active .currentHint{font-size:9px!important;}
+  .leftActionPanel button{min-height:31px!important;font-size:10px!important;padding:4px 3px!important;}
+  .leftActionPanel .wideAction{min-height:30px!important;}
+}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -2746,6 +2804,15 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <div class="modeHelp modeHelpSticky">よく使う入力は☆登録 → 上部から1タップ選択</div>
       <button type="button" class="subQuickBtn" onclick="openSubModal(selectedCourtNum)">🔁 選手交代</button>
       <div id="lastSubstitutionBox" class="lastSubstitutionBox" aria-live="polite"></div>
+      <div class="otherCompact leftActionPanel">
+        <button class="green" onclick="pointOnly('my')">自チーム得点</button>
+        <button class="orange" onclick="opponentMist()">相手ミス</button>
+        <button class="red" onclick="pointOnly('op')">相手得点</button>
+        <button class="gray" onclick="manualRotate()">ローテ＋</button>
+        <button class="gray" onclick="toggleServe()">サーブ切替</button>
+        <button class="undoBtn" onclick="undo()">取り消し</button>
+        <button class="red wideAction" onclick="clearLogs()">ログ全消去</button>
+      </div>
     </div>
 
     <div class="displayFilterPanel" id="displayFilterPanel">
@@ -2842,14 +2909,6 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
       <div class="helper">プレーを選んで、コート上の選手をタップ。ローテーションは時計回り</div>
 
-      <div class="otherCompact">
-        <button class="green" onclick="pointOnly('my')">自チーム得点</button>
-        <button class="red" onclick="pointOnly('op')">相手得点</button>
-        <button class="undoBtn" onclick="undo()">取り消し</button>
-        <button class="gray" onclick="manualRotate()">ローテ＋</button>
-        <button class="gray" onclick="toggleServe()">サーブ切替</button>
-        <button class="red" onclick="clearLogs()">ログ全消去</button>
-      </div>
     </div>
   </div>
 
