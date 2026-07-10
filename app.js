@@ -14,6 +14,8 @@ let s = {
 };
 let setupSelected = 0;
 let selectedCourtNum = null;
+// V65: プレー未選択状態を持ち、記録後はプレーだけ解除する
+let playArmed = false;
 let subOutNum = null;
 let previousPlaySelection = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
@@ -163,6 +165,7 @@ function saveFavoritePlays(){
 }
 function isCurrentFavoritePlay(){
   normalizeFavoritePlays();
+  if(!playArmed) return false;
   return favoritePlays.some(x=>x.mode===s.mode && x.result===s.result);
 }
 function playText(mode,result){
@@ -178,7 +181,19 @@ function setPlay(mode,result){
   if(s.mode!==mode || s.result!==result){
     previousPlaySelection={mode:s.mode, result:s.result};
   }
-  s.mode=mode; s.result=result; save(); render();
+  s.mode=mode;
+  s.result=result;
+  playArmed=true;
+  save();
+
+  // 番号が先に選ばれている場合は、プレーボタンを押した時点で記録する。
+  if(selectedCourtNum!==null){
+    const nums=rotationNums().map(String);
+    const idx=nums.findIndex(n=>n===String(selectedCourtNum));
+    addByNumber(selectedCourtNum, idx>=0 ? String(idx+1) : "-");
+    return;
+  }
+  render();
 }
 function clearGroupPlay(groupKey, ev){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
@@ -203,6 +218,7 @@ function clearGroupPlay(groupKey, ev){
 }
 
 function toggleFavoritePlay(){
+  if(!playArmed){ showInputToast("プレーを選択してください"); return; }
   const idx=favoritePlays.findIndex(x=>x.mode===s.mode && x.result===s.result);
   if(idx>=0){
     favoritePlays.splice(idx,1);
@@ -227,7 +243,7 @@ function renderFavoritePlayBar(){
   normalizeFavoritePlays();
   bar.classList.toggle("empty", favoritePlays.length===0);
   bar.innerHTML = favoritePlays.map(x=>{
-    const active=x.mode===s.mode && x.result===s.result;
+    const active=playArmed && x.mode===s.mode && x.result===s.result;
     return `<button type="button" class="favoritePlayChip ${active?'active':''}" onclick="setPlay('${escapeAttr(x.mode)}','${escapeAttr(x.result)}')"><span>${escapeHtml(playText(x.mode,x.result))}</span><span class="removeFav" onclick="removeFavoritePlay('${escapeAttr(x.mode)}','${escapeAttr(x.result)}', event)">×</span></button>`;
   }).join("");
 }
@@ -459,7 +475,7 @@ function startMatch(){
   s.oppTeam=document.getElementById("oppTeam").value || "相手";
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
-  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
+  s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null; playArmed=false;
   save(); show("match");
 }
 function pointByResult(result){
@@ -503,15 +519,27 @@ function add(pos){
 function addByNumber(num, pos="-"){
   selectedCourtNum = String(num);
   vibrateTap();
+
+  // プレー未選択なら番号を選ぶだけ。得点・ログは一切動かさない。
+  if(!playArmed){
+    render();
+    showInputToast(num + "番を選択");
+    return;
+  }
+
   snap();
+  const recordedLabel=playLabel();
   const point=pointByResult(s.result);
   s.logs.push({
     no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:s.mode,
     num:String(num),pos:String(pos),result:s.result,point:point,
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
   });
+
+  // 記録後はプレーだけ解除。選手番号は選択状態を維持する。
+  playArmed=false;
   save(); render();
-  showInputToast("記録しました：" + playLabel() + " / " + num + "番");
+  showInputToast("記録しました：" + recordedLabel + " / " + num + "番");
 }
 function pointOnly(team){
   snap();
@@ -577,8 +605,8 @@ function render(){
   document.getElementById("myScore").textContent=s.my;
   document.getElementById("opScore").textContent=s.op;
   document.getElementById("serveLabel").textContent=s.serve==="mine"?"自サーブ":"相手サーブ";
-  document.getElementById("modeBadge").textContent=playLabel();
-  const spl=document.getElementById("selectedPlayLabel"); if(spl) spl.textContent=playLabel();
+  document.getElementById("modeBadge").textContent=playArmed ? playLabel() : "プレー未選択";
+  const spl=document.getElementById("selectedPlayLabel"); if(spl) spl.textContent=playArmed ? playLabel() : "プレー未選択";
   const fpb=document.getElementById("favoritePlayBtn"); if(fpb){ const fav=isCurrentFavoritePlay(); fpb.textContent=fav?"★":"☆"; fpb.classList.toggle("active", fav); }
   renderLastSubstitution();
   renderFavoritePlayBar();
@@ -590,7 +618,7 @@ function render(){
     b.classList.toggle("setter", n===setterNum);
     b.classList.toggle("selected", String(n)===String(selectedCourtNum));
   });
-  document.querySelectorAll(".fastBtn").forEach(b=>b.classList.toggle("active", b.dataset.type===s.mode && b.dataset.result===s.result));
+  document.querySelectorAll(".fastBtn").forEach(b=>b.classList.toggle("active", playArmed && b.dataset.type===s.mode && b.dataset.result===s.result));
   applyInputView();
   renderMatchNumberBank();
   quick();
