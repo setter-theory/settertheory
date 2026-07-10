@@ -1,5 +1,5 @@
 
-// V69: match info card, set count, and expandable all-rotation overview.
+// V70: court-style rotation overview, reliable close, Setter IQ and Aquila advice.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
@@ -314,20 +314,36 @@ function adjustSetCount(side, delta){
 function toggleRotationOverview(){
   const box=document.getElementById('rotationOverview');
   const btn=document.getElementById('rotationToggleBtn');
+  const card=document.querySelector('.matchInfoCard');
   if(!box||!btn) return;
   const willOpen=box.hidden;
   box.hidden=!willOpen;
+  if(card) card.classList.toggle('rotationOpen', willOpen);
   btn.setAttribute('aria-expanded', String(willOpen));
-  btn.textContent=willOpen?'各ローテを閉じる ▲':'各ローテを見る ▼';
+  btn.textContent=willOpen?'各ローテを閉じる ▲':'各ローテ一覧を見る ▼';
   if(willOpen) renderRotationOverview();
+}
+function miniCourtHtml(nums, rot){
+  const order=[1,5,0,2,3,4]; // 上段: pos2,pos6,pos1 / 下段: pos3,pos4,pos5
+  return `<div class="rotationMiniCourt" aria-label="S${rot}ローテーション">
+    <div class="rotationMiniLine"></div>
+    ${order.map((idx,visualIndex)=>{
+      const n=nums[idx] ?? '-';
+      const name=getPlayerName(n);
+      return `<div class="rotationMiniPlayer mini${visualIndex+1}" title="${escapeAttr(name)}"><b>${escapeHtml(n)}</b><small>${escapeHtml(name)}</small></div>`;
+    }).join('')}
+  </div>`;
 }
 function renderRotationOverview(){
   const box=document.getElementById('rotationOverview');
   if(!box || box.hidden) return;
-  box.innerHTML=[1,2,3,4,5,6].map(rot=>{
+  box.innerHTML=`<div class="rotationOverviewGrid">${[1,2,3,4,5,6].map(rot=>{
     const nums=rotationNumsAt(rot);
-    return `<div class="rotationOverviewRow ${rot===s.rot?'current':''}"><span class="rotationOverviewLabel">S${rot}</span>${nums.map(n=>`<span class="rotationOverviewPlayer" title="${escapeAttr(getPlayerName(n))}">${escapeHtml(n)}</span>`).join('')}</div>`;
-  }).join('');
+    return `<section class="rotationOverviewCard ${rot===s.rot?'current':''}">
+      <div class="rotationOverviewLabel">S${rot}${rot===1?'<span>開始</span>':''}</div>
+      ${miniCourtHtml(nums,rot)}
+    </section>`;
+  }).join('')}</div>`;
 }
 function rotatedSetterNum(){ return s.nums[s.setterIndex]; }
 function nextRot(){ s.rot=s.rot%6+1; }
@@ -1032,6 +1048,46 @@ function buildSetterInsight(){
   return `<div class="v37Insight"><div class="v37InsightTitle">Setter Theory コメント</div><ul>${comments.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
 }
 
+function currentMatchSetterAnalysis(){
+  const toss=s.logs.filter(x=>x.type==='トス');
+  const counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
+  const terminalCounts={};
+  toss.forEach(x=>{
+    const label=counts[x.result]!==undefined ? x.result : classifyTossTarget(x.result);
+    if(counts[label]===undefined) counts[label]=0;
+    counts[label]++;
+    const score=scoreParts(x.score||'');
+    if(score && score.high>=20) addCount(terminalCounts,label);
+  });
+  const total=toss.length;
+  const items=analysisItemsFromCounts(counts,total);
+  return {total,items,terminalCounts,...calcScores(counts,total,terminalCounts)};
+}
+function buildCurrentSetterIqPanel(){
+  const a=currentMatchSetterAnalysis();
+  if(!a.total){
+    return `<div class="setterIqLive empty"><div class="setterIqLiveHead"><span>Setter IQ</span><b>--</b><small>/100</small></div><p>トスを記録すると、配球バランスをもとにSetter IQを表示します。</p></div>`;
+  }
+  const top=a.items[0]||{label:'-',pct:0};
+  return `<div class="setterIqLive"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div>
+    <div class="setterIqMetrics"><span>配球バランス <b>${a.balance}</b></span><span>多様性 <b>${a.diversity}</b></span><span>速攻活用 <b>${a.quick}</b></span><span>終盤冷静度 <b>${a.clutch}</b></span></div>
+    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+}
+function buildCurrentAquilaAdvice(){
+  const a=currentMatchSetterAnalysis();
+  if(!a.total) return `<div class="aquilaLiveAdvice"><b>🦅 Aquilaのアドバイス</b><p>まずはトスを記録しよう。5本以上たまると、配球の偏りが見えやすくなります。</p></div>`;
+  const top=a.items[0]||{label:'-',pct:0};
+  const center=a.items.find(x=>x.label==='センター')||{pct:0};
+  const advice=[];
+  if(top.pct>=55) advice.push(`${top.label}が${top.pct}%です。次の序盤で別方向を1本見せると、終盤の${top.label}が生きます。`);
+  else advice.push('極端な一方向依存は少なめです。今の散らし方を維持しながら、勝負所の意図を確認しよう。');
+  if(center.pct<15) advice.push(`センター使用率は${center.pct}%です。A/Bパス時に1本見せると、相手MBを中央に残しやすくなります。`);
+  else advice.push(`センター使用率は${center.pct}%です。サイドを生かす伏線として機能しています。`);
+  if(a.clutch<65) advice.push('20点以降に配球が寄っています。終盤の最初の1本だけ別方向を使う準備をしておこう。');
+  else advice.push('終盤の配球は大きく崩れていません。次はローテ別の偏りを確認しよう。');
+  return `<div class="aquilaLiveAdvice"><b>🦅 Aquilaのアドバイス</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
+}
+
 function report(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length;
@@ -1086,6 +1142,10 @@ function report(){
 
   const dashboard=`<div class="reportGrid">
     ${summary}
+    <div class="setterIqAdviceGrid">
+      <div class="reportPanel">${buildCurrentSetterIqPanel()}</div>
+      <div class="reportPanel">${buildCurrentAquilaAdvice()}</div>
+    </div>
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
       <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>

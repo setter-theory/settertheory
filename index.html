@@ -2770,6 +2770,27 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 
 </style>
+
+<style id="v70-rotation-iq-fix">
+/* V70: 各ローテをコート形式で一覧表示。hiddenを確実に反映 */
+.rotationOverview[hidden]{display:none!important;}
+.matchInfoCard.rotationOpen{padding:10px!important;}
+.rotationOverview{margin-top:8px;width:100%;}
+.rotationOverviewGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;}
+.rotationOverviewCard{min-width:0;border:1px solid rgba(255,255,255,.18);border-radius:11px;padding:6px;background:rgba(15,23,42,.58);}
+.rotationOverviewCard.current{border:3px solid #ef4444;padding:4px;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 0 14px rgba(239,68,68,.30);}
+.rotationOverviewLabel{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:12px;font-weight:1000;color:#fbbf24;}
+.rotationOverviewLabel span{font-size:8px;padding:2px 5px;border-radius:999px;background:#334155;color:#fff;}
+.rotationMiniCourt{position:relative;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,34px);gap:3px;padding:4px;border-radius:8px;background:linear-gradient(90deg,#f59e0b 0 50%,#fbbf24 50%);border:2px solid rgba(255,255,255,.8);overflow:hidden;}
+.rotationMiniLine{position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(255,255,255,.9);transform:translateX(-1px);}
+.rotationMiniPlayer{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;border-radius:6px;background:#0f172a;color:#fff;line-height:1;}
+.rotationMiniPlayer b{font-size:12px}.rotationMiniPlayer small{display:block;max-width:100%;margin-top:2px;font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cbd5e1;}
+.rotationMiniPlayer.mini1{grid-column:1;grid-row:1}.rotationMiniPlayer.mini2{grid-column:2;grid-row:1}.rotationMiniPlayer.mini3{grid-column:3;grid-row:1}.rotationMiniPlayer.mini4{grid-column:1;grid-row:2}.rotationMiniPlayer.mini5{grid-column:2;grid-row:2}.rotationMiniPlayer.mini6{grid-column:3;grid-row:2}
+.setterIqAdviceGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+.setterIqLiveHead{display:flex;align-items:baseline;gap:6px}.setterIqLiveHead span{font-weight:1000}.setterIqLiveHead b{font-size:42px;color:#2563eb;line-height:1}.setterIqLiveHead small{font-weight:900;color:#64748b}.setterIqMetrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.setterIqMetrics span{padding:8px;border-radius:10px;background:#f1f5f9;font-size:12px;font-weight:900}.setterIqMetrics b{float:right;color:#0f172a}.setterIqLive p,.aquilaLiveAdvice p,.aquilaLiveAdvice li{line-height:1.65;font-weight:800}.aquilaLiveAdvice>b{display:block;margin-bottom:8px;color:#1e3a8a}.aquilaLiveAdvice ul{margin:0;padding-left:20px}.aquilaLiveAdvice li+li{margin-top:7px}
+@media(max-width:700px){.setterIqAdviceGrid{grid-template-columns:1fr}.rotationOverviewGrid{grid-template-columns:1fr 1fr}}
+@media(orientation:landscape) and (min-width:768px){#match .matchInfoCard.rotationOpen{position:relative;z-index:20}.rotationOverviewGrid{grid-template-columns:repeat(3,minmax(0,1fr));}.rotationMiniCourt{grid-template-rows:repeat(2,31px)}}
+</style>
 </head>
 <body>
 
@@ -3149,7 +3170,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=67-instant-record-inline-undo"></script>
+<script src="app.js?v=70-rotation-iq"></script>
 
 
 
