@@ -2,10 +2,63 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ff8a1d">
 <link rel="manifest" href="manifest.json">
 <title>Setter Theory</title>
+<!-- V56: iPad PWA direct-input stabilization -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+/* Standalone iPad: avoid fixed-height/overflow combinations that suppress the software keyboard. */
+@media (display-mode: standalone) {
+  html, body {
+    min-height:100%;
+    height:auto!important;
+    overflow:auto!important;
+    overscroll-behavior:auto!important;
+  }
+  #setup.screen.active {
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-y!important;
+    contain:none!important;
+  }
+  #setup .setupCompact,
+  #setup .card,
+  #setup .setupTop,
+  #setup .setupPlayers {
+    transform:none!important;
+    contain:none!important;
+  }
+  #setup input, #setup textarea {
+    position:relative!important;
+    z-index:100!important;
+    min-height:44px!important;
+    font-size:16px!important;
+    pointer-events:auto!important;
+    touch-action:auto!important;
+    -webkit-user-select:text!important;
+    user-select:text!important;
+    -webkit-touch-callout:default!important;
+  }
+}
+/* Make the play-first buttons visibly larger in iPad landscape. */
+@media (orientation:landscape) and (min-width:900px) and (max-width:1366px) {
+  #match.active .fastBtn {
+    min-height:58px!important;
+    font-size:15px!important;
+    padding:11px 8px!important;
+  }
+}
+</style>
+
 <style>
 :root{
   --bg:#fff7ed;--card:#fff;--ink:#172033;--muted:#6b7280;--line:#e5e7eb;

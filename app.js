@@ -1973,7 +1973,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     render();
   }));
   if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("sw.js?v=55", {updateViaCache:"none"})
+    navigator.serviceWorker.register("sw.js?v=56", {updateViaCache:"none"})
       .then(reg=>reg.update())
       .catch(()=>{});
   }
@@ -2112,3 +2112,30 @@ function setupCsvImport(){
   }
 }
 
+
+
+// V56: iPad standalone direct input focus. Do not cancel the native touch event.
+(function enableStandaloneSetupInputs(){
+  const selector = '#setup input:not([disabled]):not([readonly]), #setup textarea:not([disabled]):not([readonly])';
+  function prepare(){
+    document.querySelectorAll(selector).forEach(el=>{
+      el.disabled=false;
+      el.readOnly=false;
+      el.setAttribute('tabindex','0');
+    });
+  }
+  document.addEventListener('DOMContentLoaded', prepare);
+  window.addEventListener('pageshow', prepare);
+  document.addEventListener('touchstart', function(ev){
+    const target = ev.target && ev.target.closest ? ev.target.closest(selector) : null;
+    if(!target) return;
+    target.disabled=false;
+    target.readOnly=false;
+    try { target.focus({preventScroll:true}); } catch(_) { target.focus(); }
+  }, {capture:true, passive:true});
+  document.addEventListener('click', function(ev){
+    const target = ev.target && ev.target.closest ? ev.target.closest(selector) : null;
+    if(!target) return;
+    try { target.focus({preventScroll:true}); } catch(_) { target.focus(); }
+  }, true);
+})();
