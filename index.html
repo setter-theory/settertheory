@@ -2778,6 +2778,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     </div>
 
     <div class="setupCourtCard card">
+      <div class="setupCourtActions">
+        <button type="button" class="whitebtn setterSelectBtn" onclick="toggleSetter()">選択位置をセッターにする</button>
+        <div class="help setterHelp">コート上の位置をタップしてから、このボタンを押してください。セッターは黒で表示されます。</div>
+      </div>
       <div class="court" id="setupCourt">
         <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="nameSelect" data-name-select="0"></select></div>
         <div class="setupSpot s2" data-spot="1" tabindex="0"><span class="name">レフト後衛</span><span class="num">2</span><select class="nameSelect" data-name-select="1"></select></div>
@@ -2827,12 +2831,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <div id="lastSubstitutionBox" class="lastSubstitutionBox" aria-live="polite"></div>
       <div class="otherCompact leftActionPanel">
         <button class="green" onclick="pointOnly('my')">自チーム得点</button>
-        <button class="orange" onclick="opponentMist()">相手ミス</button>
         <button class="red" onclick="pointOnly('op')">相手得点</button>
         <button class="gray" onclick="manualRotate()">ローテ＋</button>
         <button class="gray" onclick="toggleServe()">サーブ切替</button>
         <button class="undoBtn" onclick="undo()">取り消し</button>
         <button class="red wideAction" onclick="clearLogs()">ログ全消去</button>
+        <button class="orange wideAction opponentMistBottom" onclick="opponentMist()">相手ミス</button>
       </div>
     </div>
 
@@ -2990,7 +2994,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=62-native-input-finish"></script>
+<script src="app.js?v=63-setup-opponent-mist"></script>
 
 
 
@@ -5526,5 +5530,29 @@ body.menuOpen .sideOverlay{
     grid-template-columns:minmax(96px,112px) minmax(0,1fr)!important;
   }
   #setup .playerRegisterClean .registerBtn{grid-column:1 / -1!important;}
+}
+
+/* V63: setup fixes and opponent mistake placement */
+#setup .playerRegisterClean{
+  grid-template-columns:minmax(112px,132px) minmax(0,1fr)!important;
+}
+#setup .playerRegisterClean .registerBtn{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#setup .setupCourtActions{margin-bottom:8px;}
+#setup .setterSelectBtn{width:100%!important;min-height:42px!important;}
+#setup .setterHelp{margin-top:5px!important;}
+.leftActionPanel .opponentMistBottom{
+  grid-column:1 / -1!important;
+  width:100%!important;
+}
+@media (orientation:landscape){
+  #setup .playerRegisterClean{grid-template-columns:minmax(96px,112px) minmax(0,1fr)!important;}
+  #setup .setupCourtActions{margin-bottom:5px;}
+  #setup .setterSelectBtn{min-height:36px!important;font-size:13px!important;}
+  #setup .setterHelp{font-size:10px!important;line-height:1.25!important;}
 }
 </style>
