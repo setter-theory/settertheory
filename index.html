@@ -2791,6 +2791,30 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 @media(max-width:700px){.setterIqAdviceGrid{grid-template-columns:1fr}.rotationOverviewGrid{grid-template-columns:1fr 1fr}}
 @media(orientation:landscape) and (min-width:768px){#match .matchInfoCard.rotationOpen{position:relative;z-index:20}.rotationOverviewGrid{grid-template-columns:repeat(3,minmax(0,1fr));}.rotationMiniCourt{grid-template-rows:repeat(2,31px)}}
 </style>
+
+<style id="v71-left-rotation-panel">
+/* V71: 左下スペース内でS1〜S6をスクロールなし表示 */
+#match .matchInfoCard.rotationOpen > :not(.rotationToggle):not(.rotationOverview){display:none!important;}
+#match .matchInfoCard.rotationOpen{padding:8px!important;overflow:hidden!important;}
+#match .matchInfoCard.rotationOpen .rotationToggle{margin:0 0 6px!important;min-height:34px!important;}
+#match .matchInfoCard.rotationOpen .rotationOverview{display:block!important;margin:0!important;overflow:hidden!important;}
+#match .matchInfoCard.rotationOpen .rotationOverviewGrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:5px!important;width:100%!important;}
+#match .matchInfoCard.rotationOpen .rotationOverviewCard{padding:4px!important;border-radius:9px!important;min-height:0!important;}
+#match .matchInfoCard.rotationOpen .rotationOverviewCard.current{padding:2px!important;border:3px solid #ef4444!important;}
+#match .matchInfoCard.rotationOpen .rotationOverviewLabel{font-size:10px!important;margin-bottom:2px!important;line-height:1.05!important;}
+#match .matchInfoCard.rotationOpen .rotationOverviewLabel span{font-size:6px!important;padding:1px 3px!important;}
+#match .matchInfoCard.rotationOpen .rotationMiniCourt{grid-template-rows:repeat(2,25px)!important;gap:2px!important;padding:3px!important;border-width:1px!important;}
+#match .matchInfoCard.rotationOpen .rotationMiniPlayer{border-radius:4px!important;}
+#match .matchInfoCard.rotationOpen .rotationMiniPlayer b{font-size:10px!important;}
+#match .matchInfoCard.rotationOpen .rotationMiniPlayer small{font-size:6px!important;margin-top:1px!important;}
+@media (orientation:landscape) and (min-width:768px){
+  #match .matchInfoCard.rotationOpen{max-height:250px!important;}
+  #match .matchInfoCard.rotationOpen .rotationOverviewGrid{height:198px!important;}
+}
+.reportIqBtn{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
+.reportIqValue{display:inline-flex;align-items:center;justify-content:center;min-width:56px;padding:3px 7px;border-radius:999px;background:#fff;color:#0f172a;font-size:12px;font-weight:1000;}
+.reportIqValue.iqExcellent{background:#dcfce7;color:#166534}.reportIqValue.iqGood{background:#dbeafe;color:#1d4ed8}.reportIqValue.iqFair{background:#fef3c7;color:#92400e}.reportIqValue.iqLow{background:#fee2e2;color:#b91c1c}.reportIqValue.iqEmpty{background:#e2e8f0;color:#475569}
+</style>
 </head>
 <body>
 
@@ -3147,7 +3171,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <div class="bottom hidden" id="bottomBar">
   <button class="red" onclick="goHome()">🏠 ホーム</button>
   <button class="undoBtn" onclick="undo()">取り消し</button>
-  <button class="orange" onclick="showReport()">レポート</button>
+  <button class="orange reportIqBtn" onclick="showReport()"><span>レポート</span><b id="reportIqValue" class="reportIqValue iqEmpty">--/100</b></button>
   <button class="blue" onclick="downloadCSV()">CSV</button>
 </div>
 

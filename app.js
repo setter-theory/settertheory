@@ -320,7 +320,7 @@ function toggleRotationOverview(){
   box.hidden=!willOpen;
   if(card) card.classList.toggle('rotationOpen', willOpen);
   btn.setAttribute('aria-expanded', String(willOpen));
-  btn.textContent=willOpen?'各ローテを閉じる ▲':'各ローテ一覧を見る ▼';
+  btn.textContent=willOpen?'ローテ一覧を閉じる ▲':'各ローテ一覧を見る ▼';
   if(willOpen) renderRotationOverview();
 }
 function miniCourtHtml(nums, rot){
@@ -656,6 +656,13 @@ function render(){
   const mySetEl=document.getElementById("mySetCount"); if(mySetEl) mySetEl.textContent=Number(s.mySets||0);
   const opSetEl=document.getElementById("opSetCount"); if(opSetEl) opSetEl.textContent=Number(s.opSets||0);
   renderRotationOverview();
+  const reportIqEl=document.getElementById('reportIqValue');
+  if(reportIqEl){
+    const iqData=currentMatchSetterAnalysis();
+    const iq=iqData.total ? iqData.setterIq : null;
+    reportIqEl.textContent=iq===null ? '--/100' : `${iq}/100`;
+    reportIqEl.className='reportIqValue '+(iq===null?'iqEmpty':iq>=90?'iqExcellent':iq>=80?'iqGood':iq>=70?'iqFair':'iqLow');
+  }
   const inputGuide = selectedCourtNum===null
     ? "選手番号を選択"
     : selectedCourtNum + "番選択中｜プレーを選択";
