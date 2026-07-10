@@ -1,5 +1,5 @@
 
-// V70: court-style rotation overview, reliable close, Setter IQ and Aquila advice.
+// V72: Aquila Report hero, IQ-first report screen, branded PDF IQ/advice.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
@@ -1070,19 +1070,17 @@ function currentMatchSetterAnalysis(){
   const items=analysisItemsFromCounts(counts,total);
   return {total,items,terminalCounts,...calcScores(counts,total,terminalCounts)};
 }
-function buildCurrentSetterIqPanel(){
-  const a=currentMatchSetterAnalysis();
-  if(!a.total){
-    return `<div class="setterIqLive empty"><div class="setterIqLiveHead"><span>Setter IQ</span><b>--</b><small>/100</small></div><p>トスを記録すると、配球バランスをもとにSetter IQを表示します。</p></div>`;
-  }
-  const top=a.items[0]||{label:'-',pct:0};
-  return `<div class="setterIqLive"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div>
-    <div class="setterIqMetrics"><span>配球バランス <b>${a.balance}</b></span><span>多様性 <b>${a.diversity}</b></span><span>速攻活用 <b>${a.quick}</b></span><span>終盤冷静度 <b>${a.clutch}</b></span></div>
-    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+function setterIqRank(score){
+  const n=Number(score||0);
+  if(n>=95) return {label:'LEGEND',cls:'legend'};
+  if(n>=90) return {label:'ELITE',cls:'elite'};
+  if(n>=80) return {label:'ADVANCED',cls:'advanced'};
+  if(n>=70) return {label:'INTERMEDIATE',cls:'intermediate'};
+  return {label:'DEVELOPING',cls:'developing'};
 }
-function buildCurrentAquilaAdvice(){
+function getCurrentAquilaAdviceItems(){
   const a=currentMatchSetterAnalysis();
-  if(!a.total) return `<div class="aquilaLiveAdvice"><b>🦅 Aquilaのアドバイス</b><p>まずはトスを記録しよう。5本以上たまると、配球の偏りが見えやすくなります。</p></div>`;
+  if(!a.total) return ['まずはトスを記録しよう。5本以上たまると、配球の偏りが見えやすくなります。'];
   const top=a.items[0]||{label:'-',pct:0};
   const center=a.items.find(x=>x.label==='センター')||{pct:0};
   const advice=[];
@@ -1092,7 +1090,22 @@ function buildCurrentAquilaAdvice(){
   else advice.push(`センター使用率は${center.pct}%です。サイドを生かす伏線として機能しています。`);
   if(a.clutch<65) advice.push('20点以降に配球が寄っています。終盤の最初の1本だけ別方向を使う準備をしておこう。');
   else advice.push('終盤の配球は大きく崩れていません。次はローテ別の偏りを確認しよう。');
-  return `<div class="aquilaLiveAdvice"><b>🦅 Aquilaのアドバイス</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`;
+  return advice;
+}
+function buildCurrentSetterIqPanel(){
+  const a=currentMatchSetterAnalysis();
+  if(!a.total){
+    return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>Setter IQ</span><b>--</b><small>/100</small></div><p>トスを記録すると、配球バランスをもとにSetter IQを表示します。</p></div></div></div>`;
+  }
+  const top=a.items[0]||{label:'-',pct:0};
+  const rank=setterIqRank(a.setterIq);
+  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
+    <div class="setterIqMetrics"><span>配球バランス <b>${a.balance}</b></span><span>多様性 <b>${a.diversity}</b></span><span>速攻活用 <b>${a.quick}</b></span><span>終盤冷静度 <b>${a.clutch}</b></span></div>
+    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+}
+function buildCurrentAquilaAdvice(){
+  const advice=getCurrentAquilaAdviceItems();
+  return `<div class="aquilaLiveAdvice aquilaAdviceHero"><div class="aquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>🦅 Aquilaのアドバイス</b></div>${advice.length===1?`<p>${escapeHtml(advice[0])}</p>`:`<ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`}</div>`;
 }
 
 function report(){
@@ -1148,11 +1161,11 @@ function report(){
   const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}</div></div>`;}).join("");
 
   const dashboard=`<div class="reportGrid">
-    ${summary}
-    <div class="setterIqAdviceGrid">
-      <div class="reportPanel">${buildCurrentSetterIqPanel()}</div>
-      <div class="reportPanel">${buildCurrentAquilaAdvice()}</div>
+    <div class="setterIqAdviceGrid reportLeadGrid">
+      <div class="reportPanel reportLeadPanel">${buildCurrentSetterIqPanel()}</div>
+      <div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice()}</div>
     </div>
+    ${summary}
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
       <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>
@@ -1288,6 +1301,11 @@ function printMatchPdfReport(){
   const effTotal = effectRate(actionLogs);
   const myPts = s.logs.filter(x=>x.point==='自').length;
   const opPts = s.logs.filter(x=>x.point==='相').length;
+  const setterAnalysis = currentMatchSetterAnalysis();
+  const setterIq = setterAnalysis.total ? setterAnalysis.setterIq : 0;
+  const iqRank = setterIqRank(setterIq);
+  const aquilaAdvice = getCurrentAquilaAdviceItems();
+  const aquilaIcon = `${location.origin}/icons/aquila-192.png`;
 
   function table(headers, rows, emptyText){
     const body = rows && rows.length ? rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${headers.length}" class="empty">${esc(emptyText||'記録がありません。')}</td></tr>`;
@@ -1353,6 +1371,9 @@ function printMatchPdfReport(){
     .sheet{width:190mm;max-width:calc(100vw - 20px);margin:12px auto;background:#fff;padding:12mm;box-shadow:0 10px 28px rgba(15,23,42,.16);}
     .brand{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #f4b63f;padding-bottom:10px;margin-bottom:12px;}
     .brand h1{margin:0;font-size:25px;letter-spacing:.02em;color:#0f172a}.brand p{margin:4px 0 0;color:#64748b;font-size:12px}.badge{font-weight:900;background:#0f172a;color:#fbbf24;border-radius:999px;padding:7px 10px;font-size:11px;white-space:nowrap;}
+    .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
+    .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
+    .pdfLead{display:grid;grid-template-columns:1.05fr 1.95fr;gap:10px;margin:10px 0 12px;align-items:stretch}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:42px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:14px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:7px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:10px;font-weight:950}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;font-size:9px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
     .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
     .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
@@ -1363,7 +1384,11 @@ function printMatchPdfReport(){
   </style></head><body>
     <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
     <main class="sheet">
-      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}</p></div><div class="badge">Aquila Report</div></header>
+      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
+      <div class="pdfLead">
+        <div class="pdfIqCard"><div class="title">Setter IQ</div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div><div class="pdfIqBreakdown"><span>配球 ${setterAnalysis.balance||0}</span><span>多様性 ${setterAnalysis.diversity||0}</span><span>速攻 ${setterAnalysis.quick||0}</span><span>終盤 ${setterAnalysis.clutch||0}</span></div></div>
+        <div class="pdfAdviceCard"><div class="title">🦅 Aquila Advice</div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+      </div>
       <div class="summary">
         <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
         <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>

@@ -1,6 +1,7 @@
-Setter Theory V71
-- 左下スペース内でS1〜S6を3列×2段表示
-- 現在ローテを赤枠表示
-- ローテ一覧表示中はチーム名・得点等を一時非表示
-- スクロールなしで確認可能
-- レポートボタン横にSetter IQ /100を表示
+# Setter Theory V72
+
+- 試合レポート最上部を Setter IQ → Aquila Advice → 各種データ の順に変更
+- Setter IQにランクと内訳を追加
+- PDF右上にAquilaキャラクター、IQ、ランクを表示
+- PDF本文の最初にSetter IQとAquila Adviceを配置
+- V71までの入力・ローテーション・PWA機能を維持
