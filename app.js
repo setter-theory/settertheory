@@ -1,74 +1,5 @@
 
-// V61: iPad home-screen input editor fallback.
-// Native inputs remain enabled. In standalone mode, the small "入力" button opens
-// a clean modal input from a real button click so iPadOS can show its keyboard.
-(function installStandaloneInputEditor(){
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-  if(!isIOS || !isStandalone) return;
-
-  const fields = [
-    ['team','自チーム名を入力','text'],
-    ['oppTeam','相手チーム名を入力','text'],
-    ['newPlayerNo','背番号を入力','numeric'],
-    ['newPlayerName','選手名を入力','text']
-  ];
-
-  function ensureModal(){
-    let modal=document.getElementById('standaloneInputModal');
-    if(modal) return modal;
-    modal=document.createElement('div');
-    modal.id='standaloneInputModal';
-    modal.innerHTML=`<div class="standaloneInputCard">
-      <div id="standaloneInputTitle" class="standaloneInputTitle">入力</div>
-      <input id="standaloneInputField" type="text" autocomplete="off">
-      <div class="standaloneInputActions">
-        <button type="button" id="standaloneInputCancel" class="whitebtn">キャンセル</button>
-        <button type="button" id="standaloneInputApply" class="orange">決定</button>
-      </div>
-    </div>`;
-    document.body.appendChild(modal);
-    return modal;
-  }
-
-  function openEditor(target, title, mode){
-    const modal=ensureModal();
-    const field=modal.querySelector('#standaloneInputField');
-    modal.querySelector('#standaloneInputTitle').textContent=title;
-    field.inputMode=mode || 'text';
-    field.value=target.value || '';
-    modal.classList.add('show');
-    const close=()=>modal.classList.remove('show');
-    modal.querySelector('#standaloneInputCancel').onclick=close;
-    modal.querySelector('#standaloneInputApply').onclick=()=>{
-      target.value=field.value;
-      target.dispatchEvent(new Event('input',{bubbles:true}));
-      target.dispatchEvent(new Event('change',{bubbles:true}));
-      close();
-    };
-    // Must happen synchronously inside the button click on iPadOS.
-    field.focus();
-    try { field.setSelectionRange(field.value.length, field.value.length); } catch(_) {}
-  }
-
-  function mount(){
-    fields.forEach(([id,title,mode])=>{
-      const input=document.getElementById(id);
-      if(!input || input.dataset.v61EditorMounted==='1') return;
-      input.dataset.v61EditorMounted='1';
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='standaloneInputOpen';
-      btn.textContent='入力';
-      btn.setAttribute('aria-label',title);
-      btn.addEventListener('click',()=>openEditor(input,title,mode),false);
-      input.insertAdjacentElement('afterend',btn);
-    });
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mount,{once:true});
-  else mount();
-})();
+// V62: native iPad/PWA inputs only. The temporary blue input buttons were removed.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
@@ -2176,3 +2107,16 @@ function setupCsvImport(){
   }
 }
 
+
+
+// V62: close the on-screen keyboard when tapping a non-interactive area.
+(function installNaturalKeyboardDismiss(){
+  function isEditableOrControl(el){
+    return !!(el && el.closest && el.closest('input, textarea, select, button, [contenteditable="true"], label, a'));
+  }
+  document.addEventListener('pointerdown', function(e){
+    const active=document.activeElement;
+    const editing=active && (active.matches('input, textarea, [contenteditable="true"]'));
+    if(editing && !isEditableOrControl(e.target)) active.blur();
+  }, {passive:true});
+})();
