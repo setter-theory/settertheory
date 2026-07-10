@@ -1774,6 +1774,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   .leftActionPanel .wideAction{min-height:30px!important;}
 }
 
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -2254,6 +2285,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   }
 }
 
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 
@@ -2618,6 +2680,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   }
 }
 
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 
@@ -2645,6 +2738,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     border-radius:11px!important;
   }
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 </head>
 <body>
@@ -2797,12 +2921,9 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 </section>
 
 <section id="match" class="screen">
-  <div class="topbar">
+  <div class="topbar compactMatchTopbar">
     <div class="status">
       <button class="menuBtn" type="button" onclick="openSideMenu()" aria-label="メニュー">☰</button>
-      <div class="pill">S<span id="rot">1</span></div>
-      <div class="pill score"><span id="myScore">0</span> - <span id="opScore">0</span></div>
-      <div class="pill" id="serveLabel">自サーブ</div>
     </div>
   </div>
 
@@ -2829,14 +2950,42 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <div class="modeHelp modeHelpSticky">よく使う入力は☆登録 → 上部から1タップ選択</div>
       <button type="button" class="subQuickBtn" onclick="openSubModal(selectedCourtNum)">🔁 選手交代</button>
       <div id="lastSubstitutionBox" class="lastSubstitutionBox" aria-live="polite"></div>
-      <div class="otherCompact leftActionPanel">
-        <button class="green" onclick="pointOnly('my')">自チーム得点</button>
-        <button class="red" onclick="pointOnly('op')">相手得点</button>
-        <button class="gray" onclick="manualRotate()">ローテ＋</button>
-        <button class="gray" onclick="toggleServe()">サーブ切替</button>
-        <button class="undoBtn" onclick="undo()">取り消し</button>
-        <button class="red wideAction" onclick="clearLogs()">ログ全消去</button>
+      <div class="leftActionPanel matchLeftTools">
         <button class="red wideAction opponentMistBottom" onclick="opponentMist()">相手ミス</button>
+
+        <section class="matchInfoCard" aria-label="試合情報">
+          <div class="matchTeamRow">
+            <div class="matchTeamName" id="infoMyTeam">自チーム</div>
+            <div class="matchTeamVs">VS</div>
+            <div class="matchTeamName" id="infoOppTeam">相手</div>
+          </div>
+
+          <div class="setCountBlock">
+            <div class="setCountLabel">セットカウント</div>
+            <div class="setCountControls">
+              <div class="setSide">
+                <button type="button" class="setAdjust" onclick="adjustSetCount('my',-1)" aria-label="自チームのセットを減らす">−</button>
+                <strong id="mySetCount">0</strong>
+                <button type="button" class="setAdjust" onclick="adjustSetCount('my',1)" aria-label="自チームのセットを増やす">＋</button>
+              </div>
+              <span class="setDash">-</span>
+              <div class="setSide">
+                <button type="button" class="setAdjust" onclick="adjustSetCount('op',-1)" aria-label="相手のセットを減らす">−</button>
+                <strong id="opSetCount">0</strong>
+                <button type="button" class="setAdjust" onclick="adjustSetCount('op',1)" aria-label="相手のセットを増やす">＋</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="matchStateRow">
+            <span class="statePill">S<span id="rot">1</span></span>
+            <span class="statePill" id="serveLabel">自サーブ</span>
+          </div>
+          <div class="matchScoreBig"><span id="myScore">0</span><span>-</span><span id="opScore">0</span></div>
+
+          <button type="button" class="rotationToggle" onclick="toggleRotationOverview()" aria-expanded="false" id="rotationToggleBtn">各ローテを見る ▼</button>
+          <div id="rotationOverview" class="rotationOverview" hidden></div>
+        </section>
       </div>
     </div>
 
@@ -3052,6 +3201,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   #setupCourt .setupSpot .setupName{font-size:10px!important;}
   #setupCourt .setupSpot .nameSelect{font-size:11px!important;padding:4px!important;}
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 
@@ -3067,6 +3247,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   overflow:visible!important;
   text-overflow:clip!important;
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 
@@ -3106,6 +3317,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     text-overflow:clip!important;
   }
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 <style>
@@ -3130,6 +3372,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 @media (orientation:landscape) and (min-width:768px){
   #match.active .groupUndoAction{min-height:58px!important;font-size:15px!important;}
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 <style>
@@ -3154,6 +3427,37 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     text-align:center!important;
   }
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 </body>
 </html>
@@ -3636,6 +3940,37 @@ body{
   }
 }
 
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 <!-- V36.1 menu overlay fix -->
 <style>
@@ -3981,6 +4316,37 @@ body.menuOpen #match .matchInputPane{
     font-size:21px!important;
     flex:0 0 auto!important;
   }
+}
+
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
 }
 
 </style>
@@ -4343,6 +4709,37 @@ body.menuOpen .sideOverlay{
     font-size:21px!important;
     flex:0 0 auto!important;
   }
+}
+
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
 }
 
 </style>
@@ -4725,6 +5122,37 @@ body.menuOpen .sideOverlay{
     font-size:21px!important;
     flex:0 0 auto!important;
   }
+}
+
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
 }
 
 </style>
@@ -5472,6 +5900,37 @@ body.menuOpen .sideOverlay{
     min-height: 86px !important;
   }
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 <style>
@@ -5515,6 +5974,37 @@ body.menuOpen .sideOverlay{
   #match.active .leftActionPanel{gap:4px!important;margin-top:5px!important;grid-template-columns:repeat(3,1fr)!important;}
   #match.active .leftActionPanel button{min-height:30px!important;font-size:10px!important;padding:4px 3px!important;border-radius:9px!important;}
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>
 
 
@@ -5639,4 +6129,35 @@ body.menuOpen .sideOverlay{
   border-color:rgba(255,255,255,.85)!important;
   outline:4px solid rgba(255,255,255,.9)!important;
 }
+
+
+/* V69: 左下の試合情報カードとローテーション確認 */
+#match .compactMatchTopbar{min-height:0!important;margin-bottom:4px!important;}
+#match .compactMatchTopbar .status{justify-content:flex-start!important;}
+#match .matchLeftTools{display:block!important;margin-top:8px!important;}
+#match .matchLeftTools .opponentMistBottom{width:100%!important;min-height:48px!important;margin:0 0 8px!important;background:#dc2626!important;color:#fff!important;}
+.matchInfoCard{background:rgba(255,255,255,.07);border:1px solid rgba(245,181,68,.24);border-radius:16px;padding:10px;color:#f8fafc;}
+.matchTeamRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;}
+.matchTeamName{font-size:13px;font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.matchTeamVs{font-size:10px;color:#94a3b8;font-weight:1000;}
+.setCountBlock{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.10);}
+.setCountLabel{text-align:center;font-size:10px;color:#cbd5e1;font-weight:1000;margin-bottom:5px;}
+.setCountControls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.setSide{display:flex;align-items:center;gap:5px;}
+#match .setAdjust{min-width:28px;width:28px;height:28px;min-height:28px;padding:0;border-radius:8px;background:rgba(255,255,255,.12);font-size:17px;box-shadow:none;}
+.setSide strong{font-size:20px;min-width:22px;text-align:center;color:#fbbf24;}
+.setDash{font-size:19px;font-weight:1000;color:#f8fafc;}
+.matchStateRow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.statePill{display:grid;place-items:center;min-height:31px;border-radius:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:1000;}
+.matchScoreBig{display:flex;align-items:center;justify-content:center;gap:16px;margin:7px 0;font-size:31px;line-height:1;font-weight:1000;color:#fbbf24;}
+#match .rotationToggle{width:100%;min-height:36px;padding:7px 9px;border-radius:10px;background:#334155;color:#fff;font-size:12px;box-shadow:none;}
+.rotationOverview{display:grid;gap:5px;margin-top:7px;}
+.rotationOverviewRow{display:grid;grid-template-columns:30px repeat(6,minmax(0,1fr));gap:3px;align-items:center;padding:4px;border-radius:8px;background:rgba(255,255,255,.05);}
+.rotationOverviewRow.current{background:rgba(37,99,235,.22);outline:1px solid rgba(96,165,250,.55);}
+.rotationOverviewLabel{font-size:11px;font-weight:1000;color:#fbbf24;text-align:center;}
+.rotationOverviewPlayer{min-width:0;text-align:center;border-radius:6px;background:rgba(255,255,255,.08);padding:4px 1px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-height:760px) and (orientation:landscape){
+  .matchInfoCard{padding:8px}.matchScoreBig{font-size:26px;margin:5px 0}.setCountBlock{margin-top:6px;padding-top:6px}.matchStateRow{margin-top:6px}.rotationOverviewRow{padding:3px}.rotationOverviewPlayer{padding:3px 1px}
+}
+
 </style>

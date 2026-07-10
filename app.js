@@ -1,5 +1,5 @@
 
-// V67: number-first instant record, reset after each play, inline group cancel buttons.
+// V69: match info card, set count, and expandable all-rotation overview.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
@@ -9,7 +9,7 @@ let s = {
   benchCount:6,
   lastSubstitution:null,
   substitutionCounts:{},
-  rot:1, my:0, op:0, serve:"mine",
+  rot:1, my:0, op:0, mySets:0, opSets:0, serve:"mine",
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
 let setupSelected = 0;
@@ -298,6 +298,36 @@ function rotationNums(){
   let a=s.nums.slice();
   for(let i=1;i<s.rot;i++){ a=rotateClockwiseOnce(a); }
   return a;
+}
+function rotationNumsAt(rot){
+  let a=s.nums.slice();
+  for(let i=1;i<rot;i++){ a=rotateClockwiseOnce(a); }
+  return a;
+}
+function adjustSetCount(side, delta){
+  snap();
+  if(side==='my') s.mySets=Math.max(0, Number(s.mySets||0)+delta);
+  else s.opSets=Math.max(0, Number(s.opSets||0)+delta);
+  save();
+  render();
+}
+function toggleRotationOverview(){
+  const box=document.getElementById('rotationOverview');
+  const btn=document.getElementById('rotationToggleBtn');
+  if(!box||!btn) return;
+  const willOpen=box.hidden;
+  box.hidden=!willOpen;
+  btn.setAttribute('aria-expanded', String(willOpen));
+  btn.textContent=willOpen?'各ローテを閉じる ▲':'各ローテを見る ▼';
+  if(willOpen) renderRotationOverview();
+}
+function renderRotationOverview(){
+  const box=document.getElementById('rotationOverview');
+  if(!box || box.hidden) return;
+  box.innerHTML=[1,2,3,4,5,6].map(rot=>{
+    const nums=rotationNumsAt(rot);
+    return `<div class="rotationOverviewRow ${rot===s.rot?'current':''}"><span class="rotationOverviewLabel">S${rot}</span>${nums.map(n=>`<span class="rotationOverviewPlayer" title="${escapeAttr(getPlayerName(n))}">${escapeHtml(n)}</span>`).join('')}</div>`;
+  }).join('');
 }
 function rotatedSetterNum(){ return s.nums[s.setterIndex]; }
 function nextRot(){ s.rot=s.rot%6+1; }
@@ -605,6 +635,11 @@ function render(){
   document.getElementById("myScore").textContent=s.my;
   document.getElementById("opScore").textContent=s.op;
   document.getElementById("serveLabel").textContent=s.serve==="mine"?"自サーブ":"相手サーブ";
+  const myTeamEl=document.getElementById("infoMyTeam"); if(myTeamEl) myTeamEl.textContent=s.team||"自チーム";
+  const oppTeamEl=document.getElementById("infoOppTeam"); if(oppTeamEl) oppTeamEl.textContent=s.oppTeam||"相手";
+  const mySetEl=document.getElementById("mySetCount"); if(mySetEl) mySetEl.textContent=Number(s.mySets||0);
+  const opSetEl=document.getElementById("opSetCount"); if(opSetEl) opSetEl.textContent=Number(s.opSets||0);
+  renderRotationOverview();
   const inputGuide = selectedCourtNum===null
     ? "選手番号を選択"
     : selectedCourtNum + "番選択中｜プレーを選択";
