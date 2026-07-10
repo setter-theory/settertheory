@@ -1,31 +1,75 @@
 
-
-// V60: iPad home-screen (standalone) input focus bridge.
-// Focus is requested directly inside the user's touch gesture and no default action is cancelled.
-(function installIpadStandaloneInputFocus(){
+// V61: iPad home-screen input editor fallback.
+// Native inputs remain enabled. In standalone mode, the small "入力" button opens
+// a clean modal input from a real button click so iPadOS can show its keyboard.
+(function installStandaloneInputEditor(){
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  if(!isStandalone || !isIOS) return;
+  if(!isIOS || !isStandalone) return;
 
-  const editable = (target) => target && target.closest && target.closest('#setup input:not([disabled]):not([readonly]), #setup textarea:not([disabled]):not([readonly])');
-  const focusInput = (event) => {
-    const input = editable(event.target);
-    if(!input) return;
-    // Do not preventDefault: iPadOS needs its native default action to open the keyboard.
-    try { input.focus({preventScroll:true}); } catch(_) { input.focus(); }
-    requestAnimationFrame(() => {
-      try { input.focus({preventScroll:true}); } catch(_) { input.focus(); }
-      const len = String(input.value || '').length;
-      if(typeof input.setSelectionRange === 'function') {
-        try { input.setSelectionRange(len, len); } catch(_) {}
-      }
+  const fields = [
+    ['team','自チーム名を入力','text'],
+    ['oppTeam','相手チーム名を入力','text'],
+    ['newPlayerNo','背番号を入力','numeric'],
+    ['newPlayerName','選手名を入力','text']
+  ];
+
+  function ensureModal(){
+    let modal=document.getElementById('standaloneInputModal');
+    if(modal) return modal;
+    modal=document.createElement('div');
+    modal.id='standaloneInputModal';
+    modal.innerHTML=`<div class="standaloneInputCard">
+      <div id="standaloneInputTitle" class="standaloneInputTitle">入力</div>
+      <input id="standaloneInputField" type="text" autocomplete="off">
+      <div class="standaloneInputActions">
+        <button type="button" id="standaloneInputCancel" class="whitebtn">キャンセル</button>
+        <button type="button" id="standaloneInputApply" class="orange">決定</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  function openEditor(target, title, mode){
+    const modal=ensureModal();
+    const field=modal.querySelector('#standaloneInputField');
+    modal.querySelector('#standaloneInputTitle').textContent=title;
+    field.inputMode=mode || 'text';
+    field.value=target.value || '';
+    modal.classList.add('show');
+    const close=()=>modal.classList.remove('show');
+    modal.querySelector('#standaloneInputCancel').onclick=close;
+    modal.querySelector('#standaloneInputApply').onclick=()=>{
+      target.value=field.value;
+      target.dispatchEvent(new Event('input',{bubbles:true}));
+      target.dispatchEvent(new Event('change',{bubbles:true}));
+      close();
+    };
+    // Must happen synchronously inside the button click on iPadOS.
+    field.focus();
+    try { field.setSelectionRange(field.value.length, field.value.length); } catch(_) {}
+  }
+
+  function mount(){
+    fields.forEach(([id,title,mode])=>{
+      const input=document.getElementById(id);
+      if(!input || input.dataset.v61EditorMounted==='1') return;
+      input.dataset.v61EditorMounted='1';
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='standaloneInputOpen';
+      btn.textContent='入力';
+      btn.setAttribute('aria-label',title);
+      btn.addEventListener('click',()=>openEditor(input,title,mode),false);
+      input.insertAdjacentElement('afterend',btn);
     });
-  };
-  document.addEventListener('touchstart', focusInput, {capture:true, passive:true});
-  document.addEventListener('click', focusInput, true);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mount,{once:true});
+  else mount();
 })();
 
-;
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
