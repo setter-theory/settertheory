@@ -13,8 +13,8 @@
   --purple:#7c3aed;--yellow:#f59e0b;--dark:#111827;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{touch-action:auto;overscroll-behavior-y:none}
-button{user-select:none;-webkit-user-select:none}
+html,body{touch-action:manipulation;overscroll-behavior-y:none}
+body,button{user-select:none;-webkit-user-select:none}
 button{touch-action:manipulation}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
 .screen{display:none;min-height:100vh;padding:18px 14px 104px;max-width:720px;margin:0 auto}
@@ -2626,12 +2626,24 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <meta name="theme-color" content="#0f172a">
 
 <style>
-#match .fastInput button,
-#match .otherCompact button,
-#match .fastGroup button{
-min-height:56px!important;
-font-size:18px!important;
-padding:12px 10px!important;
+/* V59: final iPad PWA input and landscape button sizing */
+#setup input, #setup textarea, #setup select {
+  position:relative!important;
+  z-index:50!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-appearance:none;
+}
+@media (orientation:landscape) and (min-width:768px){
+  #match.active .fastButtons .fastBtn{
+    min-height:46px!important;
+    font-size:12px!important;
+    line-height:1.15!important;
+    padding:8px 6px!important;
+    border-radius:11px!important;
+  }
 }
 </style>
 </head>
@@ -5409,67 +5421,4 @@ body.menuOpen .sideOverlay{
 }
 </style>
 
-<style>
-/* V53: iPadで通常キーボードが出ない場合の安全入力ボタン */
-#setup .setupField{position:relative!important;}
-#setup .ipadTextEditBtn{
-  margin-top:5px!important;
-  min-height:28px!important;
-  padding:4px 8px!important;
-  border-radius:10px!important;
-  font-size:11px!important;
-  font-weight:1000!important;
-  background:linear-gradient(135deg,#f5b544,#ff8a1d)!important;
-  color:#111827!important;
-  border:1px solid rgba(245,181,68,.75)!important;
-  box-shadow:0 4px 10px rgba(0,0,0,.12)!important;
-  width:100%!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:none!important;
-  user-select:none!important;
-}
-@media (orientation:landscape){
-  #setup .ipadTextEditBtn{min-height:24px!important;font-size:10px!important;padding:3px 6px!important;margin-top:3px!important;}
-  #setup .setupTop{align-items:start!important;}
-  #setup .playerRegisterClean{align-items:start!important;}
-}
-</style>
-<script>
-/* V53: iPad Safari/PWAでinputのソフトキーボードが出ない場合でも、ボタンからprompt入力できるようにする */
-(function(){
-  function safePromptInput(id, label){
-    var el = document.getElementById(id);
-    if(!el) return;
-    var current = el.value || "";
-    var value = window.prompt(label + "を入力", current);
-    if(value === null) return;
-    el.value = value;
-    el.dispatchEvent(new Event('input', {bubbles:true}));
-    el.dispatchEvent(new Event('change', {bubbles:true}));
-    try{ el.focus(); }catch(e){}
-  }
-  function addPromptButton(id, label){
-    var el = document.getElementById(id);
-    if(!el || el.dataset.v53PromptBtn === "1") return;
-    el.dataset.v53PromptBtn = "1";
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'ipadTextEditBtn';
-    btn.textContent = label + 'を入力';
-    btn.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); safePromptInput(id, label); }, false);
-    btn.addEventListener('touchend', function(ev){ ev.preventDefault(); ev.stopPropagation(); safePromptInput(id, label); }, {passive:false});
-    el.insertAdjacentElement('afterend', btn);
-  }
-  function initV53SafeInput(){
-    addPromptButton('team', '自チーム');
-    addPromptButton('oppTeam', '相手');
-    addPromptButton('newPlayerNo', '背番号');
-    addPromptButton('newPlayerName', '選手名');
-  }
-  document.addEventListener('DOMContentLoaded', initV53SafeInput);
-  window.addEventListener('pageshow', initV53SafeInput);
-  document.addEventListener('click', function(){ setTimeout(initV53SafeInput, 0); }, true);
-  window.v53SafeInput = safePromptInput;
-})();
-</script>
+

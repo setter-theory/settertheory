@@ -1,21 +1,5 @@
 
-// v31: スマホ連打時のダブルタップ拡大を防止
-(function preventDoubleTapZoom(){
-  let lastTouchEnd = 0;
-  function isEditableTarget(t){
-    return t && t.closest && t.closest('input, textarea, select, [contenteditable=\"true\"]');
-  }
-  document.addEventListener('touchend', function(e){
-    if(isEditableTarget(e.target)) return;
-    const now = Date.now();
-    if(false && now - lastTouchEnd <= 300){ e.preventDefault(); }
-    lastTouchEnd = now;
-  }, {passive:false});
-  document.addEventListener('dblclick', function(e){
-    if(isEditableTarget(e.target)) return;
-    return;
-  }, {passive:false});
-})();
+;
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
