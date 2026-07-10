@@ -2780,7 +2780,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     <div class="setupCourtCard card">
       <div class="setupCourtActions">
         <button type="button" class="whitebtn setterSelectBtn" onclick="toggleSetter()">選択位置をセッターにする</button>
-        <div class="help setterHelp">コート上の位置をタップしてから、このボタンを押してください。セッターは黒で表示されます。</div>
+        <div class="help setterHelp">コート上の位置をタップしてから、このボタンを押してください。セッターは青色で表示されます。</div>
       </div>
       <div class="court" id="setupCourt">
         <div class="setupSpot s1" data-spot="0" tabindex="0"><span class="name">ライト後衛</span><span class="num">1</span><select class="nameSelect" data-name-select="0"></select></div>
@@ -2994,7 +2994,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=63-setup-opponent-mist"></script>
+<script src="app.js?v=64-setter-color-sync"></script>
 
 
 
@@ -5554,5 +5554,35 @@ body.menuOpen .sideOverlay{
   #setup .setupCourtActions{margin-bottom:5px;}
   #setup .setterSelectBtn{min-height:36px!important;font-size:13px!important;}
   #setup .setterHelp{font-size:10px!important;line-height:1.25!important;}
+}
+
+
+/* V64: セッター色をローテーション設定画面とコート入力画面で統一 */
+#setup .setupSpot.setter{
+  background:var(--blue)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.85)!important;
+  box-shadow:0 8px 18px rgba(37,99,235,.28)!important;
+}
+#setup .setupSpot.setter .num,
+#setup .setupSpot.setter .num span,
+#setup .setupSpot.setter .setupName,
+#setup .setupSpot.setter .name{
+  color:#fff!important;
+  background:transparent!important;
+}
+#setup .setupSpot.setter .name:after{
+  content:"  (S)"!important;
+  color:#fde68a!important;
+}
+#setup .setupSpot.setter.active{
+  outline:5px solid #fbbf24!important;
+  background:var(--blue)!important;
+}
+#matchCourt .player.setter{
+  background:var(--blue)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.85)!important;
+  outline:4px solid rgba(255,255,255,.9)!important;
 }
 </style>
