@@ -1,4 +1,30 @@
 
+
+// V60: iPad home-screen (standalone) input focus bridge.
+// Focus is requested directly inside the user's touch gesture and no default action is cancelled.
+(function installIpadStandaloneInputFocus(){
+  const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(!isStandalone || !isIOS) return;
+
+  const editable = (target) => target && target.closest && target.closest('#setup input:not([disabled]):not([readonly]), #setup textarea:not([disabled]):not([readonly])');
+  const focusInput = (event) => {
+    const input = editable(event.target);
+    if(!input) return;
+    // Do not preventDefault: iPadOS needs its native default action to open the keyboard.
+    try { input.focus({preventScroll:true}); } catch(_) { input.focus(); }
+    requestAnimationFrame(() => {
+      try { input.focus({preventScroll:true}); } catch(_) { input.focus(); }
+      const len = String(input.value || '').length;
+      if(typeof input.setSelectionRange === 'function') {
+        try { input.setSelectionRange(len, len); } catch(_) {}
+      }
+    });
+  };
+  document.addEventListener('touchstart', focusInput, {capture:true, passive:true});
+  document.addEventListener('click', focusInput, true);
+})();
+
 ;
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",

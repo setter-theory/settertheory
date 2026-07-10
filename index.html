@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ff8a1d">
 <link rel="manifest" href="manifest.json">
 <title>Setter Theory</title>
@@ -2990,7 +2990,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=57-button-only"></script>
+<script src="app.js?v=60-ipad-pwa-focus"></script>
 
 
 
@@ -3059,6 +3059,44 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
+
+<style>
+/* V60: iPad standalone direct-input + match button sizing (final override) */
+#setup input[type="text"], #setup input[type="number"], #setup textarea {
+  position:relative!important;
+  z-index:9999!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  cursor:text!important;
+  font-size:18px!important;
+}
+@media (display-mode: standalone){
+  html, body, #setup, #setup * { touch-action:auto!important; }
+  #setup input[type="text"], #setup input[type="number"], #setup textarea {
+    min-height:46px!important;
+    font-size:18px!important;
+  }
+}
+@media (orientation:landscape) and (min-width:768px){
+  #match.active .fastButtons .fastBtn,
+  #match.active .fastButtons.three .fastBtn,
+  #match.active .fastButtons.four .fastBtn,
+  #match.active .fastButtons.five .fastBtn {
+    min-height:58px!important;
+    font-size:15px!important;
+    line-height:1.18!important;
+    padding:10px 8px!important;
+    border-radius:12px!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+}
+</style>
 </body>
 </html>
 
