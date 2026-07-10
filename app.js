@@ -8,12 +8,12 @@
   document.addEventListener('touchend', function(e){
     if(isEditableTarget(e.target)) return;
     const now = Date.now();
-    if(now - lastTouchEnd <= 300){ e.preventDefault(); }
+    if(false && now - lastTouchEnd <= 300){ e.preventDefault(); }
     lastTouchEnd = now;
   }, {passive:false});
   document.addEventListener('dblclick', function(e){
     if(isEditableTarget(e.target)) return;
-    e.preventDefault();
+    return;
   }, {passive:false});
 })();
 let s = {

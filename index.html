@@ -13,8 +13,8 @@
   --purple:#7c3aed;--yellow:#f59e0b;--dark:#111827;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{touch-action:manipulation;overscroll-behavior-y:none}
-body,button{user-select:none;-webkit-user-select:none}
+html,body{touch-action:auto;overscroll-behavior-y:none}
+button{user-select:none;-webkit-user-select:none}
 button{touch-action:manipulation}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
 .screen{display:none;min-height:100vh;padding:18px 14px 104px;max-width:720px;margin:0 auto}
@@ -2624,6 +2624,16 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <link rel="icon" type="image/png" sizes="192x192" href="icons/aquila-192.png">
 <link rel="apple-touch-icon" href="icons/aquila-180.png">
 <meta name="theme-color" content="#0f172a">
+
+<style>
+#match .fastInput button,
+#match .otherCompact button,
+#match .fastGroup button{
+min-height:56px!important;
+font-size:18px!important;
+padding:12px 10px!important;
+}
+</style>
 </head>
 <body>
 
