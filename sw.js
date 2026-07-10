@@ -1,6 +1,6 @@
-const CACHE_NAME = "setter-theory-v54-pwa-input-fix";
+const CACHE_NAME = "setter-theory-v55-pwa-input-focus-reset";
 const ASSETS = [
-  "./", "index.html?v=54", "app.js?v=54", "manifest.json",
+  "./", "index.html?v=55", "app.js?v=55", "manifest.json",
   "icons/aquila-192.png", "icons/aquila-512.png"
 ];
 

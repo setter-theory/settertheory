@@ -13,8 +13,7 @@
   --purple:#7c3aed;--yellow:#f59e0b;--dark:#111827;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{touch-action:manipulation;overscroll-behavior-y:none}
-body,button{user-select:none;-webkit-user-select:none}
+html,body{overscroll-behavior-y:none}
 button{touch-action:manipulation}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
 .screen{display:none;min-height:100vh;padding:18px 14px 104px;max-width:720px;margin:0 auto}
@@ -2995,7 +2994,7 @@ button,.fastBtn,.player{touch-action:manipulation;}
   </div>
 </div>
 
-<script src="app.js?v=54"></script>
+<script src="app.js?v=55"></script>
 
 
 
@@ -3049,6 +3048,36 @@ button,.fastBtn,.player{touch-action:manipulation;}
 }
 </style>
 
+
+<style>
+/* V55: iPadホーム画面アプリ入力の最終優先CSS */
+html,body,#setup,#setup *{
+  -webkit-user-select:auto!important;
+  user-select:auto!important;
+}
+#setup input,#setup textarea,#setup select{
+  position:relative!important;
+  z-index:999!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+#setup input{cursor:text!important;}
+@media (orientation:landscape) and (min-width:700px){
+  #match.active .fastBtn{
+    min-height:44px!important;
+    font-size:14px!important;
+    line-height:1.1!important;
+    padding:8px 6px!important;
+    border-radius:12px!important;
+  }
+  #match.active .fastButtons{gap:6px!important;}
+  #match.active .fastGroup{padding:7px!important;}
+}
+</style>
 </body>
 </html>
 

@@ -1,5 +1,5 @@
 
-// V54: iPad PWAの入力フォーカスを妨げないよう、
+// V55: iPad PWAの入力フォーカスを妨げないよう、
 // document全体のtouchend/dblclick preventDefault処理を撤去。
 // ダブルタップ拡大対策はCSSの touch-action: manipulation で行う。
 let s = {
@@ -1973,7 +1973,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     render();
   }));
   if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("sw.js?v=54", {updateViaCache:"none"})
+    navigator.serviceWorker.register("sw.js?v=55", {updateViaCache:"none"})
       .then(reg=>reg.update())
       .catch(()=>{});
   }

@@ -1,7 +1,6 @@
-# Setter Theory V54
+Setter Theory V55
 
-- iPadホーム画面アプリで入力フォーカスを妨げる全体 touchend / dblclick 制御を撤去
-- V53の「〇〇を入力」応急ボタンを削除
-- Service WorkerをV54へ更新し、古いPWAキャッシュを自動削除
-- app.jsをキャッシュバスター付きで読み込み
-- iPad横画面のプレー項目ボタンを拡大
+- iPadホーム画面アプリで入力を阻害する可能性がある html/body の touch-action と user-select 制限を撤去
+- setup画面のinput/selectを最終CSSで最前面・文字選択可に固定
+- 右側プレー項目ボタンを最終CSSで大型化
+- Service WorkerキャッシュをV55へ更新
