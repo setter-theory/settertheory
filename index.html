@@ -2,63 +2,10 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#ff8a1d">
 <link rel="manifest" href="manifest.json">
 <title>Setter Theory</title>
-<!-- V56: iPad PWA direct-input stabilization -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>
-/* Standalone iPad: avoid fixed-height/overflow combinations that suppress the software keyboard. */
-@media (display-mode: standalone) {
-  html, body {
-    min-height:100%;
-    height:auto!important;
-    overflow:auto!important;
-    overscroll-behavior:auto!important;
-  }
-  #setup.screen.active {
-    display:block!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:100dvh!important;
-    max-height:none!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    -webkit-overflow-scrolling:touch!important;
-    touch-action:pan-y!important;
-    contain:none!important;
-  }
-  #setup .setupCompact,
-  #setup .card,
-  #setup .setupTop,
-  #setup .setupPlayers {
-    transform:none!important;
-    contain:none!important;
-  }
-  #setup input, #setup textarea {
-    position:relative!important;
-    z-index:100!important;
-    min-height:44px!important;
-    font-size:16px!important;
-    pointer-events:auto!important;
-    touch-action:auto!important;
-    -webkit-user-select:text!important;
-    user-select:text!important;
-    -webkit-touch-callout:default!important;
-  }
-}
-/* Make the play-first buttons visibly larger in iPad landscape. */
-@media (orientation:landscape) and (min-width:900px) and (max-width:1366px) {
-  #match.active .fastBtn {
-    min-height:58px!important;
-    font-size:15px!important;
-    padding:11px 8px!important;
-  }
-}
-</style>
-
 <style>
 :root{
   --bg:#fff7ed;--card:#fff;--ink:#172033;--muted:#6b7280;--line:#e5e7eb;
@@ -66,7 +13,8 @@
   --purple:#7c3aed;--yellow:#f59e0b;--dark:#111827;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{overscroll-behavior-y:none}
+html,body{touch-action:manipulation;overscroll-behavior-y:none}
+body,button{user-select:none;-webkit-user-select:none}
 button{touch-action:manipulation}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
 .screen{display:none;min-height:100vh;padding:18px 14px 104px;max-width:720px;margin:0 auto}
@@ -2676,33 +2624,6 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <link rel="icon" type="image/png" sizes="192x192" href="icons/aquila-192.png">
 <link rel="apple-touch-icon" href="icons/aquila-180.png">
 <meta name="theme-color" content="#0f172a">
-
-<style>
-/* V54: iPadホーム画面アプリの直接入力と実戦用ボタンサイズ */
-html,body{overscroll-behavior:none;}
-button,.fastBtn,.player{touch-action:manipulation;}
-#setup input,#setup textarea,#setup select{
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  -webkit-appearance:auto!important;
-  appearance:auto!important;
-}
-#setup .ipadTextEditBtn{display:none!important;}
-@media (orientation:landscape) and (min-width:700px){
-  #match.active .fastBtn{
-    min-height:36px!important;
-    font-size:12px!important;
-    line-height:1.05!important;
-    padding:5px 4px!important;
-    border-radius:10px!important;
-  }
-  #match.active .fastButtons{gap:4px!important;}
-  #match.active .fastGroup{margin-bottom:4px!important;}
-  #match.active .fastGroupTitle{min-height:24px!important;padding:3px 6px!important;}
-}
-</style>
 </head>
 <body>
 
@@ -3047,7 +2968,7 @@ button,.fastBtn,.player{touch-action:manipulation;}
   </div>
 </div>
 
-<script src="app.js?v=55"></script>
+<script src="app.js?v=57-button-only"></script>
 
 
 
@@ -3103,34 +3024,19 @@ button,.fastBtn,.player{touch-action:manipulation;}
 
 
 <style>
-/* V55: iPadホーム画面アプリ入力の最終優先CSS */
-html,body,#setup,#setup *{
-  -webkit-user-select:auto!important;
-  user-select:auto!important;
-}
-#setup input,#setup textarea,#setup select{
-  position:relative!important;
-  z-index:999!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  -webkit-appearance:none!important;
-  appearance:none!important;
-}
-#setup input{cursor:text!important;}
-@media (orientation:landscape) and (min-width:700px){
-  #match.active .fastBtn{
-    min-height:44px!important;
-    font-size:14px!important;
-    line-height:1.1!important;
-    padding:8px 6px!important;
-    border-radius:12px!important;
-  }
-  #match.active .fastButtons{gap:6px!important;}
-  #match.active .fastGroup{padding:7px!important;}
+/* V57 TEST: 小項目ボタンの大きさだけを変更 */
+#match.active .fastBtn{
+  min-height:52px!important;
+  font-size:15px!important;
+  line-height:1.2!important;
+  padding:10px 8px!important;
+  border-radius:12px!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
 }
 </style>
+
 </body>
 </html>
 
@@ -5493,4 +5399,67 @@ body.menuOpen .sideOverlay{
 }
 </style>
 
-
+<style>
+/* V53: iPadで通常キーボードが出ない場合の安全入力ボタン */
+#setup .setupField{position:relative!important;}
+#setup .ipadTextEditBtn{
+  margin-top:5px!important;
+  min-height:28px!important;
+  padding:4px 8px!important;
+  border-radius:10px!important;
+  font-size:11px!important;
+  font-weight:1000!important;
+  background:linear-gradient(135deg,#f5b544,#ff8a1d)!important;
+  color:#111827!important;
+  border:1px solid rgba(245,181,68,.75)!important;
+  box-shadow:0 4px 10px rgba(0,0,0,.12)!important;
+  width:100%!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+@media (orientation:landscape){
+  #setup .ipadTextEditBtn{min-height:24px!important;font-size:10px!important;padding:3px 6px!important;margin-top:3px!important;}
+  #setup .setupTop{align-items:start!important;}
+  #setup .playerRegisterClean{align-items:start!important;}
+}
+</style>
+<script>
+/* V53: iPad Safari/PWAでinputのソフトキーボードが出ない場合でも、ボタンからprompt入力できるようにする */
+(function(){
+  function safePromptInput(id, label){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var current = el.value || "";
+    var value = window.prompt(label + "を入力", current);
+    if(value === null) return;
+    el.value = value;
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+    try{ el.focus(); }catch(e){}
+  }
+  function addPromptButton(id, label){
+    var el = document.getElementById(id);
+    if(!el || el.dataset.v53PromptBtn === "1") return;
+    el.dataset.v53PromptBtn = "1";
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ipadTextEditBtn';
+    btn.textContent = label + 'を入力';
+    btn.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); safePromptInput(id, label); }, false);
+    btn.addEventListener('touchend', function(ev){ ev.preventDefault(); ev.stopPropagation(); safePromptInput(id, label); }, {passive:false});
+    el.insertAdjacentElement('afterend', btn);
+  }
+  function initV53SafeInput(){
+    addPromptButton('team', '自チーム');
+    addPromptButton('oppTeam', '相手');
+    addPromptButton('newPlayerNo', '背番号');
+    addPromptButton('newPlayerName', '選手名');
+  }
+  document.addEventListener('DOMContentLoaded', initV53SafeInput);
+  window.addEventListener('pageshow', initV53SafeInput);
+  document.addEventListener('click', function(){ setTimeout(initV53SafeInput, 0); }, true);
+  window.v53SafeInput = safePromptInput;
+})();
+</script>
