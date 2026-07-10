@@ -2867,7 +2867,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <div class="results">
         <button class="green active" data-result="成功">成功</button>
         <button class="red" data-result="ミス">ミス</button>
-        <button class="yellow" data-result="被ブロック">🚫 被ブロック</button>
+        <button class="yellow" data-result="被ブロック">🚫 被<br>ブロック</button>
         <button class="purple" data-result="継続">継続</button>
       </div>
 
@@ -2877,21 +2877,21 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         <div class="fastGroup open" data-acc-group="attack">
           <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('attack')"><span>💥 攻撃</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('attack', event)">☆</span><span class="accArrow">⌃</span></span></button>
           <div class="fastButtons four">
-            <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク成功</button>
-            <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイクミス</button>
-            <button class="fastBtn blocked" data-type="スパイク" data-result="被ブロック">🚫 被ブロック</button>
-            <button class="fastBtn keep" data-type="スパイク" data-result="継続">🔄 継続</button>
-            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('attack', event)">↩ 取り消し</button>
+            <button class="fastBtn attack" data-type="スパイク" data-result="成功">💥 スパイク<br>成功</button>
+            <button class="fastBtn bad" data-type="スパイク" data-result="ミス">❌ スパイク<br>ミス</button>
+            <button class="fastBtn blocked" data-type="スパイク" data-result="被ブロック">🚫 被<br>ブロック</button>
+            <button class="fastBtn keep" data-type="スパイク" data-result="継続">🔄<br>継続</button>
+            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('attack', event)">↩<br>取り消し</button>
           </div>
         </div>
 
         <div class="fastGroup" data-acc-group="serve">
           <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('serve')"><span>🎯 サーブ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('serve', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons three">
-            <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ成功</button>
-            <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービスエース</button>
-            <button class="fastBtn bad" data-type="サーブ" data-result="ミス">❌ サーブミス</button>
-            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('serve', event)">↩ 取り消し</button>
+            <button class="fastBtn good" data-type="サーブ" data-result="成功">🎯 サーブ<br>成功</button>
+            <button class="fastBtn attack" data-type="サーブ" data-result="エース">⭐ サービス<br>エース</button>
+            <button class="fastBtn bad" data-type="サーブ" data-result="ミス">❌ サーブ<br>ミス</button>
+            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('serve', event)">↩<br>取り消し</button>
           </div>
         </div>
 
@@ -2901,39 +2901,39 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
             <button class="fastBtn good" data-type="レセプ" data-result="Aパス">🟢 Aパス</button>
             <button class="fastBtn blocked" data-type="レセプ" data-result="Bパス">🟡 Bパス</button>
             <button class="fastBtn attack" data-type="レセプ" data-result="Cパス">🟠 Cパス</button>
-            <button class="fastBtn bad" data-type="レセプ" data-result="ミス">❌ レセプミス</button>
-            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('receive', event)">↩ 取り消し</button>
+            <button class="fastBtn bad" data-type="レセプ" data-result="ミス">❌ レセプ<br>ミス</button>
+            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('receive', event)">↩<br>取り消し</button>
           </div>
         </div>
 
         <div class="fastGroup" data-acc-group="toss">
           <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('toss')"><span>⚡ トス（トス先を選択）</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('toss', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons five">
-            <button class="fastBtn toss" data-type="トス" data-result="レフト">← レフト</button>
-            <button class="fastBtn toss" data-type="トス" data-result="センター">↑ センター</button>
-            <button class="fastBtn toss" data-type="トス" data-result="ライト">→ ライト</button>
-            <button class="fastBtn toss" data-type="トス" data-result="バック">↩ バック</button>
-            <button class="fastBtn two" data-type="トス" data-result="ツー">⚡ ツー</button>
-            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('toss', event)">↩ 取り消し</button>
+            <button class="fastBtn toss" data-type="トス" data-result="レフト">←<br>レフト</button>
+            <button class="fastBtn toss" data-type="トス" data-result="センター">↑<br>センター</button>
+            <button class="fastBtn toss" data-type="トス" data-result="ライト">→<br>ライト</button>
+            <button class="fastBtn toss" data-type="トス" data-result="バック">↩<br>バック</button>
+            <button class="fastBtn two" data-type="トス" data-result="ツー">⚡<br>ツー</button>
+            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('toss', event)">↩<br>取り消し</button>
           </div>
         </div>
 
         <div class="fastGroup" data-acc-group="dig">
           <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('dig')"><span>🛡️ ディグ</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('dig', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons">
-            <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ成功</button>
-            <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグミス</button>
-            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('dig', event)">↩ 取り消し</button>
+            <button class="fastBtn good" data-type="ディグ" data-result="成功">💪 ディグ<br>成功</button>
+            <button class="fastBtn bad" data-type="ディグ" data-result="ミス">❌ ディグ<br>ミス</button>
+            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('dig', event)">↩<br>取り消し</button>
           </div>
         </div>
 
         <div class="fastGroup" data-acc-group="block">
           <button type="button" class="fastGroupTitle" onclick="toggleInputGroup('block')"><span>🧱 ブロック</span><span class="titleTools"><span class="favToggle" onclick="toggleFavoriteGroup('block', event)">☆</span><span class="accArrow">⌄</span></span></button>
           <div class="fastButtons three">
-            <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱 シャット</button>
-            <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワンタッチ</button>
-            <button class="fastBtn bad" data-type="ブロック" data-result="ミス">❌ ブロックミス</button>
-            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('block', event)">↩ 取り消し</button>
+            <button class="fastBtn block" data-type="ブロック" data-result="シャット">🧱<br>シャット</button>
+            <button class="fastBtn blocked" data-type="ブロック" data-result="ワンタッチ">✋ ワン<br>タッチ</button>
+            <button class="fastBtn bad" data-type="ブロック" data-result="ミス">❌ ブロック<br>ミス</button>
+            <button type="button" class="groupUndoAction" onclick="clearGroupPlay('block', event)">↩<br>取り消し</button>
           </div>
         </div>
       </div>
@@ -3129,6 +3129,30 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 @media (orientation:landscape) and (min-width:768px){
   #match.active .groupUndoAction{min-height:58px!important;font-size:15px!important;}
+}
+</style>
+
+<style>
+/* V68: inline cancel fit and two-line labels */
+@media (orientation:landscape) and (min-width:768px){
+  #match.active .fastGroup[data-acc-group="attack"] .fastButtons{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+  #match.active .fastGroup[data-acc-group="serve"] .fastButtons{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #match.active .fastGroup[data-acc-group="receive"] .fastButtons{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+  #match.active .fastGroup[data-acc-group="toss"] .fastButtons{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  #match.active .fastGroup[data-acc-group="dig"] .fastButtons{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  #match.active .fastGroup[data-acc-group="block"] .fastButtons{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #match.active .fastButtons .fastBtn,
+  #match.active .fastButtons .groupUndoAction{
+    min-width:0!important;
+    width:100%!important;
+    padding:7px 4px!important;
+    font-size:14px!important;
+    line-height:1.08!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    word-break:keep-all!important;
+    text-align:center!important;
+  }
 }
 </style>
 </body>

@@ -1,1 +1,1 @@
-Setter Theory V67 - instant record / inline cancel / red opponent mistake
+Setter Theory V68 - inline cancel layout fix
