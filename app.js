@@ -1,5 +1,5 @@
 
-// V62: native iPad/PWA inputs only. The temporary blue input buttons were removed.
+// V67: number-first instant record, reset after each play, inline group cancel buttons.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
@@ -175,7 +175,7 @@ function playText(mode,result){
   return `${before} ${mode}${result}`;
 }
 function setPlay(mode,result){
-  // V66: 入力順は「選手番号 → プレー」。
+  // V67: 入力順は「選手番号 → プレー」。プレー押下で即記録。
   // 選手が未選択のときは、プレーを記録せず案内だけ表示する。
   if(selectedCourtNum===null){
     showInputToast("先に選手番号を選択してください");
@@ -509,7 +509,7 @@ function add(pos){
   addByNumber(num, pos);
 }
 function addByNumber(num, pos="-"){
-  // V66: 番号ボタンは選手を選ぶだけ。得点・ログは動かさない。
+  // V67: 番号ボタンは選手を選ぶだけ。得点・ログは動かさない。
   selectedCourtNum = String(num);
   vibrateTap();
   render();
@@ -534,6 +534,9 @@ function recordSelectedPlayerPlay(){
     num:num,pos:pos,result:s.result,point:point,
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
   });
+  // V67: プレーを押した瞬間に記録を確定し、次の入力に備えて選手選択を解除する。
+  // 誤入力は既存の「取り消し」で一つ前の状態へ戻せる。
+  selectedCourtNum = null;
   save();
   render();
   showInputToast("記録しました：" + recordedLabel + " / " + num + "番");
@@ -618,7 +621,7 @@ function render(){
     b.classList.toggle("setter", n===setterNum);
     b.classList.toggle("selected", String(n)===String(selectedCourtNum));
   });
-  // V66ではプレーボタンを押した時点で記録されるため、選択状態は残さない。
+  // V67ではプレーボタン押下で記録し、選手・プレー選択を次の入力用に解除する。
   document.querySelectorAll(".fastBtn").forEach(b=>b.classList.remove("active"));
   applyInputView();
   renderMatchNumberBank();
@@ -1984,21 +1987,16 @@ document.addEventListener("DOMContentLoaded",()=>{
     save(); renderSetup(); renderMatchNumberBank(); render();
   }));
   document.querySelectorAll(".player").forEach(b=>b.addEventListener("click",()=>{ pulseElement(b); add(b.dataset.pos); }));
-  document.querySelectorAll(".fastBtn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".fastBtn[data-type][data-result]").forEach(b=>b.addEventListener("click",()=>{
     pulseElement(b);
     vibrateTap();
-    if(s.mode!==b.dataset.type || s.result!==b.dataset.result){
-      previousPlaySelection={mode:s.mode, result:s.result};
-    }
-    s.mode=b.dataset.type;
-    s.result=b.dataset.result;
     const group=b.closest(".fastGroup");
     if(group && group.dataset.accGroup && inputView==="simple" && !openInputGroups.includes(group.dataset.accGroup)){
       openInputGroups.push(group.dataset.accGroup);
       saveOpenInputGroups();
     }
-    save();
-    render();
+    // V67: 番号 → プレー。プレーを押した時点で記録し、次の入力へ移る。
+    setPlay(b.dataset.type, b.dataset.result);
   }));
   if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
   renderSetup();
