@@ -1,21 +1,7 @@
 
-// v31: スマホ連打時のダブルタップ拡大を防止
-(function preventDoubleTapZoom(){
-  let lastTouchEnd = 0;
-  function isEditableTarget(t){
-    return t && t.closest && t.closest('input, textarea, select, [contenteditable=\"true\"]');
-  }
-  document.addEventListener('touchend', function(e){
-    if(isEditableTarget(e.target)) return;
-    const now = Date.now();
-    if(now - lastTouchEnd <= 300){ e.preventDefault(); }
-    lastTouchEnd = now;
-  }, {passive:false});
-  document.addEventListener('dblclick', function(e){
-    if(isEditableTarget(e.target)) return;
-    e.preventDefault();
-  }, {passive:false});
-})();
+// V54: iPad PWAの入力フォーカスを妨げないよう、
+// document全体のtouchend/dblclick preventDefault処理を撤去。
+// ダブルタップ拡大対策はCSSの touch-action: manipulation で行う。
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
@@ -1986,7 +1972,11 @@ document.addEventListener("DOMContentLoaded",()=>{
     save();
     render();
   }));
-  if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js?v=54", {updateViaCache:"none"})
+      .then(reg=>reg.update())
+      .catch(()=>{});
+  }
   renderSetup();
   render();
 });
