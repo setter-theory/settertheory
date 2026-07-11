@@ -1384,6 +1384,7 @@ function printMatchPdfReport(){
     .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
     .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
     .pdfLead{display:grid;grid-template-columns:1.05fr 1.95fr;gap:10px;margin:10px 0 12px;align-items:stretch}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:42px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:14px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:7px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:10px;font-weight:950}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;font-size:9px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
+    .pdfAdviceTitle{display:flex;align-items:center;gap:7px}.pdfAdviceTitle img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #f4b63f;padding:2px}.pdfAdviceTitle span{font-size:12px;font-weight:950;color:#1e3a8a}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
     .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
     .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
@@ -1397,7 +1398,7 @@ function printMatchPdfReport(){
       <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
       <div class="pdfLead">
         <div class="pdfIqCard"><div class="title">Setter IQ</div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div><div class="pdfIqBreakdown"><span>配球 ${setterAnalysis.balance||0}</span><span>多様性 ${setterAnalysis.diversity||0}</span><span>速攻 ${setterAnalysis.quick||0}</span><span>終盤 ${setterAnalysis.clutch||0}</span></div></div>
-        <div class="pdfAdviceCard"><div class="title">🦅 Aquila Advice</div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
       </div>
       <div class="summary">
         <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
@@ -2115,10 +2116,12 @@ function renderCsvAnalysis(parsed){
   const unified=buildImportedUnifiedReport(parsed);
   const a=analyzeImportedCsv(parsed);
   box.style.display='block';
+  const importedState=importedCsvToMatchState(parsed);
+  const reportDate=(parsed.data&&parsed.data[0]&&parsed.data[0].Time)?String(parsed.data[0].Time):new Date().toLocaleDateString();
   box.innerHTML=`
-    <div class="csvAnalysisHead unifiedCsvHead">
-      <div><div class="csvAnalysisTitle">🦅 Setter Theory 試合レポート</div><div class="csvSmall">試合終了直後のレポートと同じ解析ロジックで再表示しています。</div></div>
-      <div class="csvHeadActions"><button class="ghostBtn" type="button" onclick="printCsvReport()">PDFレポート出力</button><div class="csvIq"><span>Setter IQ</span><b>${a.total?a.setterIq:'--'}</b></div></div>
+    <div class="csvReportBrand">
+      <div class="csvReportIdentity"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="csvReportEyebrow">AQUILA REPORT</div><div class="csvAnalysisTitle">Setter Theory Match Report</div><div class="csvSmall">${escapeHtml(importedState.myTeam||'自チーム')} vs ${escapeHtml(importedState.oppTeam||'相手')} / Set ${escapeHtml(importedState.setNo||'1')}</div></div></div>
+      <button class="ghostBtn csvPdfButton" type="button" onclick="printCsvReport()">PDFレポート出力</button>
     </div>
     <div class="importedUnifiedReport">${unified}</div>
     <div class="saveCurrentBox"><input id="matchSaveName" value="${escapeHtml(suggestedMatchName())}" placeholder="試合名"><button class="csvFileBtn" type="button" onclick="saveCurrentMatch()">💾 この試合を保存</button></div>

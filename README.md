@@ -1,11 +1,7 @@
-Setter Theory V74
+Setter Theory V76
 
-- CSV読込後の解析画面を、試合終了直後と同じレポートエンジンへ統一
-- CSVからのPDF出力も試合レポートと同じ生成処理へ統一
-- Setter IQ / Aquila Advice / 各種集計の不一致を解消
-
-
-## V75 CSV report layout fix
-- CSV読み込み後のレポートを白いカード内に収める
-- 白背景で白文字になる問題を修正
-- モバイル/iPadで横はみ出しを防止
+- CSV読込レポートと試合終了レポートのデザインを統一
+- CSV画面の巨大なAquila画像とIQ重複表示を整理
+- Aquilaアイコンをタイトル横のコンパクトな位置へ調整
+- PDFのAquila Adviceは絵文字ではなく画像を使用
+- PDFはA4向けレイアウトを維持しつつ、色・順番・ブランド表現を画面版と統一

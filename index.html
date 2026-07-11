@@ -3005,6 +3005,66 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   #csvAnalysisBox .csvHeadActions .ghostBtn{width:100%!important;}
 }
 </style>
+<style id="v76ReportDesignUnified">
+/* V76: CSV viewer and PDF share the same Aquila visual language. */
+#csvAnalysisBox{background:#f8fafc!important;padding:14px!important;}
+#csvAnalysisBox .csvReportBrand{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:100%;padding:12px 14px;margin:0 0 14px;
+  border-radius:18px;border:1px solid #cbd5e1;
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;
+  box-shadow:0 10px 24px rgba(15,23,42,.16);
+}
+#csvAnalysisBox .csvReportIdentity{display:flex;align-items:center;gap:12px;min-width:0;}
+#csvAnalysisBox .csvReportIdentity>img{
+  width:58px;height:58px;flex:0 0 58px;object-fit:contain;border-radius:50%;
+  background:#fff;border:2px solid #fbbf24;padding:3px;
+}
+#csvAnalysisBox .csvReportIdentity>div{min-width:0;}
+#csvAnalysisBox .csvReportEyebrow{font-size:10px;font-weight:1000;letter-spacing:.12em;color:#fbbf24;}
+#csvAnalysisBox .csvAnalysisTitle{font-size:20px!important;line-height:1.2;color:#fff!important;}
+#csvAnalysisBox .csvReportBrand .csvSmall{color:#cbd5e1!important;margin-top:3px;}
+#csvAnalysisBox .csvPdfButton{flex:0 0 auto;background:#fbbf24!important;color:#111827!important;border:0!important;}
+#csvAnalysisBox .importedUnifiedReport{margin-top:0!important;}
+#csvAnalysisBox .reportLeadGrid{
+  display:grid!important;grid-template-columns:minmax(260px,.9fr) minmax(320px,1.45fr)!important;
+  gap:14px!important;margin-top:0!important;
+}
+#csvAnalysisBox .reportLeadPanel{
+  border:2px solid #bfdbfe!important;background:linear-gradient(145deg,#fff,#eff6ff)!important;
+  box-shadow:0 12px 26px rgba(37,99,235,.10)!important;
+}
+#csvAnalysisBox .aquilaHeroTop{display:flex!important;align-items:center!important;gap:14px!important;}
+#csvAnalysisBox .aquilaHeroTop>img{
+  width:72px!important;height:72px!important;flex:0 0 72px!important;object-fit:contain!important;
+  border-radius:50%!important;background:#fff!important;border:2px solid #fbbf24!important;padding:4px!important;
+  box-shadow:0 7px 16px rgba(15,23,42,.14)!important;
+}
+#csvAnalysisBox .aquilaHeroBody{min-width:0!important;flex:1!important;}
+#csvAnalysisBox .setterIqLiveHead{display:flex!important;align-items:baseline!important;gap:7px!important;flex-wrap:wrap!important;}
+#csvAnalysisBox .setterIqLiveHead span{color:#1e3a8a!important;font-weight:1000!important;}
+#csvAnalysisBox .setterIqLiveHead b{font-size:56px!important;line-height:1!important;color:#1d4ed8!important;text-shadow:0 2px 0 #dbeafe!important;}
+#csvAnalysisBox .setterIqLiveHead small{color:#64748b!important;font-weight:1000!important;}
+#csvAnalysisBox .iqRank{display:inline-flex!important;margin-top:7px!important;padding:5px 12px!important;border-radius:999px!important;font-size:12px!important;font-weight:1000!important;letter-spacing:.08em!important;background:#0f172a!important;color:#fbbf24!important;}
+#csvAnalysisBox .setterIqMetrics{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-top:12px!important;}
+#csvAnalysisBox .setterIqMetrics span{background:#e2e8f0!important;color:#334155!important;border-radius:9px!important;padding:7px 9px!important;font-size:12px!important;font-weight:900!important;}
+#csvAnalysisBox .aquilaAdviceTitle{display:flex!important;align-items:center!important;gap:10px!important;margin-bottom:8px!important;}
+#csvAnalysisBox .aquilaAdviceTitle img{width:44px!important;height:44px!important;object-fit:contain!important;border-radius:50%!important;background:#fff!important;border:1px solid #fbbf24!important;padding:3px!important;}
+#csvAnalysisBox .aquilaAdviceTitle b{font-size:18px!important;color:#1e3a8a!important;}
+#csvAnalysisBox .aquilaAdviceHero li{font-size:14px!important;line-height:1.65!important;color:#334155!important;}
+@media(max-width:900px){
+  #csvAnalysisBox .reportLeadGrid{grid-template-columns:1fr!important;}
+}
+@media(max-width:620px){
+  #csvAnalysisBox .csvReportBrand{align-items:stretch;flex-direction:column;}
+  #csvAnalysisBox .csvPdfButton{width:100%;}
+  #csvAnalysisBox .csvReportIdentity>img{width:50px;height:50px;flex-basis:50px;}
+  #csvAnalysisBox .csvAnalysisTitle{font-size:17px!important;}
+  #csvAnalysisBox .aquilaHeroTop>img{width:60px!important;height:60px!important;flex-basis:60px!important;}
+  #csvAnalysisBox .setterIqLiveHead b{font-size:46px!important;}
+}
+</style>
+
 </head>
 <body>
 
