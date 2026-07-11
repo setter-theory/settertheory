@@ -1,9 +1,6 @@
-Setter Theory V79 - Home Report IQ badges
+Setter Theory V81
 
-- Saved match list now shows Setter IQ as a prominent score badge.
-- Score format is unified to XX/100.
-- IQ badges are color-coded for quick comparison.
-- The open button is labeled Report.
-
-
-V80: CSV読込レポートと試合終了レポートのブランドヘッダー、カード構成、表示順、余白、文字サイズを共通化。
+- CSV解析画面の重複ヘッダーを削除
+- 下部のPDF出力・CSV出力ボタンを削除
+- 上部のPDFレポート出力のみ使用
+- CSV解析結果から正常なPDFを生成

@@ -2124,7 +2124,16 @@ function buildImportedUnifiedReport(parsed){
   const oldDash=dash.innerHTML;
   const oldSub=sub?sub.textContent:'';
   let html='';
-  withImportedMatchState(parsed,()=>{ report(); html=dash.innerHTML; });
+  withImportedMatchState(parsed,()=>{
+    report();
+    // CSV画面には上部の共通ヘッダーを別途表示するため、
+    // 試合レポート側の重複ヘッダー（PDF/CSVボタンを含む）は除外する。
+    const holder=document.createElement('div');
+    holder.innerHTML=dash.innerHTML;
+    const duplicateBrand=holder.querySelector('.unifiedReportBrand');
+    if(duplicateBrand) duplicateBrand.remove();
+    html=holder.innerHTML;
+  });
   dash.innerHTML=oldDash;
   if(sub) sub.textContent=oldSub;
   return html;
