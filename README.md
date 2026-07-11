@@ -1,6 +1,3 @@
-Setter Theory V81
+Setter Theory V82
 
-- CSV解析画面の重複ヘッダーを削除
-- 下部のPDF出力・CSV出力ボタンを削除
-- 上部のPDFレポート出力のみ使用
-- CSV解析結果から正常なPDFを生成
+Aquila Adviceを実戦データに基づく「良かった点・改善点・次戦テーマ」の3段構成へ強化。

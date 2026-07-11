@@ -1090,16 +1090,57 @@ function setterIqRank(score){
 }
 function getCurrentAquilaAdviceItems(){
   const a=currentMatchSetterAnalysis();
-  if(!a.total) return ['まずはトスを記録しよう。5本以上たまると、配球の偏りが見えやすくなります。'];
-  const top=a.items[0]||{label:'-',pct:0};
-  const center=a.items.find(x=>x.label==='センター')||{pct:0};
+  if(!a.total) return ['まずはトスを記録しよう。5本以上たまると、配球の偏りと次の一手が見えやすくなります。'];
+
+  const byLabel=Object.fromEntries(a.items.map(x=>[x.label,x]));
+  const left=byLabel['レフト']||{pct:0,count:0};
+  const center=byLabel['センター']||{pct:0,count:0};
+  const right=byLabel['ライト']||{pct:0,count:0};
+  const back=byLabel['バック']||{pct:0,count:0};
+  const two=byLabel['ツー']||{pct:0,count:0};
+  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0,count:0};
+
+  const rotRows=[1,2,3,4,5,6].map(r=>{
+    const logs=s.logs.filter(x=>x.rot==='S'+r);
+    return {r,my:logs.filter(x=>x.point==='自').length,op:logs.filter(x=>x.point==='相').length,total:logs.length};
+  }).filter(x=>x.total>0).sort((x,y)=>(y.op-y.my)-(x.op-x.my));
+  const worst=rotRows[0]||null;
+
   const advice=[];
-  if(top.pct>=55) advice.push(`${top.label}が${top.pct}%です。次の序盤で別方向を1本見せると、終盤の${top.label}が生きます。`);
-  else advice.push('極端な一方向依存は少なめです。今の散らし方を維持しながら、勝負所の意図を確認しよう。');
-  if(center.pct<15) advice.push(`センター使用率は${center.pct}%です。A/Bパス時に1本見せると、相手MBを中央に残しやすくなります。`);
-  else advice.push(`センター使用率は${center.pct}%です。サイドを生かす伏線として機能しています。`);
-  if(a.clutch<65) advice.push('20点以降に配球が寄っています。終盤の最初の1本だけ別方向を使う準備をしておこう。');
-  else advice.push('終盤の配球は大きく崩れていません。次はローテ別の偏りを確認しよう。');
+
+  // Good: 必ずデータ根拠を含める
+  if(top.pct<50 && Math.abs(left.pct-right.pct)<=15){
+    advice.push(`良かった点：レフト${left.pct}%・センター${center.pct}%・ライト${right.pct}%で、左右の偏りを抑えながら配球できています。`);
+  }else if(center.pct>=18){
+    advice.push(`良かった点：センターを${center.pct}%（${center.count}本）使えており、相手MBを中央に意識させる配球になっています。`);
+  }else if(back.pct>=10 || two.pct>=8){
+    advice.push(`良かった点：バック${back.pct}%・ツー${two.pct}%を混ぜ、前衛3方向だけに限定されない選択ができています。`);
+  }else{
+    advice.push(`良かった点：最多配球は${top.label}${top.pct}%（${top.count}本）でした。まずは自分の勝負先を明確にできています。`);
+  }
+
+  // Improve: 最大の改善点を一つ、具体的に
+  if(top.pct>=55){
+    advice.push(`改善点：${top.label}が${top.pct}%に集中しています。次の試合では序盤に${top.label==='センター'?'レフトかライト':'センター'}を1〜2本見せ、終盤の${top.label}を生かしましょう。`);
+  }else if(center.pct<12 && a.total>=5){
+    advice.push(`改善点：センターは${center.pct}%（${center.count}本）です。A/Bパス時にまず1本使い、相手MBを中央に残す伏線を作りましょう。`);
+  }else if(Math.abs(left.pct-right.pct)>=25){
+    const low=left.pct<right.pct?'レフト':'ライト';
+    advice.push(`改善点：左右差が${Math.abs(left.pct-right.pct)}ポイントあります。少ない${low}へ次戦は2本増やすと、相手ブロックの基準をずらせます。`);
+  }else if(a.clutch<65){
+    advice.push(`改善点：終盤冷静度は${a.clutch}点です。20点以降の最初の1本だけ、直前と違う方向を準備しておきましょう。`);
+  }else{
+    advice.push(`改善点：配球の大きな偏りはありません。次は最多配球の${top.label}${top.pct}%を、ローテごとに意図して使い分けましょう。`);
+  }
+
+  // Next theme: ローテまたは終盤を使って一行で行動化
+  if(worst && worst.op>worst.my){
+    advice.push(`次戦テーマ：S${worst.r}は${worst.my}得点・${worst.op}失点でした。このローテの1本目だけ、事前に第一候補と逃げ道を決めて入りましょう。`);
+  }else if(a.clutch<75){
+    advice.push(`次戦テーマ：20点以降も序盤と同じ選択肢を残すため、15点までにセンターかバックを最低1本ずつ見せましょう。`);
+  }else{
+    advice.push(`次戦テーマ：現在の配球バランスを維持し、勝負所で「なぜこの選手か」を1本ごとに言語化してみましょう。`);
+  }
   return advice;
 }
 function buildCurrentSetterIqPanel(){
