@@ -1151,7 +1151,7 @@ function buildCurrentSetterIqPanel(){
   const top=a.items[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
   return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
-    <div class="setterIqMetrics"><span>配球バランス <b>${a.balance}/20</b></span><span>攻撃の多様性 <b>${a.diversity}/20</b></span><span>ミドル活用 <b>${a.quick}/20</b></span><span>勝負どころ <b>${a.clutch}/20</b></span><span>総合 <b>${a.setterIq}/100</b></span></div>
+    <div class="setterIqMetrics"><span>配球バランス <b>${Math.round(a.balance/5)}/20</b></span><span>攻撃の多様性 <b>${Math.round(a.diversity/5)}/20</b></span><span>ミドル活用 <b>${Math.round(a.quick/5)}/20</b></span><span>勝負どころ <b>${Math.round(a.clutch/5)}/20</b></span><span>総合 <b>${a.setterIq}/100</b></span></div>
     <p><b>採点内訳</b>：配球・多様性・ミドル活用・勝負どころを総合評価しています。</p><p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentAquilaAdvice(){
