@@ -3068,6 +3068,16 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
+
+<style id="v85-rotation-adjust">
+#match .matchStateRow{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#match .rotationAdjust{display:grid;grid-template-columns:minmax(42px,1fr) auto minmax(42px,1fr);align-items:center;gap:6px;min-width:0;flex:1;}
+#match .rotationAdjustBtn{min-height:38px;padding:7px 9px;border:1px solid rgba(255,255,255,.22);border-radius:10px;background:#475569;color:#fff;font-size:14px;font-weight:1000;line-height:1;box-shadow:none;}
+#match .rotationAdjustBtn:active{transform:scale(.96);background:#64748b;}
+#match .rotationCurrent{justify-self:center;min-width:44px;text-align:center;}
+#match #serveLabel{flex:0 0 auto;white-space:nowrap;}
+@media(max-width:560px){#match .matchStateRow{gap:5px}#match .rotationAdjust{gap:4px}#match .rotationAdjustBtn{min-height:36px;padding:6px;font-size:13px}}
+</style>
 </head>
 <body>
 
@@ -3279,7 +3289,11 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
           </div>
 
           <div class="matchStateRow">
-            <span class="statePill">S<span id="rot">1</span></span>
+            <div class="rotationAdjust" aria-label="ローテーション補正">
+              <button type="button" class="rotationAdjustBtn" onclick="adjustRotation(-1)" aria-label="ローテーションを1つ戻す">−1</button>
+              <span class="statePill rotationCurrent">S<span id="rot">1</span></span>
+              <button type="button" class="rotationAdjustBtn" onclick="adjustRotation(1)" aria-label="ローテーションを1つ進める">＋1</button>
+            </div>
             <span class="statePill" id="serveLabel">自サーブ</span>
           </div>
           <div class="matchScoreBig"><span id="myScore">0</span><span>-</span><span id="opScore">0</span></div>
@@ -3451,7 +3465,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=84-1-toss-cancel-fit"></script>
+<script src="app.js?v=85-rotation-adjust"></script>
 
 
 

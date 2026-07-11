@@ -346,6 +346,16 @@ function adjustSetCount(side, delta){
   save();
   render();
 }
+function adjustRotation(delta){
+  const step=Number(delta)||0;
+  if(!step) return;
+  snap();
+  const current=Math.max(1, Math.min(6, Number(s.rot)||1));
+  s.rot=((current-1+step)%6+6)%6+1;
+  save();
+  render();
+  showInputToast(`ローテーションをS${s.rot}に補正しました`);
+}
 function toggleRotationOverview(){
   const box=document.getElementById('rotationOverview');
   const btn=document.getElementById('rotationToggleBtn');
