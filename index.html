@@ -2909,6 +2909,102 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #match .matchLeftTools .opponentMistUndo{margin:0!important;min-width:0!important;min-height:48px!important;background:#fff!important;color:#b91c1c!important;border:2px solid #dc2626!important;font-size:12px!important;font-weight:1000!important;}
 
 </style>
+
+<style id="v75CsvReportLayoutFix">
+/* V75: CSV読込レポートを白いカード内へ収め、白背景では黒文字に統一 */
+#csvAnalysisBox{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  color:#0f172a!important;
+}
+#csvAnalysisBox *,
+#csvAnalysisBox *::before,
+#csvAnalysisBox *::after{box-sizing:border-box!important;max-width:100%;}
+#csvAnalysisBox .csvAnalysisHead{
+  width:100%!important;
+  min-width:0!important;
+  flex-wrap:wrap!important;
+}
+#csvAnalysisBox .csvAnalysisHead>div:first-child{min-width:0!important;flex:1 1 240px!important;}
+#csvAnalysisBox .csvHeadActions{flex:0 1 auto!important;min-width:0!important;}
+#csvAnalysisBox .importedUnifiedReport{
+  width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  color:#0f172a!important;
+}
+#csvAnalysisBox .reportGrid,
+#csvAnalysisBox .summaryCards,
+#csvAnalysisBox .panelGrid,
+#csvAnalysisBox .wideGrid,
+#csvAnalysisBox .bottomGrid,
+#csvAnalysisBox .setterIqAdviceGrid{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-columns:1fr!important;
+}
+#csvAnalysisBox .summaryCards{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+#csvAnalysisBox .reportPanel,
+#csvAnalysisBox .statCard{
+  width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  color:#0f172a!important;
+  border:1px solid #e2e8f0!important;
+  box-shadow:0 6px 18px rgba(15,23,42,.08)!important;
+}
+#csvAnalysisBox .reportPanel h1,
+#csvAnalysisBox .reportPanel h2,
+#csvAnalysisBox .reportPanel h3,
+#csvAnalysisBox .reportPanel h4,
+#csvAnalysisBox .statTop,
+#csvAnalysisBox .bigBarName,
+#csvAnalysisBox .bigBarPct,
+#csvAnalysisBox .bigBarNum,
+#csvAnalysisBox .rotationLabel,
+#csvAnalysisBox .rotationPct,
+#csvAnalysisBox .legendRow,
+#csvAnalysisBox .timelineText,
+#csvAnalysisBox .v37BarLabel,
+#csvAnalysisBox .v37BarNum,
+#csvAnalysisBox .v37RotRow,
+#csvAnalysisBox .v37MiniCard,
+#csvAnalysisBox .rankTable,
+#csvAnalysisBox table,
+#csvAnalysisBox td,
+#csvAnalysisBox th{color:#0f172a!important;opacity:1!important;text-shadow:none!important;}
+#csvAnalysisBox .reportPanel small,
+#csvAnalysisBox .statSub,
+#csvAnalysisBox .donutCenter .label,
+#csvAnalysisBox .v37BarNum small,
+#csvAnalysisBox .v37MiniCard small,
+#csvAnalysisBox .rankControls label,
+#csvAnalysisBox .rankNote,
+#csvAnalysisBox .v37RotHead,
+#csvAnalysisBox .csvSmall{color:#64748b!important;opacity:1!important;}
+#csvAnalysisBox .reportHero{
+  width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+#csvAnalysisBox .donutWrap,
+#csvAnalysisBox .tossPanel{grid-template-columns:1fr!important;justify-items:center!important;gap:12px!important;}
+#csvAnalysisBox .donut{width:min(42vw,150px)!important;height:min(42vw,150px)!important;margin:0 auto!important;}
+#csvAnalysisBox .saveCurrentBox,
+#csvAnalysisBox .csvMemo{width:100%!important;min-width:0!important;overflow:hidden!important;}
+#csvAnalysisBox input,
+#csvAnalysisBox textarea{max-width:100%!important;color:#0f172a!important;background:#fff!important;}
+@media(max-width:720px){
+  #csvAnalysisBox{padding:10px!important;border-radius:16px!important;}
+  #csvAnalysisBox .summaryCards{grid-template-columns:1fr!important;}
+  #csvAnalysisBox .csvHeadActions{width:100%!important;align-items:stretch!important;}
+  #csvAnalysisBox .csvHeadActions .ghostBtn{width:100%!important;}
+}
+</style>
 </head>
 <body>
 
