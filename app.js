@@ -13,6 +13,9 @@ let s = {
   mode:"スパイク", result:"成功", logs:[], hist:[]
 };
 let setupSelected = 0;
+let setupCarry = null;
+let setupHoldTimer = null;
+let setupHoldTriggered = false;
 let selectedCourtNum = null;
 let subOutNum = null;
 let previousPlaySelection = null;
@@ -503,6 +506,87 @@ function applySubstitution(inNum){
   showInputToast(`交代：${outNum}番 → ${inNum}番`);
 }
 
+
+function clearSetupCarry(){
+  setupCarry=null;
+  document.querySelectorAll('#setup .puzzleHeld,#setup .puzzleTarget').forEach(el=>el.classList.remove('puzzleHeld','puzzleTarget'));
+}
+function beginSetupCarry(kind, value, el){
+  const num = kind==='court' ? String((s.nums||[])[Number(value)]||'') : String(value||'');
+  if(!num) return;
+  setupCarry={kind, value, num};
+  document.querySelectorAll('#setup .puzzleHeld').forEach(x=>x.classList.remove('puzzleHeld'));
+  if(el) el.classList.add('puzzleHeld');
+  document.querySelectorAll('#setup .setupSpot').forEach(x=>x.classList.add('puzzleTarget'));
+  const benchDrop=document.getElementById('setupBenchDrop');
+  if(benchDrop) benchDrop.classList.add('puzzleTarget');
+  if(typeof showInputToast==='function') showInputToast(`${num}番を持ち上げました。移動先をタップ`);
+}
+function setupLongPressBind(el, kind, value){
+  if(!el) return;
+  const start=(ev)=>{
+    setupHoldTriggered=false;
+    clearTimeout(setupHoldTimer);
+    setupHoldTimer=setTimeout(()=>{
+      setupHoldTriggered=true;
+      if(navigator.vibrate) navigator.vibrate(35);
+      beginSetupCarry(kind, value, el);
+    },520);
+  };
+  const cancel=()=>{ clearTimeout(setupHoldTimer); setupHoldTimer=null; };
+  el.onpointerdown=start;
+  el.onpointerup=cancel;
+  el.onpointercancel=cancel;
+  el.onpointerleave=cancel;
+}
+function keepSetterPlayerAfterMove(setterNum, fallbackIndex){
+  const idx=(s.nums||[]).map(String).findIndex(n=>n===String(setterNum));
+  s.setterIndex = idx>=0 ? idx : Math.max(0, Math.min(5, Number(fallbackIndex)||0));
+}
+function placeSetupCarryAtCourt(targetIndex){
+  targetIndex=Number(targetIndex);
+  if(!setupCarry || targetIndex<0 || targetIndex>5) return false;
+  const setterNum=(s.nums||[])[s.setterIndex];
+  snap && snap();
+  if(setupCarry.kind==='court'){
+    const sourceIndex=Number(setupCarry.value);
+    if(sourceIndex===targetIndex){ clearSetupCarry(); return true; }
+    const tmp=s.nums[targetIndex]||'';
+    s.nums[targetIndex]=s.nums[sourceIndex]||'';
+    s.nums[sourceIndex]=tmp;
+  }else{
+    const incoming=String(setupCarry.num);
+    const existingIndex=(s.nums||[]).map(String).findIndex(n=>n===incoming);
+    if(existingIndex>=0 && existingIndex!==targetIndex){
+      const tmp=s.nums[targetIndex]||'';
+      s.nums[targetIndex]=incoming;
+      s.nums[existingIndex]=tmp;
+    }else{
+      s.nums[targetIndex]=incoming;
+    }
+  }
+  keepSetterPlayerAfterMove(setterNum,targetIndex);
+  setupSelected=targetIndex;
+  clearSetupCarry();
+  save(); renderSetup(); renderMatchNumberBank(); render();
+  return true;
+}
+function placeSetupCarryOnBench(){
+  if(!setupCarry) return;
+  if(setupCarry.kind!=='court'){
+    clearSetupCarry();
+    return;
+  }
+  const sourceIndex=Number(setupCarry.value);
+  const setterWasHere=(sourceIndex===s.setterIndex);
+  snap && snap();
+  s.nums[sourceIndex]='';
+  if(setterWasHere) s.setterIndex=sourceIndex;
+  clearSetupCarry();
+  save(); renderSetup(); renderMatchNumberBank(); render();
+  if(typeof showInputToast==='function') showInputToast('ベンチへ戻しました');
+}
+
 function renderSetup(){
   const spots=document.querySelectorAll(".setupSpot");
   spots.forEach((b,i)=>{
@@ -530,10 +614,16 @@ function renderSetup(){
     pool.forEach(n=>{
       const btn=document.createElement("button");
       btn.className="numBtn";
-      btn.textContent=n;
-      if(used.has(n))btn.classList.add("used");
+      btn.innerHTML=`<b>${escapeHtml(n)}</b>${getPlayerName(n)?`<span>${escapeHtml(getPlayerName(n))}</span>`:""}`;
+      if(used.has(n))btn.classList.add("used"); else btn.classList.add("benchPlayer");
       if(s.nums[setupSelected]===n)btn.classList.add("active");
-      btn.onclick=()=>{s.nums[setupSelected]=n; if(!s.players) s.players={}; if(s.players[n]===undefined) s.players[n]=""; save(); renderSetup(); renderMatchNumberBank();};
+      btn.onclick=()=>{
+        if(setupHoldTriggered){ setupHoldTriggered=false; return; }
+        if(setupCarry){ placeSetupCarryAtCourt(setupSelected); return; }
+        setupSelected=setupSelected;
+        s.nums[setupSelected]=n; if(!s.players) s.players={}; if(s.players[n]===undefined) s.players[n]=""; save(); renderSetup(); renderMatchNumberBank();
+      };
+      setupLongPressBind(btn, used.has(n)?'court':'bench', used.has(n)?s.nums.map(String).indexOf(String(n)):n);
       bank.appendChild(btn);
     });
   }
@@ -2300,8 +2390,15 @@ document.addEventListener("DOMContentLoaded",()=>{
   applyInputView();
   load();
   document.querySelectorAll(".setupSpot").forEach(b=>{
-    b.addEventListener("click",(e)=>{ if(e.target.classList.contains("posSelect")) return; setupSelected=Number(b.dataset.spot);renderSetup();});
-    b.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){setupSelected=Number(b.dataset.spot);renderSetup();}});
+    const idx=Number(b.dataset.spot);
+    setupLongPressBind(b,'court',idx);
+    b.addEventListener("click",(e)=>{
+      if(e.target.classList.contains("posSelect") || e.target.classList.contains("nameSelect")) return;
+      if(setupHoldTriggered){ setupHoldTriggered=false; return; }
+      if(setupCarry){ placeSetupCarryAtCourt(idx); return; }
+      setupSelected=idx; renderSetup();
+    });
+    b.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){ if(setupCarry) placeSetupCarryAtCourt(idx); else {setupSelected=idx;renderSetup();} }});
   });
   document.querySelectorAll(".nameSelect").forEach(sel=>sel.addEventListener("change",(e)=>{
     const i=Number(e.target.dataset.nameSelect);

@@ -3078,6 +3078,18 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #match #serveLabel{flex:0 0 auto;white-space:nowrap;}
 @media(max-width:560px){#match .matchStateRow{gap:5px}#match .rotationAdjust{gap:4px}#match .rotationAdjustBtn{min-height:36px;padding:6px;font-size:13px}}
 </style>
+
+<style id="v86SetupPuzzleStyles">
+#setup .setupPuzzleHelp{font-size:12px;line-height:1.45;font-weight:800;color:#64748b;margin:0 0 8px;}
+#setup .setupSpot,#setup .numBtn{touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+#setup .setupSpot.puzzleHeld,#setup .numBtn.puzzleHeld{outline:4px solid #f59e0b!important;box-shadow:0 0 0 6px rgba(245,158,11,.22),0 12px 28px rgba(0,0,0,.25)!important;transform:scale(1.03);z-index:20;}
+#setup .setupSpot.puzzleTarget{outline:4px dashed #22c55e!important;}
+#setup .setupBenchDrop{width:100%;min-height:42px;margin-top:8px;border-radius:12px;border:2px dashed #94a3b8;background:#f8fafc;color:#334155;font-weight:1000;}
+#setup .setupBenchDrop.puzzleTarget{border-color:#22c55e;background:#dcfce7;color:#166534;}
+#setup .numBtn.used{opacity:.42;}
+#setup .numBtn.benchPlayer{opacity:1;}
+@media (orientation:landscape) and (min-width:700px){#setup .setupPuzzleHelp{font-size:11px;margin-bottom:5px}#setup .setupBenchDrop{min-height:34px;margin-top:5px}}
+</style>
 </head>
 <body>
 
@@ -3206,7 +3218,9 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
     <div class="setupRoster card">
       <div id="lineupSummary" class="lineupSummary"></div>
+      <div class="setupPuzzleHelp">選手を長押しして持ち上げ、移動先をタップしてください。コート同士は入れ替え、ベンチ選手はコートへ移動できます。</div>
       <div class="numberBank" id="numberBank"></div>
+      <button type="button" id="setupBenchDrop" class="setupBenchDrop" onclick="placeSetupCarryOnBench()">ベンチへ戻す</button>
     </div>
 
     <div class="setupCourtCard card">
@@ -3431,11 +3445,11 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     <div><b>SETTER THEORY</b><span>Official Coach Aquila</span></div>
   </div>
   <button onclick="menuGo('home')">🏠 ホーム</button>
+  <button onclick="menuGo('setup')">⚙️ ローテーション設定</button>
   <button onclick="menuGo('match')">🏐 試合入力</button>
   <button onclick="menuGo('report')">📊 レポート</button>
   <button onclick="menuGo('growth')">📈 成長ダッシュボード</button>
   <button onclick="menuGo('csv')">📁 CSV管理</button>
-  <button onclick="menuGo('setup')">⚙️ ローテ設定</button>
   <button onclick="menuGo('about')">ℹ️ アプリについて</button>
 </aside>
 
@@ -3465,7 +3479,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=85-rotation-adjust"></script>
+<script src="app.js?v=86-setup-puzzle-menu"></script>
 
 
 
