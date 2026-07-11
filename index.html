@@ -3364,6 +3364,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
             <button class="fastBtn toss" data-type="トス" data-result="ライト">→<br>ライト</button>
             <button class="fastBtn toss" data-type="トス" data-result="バック">↩<br>バック</button>
             <button class="fastBtn two" data-type="トス" data-result="ツー">⚡<br>ツー</button>
+            <button type="button" class="tossMistAction" onclick="markLastTossMist(event)">⚠️<br>トスミス</button>
             <button type="button" class="groupUndoAction" onclick="clearGroupPlay('toss', event)">↩<br>取り消し</button>
           </div>
         </div>
@@ -6668,4 +6669,15 @@ body.menuOpen .sideOverlay{
   #csvAnalysisBox .csvAquilaBadge{flex:1 1 160px!important;}
   #csvAnalysisBox .csvPdfButton{flex:1 1 160px!important;}
 }
+
+/* V84: トスミス（トス先とは別の技術評価） */
+.tossMistAction{min-height:58px;border:2px solid #dc2626!important;border-radius:12px!important;background:#fee2e2!important;color:#991b1b!important;font-weight:950!important;font-size:16px!important;line-height:1.05!important;}
+.tossMistAction:active{transform:scale(.97);background:#fecaca!important;}
+.tossQualityPanel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 8px;}
+.tossQualityMetric{border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;padding:9px;text-align:center;}
+.tossQualityMetric span{display:block;font-size:11px;color:#64748b;font-weight:900;}
+.tossQualityMetric b{font-size:24px;color:#0f172a;margin:0 3px;}
+.tossQualityMetric small{font-size:11px;color:#64748b;font-weight:900;}
+.tossQualityMetric.miss{background:#fff1f2;border-color:#fecdd3;}.tossQualityMetric.miss b{color:#dc2626;}
+.tossQualityMetric.success{background:#ecfdf5;border-color:#a7f3d0;}.tossQualityMetric.success b{color:#059669;}
 </style>

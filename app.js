@@ -174,6 +174,40 @@ function playText(mode,result){
   if(result==="被ブロック") return `🚫 被ブロック`;
   return `${before} ${mode}${result}`;
 }
+function isTossMissLog(x){
+  return !!(x && x.type==="トス" && (x.tossMist===true || x.tossMist==="1" || x.tossMist==="true" || x.quality==="ミス"));
+}
+function tossQualityStats(logs=s.logs){
+  const toss=(logs||[]).filter(x=>x.type==="トス");
+  const miss=toss.filter(isTossMissLog).length;
+  const success=Math.max(0,toss.length-miss);
+  const successRate=toss.length?Math.round(success/toss.length*1000)/10:0;
+  const missRate=toss.length?Math.round(miss/toss.length*1000)/10:0;
+  return {total:toss.length,miss,success,successRate,missRate};
+}
+function logResultText(x){
+  if(!x) return "";
+  return isTossMissLog(x) ? `${x.result}（トスミス）` : (x.result||"");
+}
+function markLastTossMist(ev){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  const logs=s.logs||[];
+  const last=logs[logs.length-1];
+  if(!last || last.type!=="トス"){
+    showInputToast("先にトス先を記録してください");
+    return;
+  }
+  if(isTossMissLog(last)){
+    showInputToast("直前のトスはすでにミス登録済みです");
+    return;
+  }
+  snap();
+  last.tossMist=true;
+  last.quality="ミス";
+  save();
+  render();
+  showInputToast(`トスミスを追加：${last.result}`);
+}
 function setPlay(mode,result){
   // V67: 入力順は「選手番号 → プレー」。プレー押下で即記録。
   // 選手が未選択のときは、プレーを記録せず案内だけ表示する。
@@ -1261,9 +1295,15 @@ function report(){
   const tossColors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#0f172a"};
   const tossItems=tossLabels.map(t=>({label:t,count:tossLogs.filter(x=>x.result===t).length,color:tossColors[t]})).filter(x=>x.count>0);
   const tossDonut=`<div class="tossPanel"><div class="donut" style="background:${donutStyle(tossItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${tossLogs.length}</div></div></div>${legendHtml(tossItems,tossLogs.length)}</div>`;
+  const tossQuality=tossQualityStats(tossLogs);
+  const tossQualityPanel=`<div class="tossQualityPanel">
+    <div class="tossQualityMetric"><span>総トス</span><b>${tossQuality.total}</b><small>本</small></div>
+    <div class="tossQualityMetric miss"><span>トスミス</span><b>${tossQuality.miss}</b><small>本</small></div>
+    <div class="tossQualityMetric success"><span>トス成功率</span><b>${tossQuality.successRate}</b><small>%</small></div>
+  </div>`;
 
   const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
-  const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}</div></div>`;}).join("");
+  const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join("");
 
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
@@ -1288,7 +1328,7 @@ function report(){
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
     <div class="bottomGrid">
-      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${buildTossUsageAnalysis()}</div>
+      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
   </div>`;
@@ -1378,8 +1418,8 @@ function buildSetterInsight(){
 }
 
 function downloadCSV(){
-  const rows=[["No","Set","Rotation","Type","Number","Name","Position","Result","Point","Score","Time"]];
-  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.pos,x.result,x.point,x.score,x.time]));
+  const rows=[["No","Set","Rotation","Type","Number","Name","Position","Result","TossMiss","Point","Score","Time"]];
+  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]));
   const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
@@ -1447,6 +1487,7 @@ function printMatchPdfReport(){
   });
 
   const tossLogs=s.logs.filter(x=>x.type==='トス');
+  const tossQuality=tossQualityStats(tossLogs);
   const tossLabels=['レフト','センター','ライト','バック','ツー'];
   const tossRows=tossLabels.map(label=>{
     const count=tossLogs.filter(x=>x.result===label).length;
@@ -1459,7 +1500,7 @@ function printMatchPdfReport(){
   ]);
 
   const recentRows=s.logs.slice(-30).reverse().map(x=>[
-    `${x.no}`, x.set || '-', x.rot || '-', x.type || '-', x.num && x.num!=='-' ? `${x.num}番` : '-', x.result || '-', x.point || '-', x.score || '-', x.time || '-'
+    `${x.no}`, x.set || '-', x.rot || '-', x.type || '-', x.num && x.num!=='-' ? `${x.num}番` : '-', logResultText(x) || '-', x.point || '-', x.score || '-', x.time || '-'
   ]);
 
   const playRows=actionTypes.map(t=>{
@@ -1504,13 +1545,16 @@ function printMatchPdfReport(){
         <div class="metric"><div class="label">効果率</div><div class="value">${effTotal}%</div><div class="sub">成功−ミス系 ÷ 対象</div></div>
         <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">記録上の得失点</div></div>
       </div>
-      <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トスはトスミス入力がないため、成功率・効果率の対象外です。</div></section>
+      <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
       <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
       <div class="twoCol">
         <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
         <section class="section"><h2>プレー割合</h2>${table(['項目','本数','割合'], playRows, '記録がありません。')}</section>
       </div>
-      <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}<div class="note">※Version 1.0ではトス先の配分のみ表示します。オープン・平行・A/B/Cなどの詳細分類は詳細分析モードで追加予定です。</div></section>
+      <div class="twoCol">
+        <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}</section>
+        <section class="section"><h2>トス技術</h2>${table(['総トス','成功','トスミス','成功率','ミス率'], [[`${tossQuality.total}`,`${tossQuality.success}`,`${tossQuality.miss}`,`${tossQuality.successRate}%`,`${tossQuality.missRate}%`]], 'トス記録がありません。')}<div class="note">※トスミスは得点・失点とは別に、トスの技術的な質として記録します。</div></section>
+      </div>
       <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
       <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
       <footer class="footer"><span>Setter Theory</span><span>Generated by Aquila</span></footer>
@@ -2151,6 +2195,7 @@ function importedCsvToMatchState(parsed){
   const nameCol=find(['Name','選手名']);
   const posCol=find(['Position','位置','ポジション']);
   const resultCol=find(['Result','結果','Outcome','評価','Eval','Grade']);
+  const tossMissCol=find(['TossMiss','トスミス','Toss Mistake']);
   const pointCol=find(['Point','得点']);
   const scoreCol=find(['Score','スコア']);
   const timeCol=find(['Time','時刻']);
@@ -2162,6 +2207,7 @@ function importedCsvToMatchState(parsed){
     num:getCell(r,[numCol]) || '-',
     pos:getCell(r,[posCol]) || '',
     result:getCell(r,[resultCol]) || '',
+    tossMist:['1','true','yes','ミス','○'].includes(String(getCell(r,[tossMissCol])||'').toLowerCase()),
     point:getCell(r,[pointCol]) || '',
     score:getCell(r,[scoreCol]) || '',
     time:getCell(r,[timeCol]) || ''
