@@ -6596,3 +6596,44 @@ body.menuOpen .sideOverlay{
 .importedUnifiedReport .reportGrid{gap:14px}
 .unifiedCsvHead{position:sticky;top:0;z-index:4;background:#fff;border-bottom:1px solid #e2e8f0;padding-bottom:12px}
 </style>
+<style id="v77ReportBrandAlignment">
+/* V77: CSV viewer and PDF share the same header hierarchy and Aquila badge. */
+#csvAnalysisBox .csvReportBrand{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:16px!important;
+  padding:14px 16px!important;
+}
+#csvAnalysisBox .csvReportIdentity{display:block!important;min-width:0!important;}
+#csvAnalysisBox .csvReportIdentity>img{display:none!important;}
+#csvAnalysisBox .csvReportRight{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important;justify-content:flex-end!important;}
+#csvAnalysisBox .csvAquilaBadge{
+  display:flex!important;align-items:center!important;gap:9px!important;
+  min-width:150px!important;padding:7px 10px!important;border-radius:14px!important;
+  background:linear-gradient(135deg,#111827,#1e3a8a)!important;
+  border:1px solid rgba(251,191,36,.75)!important;color:#fff!important;
+  box-shadow:0 7px 16px rgba(15,23,42,.18)!important;
+}
+#csvAnalysisBox .csvAquilaBadge img{
+  width:42px!important;height:42px!important;object-fit:contain!important;border-radius:50%!important;
+  background:#fff!important;border:2px solid #fbbf24!important;padding:2px!important;flex:0 0 42px!important;
+}
+#csvAnalysisBox .csvAquilaBadge .small{font-size:8px!important;font-weight:1000!important;letter-spacing:.12em!important;color:#fbbf24!important;line-height:1!important;}
+#csvAnalysisBox .csvAquilaBadge .iqLine{display:flex!important;align-items:baseline!important;gap:3px!important;line-height:1!important;margin-top:2px!important;}
+#csvAnalysisBox .csvAquilaBadge .iqLine b{font-size:27px!important;color:#fff!important;}
+#csvAnalysisBox .csvAquilaBadge .iqLine span{font-size:10px!important;color:#dbeafe!important;font-weight:900!important;}
+#csvAnalysisBox .csvAquilaBadge .rank{font-size:8px!important;font-weight:1000!important;color:#fde68a!important;letter-spacing:.06em!important;margin-top:2px!important;}
+#csvAnalysisBox .csvPdfButton{min-height:42px!important;padding:9px 14px!important;}
+/* The header already carries Aquila, so the IQ card focuses on the score instead of repeating the large icon. */
+#csvAnalysisBox .reportLeadGrid .aquilaHeroTop>img{display:none!important;}
+#csvAnalysisBox .reportLeadGrid .aquilaHeroTop{gap:0!important;}
+#csvAnalysisBox .reportLeadGrid .aquilaHeroBody{width:100%!important;}
+#csvAnalysisBox .reportLeadGrid .setterIqLiveHead{justify-content:flex-start!important;}
+@media(max-width:760px){
+  #csvAnalysisBox .csvReportBrand{grid-template-columns:1fr!important;}
+  #csvAnalysisBox .csvReportRight{justify-content:stretch!important;}
+  #csvAnalysisBox .csvAquilaBadge{flex:1 1 160px!important;}
+  #csvAnalysisBox .csvPdfButton{flex:1 1 160px!important;}
+}
+</style>

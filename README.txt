@@ -1,7 +1,6 @@
-Setter Theory V76
+Setter Theory V77 - Report brand alignment
 
-- CSV読込レポートと試合終了レポートのデザインを統一
-- CSV画面の巨大なAquila画像とIQ重複表示を整理
-- Aquilaアイコンをタイトル横のコンパクトな位置へ調整
-- PDFのAquila Adviceは絵文字ではなく画像を使用
-- PDFはA4向けレイアウトを維持しつつ、色・順番・ブランド表現を画面版と統一
+- CSV viewer and PDF now share the same header hierarchy.
+- Aquila icon is consolidated into a compact IQ badge.
+- Duplicate large icon in the CSV IQ card is removed.
+- Screen and print layouts remain optimized for their different purposes.

@@ -2115,13 +2115,17 @@ function renderCsvAnalysis(parsed){
   if(!parsed || !(parsed.data||[]).length){ box.style.display='none'; box.innerHTML=''; return; }
   const unified=buildImportedUnifiedReport(parsed);
   const a=analyzeImportedCsv(parsed);
+  const csvRank=setterIqRank(a.setterIq||0);
   box.style.display='block';
   const importedState=importedCsvToMatchState(parsed);
   const reportDate=(parsed.data&&parsed.data[0]&&parsed.data[0].Time)?String(parsed.data[0].Time):new Date().toLocaleDateString();
   box.innerHTML=`
     <div class="csvReportBrand">
-      <div class="csvReportIdentity"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="csvReportEyebrow">AQUILA REPORT</div><div class="csvAnalysisTitle">Setter Theory Match Report</div><div class="csvSmall">${escapeHtml(importedState.myTeam||'自チーム')} vs ${escapeHtml(importedState.oppTeam||'相手')} / Set ${escapeHtml(importedState.setNo||'1')}</div></div></div>
-      <button class="ghostBtn csvPdfButton" type="button" onclick="printCsvReport()">PDFレポート出力</button>
+      <div class="csvReportIdentity"><div><div class="csvReportEyebrow">AQUILA REPORT</div><div class="csvAnalysisTitle">Setter Theory Match Report</div><div class="csvSmall">${escapeHtml(importedState.myTeam||'自チーム')} vs ${escapeHtml(importedState.oppTeam||'相手')} / Set ${escapeHtml(importedState.setNo||'1')}</div></div></div>
+      <div class="csvReportRight">
+        <div class="csvAquilaBadge"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${a.setterIq||'--'}</b><span>/100</span></div><div class="rank">${a.setterIq?csvRank.label:'NO DATA'}</div></div></div>
+        <button class="ghostBtn csvPdfButton" type="button" onclick="printCsvReport()">PDFレポート出力</button>
+      </div>
     </div>
     <div class="importedUnifiedReport">${unified}</div>
     <div class="saveCurrentBox"><input id="matchSaveName" value="${escapeHtml(suggestedMatchName())}" placeholder="試合名"><button class="csvFileBtn" type="button" onclick="saveCurrentMatch()">💾 この試合を保存</button></div>
