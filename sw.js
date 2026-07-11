@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v84-toss-miss';
-const ASSETS=['./','index.html','app.js?v=83-1-iq-breakdown-scale-fix','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
+const CACHE_NAME = 'setter-theory-v84-1-toss-cancel-fit';
+const ASSETS=['./','index.html','app.js?v=84-1-toss-cancel-fit','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
 self.addEventListener('fetch',e=>{
