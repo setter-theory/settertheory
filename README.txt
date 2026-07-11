@@ -1,6 +1,6 @@
-Setter Theory V77 - Report brand alignment
+Setter Theory V79 - Home Report IQ badges
 
-- CSV viewer and PDF now share the same header hierarchy.
-- Aquila icon is consolidated into a compact IQ badge.
-- Duplicate large icon in the CSV IQ card is removed.
-- Screen and print layouts remain optimized for their different purposes.
+- Saved match list now shows Setter IQ as a prominent score badge.
+- Score format is unified to XX/100.
+- IQ badges are color-coded for quick comparison.
+- The open button is labeled Report.

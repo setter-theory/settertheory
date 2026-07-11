@@ -1737,16 +1737,18 @@ function renderSavedMatches(){
   listEl.innerHTML=list.map(m=>{
     const d=m.savedAt ? new Date(m.savedAt) : new Date();
     const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-    const iq=(m.summary && m.summary.setterIq) ? m.summary.setterIq : '-';
+    const iqRaw=(m.summary && Number.isFinite(Number(m.summary.setterIq))) ? Number(m.summary.setterIq) : null;
+    const iq=iqRaw===null ? '--' : Math.round(iqRaw);
+    const iqClass=iqRaw===null?'iqEmpty':iqRaw>=90?'iqExcellent':iqRaw>=80?'iqGood':iqRaw>=70?'iqFair':'iqLow';
     const total=(m.summary && m.summary.total) ? m.summary.total : 0;
     return `<div class="savedMatchItem">
       <div>
         <div class="savedMatchTitle">${escapeHtml(m.title||'無題の試合')}</div>
         <div class="savedMatchMeta">${escapeHtml(date)}　${escapeHtml(m.fileName||'CSV')}　トス${total}本</div>
-        <div class="savedMatchIq">Setter IQ ${iq}</div>
       </div>
       <div class="savedMatchActions">
-        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">開く</button>
+        <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
+        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">Report</button>
         <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
         <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
       </div>
