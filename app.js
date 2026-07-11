@@ -1143,6 +1143,38 @@ function getCurrentAquilaAdviceItems(){
   }
   return advice;
 }
+function iqBreakdown20(a){
+  const target=Math.max(0, Math.min(100, Math.round(Number(a?.setterIq)||0)));
+  const raw=[
+    Math.max(0, Number(a?.balance)||0),
+    Math.max(0, Number(a?.diversity)||0),
+    Math.max(0, Number(a?.quick)||0),
+    Math.max(0, Number(a?.clutch)||0),
+    Math.max(0, Number(a?.leftRightBalance)||0)
+  ];
+  const values=[0,0,0,0,0];
+  // Setter IQを5項目（各20点）へ、各指標の強さに応じて配分する。
+  // 合計は必ずSetter IQと一致し、各項目は20点を超えない。
+  for(let point=0; point<target; point++){
+    let best=-1;
+    let bestScore=-1;
+    for(let i=0;i<values.length;i++){
+      if(values[i]>=20) continue;
+      const score=raw[i]/(values[i]+1);
+      if(score>bestScore){ bestScore=score; best=i; }
+    }
+    if(best<0) break;
+    values[best]++;
+  }
+  return {
+    balance:values[0],
+    diversity:values[1],
+    quick:values[2],
+    clutch:values[3],
+    stability:values[4],
+    total:values.reduce((sum,v)=>sum+v,0)
+  };
+}
 function buildCurrentSetterIqPanel(){
   const a=currentMatchSetterAnalysis();
   if(!a.total){
@@ -1150,9 +1182,10 @@ function buildCurrentSetterIqPanel(){
   }
   const top=a.items[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
+  const breakdown=iqBreakdown20(a);
   return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
-    <div class="setterIqMetrics"><span>配球バランス <b>${Math.round(a.balance/5)}/20</b></span><span>攻撃の多様性 <b>${Math.round(a.diversity/5)}/20</b></span><span>ミドル活用 <b>${Math.round(a.quick/5)}/20</b></span><span>勝負どころ <b>${Math.round(a.clutch/5)}/20</b></span><span>総合 <b>${a.setterIq}/100</b></span></div>
-    <p><b>採点内訳</b>：配球・多様性・ミドル活用・勝負どころを総合評価しています。</p><p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+    <div class="setterIqMetrics"><span>配球バランス <b>${breakdown.balance}/20</b></span><span>攻撃の多様性 <b>${breakdown.diversity}/20</b></span><span>ミドル活用 <b>${breakdown.quick}/20</b></span><span>勝負どころ <b>${breakdown.clutch}/20</b></span><span>配球安定性 <b>${breakdown.stability}/20</b></span><span>合計 <b>${breakdown.total}/100</b></span></div>
+    <p><b>採点内訳</b>：5項目を各20点で評価し、合計がSetter IQと一致します。</p><p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentAquilaAdvice(){
   const advice=getCurrentAquilaAdviceItems();
@@ -1378,6 +1411,7 @@ function printMatchPdfReport(){
   const setterAnalysis = currentMatchSetterAnalysis();
   const setterIq = setterAnalysis.total ? setterAnalysis.setterIq : 0;
   const iqRank = setterIqRank(setterIq);
+  const iqBreakdown = iqBreakdown20(setterAnalysis);
   const aquilaAdvice = getCurrentAquilaAdviceItems();
   const aquilaIcon = `${location.origin}/icons/aquila-192.png`;
 
@@ -1461,7 +1495,7 @@ function printMatchPdfReport(){
     <main class="sheet">
       <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
       <div class="pdfLead">
-        <div class="pdfIqCard"><div class="title">Setter IQ</div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div><div class="pdfIqBreakdown"><span>配球 ${setterAnalysis.balance||0}</span><span>多様性 ${setterAnalysis.diversity||0}</span><span>速攻 ${setterAnalysis.quick||0}</span><span>終盤 ${setterAnalysis.clutch||0}</span></div></div>
+        <div class="pdfIqCard"><div class="title">Setter IQ</div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div><div class="pdfIqBreakdown"><span>配球 ${iqBreakdown.balance}/20</span><span>多様性 ${iqBreakdown.diversity}/20</span><span>ミドル ${iqBreakdown.quick}/20</span><span>勝負所 ${iqBreakdown.clutch}/20</span><span>安定性 ${iqBreakdown.stability}/20</span><span>合計 ${iqBreakdown.total}/100</span></div></div>
         <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
       </div>
       <div class="summary">
@@ -1575,7 +1609,7 @@ function calcScores(counts,total,terminalCounts){
   const setterIq=Math.max(40, Math.min(99, Math.round(balance*.28 + diversity*.22 + quick*.24 + clutch*.16 + leftRightBalance*.10)));
   const foreshadow=Math.max(40, Math.min(99, Math.round(diversity*.55 + quick*.25 + balance*.20)));
   const blockInduce=Math.max(35, Math.min(99, Math.round(quick*.55 + diversity*.25 + (100-sideDepend)*.20)));
-  return {setterIq,balance,diversity,quick,clutch,foreshadow,blockInduce,sideDepend,centerPct,backPct};
+  return {setterIq,balance,diversity,quick,clutch,leftRightBalance,foreshadow,blockInduce,sideDepend,centerPct,backPct};
 }
 function analyzeImportedCsv(parsed){
   const headers=parsed?.headers||[];
