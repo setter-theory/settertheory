@@ -3400,10 +3400,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   <div class="reportHeader">
     <button class="backLink" onclick="show('match')">← ホームに戻る</button>
     <div class="reportTitle">
-      <h1>📊 試合レポート</h1>
+      <h1>試合レポート</h1>
       <p id="reportSub">自動集計</p>
     </div>
-    <div class="reportActions"><button class="pdfBtn" onclick="printMatchPdfReport()">📄 PDF出力</button><button class="csvBtn" onclick="downloadCSV()">⬇ CSV出力</button></div>
+    <div class="reportActions"></div>
   </div>
   <div id="reportDashboard"></div>
 </section>
@@ -3815,6 +3815,35 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #match .matchLeftTools .opponentMistUndo{margin:0!important;min-width:0!important;min-height:48px!important;background:#fff!important;color:#b91c1c!important;border:2px solid #dc2626!important;font-size:12px!important;font-weight:1000!important;}
 
 </style>
+
+<style id="v80UnifiedReportDesign">
+/* V80: match-end and imported CSV reports share one brand header and one report component system. */
+.unifiedReportBrand{
+  width:100%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;gap:16px;margin:0 0 14px;padding:15px 17px;border-radius:18px;
+  background:linear-gradient(135deg,#0f172a,#172554 58%,#1e3a8a);color:#fff;
+  border:1px solid rgba(251,191,36,.75);box-shadow:0 10px 24px rgba(15,23,42,.18);
+}
+.unifiedReportIdentity{min-width:0}.unifiedReportEyebrow{font-size:10px;font-weight:1000;letter-spacing:.18em;color:#fbbf24}
+.unifiedReportTitle{font-size:22px;font-weight:1000;line-height:1.15;margin-top:4px}.unifiedReportMeta{font-size:11px;font-weight:800;color:#cbd5e1;margin-top:5px;white-space:normal}
+.unifiedReportRight{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.unifiedAquilaBadge{display:flex;align-items:center;gap:9px;min-width:154px;padding:7px 10px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(251,191,36,.62)}
+.unifiedAquilaBadge img{width:43px;height:43px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid #fbbf24;padding:2px;flex:0 0 43px}
+.unifiedAquilaBadge .small{font-size:8px;font-weight:1000;letter-spacing:.12em;color:#fbbf24;line-height:1}.unifiedAquilaBadge .iqLine{display:flex;align-items:baseline;gap:3px;line-height:1;margin-top:2px}
+.unifiedAquilaBadge .iqLine b{font-size:28px;color:#fff}.unifiedAquilaBadge .iqLine span{font-size:10px;color:#dbeafe;font-weight:900}.unifiedAquilaBadge .rank{font-size:8px;font-weight:1000;color:#fde68a;letter-spacing:.06em;margin-top:2px}
+.unifiedReportAction{min-height:42px!important;padding:9px 13px!important;margin:0!important;white-space:nowrap}
+#importedUnifiedReport,.importedUnifiedReport{width:100%;max-width:100%;box-sizing:border-box}
+#csvAnalysisBox .csvReportBrand{display:none!important}
+#csvAnalysisBox .unifiedReportBrand{margin-top:0}
+/* The same content cards, spacing and typography are used in both contexts. */
+#csvAnalysisBox .importedUnifiedReport .reportGrid,#reportDashboard .reportGrid{display:grid;gap:14px}
+#csvAnalysisBox .importedUnifiedReport .reportPanel,#reportDashboard .reportPanel{border-radius:16px}
+#csvAnalysisBox .importedUnifiedReport .summaryCards,#reportDashboard .summaryCards{gap:10px}
+@media(max-width:760px){
+ .unifiedReportBrand{grid-template-columns:1fr;padding:13px}.unifiedReportRight{justify-content:stretch}.unifiedAquilaBadge{flex:1 1 155px}.unifiedReportAction{flex:1 1 135px}.unifiedReportTitle{font-size:19px}
+}
+</style>
+
 </body>
 </html>
 

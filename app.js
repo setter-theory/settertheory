@@ -1118,6 +1118,27 @@ function buildCurrentAquilaAdvice(){
   return `<div class="aquilaLiveAdvice aquilaAdviceHero"><div class="aquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>Aquilaのアドバイス</b></div>${advice.length===1?`<p>${escapeHtml(advice[0])}</p>`:`<ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`}</div>`;
 }
 
+function buildUnifiedReportBrandHeader(state, analysis, options={}){
+  const rank=setterIqRank(analysis.setterIq||0);
+  const title=options.title||'Setter Theory Match Report';
+  const dateText=options.dateText||new Date().toLocaleDateString();
+  const actions=options.actionsHtml||'';
+  return `<div class="unifiedReportBrand">
+    <div class="unifiedReportIdentity">
+      <div class="unifiedReportEyebrow">AQUILA REPORT</div>
+      <div class="unifiedReportTitle">${escapeHtml(title)}</div>
+      <div class="unifiedReportMeta">${escapeHtml(state.myTeam||state.team||'自チーム')} vs ${escapeHtml(state.oppTeam||'相手')} / Set ${escapeHtml(state.setNo||'1')} / ${escapeHtml(dateText)}</div>
+    </div>
+    <div class="unifiedReportRight">
+      <div class="unifiedAquilaBadge">
+        <img src="icons/aquila-192.png" alt="Aquila">
+        <div><div class="small">SETTER IQ</div><div class="iqLine"><b>${analysis.setterIq||'--'}</b><span>/100</span></div><div class="rank">${analysis.setterIq?rank.label:'NO DATA'}</div></div>
+      </div>
+      ${actions}
+    </div>
+  </div>`;
+}
+
 function report(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length;
@@ -1170,7 +1191,9 @@ function report(){
   const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
   const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}</div></div>`;}).join("");
 
-  const dashboard=`<div class="reportGrid">
+  const currentAnalysis=currentMatchSetterAnalysis();
+  const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
+  const dashboard=`${reportBrand}<div class="reportGrid">
     <div class="setterIqAdviceGrid reportLeadGrid">
       <div class="reportPanel reportLeadPanel">${buildCurrentSetterIqPanel()}</div>
       <div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice()}</div>
@@ -2121,14 +2144,9 @@ function renderCsvAnalysis(parsed){
   box.style.display='block';
   const importedState=importedCsvToMatchState(parsed);
   const reportDate=(parsed.data&&parsed.data[0]&&parsed.data[0].Time)?String(parsed.data[0].Time):new Date().toLocaleDateString();
+  const sharedBrand=buildUnifiedReportBrandHeader(importedState,a,{dateText:reportDate,actionsHtml:`<button class="ghostBtn unifiedReportAction" type="button" onclick="printCsvReport()">PDFレポート出力</button>`});
   box.innerHTML=`
-    <div class="csvReportBrand">
-      <div class="csvReportIdentity"><div><div class="csvReportEyebrow">AQUILA REPORT</div><div class="csvAnalysisTitle">Setter Theory Match Report</div><div class="csvSmall">${escapeHtml(importedState.myTeam||'自チーム')} vs ${escapeHtml(importedState.oppTeam||'相手')} / Set ${escapeHtml(importedState.setNo||'1')}</div></div></div>
-      <div class="csvReportRight">
-        <div class="csvAquilaBadge"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${a.setterIq||'--'}</b><span>/100</span></div><div class="rank">${a.setterIq?csvRank.label:'NO DATA'}</div></div></div>
-        <button class="ghostBtn csvPdfButton" type="button" onclick="printCsvReport()">PDFレポート出力</button>
-      </div>
-    </div>
+    ${sharedBrand}
     <div class="importedUnifiedReport">${unified}</div>
     <div class="saveCurrentBox"><input id="matchSaveName" value="${escapeHtml(suggestedMatchName())}" placeholder="試合名"><button class="csvFileBtn" type="button" onclick="saveCurrentMatch()">💾 この試合を保存</button></div>
     <div class="csvMemo"><b>📝 セッター思考メモ</b><textarea id="setterMemo" placeholder="例：相手MBがライト寄りだったので、序盤にセンターを見せてからレフトを使った。"></textarea><div class="csvSmall">このメモは保存データに残せます。</div></div>
