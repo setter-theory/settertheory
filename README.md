@@ -1,7 +1,6 @@
-# Setter Theory V72
+# Setter Theory V73
 
-- 試合レポート最上部を Setter IQ → Aquila Advice → 各種データ の順に変更
-- Setter IQにランクと内訳を追加
-- PDF右上にAquilaキャラクター、IQ、ランクを表示
-- PDF本文の最初にSetter IQとAquila Adviceを配置
-- V71までの入力・ローテーション・PWA機能を維持
+- 相手ミス直後専用の「相手ミス取消」を追加
+- S1〜S6を標準定義へ統一（上段 S4/S3/S2、下段 S5/S6/S1）
+- ローテーション設定画面、コート入力画面、各ローテーション一覧を同じ配置へ統一
+- ローテーション進行処理を標準順へ修正

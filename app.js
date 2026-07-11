@@ -1,10 +1,10 @@
 
-// V72: Aquila Report hero, IQ-first report screen, branded PDF IQ/advice.
+// V73: opponent-mist undo and standard S1-S6 rotation definition.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
   nums:["1","2","3","4","5","7"], setterIndex:3,
-  positions:["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"],
+  positions:["ライト後衛","ライト前衛","センター前衛","レフト前衛","レフト後衛","センター後衛"],
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
   benchCount:6,
   lastSubstitution:null,
@@ -33,7 +33,7 @@ let favoritePlays = readJsonArray("setterTheoryFavoritePlays", [
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
 const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
 const rateActionTypes=["スパイク","サーブ","レセプ","ディグ","ブロック"];
-const defaultPositions=["ライト後衛","レフト後衛","レフト前衛","センター前衛","ライト前衛","センター後衛"];
+const defaultPositions=["ライト後衛","ライト前衛","センター前衛","レフト前衛","レフト後衛","センター後衛"];
 
 function show(id){
   closeSideMenu && closeSideMenu();
@@ -289,10 +289,11 @@ function snap(){
   if(s.hist.length>300)s.hist.shift();
 }
 function rotateClockwiseOnce(a){
-  // 表示上の時計回り：
-  // 左上(pos2) → 上中(pos6) → 右上(pos1) → 右下(pos5) → 下中(pos4) → 左下(pos3)
-  // s.numsの並びは [pos1,pos2,pos3,pos4,pos5,pos6]
-  return [a[5], a[2], a[3], a[4], a[0], a[1]];
+  // 標準ローテーション定義：
+  // S1=右後衛 → S2=右前衛 → S3=中央前衛 → S4=左前衛 → S5=左後衛 → S6=中央後衛
+  // コート上では S1 を基準に反時計回り。s.nums は [S1,S2,S3,S4,S5,S6]。
+  // 1ローテ進むと、各選手は S1→S6→S5→S4→S3→S2→S1 と移動する。
+  return [a[1], a[2], a[3], a[4], a[5], a[0]];
 }
 function rotationNums(){
   let a=s.nums.slice();
@@ -324,7 +325,7 @@ function toggleRotationOverview(){
   if(willOpen) renderRotationOverview();
 }
 function miniCourtHtml(nums, rot){
-  const order=[1,5,0,2,3,4]; // 上段: pos2,pos6,pos1 / 下段: pos3,pos4,pos5
+  const order=[3,2,1,4,5,0]; // 上段: S4,S3,S2 / 下段: S5,S6,S1
   return `<div class="rotationMiniCourt" aria-label="S${rot}ローテーション">
     <div class="rotationMiniLine"></div>
     ${order.map((idx,visualIndex)=>{
@@ -606,6 +607,15 @@ function opponentMist(){
   if(before==="opp"){ nextRot(); s.serve="mine"; }
   s.logs.push({no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:"得点",num:"-",pos:"-",result:"相手ミス",point:"自",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()});
   save(); render();
+}
+function undoOpponentMist(){
+  const last=s.logs && s.logs[s.logs.length-1];
+  if(!last || last.result!=="相手ミス"){
+    showInputToast("直前の記録は相手ミスではありません");
+    return;
+  }
+  undo();
+  showInputToast("相手ミスを取り消しました");
 }
 function manualRotate(){snap();nextRot();save();render();}
 function toggleServe(){snap();s.serve=s.serve==="mine"?"opp":"mine";save();render();}
