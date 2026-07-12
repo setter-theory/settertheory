@@ -339,7 +339,18 @@ function secondBallAnalysis(logs=s.logs){
 function buildSecondBallAnalysis(){
   const a=secondBallAnalysis();
   if(!a.total) return `<div class="reportPanel secondBallPanel"><h3>二段トス分析</h3><p class="emptySecondBall">二段トスの記録はありません。</p></div>`;
-  const cards=a.players.map(p=>`<div class="secondBallCard"><div class="secondBallHead"><b>${escapeHtml(p.num)}番 ${escapeHtml(p.name||"")}</b><span>${p.total}本</span></div><div class="secondBallZones">${a.zones.map(z=>`<span><b>${z}</b>${p.counts[z]}本</span>`).join("")}</div></div>`).join("");
+  const cards=a.players.map(p=>{
+    const playerLabel = `${escapeHtml(p.num)}番${p.name ? ` ${escapeHtml(p.name)}` : ""}`;
+    const zoneCells = a.zones.map(z=>`<div class="secondBallZoneCell"><span>${z}</span><b>${p.counts[z]}本</b></div>`).join("");
+    return `<article class="secondBallCard">
+      <div class="secondBallHead">
+        <div class="secondBallPlayer"><small>選手</small><strong>${playerLabel}</strong></div>
+        <div class="secondBallTotal"><small>二段トス</small><strong>${p.total}本</strong></div>
+      </div>
+      <div class="secondBallZoneTitle">トス先</div>
+      <div class="secondBallZones">${zoneCells}</div>
+    </article>`;
+  }).join("");
   return `<div class="reportPanel secondBallPanel"><h3>二段トス分析 <small>（Setter IQ・通常トス集計とは別）</small></h3><div class="secondBallSummary">チーム合計 <b>${a.total}本</b></div><div class="secondBallGrid">${cards}</div></div>`;
 }
 function setPlay(mode,result){
