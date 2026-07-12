@@ -789,6 +789,13 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
   box-shadow:0 8px 24px rgba(31,41,55,.07);
 }
 .growthDashboardBody{display:grid;gap:12px;color:var(--ink);font-weight:900}
+.growthPlayerControls{display:flex;align-items:center;gap:10px;margin:8px 0 12px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc}
+.growthPlayerControls label{font-size:12px;font-weight:1000;color:#475569}
+.growthPlayerControls select{min-width:190px;max-width:100%;padding:9px 11px;border:1px solid #94a3b8;border-radius:10px;background:#fff;color:#0f172a;font-weight:900}
+.playerGrowthHeader{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff}
+.playerGrowthHeader b{font-size:18px}.playerGrowthHeader small{display:block;color:#bfdbfe;margin-top:3px}
+.playerGrowthBadge{padding:7px 10px;border-radius:999px;background:#fff;color:#1e3a8a;font-weight:1000;font-size:12px}
+
 .growthSummary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .growthMetric{border:1px solid var(--line);border-radius:18px;padding:12px;background:#f8fafc}
 .growthMetric b{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -3380,6 +3387,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     <h3>📈 成長ダッシュボード β0.3.4.1</h3>
     <span class="savedMatchCount" id="growthMatchCount">保存試合から自動生成</span>
   </div>
+  <div class="growthPlayerControls">
+    <label for="growthPlayerSelect">表示対象</label>
+    <select id="growthPlayerSelect" onchange="changeGrowthPlayer(this.value)">
+      <option value="team">チーム全体</option>
+    </select>
+  </div>
   <div id="growthDashboardBody" class="growthDashboardBody">
     保存した試合が2件以上あると、Setter IQや配球傾向の推移を表示できます。
   </div>
@@ -3741,7 +3754,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=93-7-home-dashboard-fix"></script>
+<script src="app.js?v=93-8-player-growth"></script>
 
 
 

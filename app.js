@@ -2706,11 +2706,138 @@ function buildGrowthAquilaMessage(first,last){
   if(!lines.length) lines.push('大きな変化は少なめだね。次はローテ別に「どこで偏ったか」を見てみよう。');
   return lines.slice(0,3);
 }
+
+function growthPlayerStorageKey(){ return 'setterTheoryGrowthPlayerV1'; }
+function growthPlayerIdentity(meta){
+  const num=String(meta?.num||'').trim();
+  const name=String(meta?.name||'').trim();
+  return name ? `name:${name}` : `num:${num}`;
+}
+function savedMatchSetterMeta(match){
+  try{return importedSetterMeta(match?.csv||{});}catch(e){return [];}
+}
+function allGrowthPlayers(saved){
+  const map=new Map();
+  (saved||[]).forEach(m=>savedMatchSetterMeta(m).forEach(meta=>{
+    const key=growthPlayerIdentity(meta);
+    if(!map.has(key)) map.set(key,{key,num:String(meta.num||''),name:String(meta.name||'')});
+  }));
+  return [...map.values()].sort((a,b)=>Number(a.num||999)-Number(b.num||999) || a.name.localeCompare(b.name,'ja'));
+}
+function renderGrowthPlayerSelector(saved){
+  const select=document.getElementById('growthPlayerSelect');
+  if(!select) return 'team';
+  const players=allGrowthPlayers(saved);
+  const wanted=localStorage.getItem(growthPlayerStorageKey())||'team';
+  select.innerHTML='<option value="team">チーム全体</option>'+players.map(p=>`<option value="${escapeHtml(p.key)}">#${escapeHtml(p.num)} ${escapeHtml(p.name||'名前未登録')}</option>`).join('');
+  const valid=[...select.options].some(o=>o.value===wanted)?wanted:'team';
+  select.value=valid;
+  if(valid!==wanted) localStorage.setItem(growthPlayerStorageKey(),valid);
+  return valid;
+}
+function changeGrowthPlayer(value){
+  localStorage.setItem(growthPlayerStorageKey(),value||'team');
+  renderGrowthDashboard();
+}
+function playerMatchesMeta(meta,key){
+  return growthPlayerIdentity(meta)===key;
+}
+function analyzeSetterForSavedMatch(match,key){
+  const metas=savedMatchSetterMeta(match);
+  const meta=metas.find(x=>playerMatchesMeta(x,key));
+  if(!meta) return null;
+  const ms=importedCsvToMatchState(match.csv||{});
+  const num=String(meta.num||'');
+  const toss=(ms.logs||[]).filter(x=>x.type==='トス' && String(x.num)===num);
+  const counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
+  const terminalCounts={};
+  toss.forEach(x=>{
+    const label=counts[x.result]!==undefined ? x.result : classifyTossTarget(x.result);
+    if(counts[label]===undefined) counts[label]=0;
+    counts[label]++;
+    const score=scoreParts(x.score||'');
+    if(score && score.high>=20) addCount(terminalCounts,label);
+  });
+  const total=toss.length;
+  const quality=tossQualityStats(toss);
+  const scores=calcScores(counts,total,terminalCounts);
+  const items=analysisItemsFromCounts(counts,total);
+  return {
+    key, num, name:meta.name||ms.players?.[num]||'', total, counts, items, quality,
+    setterIq:scores.setterIq||0, balance:scores.balance||0, diversity:scores.diversity||0,
+    quick:scores.quick||0, clutch:scores.clutch||0, stability:scores.stability||0,
+    match
+  };
+}
+function playerPctValue(a,label){
+  const item=(a?.items||[]).find(x=>x.label===label);
+  return item?Number(item.pct||0):0;
+}
+function playerGrowthTrendRows(list,key,label,suffix='',color=''){
+  const rows=list.map(a=>{
+    const val=key==='successRate'?Number(a.quality?.successRate||0):key==='missRate'?Number(a.quality?.missRate||0):key==='center'?playerPctValue(a,'センター'):key==='left'?playerPctValue(a,'レフト'):key==='right'?playerPctValue(a,'ライト'):Number(a[key]||0);
+    const name=(a.match?.title||a.match?.fileName||'試合').replace(/^\d{4}\/\d{2}\/\d{2}\s*/, '');
+    return `<div class="growthTrendRow"><div class="growthTrendName">${escapeHtml(name)}</div><div class="growthTrendTrack"><div class="growthTrendFill" style="width:${Math.max(2,Math.min(100,val))}%;${color?`background:${color}`:''}"></div></div><div>${val}${suffix}</div></div>`;
+  }).join('');
+  return `<div class="growthTrendPanel"><h4>${escapeHtml(label)}</h4>${rows}</div>`;
+}
+function buildPlayerGrowthAquila(first,last){
+  const iq=Number(last.setterIq||0)-Number(first.setterIq||0);
+  const success=Number(last.quality?.successRate||0)-Number(first.quality?.successRate||0);
+  const miss=Number(last.quality?.missRate||0)-Number(first.quality?.missRate||0);
+  const center=playerPctValue(last,'センター')-playerPctValue(first,'センター');
+  const lines=[];
+  if(iq>0) lines.push(`Setter IQが${iq}上がっています。配球判断の積み重ねが数字に表れています。`);
+  else if(iq<0) lines.push(`Setter IQは${Math.abs(iq)}下がっています。配球の偏りと勝負所を確認しましょう。`);
+  else lines.push('Setter IQは同水準です。トス技術と配球の内訳を見比べましょう。');
+  if(success>0) lines.push(`トス成功率が${success}%上がっています。技術面の安定が見えます。`);
+  if(miss>0) lines.push(`トスミス率が${miss}%増えています。判断と技術を分けて振り返りましょう。`);
+  else if(miss<0) lines.push(`トスミス率が${Math.abs(miss)}%下がっています。精度の改善が見えます。`);
+  if(center>=5) lines.push(`センター使用率が${center}%増え、攻撃の幅が広がっています。`);
+  return lines.slice(0,3);
+}
+function renderPlayerGrowthDashboard(saved,key,body,count){
+  const all=([...saved].reverse()).map(m=>analyzeSetterForSavedMatch(m,key)).filter(Boolean);
+  const recent=all.slice(-5);
+  const player=all[all.length-1]||null;
+  if(count) count.textContent=player?`#${player.num} ${player.name||''}・${all.length}試合`:'対象試合なし';
+  if(all.length<2){
+    body.innerHTML=`<div class="csvSmall">この選手の保存試合が2件以上あると、個人成長推移を表示できます。現在 ${all.length}件です。</div>`;
+    return;
+  }
+  const first=recent[0], last=recent[recent.length-1];
+  const iqDiff=Number(last.setterIq||0)-Number(first.setterIq||0);
+  const successDiff=Number(last.quality?.successRate||0)-Number(first.quality?.successRate||0);
+  const missDiff=Number(last.quality?.missRate||0)-Number(first.quality?.missRate||0);
+  const centerDiff=playerPctValue(last,'センター')-playerPctValue(first,'センター');
+  const advice=buildPlayerGrowthAquila(first,last);
+  body.innerHTML=`
+    <div class="playerGrowthHeader"><div><b>#${escapeHtml(last.num)} ${escapeHtml(last.name||'')}</b><small>直近${recent.length}試合の個人成長</small></div><div class="playerGrowthBadge">選手別</div></div>
+    <div class="growthSummary">
+      ${growthMetricCard('Setter IQ',Number(last.setterIq||0),iqDiff)}
+      ${growthMetricCard('トス成功率',Number(last.quality?.successRate||0),successDiff,'%')}
+      ${growthMetricCard('トスミス率',Number(last.quality?.missRate||0),missDiff,'%',true)}
+      ${growthMetricCard('センター使用率',playerPctValue(last,'センター'),centerDiff,'%')}
+    </div>
+    <div class="growthAquila"><b>Aquilaの個人成長コメント</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+    ${playerGrowthTrendRows(recent,'setterIq','Setter IQ 推移')}
+    ${playerGrowthTrendRows(recent,'successRate','トス成功率 推移','%','#16a34a')}
+    <div class="growthDistribution">
+      ${playerGrowthTrendRows(recent,'missRate','トスミス率 推移','%','#dc2626')}
+      ${playerGrowthTrendRows(recent,'center','センター使用率 推移','%','#f59e0b')}
+    </div>`;
+}
+
 function renderGrowthDashboard(){
   const body=document.getElementById('growthDashboardBody');
   const count=document.getElementById('growthMatchCount');
   if(!body) return;
   const saved=getSavedMatches();
+  const selected=renderGrowthPlayerSelector(saved);
+  if(selected!=='team'){
+    renderPlayerGrowthDashboard(saved,selected,body,count);
+    return;
+  }
   if(count) count.textContent=`保存 ${saved.length}件`;
   if(saved.length<2){
     body.innerHTML='<div class="csvSmall">保存した試合が2件以上あると、成長推移を表示できます。</div>';
