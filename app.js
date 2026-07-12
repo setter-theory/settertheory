@@ -10,7 +10,8 @@ let s = {
   lastSubstitution:null,
   substitutionCounts:{},
   rot:1, my:0, op:0, mySets:0, opSets:0, serve:"mine",
-  mode:"スパイク", result:"成功", logs:[], hist:[]
+  mode:"スパイク", result:"成功", logs:[], hist:[],
+  matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 let setupSelected = 0;
 let setupCarry = null;
@@ -53,7 +54,9 @@ function menuGo(target){
   if(target==="report"){ showReport(); return; }
   if(target==="match"){ show("match"); return; }
   if(target==="setup"){ show("setup"); return; }
+  save();
   show("home");
+  updateHomeMatchControls();
   setTimeout(()=>{
     const map={growth:"growthDashboardCard",csv:"csvImportCard",about:"growthDashboardCard"};
     const el=document.getElementById(map[target]||"");
@@ -299,12 +302,54 @@ function vibrateTap(){
   try{ if(navigator.vibrate) navigator.vibrate(18); }catch(e){}
 }
 
+function hasInProgressMatch(){
+  return !!(s && s.matchActive && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
+}
+function matchResumeSummary(){
+  const saved=s.lastSavedAt ? new Date(s.lastSavedAt).toLocaleString() : "保存時刻不明";
+  return `${s.team||"自チーム"} vs ${s.oppTeam||"相手"} / ${s.my||0}-${s.op||0} / S${s.rot||1} / ${saved}`;
+}
+function updateHomeMatchControls(){
+  const resume=document.getElementById("resumeMatchBtn");
+  const fresh=document.getElementById("newMatchBtn");
+  const note=document.getElementById("resumeMatchNote");
+  const active=hasInProgressMatch();
+  if(resume){ resume.style.display=active?"block":"none"; resume.textContent="▶ 試合を再開"; }
+  if(fresh){ fresh.textContent=active?"＋ 新しい試合を始める":"🏐 試合を始める"; }
+  if(note){ note.style.display=active?"block":"none"; note.textContent=active?matchResumeSummary():""; }
+}
+function resumeMatch(){
+  load();
+  if(!hasInProgressMatch()){
+    alert("再開できる途中データがありません");
+    updateHomeMatchControls();
+    return;
+  }
+  show("match");
+  showInputToast("途中の試合を再開しました");
+}
+function startNewMatchSetup(){
+  if(hasInProgressMatch()){
+    const ok=confirm("途中の試合データがあります。新しい試合の設定へ進みますか？\n※『試合開始』を押すまでは途中データは消えません。");
+    if(!ok) return;
+  }
+  show("setup");
+}
 function goHome(){
-  if(confirm("ホームへ戻りますか？\n試合中の記録は保存されています。")){
+  save();
+  if(confirm("ホームへ戻りますか？\n途中データは自動保存され、ホームから再開できます。")){
     show("home");
+    updateHomeMatchControls();
   }
 }
-function save(){ localStorage.setItem("setterTheoryV2", JSON.stringify(s)); }
+function save(){
+  try{
+    s.lastSavedAt=new Date().toISOString();
+    localStorage.setItem("setterTheoryV2", JSON.stringify(s));
+  }catch(e){
+    console.error("autosave failed",e);
+  }
+}
 function load(){
   const x=localStorage.getItem("setterTheoryV2");
   if(x){
@@ -318,6 +363,9 @@ function load(){
   if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
   s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
   if(s.lastSubstitution===undefined) s.lastSubstitution=null;
+  if(s.matchActive===undefined) s.matchActive=((s.logs&&s.logs.length)>0 || Number(s.my||0)>0 || Number(s.op||0)>0);
+  if(s.matchStartedAt===undefined) s.matchStartedAt=null;
+  if(s.lastSavedAt===undefined) s.lastSavedAt=null;
   if(!s.substitutionCounts || typeof s.substitutionCounts!=="object" || Array.isArray(s.substitutionCounts)) s.substitutionCounts={};
   s.nums.forEach(n=>{ if(s.players[n]===undefined) s.players[n]=""; });
 }
@@ -649,6 +697,7 @@ function startMatch(){
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
   s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
+  s.matchActive=true; s.matchStartedAt=new Date().toISOString();
   save(); show("match");
 }
 function pointByResult(result){
@@ -2389,6 +2438,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   renderCompareSelectors();
   applyInputView();
   load();
+  updateHomeMatchControls();
+  window.addEventListener("pagehide", save);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") save(); });
   document.querySelectorAll(".setupSpot").forEach(b=>{
     const idx=Number(b.dataset.spot);
     setupLongPressBind(b,'court',idx);

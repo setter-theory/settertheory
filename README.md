@@ -6,4 +6,8 @@ Setter Theory V86
 - V85までの機能を維持
 
 
-V87 planned: autosave/resume foundation.
+## V87
+- 試合状態を各操作ごとにlocalStorageへ自動保存
+- ホームに戻っても「試合を再開」から途中復元
+- pagehide / visibilitychangeでも保存
+- 新規試合開始時のみ試合状態を初期化
