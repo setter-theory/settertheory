@@ -2061,6 +2061,32 @@ function printMatchPdfReport(){
   const secondBall=secondBallAnalysis();
   const secondBallRows=secondBall.players.map(p=>[`${p.num}番`,p.name||'-',`${p.total}`,`${p.counts['レフト']}`,`${p.counts['センター']}`,`${p.counts['ライト']}`,`${p.counts['バック']}`,`${p.counts['ツー']}`]);
 
+  function topThreeRanking(type){
+    const configs={
+      'スパイク':{label:'攻撃',all:x=>x.type==='スパイク',ok:x=>x.type==='スパイク'&&x.result==='成功'},
+      'サーブ':{label:'サーブ',all:x=>x.type==='サーブ',ok:x=>x.type==='サーブ'&&(x.result==='成功'||x.result==='エース')},
+      'レセプ':{label:'レセプション',all:x=>x.type==='レセプ',ok:x=>x.type==='レセプ'&&(x.result==='Aパス'||x.result==='Bパス'||x.result==='Cパス')},
+      'ブロック':{label:'ブロック',all:x=>x.type==='ブロック',ok:x=>x.type==='ブロック'&&(x.result==='シャット'||x.result==='ワンタッチ')},
+      'ディグ':{label:'ディグ',all:x=>x.type==='ディグ',ok:x=>x.type==='ディグ'&&x.result==='成功'},
+      'トス':{label:'通常トス',all:x=>x.type==='トス',ok:x=>x.type==='トス'&&!isTossMissLog(x)},
+      '二段トス':{label:'二段トス',all:x=>x.type==='二段トス',ok:x=>x.type==='二段トス'}
+    };
+    const cfg=configs[type];
+    const rows=nums.map(n=>{
+      const logs=s.logs.filter(x=>String(x.num)===String(n)&&cfg.all(x));
+      const ok=logs.filter(cfg.ok).length;
+      const rate=logs.length?Math.round(ok/logs.length*100):0;
+      return {n,name:getPlayerName(n)||'-',total:logs.length,ok,rate};
+    }).filter(x=>x.total>0);
+    rows.sort((a,b)=>b.rate-a.rate||b.ok-a.ok||b.total-a.total||Number(a.n)-Number(b.n));
+    return {label:cfg.label,rows:rows.slice(0,3)};
+  }
+  const pdfRankings=['スパイク','サーブ','レセプ','ブロック','ディグ','トス','二段トス'].map(topThreeRanking);
+  const pdfRankingHtml=pdfRankings.map(group=>{
+    const rows=group.rows.map((r,i)=>[`${i+1}位`,`${r.n}番`,r.name,`${r.ok}/${r.total}`,`${r.rate}%`]);
+    return `<div class="pdfRankCard"><h3>${esc(group.label)}</h3>${table(['順位','背番号','選手','成功/総数','率'],rows,'記録なし')}</div>`;
+  }).join('');
+
   const subCounts=s.substitutionCounts || {};
   const subRows=Object.values(subCounts).sort((a,b)=>(b.count||0)-(a.count||0)).map(x=>[
     `${x.a}番 ⇄ ${x.b}番`, `${x.count||0}回`, x.lastScore || '-', x.lastRot || '-', x.lastTime || '-'
@@ -2095,6 +2121,7 @@ function printMatchPdfReport(){
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
     .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
     .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
+    .pdfRankGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}.pdfRankCard{border:1px solid #cbd5e1;border-radius:10px;padding:7px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid}.pdfRankCard h3{margin:0 0 5px;font-size:12px;color:#1e3a8a}.pdfRankCard table{font-size:9px}.pdfRankCard th,.pdfRankCard td{padding:4px}
     table{width:100%;border-collapse:collapse;margin:0;font-size:10px;table-layout:auto;}th,td{border:1px solid #cbd5e1;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e2e8f0;color:#0f172a;font-weight:900;}td{background:#fff}.empty{text-align:center;color:#64748b;padding:12px!important;}
     .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}.note{font-size:10px;color:#64748b;line-height:1.55;margin-top:5px}.footer{border-top:1px solid #cbd5e1;margin-top:12px;padding-top:8px;color:#64748b;font-size:10px;display:flex;justify-content:space-between;gap:8px;}
     @media print{html,body{background:#fff!important}.topbar{display:none!important}.sheet{width:auto;max-width:none;margin:0;padding:0;box-shadow:none}.section{break-inside:avoid;page-break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}.twoCol{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(4,1fr)} }
@@ -2126,6 +2153,7 @@ function printMatchPdfReport(){
         <section class="section"><h2>トス技術</h2>${table(['総トス','成功','トスミス','成功率','ミス率'], [[`${tossQuality.total}`,`${tossQuality.success}`,`${tossQuality.miss}`,`${tossQuality.successRate}%`,`${tossQuality.missRate}%`]], 'トス記録がありません。')}<div class="note">※トスミスは得点・失点とは別に、トスの技術的な質として記録します。</div></section>
       </div>
       <section class="section"><h2>二段トス分析</h2>${table(['選手','名前','合計','レフト','センター','ライト','バック','ツー'], secondBallRows, '二段トスの記録がありません。')}<div class="note">※二段トスは通常トス・Setter IQとは別集計です。セッター本人の二段トスもここに含まれます。</div></section>
+      <section class="section"><h2>各項目ランキング TOP3</h2><div class="pdfRankGrid">${pdfRankingHtml}</div><div class="note">※通常トスはトスミスを除いた成功本数、二段トスは記録本数で表示します。</div></section>
       <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
       <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
       <footer class="footer"><span>Setter Theory</span><span>Generated by Aquila</span></footer>
