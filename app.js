@@ -44,6 +44,7 @@ function show(id){
   closeSideMenu && closeSideMenu();
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+  if(id==="match") ensureMatchRosterState();
   const bottom=document.getElementById("bottomBar");
   if(bottom) bottom.classList.add("hidden");
   render();
@@ -870,6 +871,50 @@ function toggleServe(){
   render();
   showInputToast(label+"に切り替えました");
 }
+function setServeTeam(isMine){
+  const next = isMine ? "mine" : "opp";
+  if(s.serve===next){
+    render();
+    return;
+  }
+  snap();
+  s.serve=next;
+  const label=isMine?"自チーム":"相手";
+  s.logs.push({
+    no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:"操作",
+    num:"-",pos:"-",result:"サーブ権を手動変更："+label,
+    point:"継続",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
+  });
+  save();
+  render();
+  showInputToast("サーブ権を"+label+"に切り替えました");
+}
+
+function ensureMatchRosterState(){
+  const validNums=Array.isArray(s.nums) && s.nums.length>=6 && s.nums.slice(0,6).every(n=>String(n||"").trim()!=="");
+  if(validNums) return;
+  const current=s;
+  const raw=localStorage.getItem("setterTheoryV2");
+  if(!raw) return;
+  try{
+    const saved=JSON.parse(raw);
+    const savedValid=Array.isArray(saved.nums) && saved.nums.length>=6 && saved.nums.slice(0,6).every(n=>String(n||"").trim()!=="");
+    if(savedValid){
+      s={...saved, logs:Array.isArray(saved.logs)?saved.logs:[], hist:Array.isArray(saved.hist)?saved.hist:[]};
+    }else{
+      s=current;
+    }
+  }catch(e){
+    s=current;
+  }
+}
+
+function returnToMatchFromReport(){
+  ensureMatchRosterState();
+  show("match");
+  render();
+}
+
 function undo(){
   const h=s.hist.pop();
   if(!h){ alert("取り消す記録がありません"); return; }
@@ -911,7 +956,18 @@ function render(){
   document.getElementById("rot").textContent=s.rot;
   document.getElementById("myScore").textContent=s.my;
   document.getElementById("opScore").textContent=s.op;
-  document.getElementById("serveLabel").textContent=s.serve==="mine"?"自サーブ":"相手サーブ";
+  const serveLabelEl=document.getElementById("serveLabel");
+  if(serveLabelEl) serveLabelEl.textContent=s.serve==="mine"?"自サーブ":"相手サーブ";
+  const serveHomeBtn=document.getElementById("serveHomeBtn");
+  const serveAwayBtn=document.getElementById("serveAwayBtn");
+  if(serveHomeBtn){
+    serveHomeBtn.classList.toggle("active", s.serve==="mine");
+    serveHomeBtn.setAttribute("aria-pressed", s.serve==="mine" ? "true" : "false");
+  }
+  if(serveAwayBtn){
+    serveAwayBtn.classList.toggle("active", s.serve==="opp");
+    serveAwayBtn.setAttribute("aria-pressed", s.serve==="opp" ? "true" : "false");
+  }
   const myTeamEl=document.getElementById("infoMyTeam"); if(myTeamEl) myTeamEl.textContent=s.team||"自チーム";
   const oppTeamEl=document.getElementById("infoOppTeam"); if(oppTeamEl) oppTeamEl.textContent=s.oppTeam||"相手";
   const mySetEl=document.getElementById("mySetCount"); if(mySetEl) mySetEl.textContent=Number(s.mySets||0);
