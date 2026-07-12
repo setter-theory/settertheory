@@ -78,3 +78,9 @@ V93.7: ホーム画面の保存試合・試合比較・成長ダッシュボー�
 - Older one-setter CSVs without SetterSummary/SetterRole are inferred from normal toss logs.
 - Player growth identity now prioritizes jersey number so old and new saved matches are linked.
 - Existing name-based growth selection is migrated automatically.
+
+
+## V94
+- 成長ダッシュボードの選手同一性を名前優先に変更（背番号変更対応）
+- 累計トス成功率／ミス率を全保存試合の通常トス母数で再計算
+- SetterSummaryから母数・ミス数を復元し旧CSVにも対応

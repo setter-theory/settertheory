@@ -2707,12 +2707,18 @@ function buildGrowthAquilaMessage(first,last){
   return lines.slice(0,3);
 }
 
-function growthPlayerStorageKey(){ return 'setterTheoryGrowthPlayerV1'; }
+function growthPlayerStorageKey(){ return 'setterTheoryGrowthPlayerV2'; }
+function normalizeGrowthPlayerName(value){
+  return String(value||'').normalize('NFKC').trim().replace(/\s+/g,'').toLowerCase();
+}
 function growthPlayerIdentity(meta){
   const num=String(meta?.num||'').trim();
   const name=String(meta?.name||'').trim();
-  // 旧データでは選手名が保存されていない場合があるため、背番号を優先して同一選手を結び付ける。
-  return num && num!=='-' && num!=='0' ? `num:${num}` : `name:${name}`;
+  const normalizedName=normalizeGrowthPlayerName(name);
+  // 成長履歴は選手本人を追跡するため、名前がある場合は名前を優先する。
+  // これにより #4 けんと → #5 けんと でも同一人物として集計できる。
+  if(normalizedName) return `name:${normalizedName}`;
+  return num && num!=='-' && num!=='0' ? `num:${num}` : 'unknown';
 }
 function inferLegacySetterMeta(parsed){
   const headers=parsed?.headers||[];
@@ -2757,17 +2763,22 @@ function savedMatchSetterMeta(match){
 }
 function allGrowthPlayers(saved){
   const map=new Map();
-  (saved||[]).forEach(m=>savedMatchSetterMeta(m).forEach(meta=>{
+  // 保存日時の古い順に読み、同一人物の表示背番号は最新試合のものへ更新する。
+  [...(saved||[])].reverse().forEach(m=>savedMatchSetterMeta(m).forEach(meta=>{
     const key=growthPlayerIdentity(meta);
-    if(!map.has(key)) map.set(key,{key,num:String(meta.num||''),name:String(meta.name||'')});
+    if(key==='unknown') return;
+    const current=map.get(key)||{key,num:'',name:''};
+    current.num=String(meta.num||current.num||'');
+    current.name=String(meta.name||current.name||'');
+    map.set(key,current);
   }));
-  return [...map.values()].sort((a,b)=>Number(a.num||999)-Number(b.num||999) || a.name.localeCompare(b.name,'ja'));
+  return [...map.values()].sort((a,b)=>a.name.localeCompare(b.name,'ja') || Number(a.num||999)-Number(b.num||999));
 }
 function renderGrowthPlayerSelector(saved){
   const select=document.getElementById('growthPlayerSelect');
   if(!select) return 'team';
   const players=allGrowthPlayers(saved);
-  let wanted=localStorage.getItem(growthPlayerStorageKey())||'team';
+  let wanted=localStorage.getItem(growthPlayerStorageKey())||localStorage.getItem('setterTheoryGrowthPlayerV1')||'team';
   select.innerHTML='<option value="team">チーム全体</option>'+players.map(p=>`<option value="${escapeHtml(p.key)}">#${escapeHtml(p.num)} ${escapeHtml(p.name||'名前未登録')}</option>`).join('');
   // V93.8で保存された name:形式の選択値を、背番号優先の新形式へ自動移行する。
   if(wanted.startsWith('name:')){
@@ -2787,6 +2798,28 @@ function changeGrowthPlayer(value){
 function playerMatchesMeta(meta,key){
   return growthPlayerIdentity(meta)===key;
 }
+function savedMatchSetterSummary(match,meta){
+  const rows=match?.csv?.data||[];
+  const role=String(meta?.role||'').trim();
+  const num=String(meta?.num||'').trim();
+  const nameKey=normalizeGrowthPlayerName(meta?.name||'');
+  for(const r of rows){
+    if(String(r?.[0]||'').trim()!=='SetterSummary') continue;
+    // 見出し行は除外
+    if(String(r?.[1]||'').trim()==='Role') continue;
+    const rowRole=String(r?.[1]||'').trim();
+    const rowNum=String(r?.[2]||'').trim();
+    const rowName=String(r?.[3]||'').trim();
+    if((role && rowRole===role) || (num && rowNum===num) || (nameKey && normalizeGrowthPlayerName(rowName)===nameKey)){
+      return {
+        setterIq:Number(r?.[4]||0), total:Number(r?.[5]||0), miss:Number(r?.[6]||0),
+        successRate:Number(r?.[7]||0),
+        counts:{レフト:Number(r?.[8]||0),センター:Number(r?.[9]||0),ライト:Number(r?.[10]||0),バック:Number(r?.[11]||0),ツー:Number(r?.[12]||0)}
+      };
+    }
+  }
+  return null;
+}
 function analyzeSetterForSavedMatch(match,key){
   const metas=savedMatchSetterMeta(match);
   const meta=metas.find(x=>playerMatchesMeta(x,key));
@@ -2794,7 +2827,7 @@ function analyzeSetterForSavedMatch(match,key){
   const ms=importedCsvToMatchState(match.csv||{});
   const num=String(meta.num||'');
   const toss=(ms.logs||[]).filter(x=>x.type==='トス' && String(x.num)===num);
-  const counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
+  let counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
   const terminalCounts={};
   toss.forEach(x=>{
     const label=counts[x.result]!==undefined ? x.result : classifyTossTarget(x.result);
@@ -2803,13 +2836,22 @@ function analyzeSetterForSavedMatch(match,key){
     const score=scoreParts(x.score||'');
     if(score && score.high>=20) addCount(terminalCounts,label);
   });
-  const total=toss.length;
-  const quality=tossQualityStats(toss);
+  let total=toss.length;
+  let quality=tossQualityStats(toss);
+  const summary=savedMatchSetterSummary(match,meta);
+  // CSVのSetterSummaryがある場合は、ログ欠損や旧形式でも正しい母数を復元する。
+  if(summary && summary.total>0){
+    total=summary.total;
+    counts=summary.counts;
+    const miss=Math.max(0,summary.miss);
+    const success=Math.max(0,total-miss);
+    quality={total,miss,success,successRate:Math.round(success/total*1000)/10,missRate:Math.round(miss/total*1000)/10};
+  }
   const scores=calcScores(counts,total,terminalCounts);
   const items=analysisItemsFromCounts(counts,total);
   return {
     key, num, name:meta.name||ms.players?.[num]||'', total, counts, items, quality,
-    setterIq:scores.setterIq||0, balance:scores.balance||0, diversity:scores.diversity||0,
+    setterIq:(summary&&summary.setterIq)||scores.setterIq||0, balance:scores.balance||0, diversity:scores.diversity||0,
     quick:scores.quick||0, clutch:scores.clutch||0, stability:scores.stability||0,
     match
   };
@@ -2855,15 +2897,21 @@ function renderPlayerGrowthDashboard(saved,key,body,count){
   const successDiff=Number(last.quality?.successRate||0)-Number(first.quality?.successRate||0);
   const missDiff=Number(last.quality?.missRate||0)-Number(first.quality?.missRate||0);
   const centerDiff=playerPctValue(last,'センター')-playerPctValue(first,'センター');
+  const cumulativeTotal=all.reduce((sum,a)=>sum+Number(a.quality?.total||a.total||0),0);
+  const cumulativeMiss=all.reduce((sum,a)=>sum+Number(a.quality?.miss||0),0);
+  const cumulativeSuccess=Math.max(0,cumulativeTotal-cumulativeMiss);
+  const cumulativeSuccessRate=cumulativeTotal?Math.round(cumulativeSuccess/cumulativeTotal*1000)/10:0;
+  const cumulativeMissRate=cumulativeTotal?Math.round(cumulativeMiss/cumulativeTotal*1000)/10:0;
   const advice=buildPlayerGrowthAquila(first,last);
   body.innerHTML=`
-    <div class="playerGrowthHeader"><div><b>#${escapeHtml(last.num)} ${escapeHtml(last.name||'')}</b><small>直近${recent.length}試合の個人成長</small></div><div class="playerGrowthBadge">選手別</div></div>
+    <div class="playerGrowthHeader"><div><b>#${escapeHtml(last.num)} ${escapeHtml(last.name||'')}</b><small>全${all.length}試合・直近${recent.length}試合の推移</small></div><div class="playerGrowthBadge">選手別</div></div>
     <div class="growthSummary">
       ${growthMetricCard('Setter IQ',Number(last.setterIq||0),iqDiff)}
-      ${growthMetricCard('トス成功率',Number(last.quality?.successRate||0),successDiff,'%')}
-      ${growthMetricCard('トスミス率',Number(last.quality?.missRate||0),missDiff,'%',true)}
+      ${growthMetricCard('累計トス成功率',cumulativeSuccessRate,successDiff,'%')}
+      ${growthMetricCard('累計トスミス率',cumulativeMissRate,missDiff,'%',true)}
       ${growthMetricCard('センター使用率',playerPctValue(last,'センター'),centerDiff,'%')}
     </div>
+    <div class="csvSmall">累計通常トス ${cumulativeTotal}本 ／ トスミス ${cumulativeMiss}本（二段トスは含みません）</div>
     <div class="growthAquila"><b>Aquilaの個人成長コメント</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
     ${playerGrowthTrendRows(recent,'setterIq','Setter IQ 推移')}
     ${playerGrowthTrendRows(recent,'successRate','トス成功率 推移','%','#16a34a')}
