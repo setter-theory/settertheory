@@ -1,4 +1,4 @@
-// V92: two-setter support (setup/court/CSV/PDF)
+// V92.1: full two-setter analysis separation (screen/CSV/PDF)
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -1332,15 +1332,72 @@ function quick(){
       <div><div class="quickTitle">選手別の入力数</div>${buildPersonalBars()}</div>
     </div>`;
 }
+
+function currentSetterAnalysisFor(num){
+  const setterNum=String(num||'');
+  const toss=s.logs.filter(x=>x.type==='トス' && String(x.num)===setterNum);
+  const counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
+  const terminalCounts={};
+  toss.forEach(x=>{
+    const label=counts[x.result]!==undefined ? x.result : classifyTossTarget(x.result);
+    if(counts[label]===undefined) counts[label]=0;
+    counts[label]++;
+    const score=scoreParts(x.score||'');
+    if(score && score.high>=20) addCount(terminalCounts,label);
+  });
+  const total=toss.length;
+  const items=analysisItemsFromCounts(counts,total);
+  const quality=tossQualityStats(toss);
+  const rotationRows=[1,2,3,4,5,6].map(r=>{
+    const logs=toss.filter(x=>x.rot==='S'+r);
+    const miss=logs.filter(isTossMissLog).length;
+    return {rot:'S'+r,total:logs.length,miss,success:Math.max(0,logs.length-miss),rate:logs.length?Math.round((logs.length-miss)/logs.length*100):0};
+  });
+  return {num:setterNum,name:getPlayerName(setterNum),total,items,counts,terminalCounts,quality,rotationRows,...calcScores(counts,total,terminalCounts)};
+}
+function getAquilaAdviceForSetter(num){
+  const a=currentSetterAnalysisFor(num);
+  if(!a.total) return [`${a.num}番 ${a.name||''}はトス記録がありません。`];
+  const by=Object.fromEntries(a.items.map(x=>[x.label,x]));
+  const left=by['レフト']||{pct:0,count:0}, center=by['センター']||{pct:0,count:0}, right=by['ライト']||{pct:0,count:0};
+  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0,count:0};
+  const advice=[];
+  if(top.pct<50 && Math.abs(left.pct-right.pct)<=15) advice.push(`配球はレフト${left.pct}%・センター${center.pct}%・ライト${right.pct}%で、大きな偏りを抑えられています。`);
+  else if(top.pct>=55) advice.push(`${top.label}への配球が${top.pct}%です。次は序盤に別方向を1〜2本見せると、終盤の${top.label}が生きます。`);
+  else advice.push(`最多配球は${top.label}${top.pct}%（${top.count}本）です。ローテごとの意図を確認しましょう。`);
+  if(a.quality.miss>0) advice.push(`トスミスは${a.quality.miss}本、成功率は${a.quality.successRate}%です。判断の良さと技術精度を分けて振り返りましょう。`);
+  else advice.push(`トスミスは0本で、トス技術は安定しています。`);
+  const used=a.items.filter(x=>x.count>0).length;
+  if(used<=2 && a.total>=5) advice.push(`使用した攻撃ゾーンは${used}種類です。次戦はもう1方向増やすことをテーマにしましょう。`);
+  return advice;
+}
+function buildSetterDetailReports(){
+  const setters=setterNumbers();
+  if(!setters.length) return '';
+  const labels=['レフト','センター','ライト','バック','ツー'];
+  return `<div class="setterDetailGrid">${setters.map((n,idx)=>{
+    const a=currentSetterAnalysisFor(n);
+    const rank=setterIqRank(a.setterIq||0);
+    const b=iqBreakdown20(a);
+    const advice=getAquilaAdviceForSetter(n);
+    const dist=labels.map(label=>{const it=a.items.find(x=>x.label===label)||{count:0,pct:0};return `<span><b>${label}</b>${it.count}本 / ${it.pct}%</span>`}).join('');
+    const rots=a.rotationRows.filter(x=>x.total>0).map(x=>`<span><b>${x.rot}</b>${x.total}本・成功${x.rate}%</span>`).join('')||'<span>ローテ別記録なし</span>';
+    return `<section class="reportPanel setterDetailCard">
+      <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
+      <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
+      <div class="setterDetailBreakdown"><span>配球 ${b.balance}/20</span><span>多様性 ${b.diversity}/20</span><span>ミドル ${b.quick}/20</span><span>勝負所 ${b.clutch}/20</span><span>安定性 ${b.stability}/20</span></div>
+      <div class="setterDetailSection"><b>配球</b><div>${dist}</div></div>
+      <div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div>
+      <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+    </section>`;
+  }).join('')}</div>`;
+}
 function buildTwoSetterSummary(){
   const setters=setterNumbers();
   if(!setters.length) return '';
   const cards=setters.map((n,idx)=>{
-    const toss=s.logs.filter(x=>x.type==='トス' && String(x.num)===String(n));
-    const miss=toss.filter(isTossMissLog).length;
-    const success=Math.max(0,toss.length-miss);
-    const rate=toss.length?Math.round(success/toss.length*100):0;
-    return `<div class="setterRoleCard"><span>セッター${idx+1}</span><b>${escapeHtml(n)}番 ${escapeHtml(getPlayerName(n))}</b><small>トス ${toss.length}本 / 成功率 ${rate}%</small></div>`;
+    const a=currentSetterAnalysisFor(n);
+    return `<div class="setterRoleCard"><span>セッター${idx+1}</span><b>${escapeHtml(n)}番 ${escapeHtml(a.name)}</b><small>IQ ${a.total?a.setterIq:'--'}/100 ・ トス ${a.quality.total}本 ・ ミス ${a.quality.miss}本 ・ 成功率 ${a.quality.successRate}%</small></div>`;
   }).join('');
   return `<div class="reportPanel setterRolePanel"><h3>登録セッター</h3><div class="setterRoleGrid">${cards}</div></div>`;
 }
@@ -1741,6 +1798,7 @@ function report(){
       <div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice()}</div>
     </div>
     ${buildTwoSetterSummary()}
+    ${buildSetterDetailReports()}
     ${summary}
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
@@ -1847,9 +1905,17 @@ function buildSetterInsight(){
 }
 
 function downloadCSV(){
-  const rows=[["No","Set","Rotation","Type","Number","Name","SetterRole","Position","Result","TossMiss","Point","Score","Time"]];
-  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),isSetterNumber(x.num)?"Setter":"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]));
-  const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+  const analyses=Object.fromEntries(setterNumbers().map((n,i)=>[String(n),{idx:i+1,a:currentSetterAnalysisFor(n)}]));
+  const rows=[["No","Set","Rotation","Type","Number","Name","SetterRole","SetterIQ","SetterTossTotal","SetterTossMiss","SetterTossSuccessRate","SetterLeft","SetterCenter","SetterRight","SetterBack","SetterTwo","Position","Result","TossMiss","Point","Score","Time"]];
+  s.logs.forEach(x=>{
+    const d=analyses[String(x.num)];
+    const a=d&&d.a;
+    rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]);
+  });
+  rows.push([]);
+  rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two"]);
+  setterNumbers().forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0]);});
+  const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(",")).join("\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
 }
@@ -1885,6 +1951,12 @@ function printMatchPdfReport(){
   const iqBreakdown = iqBreakdown20(setterAnalysis);
   const aquilaAdvice = getCurrentAquilaAdviceItems();
   const aquilaIcon = `${location.origin}/icons/aquila-192.png`;
+  const perSetterPdfCards=setterNumbers().map((n,i)=>{
+    const a=currentSetterAnalysisFor(n), rank=setterIqRank(a.setterIq||0), b=iqBreakdown20(a), advice=getAquilaAdviceForSetter(n);
+    const dist=['レフト','センター','ライト','バック','ツー'].map(k=>`${k} ${a.counts[k]||0}本`).join(' / ');
+    const rot=a.rotationRows.filter(x=>x.total>0).map(x=>`${x.rot} ${x.total}本 成功${x.rate}%`).join(' / ') || '記録なし';
+    return `<section class="section setterPdfCard"><h2>セッター${i+1}：${esc(n)}番 ${esc(a.name)}</h2><div class="setterPdfTop"><b>IQ ${a.total?a.setterIq:'--'}/100 ${a.total?rank.label:''}</b><span>総トス ${a.quality.total} / ミス ${a.quality.miss} / 成功率 ${a.quality.successRate}%</span></div><div class="setterPdfBreak"><span>配球 ${b.balance}/20</span><span>多様性 ${b.diversity}/20</span><span>ミドル ${b.quick}/20</span><span>勝負所 ${b.clutch}/20</span><span>安定性 ${b.stability}/20</span></div><p class="note"><b>配球：</b>${esc(dist)}</p><p class="note"><b>ローテ別：</b>${esc(rot)}</p><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`;
+  }).join('');
 
   function table(headers, rows, emptyText){
     const body = rows && rows.length ? rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${headers.length}" class="empty">${esc(emptyText||'記録がありません。')}</td></tr>`;
@@ -1955,6 +2027,7 @@ function printMatchPdfReport(){
     .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
     .pdfLead{display:grid;grid-template-columns:1.05fr 1.95fr;gap:10px;margin:10px 0 12px;align-items:stretch}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:42px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:14px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:7px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:10px;font-weight:950}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;font-size:9px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
     .pdfAdviceTitle{display:flex;align-items:center;gap:7px}.pdfAdviceTitle img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #f4b63f;padding:2px}.pdfAdviceTitle span{font-size:12px;font-weight:950;color:#1e3a8a}
+    .setterPdfCard{border:1px solid #93c5fd;border-radius:12px;padding:9px;background:#f8fbff}.setterPdfTop{display:flex;justify-content:space-between;gap:8px;font-size:11px}.setterPdfTop b{color:#1d4ed8}.setterPdfBreak{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0}.setterPdfBreak span{background:#dbeafe;border-radius:6px;padding:4px;text-align:center;font-size:9px}.setterPdfCard ul{margin:5px 0 0;padding-left:17px;font-size:9px;line-height:1.45}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
     .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
     .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
@@ -1977,6 +2050,7 @@ function printMatchPdfReport(){
         <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
       </div>
       <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
+      ${perSetterPdfCards}
       <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], setterNumbers().map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&String(x.num)===String(n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
       <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
       <div class="twoCol">
