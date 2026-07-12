@@ -1,4 +1,4 @@
-// V93: second-ball toss support (separate from setter toss analysis)
+// V93.5: restore registered setters correctly from imported CSV
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -2240,6 +2240,8 @@ function analyzeImportedCsv(parsed){
   const targetCounts={}, bySet={}, byRot={}, byScore={}, byPass={}, terminalCounts={}, bySetter={};
   let currentPass='';
   rows.forEach((r,idx)=>{
+    const rowTag=String(getCell(r,[findHeader(headers,['No'])])||'').trim();
+    if(rowTag==='SetterSummary' || rowTag==='SecondBallSummary') return;
     const type=getCell(r,[actionCol]);
     const result=getCell(r,[resultCol]);
     const ntype=normalizeKey(type);
@@ -2753,6 +2755,49 @@ function buildPlainDiagnosis(a){
 }
 
 
+// V93.5: CSV末尾のSetterSummary、または各ログ行のSetterRoleから登録セッターを復元する。
+function importedSetterMeta(parsed){
+  const headers=parsed?.headers||[];
+  const rows=parsed?.data||[];
+  const find=(names)=>findHeader(headers,names);
+  const noCol=find(['No']);
+  const setCol=find(['Set','セット']);
+  const rotCol=find(['Rotation','ローテーション','Rot','ローテ']);
+  const typeCol=find(['Type','種類','Action','Skill','Play','プレー','項目','動作']);
+  const numCol=find(['Number','背番号','Player','選手']);
+  const nameCol=find(['Name','選手名']);
+  const roleCol=find(['SetterRole','セッター区分','Role']);
+  const found=[];
+  const push=(role,num,name)=>{
+    num=String(num||'').trim();
+    name=String(name||'').trim();
+    role=String(role||'').trim();
+    if(!num || num==='-' || num==='0' || /^number$/i.test(num)) return;
+    const order=(role.match(/(\d+)/)||[])[1] ? Number((role.match(/(\d+)/)||[])[1]) : 99;
+    if(!found.some(x=>x.num===num)) found.push({role,num,name,order});
+    else if(name){ const x=found.find(x=>x.num===num); if(x&&!x.name)x.name=name; }
+  };
+
+  // downloadCSV() が末尾へ追加する可変幅のSetterSummary行を読む。
+  rows.forEach(r=>{
+    if(String(getCell(r,[noCol])||'').trim()!=='SetterSummary') return;
+    const role=getCell(r,[setCol]);
+    if(!/^Setter\d+$/i.test(role)) return; // 見出し行は除外
+    push(role,getCell(r,[rotCol]),getCell(r,[typeCol]));
+  });
+
+  // Summaryが無い旧CSVでは、通常ログ行のSetterRole列から復元する。
+  if(!found.length){
+    rows.forEach(r=>{
+      const role=getCell(r,[roleCol]);
+      if(!/^Setter\d+$/i.test(role)) return;
+      push(role,getCell(r,[numCol]),getCell(r,[nameCol]));
+    });
+  }
+  found.sort((a,b)=>a.order-b.order);
+  return found.slice(0,2);
+}
+
 // V74: Setter Theory CSVを試合中と同じレポートエンジンで表示する。
 function importedCsvToMatchState(parsed){
   const headers=parsed?.headers||[];
@@ -2770,7 +2815,11 @@ function importedCsvToMatchState(parsed){
   const pointCol=find(['Point','得点']);
   const scoreCol=find(['Score','スコア']);
   const timeCol=find(['Time','時刻']);
-  const logs=rows.map((r,i)=>({
+  const logs=rows.filter(r=>{
+    const tag=String(getCell(r,[noCol])||'').trim();
+    // CSV末尾の集計行・見出し行をプレーログへ混ぜない。
+    return tag!=='SetterSummary' && tag!=='SecondBallSummary';
+  }).map((r,i)=>({
     no:getCell(r,[noCol]) || String(i+1),
     set:getCell(r,[setCol]) || '1',
     rot:getCell(r,[rotCol]) || 'S1',
@@ -2789,18 +2838,27 @@ function importedCsvToMatchState(parsed){
     const name=getCell(r,[nameCol]);
     if(n && n!=='-' && name) players[String(n)]=name;
   });
-  const nums=[...new Set(logs.map(x=>String(x.num||'')).filter(x=>x && x!=='-'))];
+  const setterMeta=importedSetterMeta(parsed);
+  setterMeta.forEach(x=>{ if(x.name) players[String(x.num)]=x.name; });
+  const nums=[...new Set(logs.map(x=>String(x.num||'')).filter(x=>x && x!=='-' && x!=='0'))];
+  const setterNums=setterMeta.map(x=>String(x.num)).filter(Boolean);
+  // ログに登場しない登録セッターも選手一覧へ保持する。
+  setterNums.forEach(n=>{ if(!nums.includes(n)) nums.push(n); });
   const last=logs[logs.length-1]||{};
   const score=scoreParts(last.score||'');
   const rotMatch=String(last.rot||'S1').match(/(\d+)/);
+  const restoredNums=nums.length?nums:s.nums.slice();
+  const restoredSetters=setterNums.length?setterNums:(s.setterNums||[]).map(String).filter(n=>restoredNums.includes(n)).slice(0,2);
   return {
     ...s,
     team:'自チーム', oppTeam:'相手',
     setNo:String(last.set||'1').replace(/^S/i,'') || '1',
-    nums:nums.length?nums:s.nums.slice(),
+    nums:restoredNums,
     players:{...s.players,...players},
+    setterNums:restoredSetters,
+    setterIndex:Math.max(0,restoredNums.indexOf(String(restoredSetters[0]||''))),
     rot:rotMatch?Math.max(1,Math.min(6,Number(rotMatch[1]))):1,
-    my:score?score.a:0, op:score?score.b:0,
+    my:score?score.my:0, op:score?score.op:0,
     logs, hist:[]
   };
 }
