@@ -2711,10 +2711,49 @@ function growthPlayerStorageKey(){ return 'setterTheoryGrowthPlayerV1'; }
 function growthPlayerIdentity(meta){
   const num=String(meta?.num||'').trim();
   const name=String(meta?.name||'').trim();
-  return name ? `name:${name}` : `num:${num}`;
+  // 旧データでは選手名が保存されていない場合があるため、背番号を優先して同一選手を結び付ける。
+  return num && num!=='-' && num!=='0' ? `num:${num}` : `name:${name}`;
+}
+function inferLegacySetterMeta(parsed){
+  const headers=parsed?.headers||[];
+  const rows=parsed?.data||[];
+  const find=(names)=>findHeader(headers,names);
+  const noCol=find(['No']);
+  const typeCol=find(['Type','種類','Action','Skill','Play','プレー','項目','動作']);
+  const numCol=find(['Number','背番号','Player','選手']);
+  const nameCol=find(['Name','選手名']);
+  const resultCol=find(['Result','結果','Outcome','評価','Eval','Grade']);
+  const counts=new Map();
+  rows.forEach(r=>{
+    const tag=String(getCell(r,[noCol])||'').trim();
+    if(tag==='SetterSummary' || tag==='SecondBallSummary') return;
+    const type=String(getCell(r,[typeCol])||'').trim();
+    const result=String(getCell(r,[resultCol])||'').trim();
+    // 旧CSVでは通常トスだけを手掛かりに、最も多くトスした選手を登録セッターとして推定する。
+    if(type!=='トス' || result==='二段トス') return;
+    const num=String(getCell(r,[numCol])||'').trim();
+    if(!num || num==='-' || num==='0') return;
+    const name=String(getCell(r,[nameCol])||'').trim();
+    const item=counts.get(num)||{num,name,count:0};
+    item.count+=1;
+    if(!item.name && name) item.name=name;
+    counts.set(num,item);
+  });
+  const ranked=[...counts.values()].sort((a,b)=>b.count-a.count);
+  if(!ranked.length) return [];
+  // 旧ワンセッター試合を確実に拾う。2人目は十分なトス記録がある場合だけ採用する。
+  const out=[{role:'Setter1',num:ranked[0].num,name:ranked[0].name||'',order:1,inferred:true}];
+  if(ranked[1] && ranked[1].count>=Math.max(2,Math.ceil(ranked[0].count*0.35))){
+    out.push({role:'Setter2',num:ranked[1].num,name:ranked[1].name||'',order:2,inferred:true});
+  }
+  return out;
 }
 function savedMatchSetterMeta(match){
-  try{return importedSetterMeta(match?.csv||{});}catch(e){return [];}
+  try{
+    const parsed=match?.csv||{};
+    const explicit=importedSetterMeta(parsed);
+    return explicit.length ? explicit : inferLegacySetterMeta(parsed);
+  }catch(e){return [];}
 }
 function allGrowthPlayers(saved){
   const map=new Map();
@@ -2728,8 +2767,14 @@ function renderGrowthPlayerSelector(saved){
   const select=document.getElementById('growthPlayerSelect');
   if(!select) return 'team';
   const players=allGrowthPlayers(saved);
-  const wanted=localStorage.getItem(growthPlayerStorageKey())||'team';
+  let wanted=localStorage.getItem(growthPlayerStorageKey())||'team';
   select.innerHTML='<option value="team">チーム全体</option>'+players.map(p=>`<option value="${escapeHtml(p.key)}">#${escapeHtml(p.num)} ${escapeHtml(p.name||'名前未登録')}</option>`).join('');
+  // V93.8で保存された name:形式の選択値を、背番号優先の新形式へ自動移行する。
+  if(wanted.startsWith('name:')){
+    const oldName=wanted.slice(5);
+    const migrated=players.find(p=>p.name===oldName);
+    if(migrated) wanted=migrated.key;
+  }
   const valid=[...select.options].some(o=>o.value===wanted)?wanted:'team';
   select.value=valid;
   if(valid!==wanted) localStorage.setItem(growthPlayerStorageKey(),valid);

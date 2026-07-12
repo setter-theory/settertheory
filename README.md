@@ -72,3 +72,9 @@ V93.7: ホーム画面の保存試合・試合比較・成長ダッシュボー�
 - 成長ダッシュボードに「チーム全体／選手別」切替を追加
 - 登録セッターごとに Setter IQ、トス成功率、トスミス率、センター使用率の推移を表示
 - ツーセッター時も選手を切り替えて個別比較可能
+
+
+## V93.9 one-setter growth compatibility
+- Older one-setter CSVs without SetterSummary/SetterRole are inferred from normal toss logs.
+- Player growth identity now prioritizes jersey number so old and new saved matches are linked.
+- Existing name-based growth selection is migrated automatically.
