@@ -833,6 +833,12 @@ function pointOnly(team){
   }
   save(); render();
 }
+function opponentPoint(){
+  // V89: 相手の攻撃がそのまま決まった場合の得点。自チームのプレーミスには加算しない。
+  pointOnly("op");
+  showInputToast("相手得点を記録しました");
+}
+
 function opponentMist(){
   snap();
   const before=s.serve;
@@ -1453,6 +1459,8 @@ function report(){
   const loss=s.logs.filter(x=>x.point==="相").length;
   const myPts=s.logs.filter(x=>x.point==="自").length;
   const opPts=s.logs.filter(x=>x.point==="相").length;
+  const opponentPointCount=s.logs.filter(x=>x.point==="相" && x.result==="相手得点").length;
+  const ownErrorLossCount=Math.max(0,opPts-opponentPointCount);
   const serveLogs=s.logs.filter(x=>x.type==="サーブ");
   const serveOk=serveLogs.filter(x=>x.result==="成功"||x.result==="エース").length;
   const spikeLogs=s.logs.filter(x=>x.type==="スパイク");
@@ -1479,7 +1487,11 @@ function report(){
   ].filter(x=>x.count>0);
   const resultDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(resultGroups)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(resultGroups,total)}</div>`;
 
-  const pointItems=[{label:"自チーム得点",count:myPts,color:"#22c55e"},{label:"相手チーム得点",count:opPts,color:"#ef4444"}].filter(x=>x.count>0);
+  const pointItems=[
+    {label:"自チーム得点",count:myPts,color:"#22c55e"},
+    {label:"自ミス等の失点",count:ownErrorLossCount,color:"#ef4444"},
+    {label:"相手得点",count:opponentPointCount,color:"#f97316"}
+  ].filter(x=>x.count>0);
   const pointDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(pointItems)}"><div class="donutCenter"><div class="label">合計</div><div class="num">${myPts+opPts}</div></div></div>${legendHtml(pointItems,myPts+opPts)}</div>`;
 
   const rotationRows=[1,2,3,4,5,6].map(r=>{
@@ -1515,7 +1527,7 @@ function report(){
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
       <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>
-      <div class="reportPanel"><h3>得点・失点</h3>${pointDonut}</div>
+      <div class="reportPanel"><h3>得点・失点</h3>${pointDonut}<div class="lossBreakdown"><span>自ミス等 <b>${ownErrorLossCount}</b></span><span>相手得点 <b>${opponentPointCount}</b></span></div></div>
     </div>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
@@ -1647,6 +1659,8 @@ function printMatchPdfReport(){
   const effTotal = effectRate(actionLogs);
   const myPts = s.logs.filter(x=>x.point==='自').length;
   const opPts = s.logs.filter(x=>x.point==='相').length;
+  const opponentPointCount = s.logs.filter(x=>x.point==='相' && x.result==='相手得点').length;
+  const ownErrorLossCount = Math.max(0, opPts-opponentPointCount);
   const setterAnalysis = currentMatchSetterAnalysis();
   const setterIq = setterAnalysis.total ? setterAnalysis.setterIq : 0;
   const iqRank = setterIqRank(setterIq);
@@ -1742,7 +1756,7 @@ function printMatchPdfReport(){
         <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
         <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>
         <div class="metric"><div class="label">効果率</div><div class="value">${effTotal}%</div><div class="sub">成功−ミス系 ÷ 対象</div></div>
-        <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">記録上の得失点</div></div>
+        <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
       </div>
       <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
       <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>

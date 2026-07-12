@@ -3292,6 +3292,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
           <button class="red wideAction opponentMistBottom" onclick="opponentMist()">相手ミス</button>
           <button class="wideAction opponentMistUndo" onclick="undoOpponentMist()">相手ミス取消</button>
         </div>
+        <button class="wideAction opponentPointBottom" onclick="opponentPoint()">相手得点</button>
 
         <section class="matchInfoCard" aria-label="試合情報">
           <div class="matchTeamRow">
@@ -6747,4 +6748,14 @@ body.menuOpen .sideOverlay{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
 }
+
+/* V89: opponent point */
+#match .matchLeftTools .opponentPointBottom{
+  width:100%!important;min-height:48px!important;margin:0 0 8px!important;
+  background:#991b1b!important;color:#fff!important;border:2px solid #ef4444!important;
+  font-weight:1000!important;box-sizing:border-box!important;
+}
+.lossBreakdown{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:#475569;}
+.lossBreakdown span{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:7px 10px;}
+.lossBreakdown b{color:#0f172a;margin-left:4px;}
 </style>
