@@ -6,4 +6,4 @@ Setter Theory V86
 - V85までの機能を維持
 
 
-V87 plan: auto-save and resume match after accidental back navigation.
+V87 planned: autosave/resume foundation.
