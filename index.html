@@ -3634,6 +3634,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
             <button class="fastBtn toss" data-type="トス" data-result="ライト">→<br>ライト</button>
             <button class="fastBtn toss" data-type="トス" data-result="バック">↩<br>バック</button>
             <button class="fastBtn two" data-type="トス" data-result="ツー">⚡<br>ツー</button>
+            <button type="button" id="secondBallModeBtn" class="secondBallModeAction" onclick="toggleSecondBallMode(event)" aria-pressed="false">👐<br>二段トス</button>
             <button type="button" class="tossMistAction" onclick="markLastTossMist(event)">⚠️<br>トスミス</button>
             <button type="button" class="groupUndoAction" onclick="clearGroupPlay('toss', event)">↩<br>取り消し</button>
           </div>
@@ -3731,7 +3732,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=91-toast-top-right"></script>
+<script src="app.js?v=93-second-ball"></script>
 
 
 
@@ -7180,4 +7181,11 @@ body.menuOpen .sideOverlay{
 <style>
 /* V92: two-setter */
 .setterRolePanel{margin-top:0}.setterRoleGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.setterRoleCard{border:1px solid rgba(96,165,250,.35);background:rgba(30,64,175,.14);border-radius:14px;padding:12px}.setterRoleCard span,.setterRoleCard small{display:block;color:#cbd5e1;font-weight:800}.setterRoleCard b{display:block;color:#fff;font-size:17px;margin:3px 0}.setupSpot.setter,.player.setter{box-shadow:0 0 0 3px #2563eb inset,0 0 14px rgba(37,99,235,.42)!important}.setupSpot.setter:after{content:"S";position:absolute;right:5px;top:5px;background:#2563eb;color:#fff;border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;font-size:11px;font-weight:1000}@media(max-width:700px){.setterRoleGrid{grid-template-columns:1fr}}
+
+/* V93: 二段トス */
+.secondBallModeAction{min-height:58px;border:2px solid #0ea5e9;border-radius:12px;background:#e0f2fe;color:#075985;font-weight:950;font-size:15px;line-height:1.1;cursor:pointer}
+.secondBallModeAction.active{background:#0ea5e9;color:#fff;box-shadow:0 0 0 3px rgba(14,165,233,.22)}
+.fastBtn.secondBallTarget{box-shadow:0 0 0 3px #38bdf8 inset;background:#ecfeff!important;color:#0c4a6e!important}
+.secondBallPanel small{font-size:11px;color:#64748b}.secondBallSummary{margin:8px 0 10px;font-size:14px}.secondBallGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.secondBallCard{border:1px solid #bae6fd;background:#f0f9ff;border-radius:12px;padding:10px}.secondBallHead{display:flex;justify-content:space-between;gap:8px;align-items:center}.secondBallHead span{font-weight:900;color:#0369a1}.secondBallZones{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:8px}.secondBallZones span{background:#fff;border:1px solid #e0f2fe;border-radius:8px;padding:5px;text-align:center;font-size:11px}.secondBallZones b{display:block;color:#075985}.emptySecondBall{color:#64748b;margin:6px 0}
+@media(max-width:700px){.secondBallGrid{grid-template-columns:1fr}.secondBallZones{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>

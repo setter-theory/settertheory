@@ -1,4 +1,4 @@
-// V92.1: full two-setter analysis separation (screen/CSV/PDF)
+// V93: second-ball toss support (separate from setter toss analysis)
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -23,6 +23,7 @@ let subOutNum = null;
 let substitutionBusy = false;
 let previousPlaySelection = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
+let secondBallMode = false;
 const groupTypeMap = {attack:"攻撃", serve:"サーブ", receive:"レセプション", toss:"トス", dig:"ディグ", block:"ブロック"};
 const defaultMineGroupOrder = ["serve","block","dig","toss","attack","receive"];
 const defaultOppGroupOrder = ["receive","toss","attack","block","dig","serve"];
@@ -51,7 +52,7 @@ let favoritePlays = readJsonArray("setterTheoryFavoritePlays", [
   {mode:"サーブ", result:"ミス"}
 ]);
 let numberPool = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"];
-const actionTypes=["トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
+const actionTypes=["トス","二段トス","レセプ","ディグ","スパイク","ブロック","サーブ"];
 const rateActionTypes=["スパイク","サーブ","レセプ","ディグ","ブロック"];
 const defaultPositions=["ライト後衛","ライト前衛","センター前衛","レフト前衛","レフト後衛","センター後衛"];
 
@@ -266,6 +267,7 @@ function isCurrentFavoritePlay(){
 }
 function playText(mode,result){
   const before={"スパイク":"💥","レセプ":"🤲","ディグ":"💪","サーブ":"🎯","トス":"⚡","ブロック":"🧱"}[mode] || "🏐";
+  if(mode==="二段トス") return `${before} 二段トス→${result}`;
   if(mode==="トス") return `${before} トス→${result}`;
   if(result==="エース") return `${before} サービスエース`;
   if(result==="シャット") return `${before} ブロックシャット`;
@@ -306,6 +308,39 @@ function markLastTossMist(ev){
   save();
   render();
   showInputToast(`トスミスを追加：${last.result}`);
+}
+function toggleSecondBallMode(ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  secondBallMode=!secondBallMode;
+  updateSecondBallModeUi();
+  showInputToast(secondBallMode ? "二段トス：トス先を選択してください" : "通常トスに戻しました");
+}
+function updateSecondBallModeUi(){
+  const btn=document.getElementById("secondBallModeBtn");
+  if(btn){
+    btn.classList.toggle("active", secondBallMode);
+    btn.setAttribute("aria-pressed", secondBallMode?"true":"false");
+    btn.innerHTML=secondBallMode ? "✅<br>二段トス中" : "👐<br>二段トス";
+  }
+  document.querySelectorAll('.fastGroup[data-acc-group="toss"] .fastBtn.toss, .fastGroup[data-acc-group="toss"] .fastBtn.two').forEach(b=>b.classList.toggle("secondBallTarget",secondBallMode));
+}
+function secondBallLogs(logs=s.logs){ return (logs||[]).filter(x=>x.type==="二段トス"); }
+function secondBallAnalysis(logs=s.logs){
+  const rows={};
+  const zones=["レフト","センター","ライト","バック","ツー"];
+  secondBallLogs(logs).forEach(x=>{
+    const key=String(x.num||"-");
+    if(!rows[key]) rows[key]={num:key,name:getPlayerName(key),total:0,counts:Object.fromEntries(zones.map(z=>[z,0]))};
+    rows[key].total++;
+    if(rows[key].counts[x.result]!==undefined) rows[key].counts[x.result]++;
+  });
+  return {total:secondBallLogs(logs).length,zones,players:Object.values(rows).sort((a,b)=>Number(a.num)-Number(b.num))};
+}
+function buildSecondBallAnalysis(){
+  const a=secondBallAnalysis();
+  if(!a.total) return `<div class="reportPanel secondBallPanel"><h3>二段トス分析</h3><p class="emptySecondBall">二段トスの記録はありません。</p></div>`;
+  const cards=a.players.map(p=>`<div class="secondBallCard"><div class="secondBallHead"><b>${escapeHtml(p.num)}番 ${escapeHtml(p.name||"")}</b><span>${p.total}本</span></div><div class="secondBallZones">${a.zones.map(z=>`<span><b>${z}</b>${p.counts[z]}本</span>`).join("")}</div></div>`).join("");
+  return `<div class="reportPanel secondBallPanel"><h3>二段トス分析 <small>（Setter IQ・通常トス集計とは別）</small></h3><div class="secondBallSummary">チーム合計 <b>${a.total}本</b></div><div class="secondBallGrid">${cards}</div></div>`;
 }
 function setPlay(mode,result){
   // V67: 入力順は「選手番号 → プレー」。プレー押下で即記録。
@@ -559,6 +594,7 @@ function serverPos(){
 }
 
 function playLabel(){
+  if(s.mode==="二段トス") return `二段トス→${s.result}`;
   if(s.mode==="トス") return `トス→${s.result}`;
   if(s.mode==="レセプ") return `${s.result}`;
   if(s.result==="エース") return "サービスエース";
@@ -943,6 +979,10 @@ function recordSelectedPlayerPlay(){
     num:num,pos:pos,result:s.result,point:point,
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
   });
+  if(s.mode==="二段トス"){
+    secondBallMode=false;
+    updateSecondBallModeUi();
+  }
   // V67: プレーを押した瞬間に記録を確定し、次の入力に備えて選手選択を解除する。
   // 誤入力は既存の「取り消し」で一つ前の状態へ戻せる。
   selectedCourtNum = null;
@@ -1799,6 +1839,7 @@ function report(){
     </div>
     ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
+    ${buildSecondBallAnalysis()}
     ${summary}
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
@@ -1906,15 +1947,18 @@ function buildSetterInsight(){
 
 function downloadCSV(){
   const analyses=Object.fromEntries(setterNumbers().map((n,i)=>[String(n),{idx:i+1,a:currentSetterAnalysisFor(n)}]));
-  const rows=[["No","Set","Rotation","Type","Number","Name","SetterRole","SetterIQ","SetterTossTotal","SetterTossMiss","SetterTossSuccessRate","SetterLeft","SetterCenter","SetterRight","SetterBack","SetterTwo","Position","Result","TossMiss","Point","Score","Time"]];
+  const rows=[["No","Set","Rotation","Type","Number","Name","SecondBall","SetterRole","SetterIQ","SetterTossTotal","SetterTossMiss","SetterTossSuccessRate","SetterLeft","SetterCenter","SetterRight","SetterBack","SetterTwo","Position","Result","TossMiss","Point","Score","Time"]];
   s.logs.forEach(x=>{
     const d=analyses[String(x.num)];
     const a=d&&d.a;
-    rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]);
+    rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]);
   });
   rows.push([]);
   rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two"]);
   setterNumbers().forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0]);});
+  rows.push([]);
+  rows.push(["SecondBallSummary","Number","Name","Total","Left","Center","Right","Back","Two"]);
+  secondBallAnalysis().players.forEach(p=>rows.push(["SecondBallSummary",p.num,p.name,p.total,p.counts["レフト"],p.counts["センター"],p.counts["ライト"],p.counts["バック"],p.counts["ツー"]]));
   const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(",")).join("\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
@@ -1996,6 +2040,8 @@ function printMatchPdfReport(){
     const count=tossLogs.filter(x=>x.result===label).length;
     return [label, `${count}`, `${pct(count,tossLogs.length)}%`];
   }).filter(r=>Number(r[1])>0);
+  const secondBall=secondBallAnalysis();
+  const secondBallRows=secondBall.players.map(p=>[`${p.num}番`,p.name||'-',`${p.total}`,`${p.counts['レフト']}`,`${p.counts['センター']}`,`${p.counts['ライト']}`,`${p.counts['バック']}`,`${p.counts['ツー']}`]);
 
   const subCounts=s.substitutionCounts || {};
   const subRows=Object.values(subCounts).sort((a,b)=>(b.count||0)-(a.count||0)).map(x=>[
@@ -2061,6 +2107,7 @@ function printMatchPdfReport(){
         <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}</section>
         <section class="section"><h2>トス技術</h2>${table(['総トス','成功','トスミス','成功率','ミス率'], [[`${tossQuality.total}`,`${tossQuality.success}`,`${tossQuality.miss}`,`${tossQuality.successRate}%`,`${tossQuality.missRate}%`]], 'トス記録がありません。')}<div class="note">※トスミスは得点・失点とは別に、トスの技術的な質として記録します。</div></section>
       </div>
+      <section class="section"><h2>二段トス分析</h2>${table(['選手','名前','合計','レフト','センター','ライト','バック','ツー'], secondBallRows, '二段トスの記録がありません。')}<div class="note">※二段トスは通常トス・Setter IQとは別集計です。セッター本人の二段トスもここに含まれます。</div></section>
       <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
       <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
       <footer class="footer"><span>Setter Theory</span><span>Generated by Aquila</span></footer>
@@ -2827,12 +2874,14 @@ document.addEventListener("DOMContentLoaded",()=>{
       openInputGroups.push(group.dataset.accGroup);
       saveOpenInputGroups();
     }
-    // V67: 番号 → プレー。プレーを押した時点で記録し、次の入力へ移る。
-    setPlay(b.dataset.type, b.dataset.result);
+    // V93: トス内で二段トスモード中は、通常トスと別データとして記録する。
+    const playType=(b.dataset.type==="トス" && secondBallMode) ? "二段トス" : b.dataset.type;
+    setPlay(playType, b.dataset.result);
   }));
   if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
   renderSetup();
   render();
+  updateSecondBallModeUi();
 });
 
 
