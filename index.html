@@ -1819,6 +1819,16 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #match .matchLeftTools .opponentMistActions .opponentMistBottom{margin:0!important;min-width:0!important;}
 #match .matchLeftTools .opponentMistUndo{margin:0!important;min-width:0!important;min-height:48px!important;background:#fff!important;color:#b91c1c!important;border:2px solid #dc2626!important;font-size:12px!important;font-weight:1000!important;}
 
+
+/* V90: manual serve ownership toggle */
+#match .serveToggleBtn{
+  appearance:none!important;-webkit-appearance:none!important;cursor:pointer!important;
+  min-height:42px!important;padding:8px 14px!important;border:2px solid #60a5fa!important;
+  background:#dbeafe!important;color:#1e3a8a!important;font-weight:1000!important;
+  box-shadow:0 2px 8px rgba(15,23,42,.12)!important;
+}
+#match .serveToggleBtn:active{transform:scale(.98);}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -3324,7 +3334,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
               <span class="statePill rotationCurrent">S<span id="rot">1</span></span>
               <button type="button" class="rotationAdjustBtn" onclick="adjustRotation(1)" aria-label="ローテーションを1つ進める">＋1</button>
             </div>
-            <span class="statePill" id="serveLabel">自サーブ</span>
+            <button type="button" class="statePill serveToggleBtn" id="serveLabel" onclick="toggleServe()" aria-label="サーブ権を切り替える">自サーブ</button>
           </div>
           <div class="matchScoreBig"><span id="myScore">0</span><span>-</span><span id="opScore">0</span></div>
 
@@ -3495,7 +3505,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=87-autosave-resume-real"></script>
+<script src="app.js?v=90-manual-serve-toggle"></script>
 
 
 

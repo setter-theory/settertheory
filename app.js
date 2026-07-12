@@ -857,7 +857,19 @@ function undoOpponentMist(){
   showInputToast("相手ミスを取り消しました");
 }
 function manualRotate(){snap();nextRot();save();render();}
-function toggleServe(){snap();s.serve=s.serve==="mine"?"opp":"mine";save();render();}
+function toggleServe(){
+  snap();
+  s.serve=s.serve==="mine"?"opp":"mine";
+  const label=s.serve==="mine"?"自サーブ":"相手サーブ";
+  s.logs.push({
+    no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:"操作",
+    num:"-",pos:"-",result:"サーブ権を手動変更："+label,
+    point:"継続",score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
+  });
+  save();
+  render();
+  showInputToast(label+"に切り替えました");
+}
 function undo(){
   const h=s.hist.pop();
   if(!h){ alert("取り消す記録がありません"); return; }
