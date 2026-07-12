@@ -22,7 +22,21 @@ let subOutNum = null;
 let substitutionBusy = false;
 let previousPlaySelection = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
-const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
+const groupTypeMap = {attack:"攻撃", serve:"サーブ", receive:"レセプション", toss:"トス", dig:"ディグ", block:"ブロック"};
+const defaultMineGroupOrder = ["serve","block","dig","toss","attack","receive"];
+const defaultOppGroupOrder = ["receive","toss","attack","block","dig","serve"];
+function normalizeGroupOrder(value, fallback){
+  const valid=["attack","serve","receive","toss","dig","block"];
+  const src=Array.isArray(value)?value:[];
+  const out=src.filter((x,i)=>valid.includes(x)&&src.indexOf(x)===i);
+  valid.forEach(x=>{ if(!out.includes(x)) out.push(x); });
+  return out.length===valid.length?out:fallback.slice();
+}
+let mineGroupOrder = normalizeGroupOrder(readJsonArray("setterTheoryMineGroupOrder", defaultMineGroupOrder), defaultMineGroupOrder);
+let oppGroupOrder = normalizeGroupOrder(readJsonArray("setterTheoryOppGroupOrder", defaultOppGroupOrder), defaultOppGroupOrder);
+let orderEditSide = "mine";
+let heldOrderGroup = null;
+let orderHoldTimer = null;
 const groupOrder = ["attack","serve","receive","toss","dig","block"];
 function readJsonArray(key, fallback){
   try{ const v=JSON.parse(localStorage.getItem(key)||"null"); return Array.isArray(v)?v:fallback; }catch(e){ return fallback; }
@@ -66,6 +80,81 @@ function menuGo(target){
   },80);
 }
 
+function currentInputGroupOrder(){ return (s.serve==="opp" ? oppGroupOrder : mineGroupOrder); }
+function saveInputGroupOrders(){
+  localStorage.setItem("setterTheoryMineGroupOrder", JSON.stringify(mineGroupOrder));
+  localStorage.setItem("setterTheoryOppGroupOrder", JSON.stringify(oppGroupOrder));
+}
+function applyInputGroupOrder(){
+  const wrap=document.querySelector("#match .fastInput");
+  if(!wrap) return;
+  currentInputGroupOrder().forEach(key=>{
+    const el=wrap.querySelector(`.fastGroup[data-acc-group="${key}"]`);
+    if(el) wrap.appendChild(el);
+  });
+}
+function openInputOrderModal(){
+  closeSideMenu();
+  const modal=document.getElementById("inputOrderModal");
+  if(!modal) return;
+  orderEditSide=s.serve==="opp"?"opp":"mine";
+  heldOrderGroup=null;
+  modal.classList.add("show");
+  renderInputOrderEditor();
+}
+function closeInputOrderModal(){
+  const modal=document.getElementById("inputOrderModal");
+  if(modal) modal.classList.remove("show");
+  heldOrderGroup=null;
+  clearTimeout(orderHoldTimer);
+}
+function setOrderEditSide(side){
+  orderEditSide=side==="opp"?"opp":"mine";
+  heldOrderGroup=null;
+  renderInputOrderEditor();
+}
+function editingOrder(){ return orderEditSide==="opp"?oppGroupOrder:mineGroupOrder; }
+function setEditingOrder(next){
+  const normalized=normalizeGroupOrder(next, orderEditSide==="opp"?defaultOppGroupOrder:defaultMineGroupOrder);
+  if(orderEditSide==="opp") oppGroupOrder=normalized; else mineGroupOrder=normalized;
+  saveInputGroupOrders();
+  applyInputGroupOrder();
+}
+function renderInputOrderEditor(){
+  const list=document.getElementById("inputOrderList");
+  if(!list) return;
+  const mineBtn=document.getElementById("orderMineBtn");
+  const oppBtn=document.getElementById("orderOppBtn");
+  if(mineBtn) mineBtn.classList.toggle("active",orderEditSide==="mine");
+  if(oppBtn) oppBtn.classList.toggle("active",orderEditSide==="opp");
+  list.innerHTML=editingOrder().map((key,i)=>`<button type="button" class="inputOrderItem ${heldOrderGroup===key?'held':''}" data-order-group="${key}" onpointerdown="startOrderHold('${key}',event)" onpointerup="cancelOrderHold()" onpointercancel="cancelOrderHold()" onclick="placeHeldOrderGroup('${key}')"><span>${i+1}</span><b>${escapeHtml(groupTypeMap[key]||key)}</b><small>${heldOrderGroup===key?'移動先をタップ':'長押しで選択'}</small></button>`).join("");
+}
+function startOrderHold(key,ev){
+  if(ev && ev.pointerType==="mouse" && ev.button!==0) return;
+  clearTimeout(orderHoldTimer);
+  orderHoldTimer=setTimeout(()=>{
+    heldOrderGroup=key;
+    if(navigator.vibrate) navigator.vibrate(35);
+    renderInputOrderEditor();
+  },420);
+}
+function cancelOrderHold(){ clearTimeout(orderHoldTimer); }
+function placeHeldOrderGroup(target){
+  if(!heldOrderGroup) return;
+  const arr=editingOrder().slice();
+  const from=arr.indexOf(heldOrderGroup), to=arr.indexOf(target);
+  if(from<0||to<0){ heldOrderGroup=null; renderInputOrderEditor(); return; }
+  arr.splice(from,1); arr.splice(to,0,heldOrderGroup);
+  setEditingOrder(arr);
+  heldOrderGroup=null;
+  renderInputOrderEditor();
+}
+function resetInputOrder(){
+  setEditingOrder(orderEditSide==="opp"?defaultOppGroupOrder:defaultMineGroupOrder);
+  heldOrderGroup=null;
+  renderInputOrderEditor();
+}
+
 function saveOpenInputGroups(){
   localStorage.setItem("setterTheoryOpenGroups", JSON.stringify(openInputGroups));
 }
@@ -73,6 +162,7 @@ function saveFavoriteInputGroups(){
   localStorage.setItem("setterTheoryFavoriteGroups", JSON.stringify(favoriteInputGroups));
 }
 function applyInputView(){
+  applyInputGroupOrder();
   document.body.classList.toggle("inputSimple", inputView==="simple" || inputView==="favorite");
   document.body.classList.toggle("inputList", inputView==="list");
   document.body.classList.toggle("inputFavorite", inputView==="favorite");
