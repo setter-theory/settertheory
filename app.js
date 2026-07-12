@@ -382,7 +382,7 @@ function showInputToast(msg){
   el.textContent=msg;
   el.classList.add("show");
   clearTimeout(showInputToast._t);
-  showInputToast._t=setTimeout(()=>el.classList.remove("show"),1100);
+  showInputToast._t=setTimeout(()=>el.classList.remove("show"),800);
 }
 function pulseElement(el){
   if(!el) return;
