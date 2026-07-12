@@ -4,3 +4,6 @@ Setter Theory V86
 - コート同士は入れ替え、ベンチ選手はコートへ配置、コート選手は「ベンチへ戻す」で外せます
 - コート入力画面の≡メニューを「ホーム → ローテーション設定 → 試合入力」の順に変更
 - V85までの機能を維持
+
+
+V87 plan: auto-save and resume match after accidental back navigation.
