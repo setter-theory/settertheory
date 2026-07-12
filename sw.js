@@ -1,4 +1,4 @@
-const CACHE_NAME='setter-theory-v90-3-1-opponent-fit';
+const CACHE_NAME='settertheory-v90-3-2';
 const ASSETS=['./','index.html','app.js?v=90-2-report-return-serve-fix','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
