@@ -1,9 +1,10 @@
+// V92: two-setter support (setup/court/CSV/PDF)
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
 let s = {
   team:"自チーム", oppTeam:"相手", setNo:"1",
-  nums:["1","2","3","4","5","7"], setterIndex:3,
+  nums:["1","2","3","4","5","7"], setterIndex:3, setterNums:["4"],
   positions:["ライト後衛","ライト前衛","センター前衛","レフト前衛","レフト後衛","センター後衛"],
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
   benchCount:6,
@@ -451,6 +452,13 @@ function load(){
   if(!s.hist) s.hist=[];
   if(!s.logs) s.logs=[];
   if(!s.nums) s.nums=["1","2","3","4","5","7"];
+  if(!Array.isArray(s.setterNums) || !s.setterNums.length){
+    const legacySetter=(s.nums||[])[Number(s.setterIndex)||0];
+    s.setterNums=legacySetter ? [String(legacySetter)] : [];
+  }
+  s.setterNums=[...new Set(s.setterNums.map(String).filter(n=>(s.nums||[]).map(String).includes(n)))].slice(0,2);
+  if(!s.setterNums.length && s.nums[0]) s.setterNums=[String(s.nums[0])];
+  s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   if(!s.players) s.players={};
   if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
   s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
@@ -533,7 +541,16 @@ function renderRotationOverview(){
     </section>`;
   }).join('')}</div>`;
 }
-function rotatedSetterNum(){ return s.nums[s.setterIndex]; }
+function setterNumbers(){
+  if(!Array.isArray(s.setterNums) || !s.setterNums.length){
+    const legacy=(s.nums||[])[Number(s.setterIndex)||0];
+    s.setterNums=legacy?[String(legacy)]:[];
+  }
+  return [...new Set(s.setterNums.map(String))].slice(0,2);
+}
+function isSetterNumber(num){ return setterNumbers().includes(String(num)); }
+function rotatedSetterNum(){ return setterNumbers()[0] || ''; }
+function rotatedSetterNums(){ return setterNumbers(); }
 function nextRot(){ s.rot=s.rot%6+1; }
 function getPlayerName(num){ return (s.players && s.players[String(num)]) ? s.players[String(num)] : ""; }
 function serverPos(){
@@ -729,13 +746,16 @@ function setupLongPressBind(el, kind, value){
   el.onpointerleave=cancel;
 }
 function keepSetterPlayerAfterMove(setterNum, fallbackIndex){
-  const idx=(s.nums||[]).map(String).findIndex(n=>n===String(setterNum));
+  const live=(s.nums||[]).map(String);
+  s.setterNums=setterNumbers().filter(n=>live.includes(String(n))).slice(0,2);
+  if(!s.setterNums.length && setterNum && live.includes(String(setterNum))) s.setterNums=[String(setterNum)];
+  const idx=live.findIndex(n=>n===String(s.setterNums[0]||setterNum));
   s.setterIndex = idx>=0 ? idx : Math.max(0, Math.min(5, Number(fallbackIndex)||0));
 }
 function placeSetupCarryAtCourt(targetIndex){
   targetIndex=Number(targetIndex);
   if(!setupCarry || targetIndex<0 || targetIndex>5) return false;
-  const setterNum=(s.nums||[])[s.setterIndex];
+  const setterNum=setterNumbers()[0] || (s.nums||[])[s.setterIndex];
   snap && snap();
   if(setupCarry.kind==='court'){
     const sourceIndex=Number(setupCarry.value);
@@ -767,10 +787,15 @@ function placeSetupCarryOnBench(){
     return;
   }
   const sourceIndex=Number(setupCarry.value);
-  const setterWasHere=(sourceIndex===s.setterIndex);
+  const removedNum=String((s.nums||[])[sourceIndex]||'');
   snap && snap();
   s.nums[sourceIndex]='';
-  if(setterWasHere) s.setterIndex=sourceIndex;
+  s.setterNums=setterNumbers().filter(n=>n!==removedNum);
+  if(!s.setterNums.length){
+    const fallback=(s.nums||[]).find(Boolean);
+    if(fallback) s.setterNums=[String(fallback)];
+  }
+  s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0]||'')));
   clearSetupCarry();
   save(); renderSetup(); renderMatchNumberBank(); render();
   if(typeof showInputToast==='function') showInputToast('ベンチへ戻しました');
@@ -780,7 +805,7 @@ function renderSetup(){
   const spots=document.querySelectorAll(".setupSpot");
   spots.forEach((b,i)=>{
     b.classList.toggle("active", i===setupSelected);
-    b.classList.toggle("setter", i===s.setterIndex);
+    b.classList.toggle("setter", isSetterNumber(s.nums[i]));
     const currentNum=s.nums[i] || "-";
     const num=b.querySelector(".num");
     if(num) num.innerHTML=`<span>${currentNum}</span><span class="setupName">${getPlayerName(currentNum)}</span>`;
@@ -827,7 +852,17 @@ function addNumber(){
   save(); renderSetup(); renderMatchNumberBank();
 }
 function toggleSetter(){
-  s.setterIndex=setupSelected;
+  const num=String((s.nums||[])[setupSelected]||'');
+  if(!num){ alert("先にコート位置へ選手を配置してください"); return; }
+  const list=setterNumbers();
+  if(list.includes(num)){
+    if(list.length===1){ alert("セッターは最低1人必要です"); return; }
+    s.setterNums=list.filter(n=>n!==num);
+  }else{
+    if(list.length>=2){ alert("セッターは最大2人です。解除するセッターを先に選んでください"); return; }
+    s.setterNums=[...list,num];
+  }
+  s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   save(); renderSetup(); render();
 }
 function startMatch(){
@@ -837,6 +872,9 @@ function startMatch(){
   s.oppTeam=document.getElementById("oppTeam").value || "相手";
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
+  s.setterNums=setterNumbers().filter(n=>starters.includes(String(n))).slice(0,2);
+  if(!s.setterNums.length){ alert("セッターを1人以上設定してください"); return; }
+  s.setterIndex=Math.max(0,starters.indexOf(String(s.setterNums[0])));
   s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
   s.matchActive=true; s.matchStartedAt=new Date().toISOString();
   save(); show("match");
@@ -1088,11 +1126,11 @@ function render(){
   renderLastSubstitution();
   renderFavoritePlayBar();
   const nums=rotationNums();
-  const setterNum=rotatedSetterNum();
+  const setterNums=rotatedSetterNums();
   document.querySelectorAll(".player").forEach(b=>{
     const n=nums[Number(b.dataset.pos)-1];
     b.innerHTML=`<span class="playerInner"><span class="playerNo">${escapeHtml(n)}</span><span class="playerName">${escapeHtml(getPlayerName(n))}</span></span>`;
-    b.classList.toggle("setter", n===setterNum);
+    b.classList.toggle("setter", setterNums.includes(String(n)));
     b.classList.toggle("selected", String(n)===String(selectedCourtNum));
   });
   // V67ではプレーボタン押下で記録し、選手・プレー選択を次の入力用に解除する。
@@ -1293,6 +1331,18 @@ function quick(){
       <div><div class="quickTitle">個人別の成功率</div><div class="quickScroll">${buildPersonalSuccessTable()}</div></div>
       <div><div class="quickTitle">選手別の入力数</div>${buildPersonalBars()}</div>
     </div>`;
+}
+function buildTwoSetterSummary(){
+  const setters=setterNumbers();
+  if(!setters.length) return '';
+  const cards=setters.map((n,idx)=>{
+    const toss=s.logs.filter(x=>x.type==='トス' && String(x.num)===String(n));
+    const miss=toss.filter(isTossMissLog).length;
+    const success=Math.max(0,toss.length-miss);
+    const rate=toss.length?Math.round(success/toss.length*100):0;
+    return `<div class="setterRoleCard"><span>セッター${idx+1}</span><b>${escapeHtml(n)}番 ${escapeHtml(getPlayerName(n))}</b><small>トス ${toss.length}本 / 成功率 ${rate}%</small></div>`;
+  }).join('');
+  return `<div class="reportPanel setterRolePanel"><h3>登録セッター</h3><div class="setterRoleGrid">${cards}</div></div>`;
 }
 function showReport(){report();show("report");}
 
@@ -1690,6 +1740,7 @@ function report(){
       <div class="reportPanel reportLeadPanel">${buildCurrentSetterIqPanel()}</div>
       <div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice()}</div>
     </div>
+    ${buildTwoSetterSummary()}
     ${summary}
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
@@ -1796,8 +1847,8 @@ function buildSetterInsight(){
 }
 
 function downloadCSV(){
-  const rows=[["No","Set","Rotation","Type","Number","Name","Position","Result","TossMiss","Point","Score","Time"]];
-  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]));
+  const rows=[["No","Set","Rotation","Type","Number","Name","SetterRole","Position","Result","TossMiss","Point","Score","Time"]];
+  s.logs.forEach(x=>rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),isSetterNumber(x.num)?"Setter":"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]));
   const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
@@ -1914,7 +1965,7 @@ function printMatchPdfReport(){
   </style></head><body>
     <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
     <main class="sheet">
-      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
+      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${setterNumbers().map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
       <div class="pdfLead">
         <div class="pdfIqCard"><div class="title">Setter IQ</div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div><div class="pdfIqBreakdown"><span>配球 ${iqBreakdown.balance}/20</span><span>多様性 ${iqBreakdown.diversity}/20</span><span>ミドル ${iqBreakdown.quick}/20</span><span>勝負所 ${iqBreakdown.clutch}/20</span><span>安定性 ${iqBreakdown.stability}/20</span><span>合計 ${iqBreakdown.total}/100</span></div></div>
         <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
@@ -1926,6 +1977,7 @@ function printMatchPdfReport(){
         <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
       </div>
       <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
+      <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], setterNumbers().map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&String(x.num)===String(n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
       <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
       <div class="twoCol">
         <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
