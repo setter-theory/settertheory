@@ -2476,6 +2476,8 @@ function renderSavedMatches(){
   const list=getSavedMatches();
   if(countEl) countEl.textContent=`${list.length}件`;
   renderCompareSelectors();
+  // V93.7: 保存件数の変化を成長ダッシュボードへ即時反映する。
+  setTimeout(()=>{ try{ renderGrowthDashboard(); }catch(e){ console.error('growth dashboard render failed',e); } },0);
   if(!list.length){ listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。CSV解析後に「この試合を保存」を押してください。</div>'; return; }
   listEl.innerHTML=list.map(m=>{
     const d=m.savedAt ? new Date(m.savedAt) : new Date();
@@ -2944,6 +2946,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   setupCsvImport();
   renderSavedMatches();
   renderCompareSelectors();
+  renderGrowthDashboard();
   applyInputView();
   load();
   updateHomeMatchControls();

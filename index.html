@@ -806,6 +806,15 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 @media(min-width:720px){.growthSummary{grid-template-columns:repeat(4,1fr)}.growthDashboardBody{grid-template-columns:1fr 1fr}.growthAquila{grid-column:1/-1}}
 
 
+
+/* V93.7: ホーム画面カードの文字コントラストを固定 */
+#savedMatchesCard,#matchCompareCard,#growthDashboardCard{color:#0f172a!important}
+#savedMatchesCard .savedMatchHead h3,#matchCompareCard .savedMatchHead h3,#growthDashboardCard .savedMatchHead h3{color:#0f172a!important}
+#savedMatchesCard .savedMatchCount,#matchCompareCard .savedMatchCount,#growthDashboardCard .savedMatchCount{color:#475569!important}
+#growthDashboardBody,#growthDashboardBody *{color:inherit}
+#growthDashboardBody .growthValue{color:#0f172a!important}
+#growthDashboardBody .growthTrendPanel h4,#growthDashboardBody .growthTrendRow,#growthDashboardBody .growthTrendRow div{color:#334155!important}
+
 /* v32: 現場入力改善＋横画面最適化（コート固定・四角ボタン・連打ズーム対策） */
 #matchCourt{
   position:sticky!important;
@@ -3732,7 +3741,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=93-6-pdf-rankings"></script>
+<script src="app.js?v=93-7-home-dashboard-fix"></script>
 
 
 
