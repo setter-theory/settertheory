@@ -3236,6 +3236,80 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .serveChoice.active:first-child{background:#2563eb;color:#fff}
 .serveChoice.active:last-child{background:#dc2626;color:#fff}
 </style>
+
+<style id="v90_3_1OpponentActionsFitFix">
+/* V90.3.1: opponent action buttons are equal-sized and rotation toggle stays visible */
+#match .matchLeftTools .opponentScoreActions{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:38px!important;
+  gap:4px!important;
+  width:100%!important;
+  margin:0 0 4px!important;
+}
+#match .matchLeftTools .opponentScoreActions > .scoreAction,
+#match .matchLeftTools .opponentScoreActions > .opponentMistBottom,
+#match .matchLeftTools .opponentScoreActions > .opponentMistUndo,
+#match .matchLeftTools .opponentScoreActions > .opponentPointBottom,
+#match .matchLeftTools .opponentScoreActions > .opponentPointUndo{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:38px!important;
+  min-height:38px!important;
+  margin:0!important;
+  padding:3px 2px!important;
+  border-radius:9px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  font-size:11px!important;
+  font-weight:1000!important;
+  line-height:1!important;
+  white-space:normal!important;
+  text-align:center!important;
+}
+#match .matchLeftTools .opponentScoreActions .scoreAction small{
+  display:block!important;
+  margin-top:1px!important;
+  font-size:9px!important;
+  line-height:1!important;
+}
+#match .matchLeftTools{margin-top:5px!important;}
+#match .matchLeftTools .matchInfoCard{
+  padding:7px!important;
+  border-radius:13px!important;
+}
+#match .matchLeftTools .matchTeamRow{margin-bottom:3px!important;}
+#match .matchLeftTools .setCountBlock{margin-top:4px!important;padding-top:4px!important;}
+#match .matchLeftTools .matchStateRow{margin-top:4px!important;gap:4px!important;}
+#match .matchLeftTools .matchScoreBig{font-size:24px!important;margin:3px 0!important;line-height:1!important;}
+#match .matchLeftTools .rotationToggle{
+  display:block!important;
+  visibility:visible!important;
+  width:100%!important;
+  min-height:31px!important;
+  margin-top:4px!important;
+  padding:5px 7px!important;
+  font-size:11px!important;
+}
+@media (orientation:landscape) and (min-width:768px){
+  #match .matchLeftTools .opponentScoreActions{grid-auto-rows:36px!important;gap:3px!important;margin-bottom:3px!important;}
+  #match .matchLeftTools .opponentScoreActions > .scoreAction,
+  #match .matchLeftTools .opponentScoreActions > .opponentMistBottom,
+  #match .matchLeftTools .opponentScoreActions > .opponentMistUndo,
+  #match .matchLeftTools .opponentScoreActions > .opponentPointBottom,
+  #match .matchLeftTools .opponentScoreActions > .opponentPointUndo{
+    height:36px!important;min-height:36px!important;font-size:10px!important;border-radius:8px!important;
+  }
+  #match .matchLeftTools .matchInfoCard{padding:6px!important;}
+  #match .matchLeftTools .rotationToggle{min-height:29px!important;margin-top:3px!important;padding:4px 6px!important;}
+}
+</style>
+
 </head>
 <body>
 
