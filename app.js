@@ -857,6 +857,15 @@ function undoOpponentMist(){
   undo();
   showInputToast("相手ミスを取り消しました");
 }
+function undoOpponentPoint(){
+  const last=s.logs && s.logs[s.logs.length-1];
+  if(!last || last.result!=="相手得点"){
+    showInputToast("直前の記録は相手得点ではありません");
+    return;
+  }
+  undo();
+  showInputToast("相手得点を取り消しました");
+}
 function manualRotate(){snap();nextRot();save();render();}
 function toggleServe(){
   snap();

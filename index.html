@@ -1836,6 +1836,52 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .serveChoice{padding:6px 10px;border-radius:8px;border:1px solid #d1d5db;background:#f3f4f6;color:#111827;font-weight:700}
 .serveChoice.active:first-child{background:#2563eb;color:#fff}
 .serveChoice.active:last-child{background:#dc2626;color:#fff}
+
+
+/* V90.3: 相手得点取消 + 相手関連ボタンをコンパクト化 */
+#match .matchLeftTools .opponentScoreActions{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+  width:100%!important;
+  margin:0 0 7px!important;
+}
+#match .matchLeftTools .opponentScoreActions .scoreAction{
+  width:100%!important;
+  min-width:0!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:5px 3px!important;
+  border-radius:10px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:1px!important;
+  font-size:12px!important;
+  font-weight:1000!important;
+  line-height:1.02!important;
+  white-space:normal!important;
+  text-align:center!important;
+}
+#match .matchLeftTools .opponentScoreActions .scoreAction small{
+  display:block!important;
+  font-size:10px!important;
+  font-weight:1000!important;
+  line-height:1!important;
+}
+#match .matchLeftTools .opponentScoreActions .opponentMistBottom{
+  background:#dc2626!important;color:#fff!important;border:2px solid #ef4444!important;
+}
+#match .matchLeftTools .opponentScoreActions .opponentPointBottom{
+  background:#991b1b!important;color:#fff!important;border:2px solid #ef4444!important;
+}
+#match .matchLeftTools .opponentScoreActions .opponentMistUndo,
+#match .matchLeftTools .opponentScoreActions .opponentPointUndo{
+  background:#fff!important;color:#b91c1c!important;border:2px solid #dc2626!important;
+}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -3389,11 +3435,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <button type="button" class="subQuickBtn" onclick="openSubModal(selectedCourtNum)">🔁 選手交代</button>
       <div id="lastSubstitutionBox" class="lastSubstitutionBox" aria-live="polite"></div>
       <div class="leftActionPanel matchLeftTools">
-        <div class="opponentMistActions">
-          <button class="red wideAction opponentMistBottom" onclick="opponentMist()">相手ミス</button>
-          <button class="wideAction opponentMistUndo" onclick="undoOpponentMist()">相手ミス取消</button>
+        <div class="opponentScoreActions" aria-label="相手得点関連操作">
+          <button class="scoreAction opponentMistBottom" onclick="opponentMist()"><span>相手ミス</span></button>
+          <button class="scoreAction opponentMistUndo" onclick="undoOpponentMist()"><span>相手ミス</span><small>取消</small></button>
+          <button class="scoreAction opponentPointBottom" onclick="opponentPoint()"><span>相手得点</span></button>
+          <button class="scoreAction opponentPointUndo" onclick="undoOpponentPoint()"><span>相手得点</span><small>取消</small></button>
         </div>
-        <button class="wideAction opponentPointBottom" onclick="opponentPoint()">相手得点</button>
 
         <section class="matchInfoCard" aria-label="試合情報">
           <div class="matchTeamRow">
