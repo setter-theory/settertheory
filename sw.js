@@ -1,4 +1,4 @@
-const CACHE_NAME = 'setter-theory-v87-autosave-resume-real';
+const CACHE_NAME='setter-theory-v88-substitution-stability';
 const ASSETS=['./','index.html','app.js?v=87-autosave-resume-real','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});

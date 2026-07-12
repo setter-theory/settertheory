@@ -19,6 +19,7 @@ let setupHoldTimer = null;
 let setupHoldTriggered = false;
 let selectedCourtNum = null;
 let subOutNum = null;
+let substitutionBusy = false;
 let previousPlaySelection = null;
 let inputView = localStorage.getItem("setterTheoryInputView") || "simple";
 const groupTypeMap = {attack:"スパイク", serve:"サーブ", receive:"レセプ", toss:"トス", dig:"ディグ", block:"ブロック"};
@@ -525,33 +526,82 @@ function renderSubModal(){
   if(label) label.textContent = subOutNum ? `${subOutNum}番を交代` : '交代するコート上の選手を選択';
   if(confirmBtn) confirmBtn.disabled = !subOutNum;
 }
+function setSubstitutionUiBusy(busy){
+  substitutionBusy=!!busy;
+  const modal=document.getElementById('subModal');
+  if(modal) modal.classList.toggle('subBusy', substitutionBusy);
+  document.querySelectorAll('#subModal button').forEach(btn=>{ btn.disabled=substitutionBusy; });
+}
 function applySubstitution(inNum){
+  // 連続タップや二重発火によるフリーズ・二重記録を防ぐ
+  if(substitutionBusy) return;
   if(!subOutNum){ showInputToast('交代する選手を選んでください'); return; }
-  inNum=String(inNum);
-  const idx=(s.nums||[]).map(String).findIndex(n=>n===String(subOutNum));
+
+  inNum=String(inNum||'');
+  const outNum=String(subOutNum||'');
+  const courtNums=(s.nums||[]).map(String);
+  const idx=courtNums.findIndex(n=>n===outNum);
+
+  if(!inNum){ showInputToast('交代で入る選手を選んでください'); return; }
   if(idx<0){ showInputToast('コート上の選手が見つかりません'); return; }
-  if(String(subOutNum)===inNum){ closeSubModal(); return; }
-  snap();
-  const outNum=String(subOutNum);
-  s.nums[idx]=inNum;
-  if(!s.players) s.players={};
-  if(s.players[inNum]===undefined) s.players[inNum]='';
-  const subTime=new Date().toLocaleTimeString();
-  const pair=[outNum,inNum].sort((a,b)=>(Number(a)||0)-(Number(b)||0));
-  const pairKey=pair.join('⇄');
-  if(!s.substitutionCounts) s.substitutionCounts={};
-  if(!s.substitutionCounts[pairKey]) s.substitutionCounts[pairKey]={a:pair[0], b:pair[1], count:0, lastTime:'', lastScore:'', lastRot:''};
-  s.substitutionCounts[pairKey].count+=1;
-  s.substitutionCounts[pairKey].lastTime=subTime;
-  s.substitutionCounts[pairKey].lastScore=s.my+'-'+s.op;
-  s.substitutionCounts[pairKey].lastRot='S'+s.rot;
-  s.lastSubstitution={outNum, inNum, pos:String(idx+1), rot:'S'+s.rot, score:s.my+'-'+s.op, time:subTime};
-  s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:subTime});
-  selectedCourtNum=inNum;
-  save();
-  closeSubModal();
-  render();
-  showInputToast(`交代：${outNum}番 → ${inNum}番`);
+  if(outNum===inNum){ closeSubModal(); return; }
+  if(courtNums.includes(inNum)){
+    showInputToast('その選手はすでにコート上にいます');
+    return;
+  }
+
+  setSubstitutionUiBusy(true);
+  const stateBefore=JSON.stringify(s);
+  const selectedBefore=selectedCourtNum;
+
+  try{
+    snap();
+    s.nums[idx]=inNum;
+    if(!s.players || typeof s.players!=='object') s.players={};
+    if(s.players[inNum]===undefined) s.players[inNum]='';
+
+    const subTime=new Date().toLocaleTimeString();
+    const pair=[outNum,inNum].sort((a,b)=>(Number(a)||0)-(Number(b)||0));
+    const pairKey=pair.join('⇄');
+    if(!s.substitutionCounts || typeof s.substitutionCounts!=='object') s.substitutionCounts={};
+    if(!s.substitutionCounts[pairKey]){
+      s.substitutionCounts[pairKey]={a:pair[0], b:pair[1], count:0, lastTime:'', lastScore:'', lastRot:''};
+    }
+    s.substitutionCounts[pairKey].count=Number(s.substitutionCounts[pairKey].count||0)+1;
+    s.substitutionCounts[pairKey].lastTime=subTime;
+    s.substitutionCounts[pairKey].lastScore=s.my+'-'+s.op;
+    s.substitutionCounts[pairKey].lastRot='S'+s.rot;
+    s.lastSubstitution={outNum, inNum, pos:String(idx+1), rot:'S'+s.rot, score:s.my+'-'+s.op, time:subTime};
+    if(!Array.isArray(s.logs)) s.logs=[];
+    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:subTime});
+    selectedCourtNum=inNum;
+
+    // 状態保存を先に完了させ、モーダルを閉じてから1回だけ再描画する
+    save();
+    const modal=document.getElementById('subModal');
+    if(modal) modal.classList.remove('show');
+    subOutNum=null;
+    requestAnimationFrame(()=>{
+      try{
+        render();
+        showInputToast(`交代：${outNum}番 → ${inNum}番`);
+      }finally{
+        setSubstitutionUiBusy(false);
+      }
+    });
+  }catch(err){
+    console.error('substitution failed', err);
+    try{
+      s=JSON.parse(stateBefore);
+      selectedCourtNum=selectedBefore;
+      save();
+      render();
+    }catch(restoreErr){
+      console.error('substitution rollback failed', restoreErr);
+    }
+    setSubstitutionUiBusy(false);
+    showInputToast('選手交代に失敗しました。もう一度お試しください');
+  }
 }
 
 

@@ -3090,6 +3090,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #setup .numBtn.benchPlayer{opacity:1;}
 @media (orientation:landscape) and (min-width:700px){#setup .setupPuzzleHelp{font-size:11px;margin-bottom:5px}#setup .setupBenchDrop{min-height:34px;margin-top:5px}}
 </style>
+
+<style id="v88-substitution-stability">
+#subModal.subBusy .modalCard{pointer-events:none;opacity:.88}
+#subModal.subBusy .modalCard::after{content:"交代処理中…";display:block;text-align:center;font-weight:800;margin-top:10px;color:#2563eb}
+#subModal button:disabled{opacity:.55;cursor:not-allowed}
+</style>
 </head>
 <body>
 
