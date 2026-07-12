@@ -592,7 +592,14 @@ function setterNumbers(){
     const legacy=(s.nums||[])[Number(s.setterIndex)||0];
     s.setterNums=legacy?[String(legacy)]:[];
   }
-  return [...new Set(s.setterNums.map(String))].slice(0,2);
+  const liveNums=new Set((s.nums||[]).map(v=>String(v).trim()).filter(Boolean));
+  const playerNums=new Set(Object.keys(s.players||{}).map(v=>String(v).trim()).filter(Boolean));
+  const cleaned=[...new Set((s.setterNums||[]).map(v=>String(v).trim()))]
+    .filter(n=>n && n!=="-" && n!=="undefined" && n!=="null")
+    // CSV復元時に混入する未設定値の「0」は、実在選手でない限り除外する
+    .filter(n=>n!=="0" || liveNums.has(n) || playerNums.has(n));
+  s.setterNums=cleaned.slice(0,2);
+  return s.setterNums.slice();
 }
 function isSetterNumber(num){ return setterNumbers().includes(String(num)); }
 function rotatedSetterNum(){ return setterNumbers()[0] || ''; }
