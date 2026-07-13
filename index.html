@@ -4328,6 +4328,27 @@ function openPositionManager(){const m=document.getElementById('positionManagerM
 function closePositionManager(){const m=document.getElementById('positionManagerModal');if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');renderSetup();}}
 </script>
 
+
+<style id="v988-ui-finish-fix">
+/* V98.8: setup court stays inside its card and Setter IQ labels remain readable */
+#setup .setupCourtCard{box-sizing:border-box!important;overflow:hidden!important;}
+#setup .setupCourtActions{flex:0 0 auto!important;}
+#setupCourt{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+}
+#report .setterIqMetrics span,
+#report .setterIqMetrics span *,
+#report .setterIqMetrics{color:#334155!important;}
+#report .setterIqMetrics b{color:#0f172a!important;}
+@media (min-width:700px){
+  #setup .setupCourtCard{display:flex!important;flex-direction:column!important;min-width:0!important;}
+  #setupCourt{height:auto!important;max-height:calc(100% - 42px)!important;aspect-ratio:3/1.75!important;flex:1 1 auto!important;}
+}
+</style>
 </body>
 </html>
 

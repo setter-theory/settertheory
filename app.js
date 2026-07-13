@@ -1,4 +1,4 @@
-// V98.7: no-scroll rotation setup and starter/bench setter roles
+// V98.8: setup court fit and Setter IQ text contrast fix
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
