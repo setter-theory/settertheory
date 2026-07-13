@@ -1,4 +1,4 @@
-// V98.6: compact rotation UI and persistent per-setter report aggregation
+// V98.7: no-scroll rotation setup and starter/bench setter roles
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -16,7 +16,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 986;
+const DATA_SCHEMA_VERSION = 987;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -55,7 +55,9 @@ function playerIdForNumber(num){
 }
 const PLAYER_POSITION_OPTIONS=[
   {value:'',label:'未設定'},
-  {value:'S',label:'セッター'},
+  {value:'S_START',label:'先発セッター'},
+  {value:'S_BENCH',label:'控えセッター'},
+  {value:'S',label:'セッター（旧）'},
   {value:'OP',label:'オポジット'},
   {value:'OH',label:'アウトサイド'},
   {value:'MB',label:'ミドル'},
@@ -68,6 +70,13 @@ function playerPositionForNumber(num){
 }
 function playerPositionLabel(code){
   return (PLAYER_POSITION_OPTIONS.find(x=>x.value===String(code||''))||PLAYER_POSITION_OPTIONS[0]).label;
+}
+function isSetterPosition(code){ return String(code||'').startsWith('S'); }
+function setterRoleLabelForNumber(num){
+  const code=playerPositionForNumber(num);
+  if(code==='S_START') return '先発セッター';
+  if(code==='S_BENCH') return '控えセッター';
+  return isSetterPosition(code)?'セッター':'';
 }
 function setPlayerPosition(num,code,{rerender=true}={}){
   ensureDistinctRegisteredPlayerIdentities(s);
@@ -90,10 +99,10 @@ function syncActiveSettersFromCourt({incomingNum='',outgoingNum='',legacyTransfe
     if(legacyTransfer && outgoingNum && incomingNum) transferSetterRole(outgoingNum,incomingNum);
     return setterNumbers();
   }
-  const onCourtSetters=court.filter(n=>playerPositionForNumber(n)==='S');
-  let next=old.filter(n=>courtSet.has(String(n)) && playerPositionForNumber(n)==='S');
+  const onCourtSetters=court.filter(n=>isSetterPosition(playerPositionForNumber(n)));
+  let next=old.filter(n=>courtSet.has(String(n)) && isSetterPosition(playerPositionForNumber(n)));
   const incoming=String(incomingNum||'');
-  if(incoming && courtSet.has(incoming) && playerPositionForNumber(incoming)==='S' && !next.includes(incoming)) next.unshift(incoming);
+  if(incoming && courtSet.has(incoming) && isSetterPosition(playerPositionForNumber(incoming)) && !next.includes(incoming)) next.unshift(incoming);
   onCourtSetters.forEach(n=>{ if(!next.includes(n)) next.push(n); });
   s.setterNums=[...new Set(next)].slice(0,2);
   s.setterIndex=Math.max(0,court.indexOf(String(s.setterNums[0]||'')));
@@ -833,7 +842,7 @@ function setBenchCount(v){
   renderSubModal();
 }
 function rosterItemHtml(n, fallback){
-  return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span class="rosterPlayerName">${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span>${positionSelectHtml(n,true)}</div>`;
+  return `<div class="rosterItem ${isSetterPosition(playerPositionForNumber(n))?'setterRosterItem':''}"><b>${escapeHtml(n)}</b><span class="rosterPlayerName">${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span>${positionSelectHtml(n,true)}</div>`;
 }
 function renderRosterPanel(){
   const starterBox=document.getElementById('starterRoster');
@@ -1105,7 +1114,7 @@ function toggleSetter(){
   }else{
     if(list.length>=2){ alert("セッターは最大2人です。解除するセッターを先に選んでください"); return; }
     s.setterNums=[...list,num];
-    if(!playerPositionForNumber(num)) setPlayerPosition(num,'S',{rerender:false});
+    if(!playerPositionForNumber(num)) setPlayerPosition(num,'S_START',{rerender:false});
   }
   s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   save(); renderSetup(); render();
@@ -1690,7 +1699,7 @@ function buildTwoSetterSummary(){
   if(!setters.length) return '';
   const cards=setters.map((n,idx)=>{
     const a=currentSetterAnalysisFor(n);
-    return `<div class="setterRoleCard"><span>セッター${idx+1}</span><b>${escapeHtml(n)}番 ${escapeHtml(a.name)}</b><small>IQ ${a.total?a.setterIq:'--'}/100 ・ トス ${a.quality.total}本 ・ ミス ${a.quality.miss}本 ・ 成功率 ${a.quality.successRate}%</small></div>`;
+    return `<div class="setterRoleCard"><span>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</span><b>${escapeHtml(n)}番 ${escapeHtml(a.name)}</b><small>IQ ${a.total?a.setterIq:'--'}/100 ・ トス ${a.quality.total}本 ・ ミス ${a.quality.miss}本 ・ 成功率 ${a.quality.successRate}%</small></div>`;
   }).join('');
   return `<div class="reportPanel setterRolePanel"><h3>登録セッター</h3><div class="setterRoleGrid">${cards}</div></div>`;
 }

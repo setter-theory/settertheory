@@ -3364,23 +3364,6 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .finishMatchBottom{background:#991b1b;color:#fff;border:0;border-radius:12px;font-weight:1000;padding:10px 12px}
 @media(max-width:700px){.finishMatchBottom{font-size:12px;padding:8px 9px}}
 </style>
-
-<style id="v986-compact-roster-fix">
-/* V98.6: ローテーション設定を縦長にしない */
-#setup .rosterGrid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;align-items:start!important}
-#setup .rosterBox{padding:8px!important;border-radius:12px!important;min-width:0!important}
-#setup .rosterBox h4{margin:0 0 5px!important;font-size:12px!important}
-#setup .rosterList{display:grid!important;gap:4px!important}
-#setup .rosterItem{display:grid!important;grid-template-columns:28px minmax(0,1fr) 92px!important;gap:4px!important;padding:4px 5px!important;min-height:30px!important;border-radius:9px!important}
-#setup .rosterItem b{font-size:13px!important}
-#setup .rosterItem .rosterPlayerName{font-size:10px!important}
-#setup .rosterItem .playerPositionSelect{min-height:26px!important;height:26px!important;max-width:92px!important;font-size:10px!important;padding:1px 3px!important;border-radius:7px!important}
-@media(max-width:560px){
- #setup .rosterGrid{grid-template-columns:1fr 1fr!important;gap:5px!important}
- #setup .rosterItem{grid-template-columns:24px minmax(0,1fr) 78px!important;padding:3px 4px!important}
- #setup .rosterItem .playerPositionSelect{max-width:78px!important;font-size:9px!important}
-}
-</style>
 </head>
 <body>
 
@@ -3534,14 +3517,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
         </div>
       </div>
       <div class="help">二枚替えを自動認識するため、セッター候補は基本ポジションを「セッター」に設定してください。開始ローテの6人がスタメンになります。</div>
-      <div class="registeredPositionPanel">
-        <h4>登録済み選手のポジション設定</h4>
-        <p>すでに登録している選手は、ここで基本ポジションを変更できます。</p>
-        <div class="rosterGrid">
-          <div class="rosterBox"><h4>スタメン</h4><div id="starterRoster" class="rosterList"></div></div>
-          <div class="rosterBox"><h4>ベンチ</h4><div id="benchRoster" class="rosterList"></div></div>
-        </div>
-      </div>
+      <button type="button" class="whitebtn positionManagerOpen" onclick="openPositionManager()">⚙ 登録済み選手のポジション設定</button>
     </div>
 
     <div class="setupRoster card">
@@ -3572,6 +3548,16 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     </div>
   </div>
 </section>
+
+<div id="positionManagerModal" class="positionManagerModal" aria-hidden="true">
+  <div class="positionManagerCard">
+    <div class="positionManagerHead"><div><h3>選手ポジション設定</h3><p>先発セッター／控えセッターを区別できます。</p></div><button type="button" class="whitebtn" onclick="closePositionManager()">閉じる</button></div>
+    <div class="rosterGrid">
+      <div class="rosterBox"><h4>スタメン</h4><div id="starterRoster" class="rosterList"></div></div>
+      <div class="rosterBox"><h4>ベンチ</h4><div id="benchRoster" class="rosterList"></div></div>
+    </div>
+  </div>
+</div>
 
 <section id="match" class="screen">
   <div class="topbar compactMatchTopbar">
@@ -4309,6 +4295,39 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   width:100%!important;
 }
 </style>
+
+<style id="v987-rotation-no-scroll-role">
+.positionManagerOpen{width:100%;margin-top:8px;min-height:38px}
+.positionManagerModal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(2,6,23,.72);padding:12px;align-items:center;justify-content:center}
+.positionManagerModal.show{display:flex}
+.positionManagerCard{width:min(920px,96vw);max-height:94dvh;overflow:hidden;background:#fff;border-radius:18px;padding:12px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.positionManagerHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.positionManagerHead h3{margin:0}.positionManagerHead p{margin:2px 0 0;color:#64748b;font-size:11px;font-weight:800}
+.positionManagerCard .rosterGrid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:0!important}
+.positionManagerCard .rosterBox{padding:8px!important;border-radius:12px!important}.positionManagerCard .rosterBox h4{margin:0 0 5px!important;font-size:13px!important}
+.positionManagerCard .rosterList{display:grid;gap:3px}.positionManagerCard .rosterItem{display:grid!important;grid-template-columns:34px minmax(70px,1fr) minmax(118px,150px)!important;gap:5px!important;min-height:30px!important;padding:3px 5px!important;border-radius:8px!important}
+.positionManagerCard .rosterItem b{font-size:12px}.positionManagerCard .rosterPlayerName{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.positionManagerCard .playerPositionSelect{min-height:27px!important;height:27px!important;padding:2px 5px!important;font-size:10px!important}
+.positionManagerCard .setterRosterItem{outline:2px solid #60a5fa;background:#eff6ff}
+@media (min-width:700px){
+  #setup.screen.active{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;padding:6px 10px!important}
+  #setup .logo{margin:0 0 4px!important}#setup .logo h1{font-size:20px!important;margin:0!important}#setup .logo p{display:none!important}
+  #setup .setupCompact{height:calc(100dvh - 42px);display:grid!important;grid-template-columns:minmax(360px,.95fr) minmax(380px,1.05fr)!important;grid-template-rows:auto 1fr auto!important;gap:6px!important;overflow:hidden!important}
+  #setup .setupTop{grid-column:1 / -1;display:grid!important;grid-template-columns:1.2fr 1.2fr .8fr .55fr!important;gap:6px!important;padding:7px!important}
+  #setup .setupPlayers{grid-column:1;grid-row:2;padding:7px!important;overflow:hidden!important}#setup .setupPlayers h3{font-size:14px!important;margin:0 0 4px!important}
+  #setup .playerRegisterClean{grid-template-columns:82px minmax(0,1fr) minmax(125px,.8fr)!important;gap:5px!important}#setup .playerRegisterClean .registerBtn{grid-column:1 / -1!important;min-height:32px!important;padding:5px!important}
+  #setup .setupField .setupLabel{font-size:10px!important;margin-bottom:2px!important}#setup input,#setup select{min-height:31px!important;height:31px!important;padding:4px 7px!important;font-size:12px!important}
+  #setup .benchCountRow{margin-top:5px!important}#setup .help{font-size:9px!important;line-height:1.2!important;margin-top:4px!important}.positionManagerOpen{min-height:32px!important;margin-top:5px!important;font-size:11px!important}
+  #setup .setupRoster{display:none!important}
+  #setup .setupCourtCard{grid-column:2;grid-row:2;padding:7px!important;min-height:0!important;overflow:hidden!important}#setup .setupCourtActions{margin-bottom:4px!important}#setup .setterHelp{display:none!important}
+  #setup .setupCourt{height:calc(100% - 40px)!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important}
+  #setup .setupFlowActions{grid-column:1 / -1;grid-row:3;position:static!important;display:grid!important;grid-template-columns:1fr!important;gap:4px!important}#setup .setupFlowActions button{min-height:38px!important}
+}
+@media (max-width:699px){.positionManagerCard .rosterGrid{grid-template-columns:1fr!important}.positionManagerCard{max-height:96dvh;overflow:auto}.positionManagerCard .rosterItem{grid-template-columns:30px minmax(60px,1fr) minmax(110px,140px)!important}}
+</style>
+<script>
+function openPositionManager(){const m=document.getElementById('positionManagerModal');if(m){renderRosterPanel();m.classList.add('show');m.setAttribute('aria-hidden','false');}}
+function closePositionManager(){const m=document.getElementById('positionManagerModal');if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');renderSetup();}}
+</script>
+
 </body>
 </html>
 
