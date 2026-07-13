@@ -1,4 +1,4 @@
-// V98.3: editable positions for already registered players and double-substitution recognition
+// V98.4: compact one-line position UI and independent player identities
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -16,7 +16,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 983;
+const DATA_SCHEMA_VERSION = 984;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -38,6 +38,7 @@ function ensureAppIdentity(state){
     const id=ensureStablePlayerId(name,num,state.playerIdentities[num]);
     if(id) state.playerIdentities[num]=id;
   });
+  ensureDistinctRegisteredPlayerIdentities(state);
   return state;
 }
 function playerIdForNumber(num){
@@ -69,6 +70,7 @@ function playerPositionLabel(code){
   return (PLAYER_POSITION_OPTIONS.find(x=>x.value===String(code||''))||PLAYER_POSITION_OPTIONS[0]).label;
 }
 function setPlayerPosition(num,code,{rerender=true}={}){
+  ensureDistinctRegisteredPlayerIdentities(s);
   const id=playerIdForNumber(num);
   if(!id) return;
   if(!s.playerPositions||typeof s.playerPositions!=='object') s.playerPositions={};
@@ -818,8 +820,7 @@ function setBenchCount(v){
   renderSubModal();
 }
 function rosterItemHtml(n, fallback){
-  const pos=playerPositionForNumber(n);
-  return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span class="rosterPlayerName">${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span><span class="positionBadge ${pos?'set':''}">${escapeHtml(playerPositionLabel(pos))}</span>${positionSelectHtml(n,true)}</div>`;
+  return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span class="rosterPlayerName">${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span>${positionSelectHtml(n,true)}</div>`;
 }
 function renderRosterPanel(){
   const starterBox=document.getElementById('starterRoster');
@@ -2595,10 +2596,10 @@ function getPlayerRegistry(){
 }
 function setPlayerRegistry(v){ localStorage.setItem(playerRegistryKey(),JSON.stringify(v||{})); }
 function identityLookupKey(name,num=''){
-  const n=normalizeGrowthPlayerName(name);
-  if(n) return `name:${n}`;
   const no=String(num||'').trim();
-  return no&&no!=='-'&&no!=='0'?`legacy-num:${no}`:'';
+  if(no && no!=='-' && no!=='0') return `number:${no}`;
+  const n=normalizeGrowthPlayerName(name);
+  return n ? `name:${n}` : '';
 }
 function ensureStablePlayerId(name,num='',preferredId=''){
   if(preferredId) return String(preferredId);
@@ -2611,6 +2612,27 @@ function ensureStablePlayerId(name,num='',preferredId=''){
   if(name) registry[key].name=String(name);
   setPlayerRegistry(registry);
   return registry[key].playerId;
+}
+function ensureDistinctRegisteredPlayerIdentities(state=s){
+  if(!state || typeof state!=='object') return state;
+  state.playerIdentities=state.playerIdentities&&typeof state.playerIdentities==='object'?state.playerIdentities:{};
+  const nums=[...(state.nums||[]),...Object.keys(state.players||{})].map(String).filter(n=>n&&n!=='-');
+  const seen=new Map();
+  nums.forEach(num=>{
+    const name=String((state.players||{})[num]||'').trim();
+    let id=String(state.playerIdentities[num]||'').trim();
+    if(!id) id=ensureStablePlayerId(name,num,'');
+    if(!id) return;
+    if(seen.has(id) && seen.get(id)!==num){
+      id=createStablePlayerId();
+      const registry=getPlayerRegistry();
+      registry[`number:${num}`]={playerId:id,name,numbers:[num]};
+      setPlayerRegistry(registry);
+    }
+    state.playerIdentities[num]=id;
+    seen.set(id,num);
+  });
+  return state;
 }
 function migrateSavedMatchIdentities(match){
   if(!match || typeof match!=='object') return match;
