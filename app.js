@@ -1,4 +1,4 @@
-// V95: stable player identity, correct setter summary matching, and growth-rate fixes
+// V96: correct cumulative growth deltas and player-growth comments
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -2928,10 +2928,10 @@ function playerGrowthTrendRows(list,key,label,suffix='',color=''){
   }).join('');
   return `<div class="growthTrendPanel"><h4>${escapeHtml(label)}</h4>${rows}</div>`;
 }
-function buildPlayerGrowthAquila(first,last){
+function buildPlayerGrowthAquila(first,last,metricDiffs={}){
   const iq=Number(last.setterIq||0)-Number(first.setterIq||0);
-  const success=Number(last.quality?.successRate||0)-Number(first.quality?.successRate||0);
-  const miss=Number(last.quality?.missRate||0)-Number(first.quality?.missRate||0);
+  const success=Number(metricDiffs.success??(Number(last.quality?.successRate||0)-Number(first.quality?.successRate||0)));
+  const miss=Number(metricDiffs.miss??(Number(last.quality?.missRate||0)-Number(first.quality?.missRate||0)));
   const center=playerPctValue(last,'センター')-playerPctValue(first,'センター');
   const lines=[];
   if(iq>0) lines.push(`Setter IQが${iq}上がっています。配球判断の積み重ねが数字に表れています。`);
@@ -2954,15 +2954,24 @@ function renderPlayerGrowthDashboard(saved,key,body,count){
   }
   const first=recent[0], last=recent[recent.length-1];
   const iqDiff=Number(last.setterIq||0)-Number(first.setterIq||0);
-  const successDiff=Number(last.quality?.successRate||0)-Number(first.quality?.successRate||0);
-  const missDiff=Number(last.quality?.missRate||0)-Number(first.quality?.missRate||0);
   const centerDiff=playerPctValue(last,'センター')-playerPctValue(first,'センター');
   const cumulativeTotal=all.reduce((sum,a)=>sum+Number(a.quality?.total||a.total||0),0);
   const cumulativeMiss=all.reduce((sum,a)=>sum+Number(a.quality?.miss||0),0);
   const cumulativeSuccess=Math.max(0,cumulativeTotal-cumulativeMiss);
   const cumulativeSuccessRate=cumulativeTotal?Math.round(cumulativeSuccess/cumulativeTotal*1000)/10:0;
   const cumulativeMissRate=cumulativeTotal?Math.round(cumulativeMiss/cumulativeTotal*1000)/10:0;
-  const advice=buildPlayerGrowthAquila(first,last);
+  // 累計カードの差分は「最新試合追加前の累計」と比較する。
+  // 以前は最新試合単体と最古試合単体を比較していたため、累計93.3%の横に-100%など誤解を招く表示が出ていた。
+  const previous=all.slice(0,-1);
+  const previousTotal=previous.reduce((sum,a)=>sum+Number(a.quality?.total||a.total||0),0);
+  const previousMiss=previous.reduce((sum,a)=>sum+Number(a.quality?.miss||0),0);
+  const previousSuccess=Math.max(0,previousTotal-previousMiss);
+  const previousSuccessRate=previousTotal?Math.round(previousSuccess/previousTotal*1000)/10:0;
+  const previousMissRate=previousTotal?Math.round(previousMiss/previousTotal*1000)/10:0;
+  const round1=v=>Math.round(Number(v||0)*10)/10;
+  const successDiff=previousTotal?round1(cumulativeSuccessRate-previousSuccessRate):0;
+  const missDiff=previousTotal?round1(cumulativeMissRate-previousMissRate):0;
+  const advice=buildPlayerGrowthAquila(first,last,{success:successDiff,miss:missDiff});
   body.innerHTML=`
     <div class="playerGrowthHeader"><div><b>#${escapeHtml(last.num)} ${escapeHtml(last.name||'')}</b><small>全${all.length}試合・直近${recent.length}試合の推移</small></div><div class="playerGrowthBadge">選手別</div></div>
     <div class="growthSummary">
