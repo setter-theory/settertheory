@@ -196,7 +196,10 @@ function menuGo(target){
   closeSideMenu();
   if(target==="report"){ showReport(); return; }
   if(target==="match"){ show("match"); return; }
-  if(target==="setup"){ show("setup"); return; }
+  if(target==="setup"){
+    show("setup");
+    return;
+  }
   save();
   show("home");
   updateHomeMatchControls();
@@ -1065,6 +1068,13 @@ function renderSetup(){
       bank.appendChild(btn);
     });
   }
+  const returnBtn=document.getElementById('returnToMatchBtn');
+  const startBtn=document.getElementById('setupStartMatchBtn');
+  if(returnBtn) returnBtn.style.display=s.matchActive?'block':'none';
+  if(startBtn){
+    startBtn.style.display=s.matchActive?'none':'block';
+    startBtn.textContent='試合開始';
+  }
 }
 function addNumber(){
   const n=prompt("追加する背番号は？");
@@ -1090,6 +1100,33 @@ function toggleSetter(){
   s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   save(); renderSetup(); render();
 }
+function returnToMatch(){
+  if(!s.matchActive){
+    alert("進行中の試合がありません。新しい試合を開始してください。");
+    renderSetup();
+    return;
+  }
+  const starters=(s.nums||[]).filter(Boolean).map(String);
+  if(starters.length!==6 || new Set(starters).size!==6){
+    alert("コート上の6人を重複なく設定してください");
+    return;
+  }
+  s.team=document.getElementById("team")?.value || s.team || "自チーム";
+  s.oppTeam=document.getElementById("oppTeam")?.value || s.oppTeam || "相手";
+  s.setNo=document.getElementById("setNo")?.value || s.setNo || "1";
+  if(hasAssignedPlayerPositions()) syncActiveSettersFromCourt();
+  if(!setterNumbers().length){
+    alert("現在のセッターを1人以上設定してください");
+    return;
+  }
+  s.setterNums=setterNumbers().filter(n=>starters.includes(String(n))).slice(0,2);
+  s.setterIndex=Math.max(0,starters.indexOf(String(s.setterNums[0])));
+  ensureMatchRosterState();
+  save();
+  show("match");
+  showInputToast("設定を反映して試合に戻りました");
+}
+
 function startMatch(){
   const starters=(s.nums||[]).filter(Boolean).map(String);
   if(starters.length!==6 || new Set(starters).size!==6){ alert("スタメン6人の背番号を重複なく設定してください"); return; }

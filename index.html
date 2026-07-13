@@ -2450,6 +2450,11 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .serveChoice{padding:6px 10px;border-radius:8px;border:1px solid #d1d5db;background:#f3f4f6;color:#111827;font-weight:700}
 .serveChoice.active:first-child{background:#2563eb;color:#fff}
 .serveChoice.active:last-child{background:#dc2626;color:#fff}
+
+/* V98.5: in-progress match return controls */
+.setupFlowActions{display:grid;gap:8px;position:sticky;bottom:8px;z-index:30}
+#setup .returnToMatchBtn{background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;color:#fff!important;border:2px solid rgba(255,255,255,.85)!important;box-shadow:0 10px 24px rgba(30,64,175,.28)!important;min-height:54px!important}
+#setup .returnToMatchBtn:active{transform:translateY(1px)}
 </style>
 
 
@@ -3544,7 +3549,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       </div>
     </div>
 
-    <button class="big startMatchBtn" onclick="startMatch()">試合開始</button>
+    <div class="setupFlowActions">
+      <button type="button" id="returnToMatchBtn" class="big returnToMatchBtn" onclick="returnToMatch()" style="display:none">↩ 試合に戻る</button>
+      <button type="button" id="setupStartMatchBtn" class="big startMatchBtn" onclick="startMatch()">試合開始</button>
+    </div>
   </div>
 </section>
 
@@ -3800,7 +3808,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=98-2-double-substitution"></script>
+<script src="app.js?v=98-5-match-return"></script>
 
 
 
