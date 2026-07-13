@@ -968,6 +968,23 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 }
 
 </style>
+
+<style id="v986-compact-roster-fix">
+/* V98.6: ローテーション設定を縦長にしない */
+#setup .rosterGrid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;align-items:start!important}
+#setup .rosterBox{padding:8px!important;border-radius:12px!important;min-width:0!important}
+#setup .rosterBox h4{margin:0 0 5px!important;font-size:12px!important}
+#setup .rosterList{display:grid!important;gap:4px!important}
+#setup .rosterItem{display:grid!important;grid-template-columns:28px minmax(0,1fr) 92px!important;gap:4px!important;padding:4px 5px!important;min-height:30px!important;border-radius:9px!important}
+#setup .rosterItem b{font-size:13px!important}
+#setup .rosterItem .rosterPlayerName{font-size:10px!important}
+#setup .rosterItem .playerPositionSelect{min-height:26px!important;height:26px!important;max-width:92px!important;font-size:10px!important;padding:1px 3px!important;border-radius:7px!important}
+@media(max-width:560px){
+ #setup .rosterGrid{grid-template-columns:1fr 1fr!important;gap:5px!important}
+ #setup .rosterItem{grid-template-columns:24px minmax(0,1fr) 78px!important;padding:3px 4px!important}
+ #setup .rosterItem .playerPositionSelect{max-width:78px!important;font-size:9px!important}
+}
+</style>
 </head>
 <body>
 

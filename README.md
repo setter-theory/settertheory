@@ -1,6 +1,7 @@
-# Setter Theory V98.5 — Match Return Fix
+# Setter Theory V98.6
 
-- Added “試合に戻る” to the rotation setup screen during an active match.
-- Returning applies lineup/setter changes without resetting score, logs, rotation, substitutions, or match ID.
-- “試合開始” is hidden while a match is in progress to prevent accidental reinitialization.
-- Existing V98.4 player-position and double-substitution behavior is retained.
+- ローテーション設定のスタメン／ベンチを2列・1選手1行のコンパクト表示へ修正
+- レポートを現在のセッターだけでなく、試合中にトスを記録した全セッターの playerId 単位で集計
+- セッター交代後も交代前後の両選手データを同時表示
+- 元のセッターへ戻しても、途中出場セッターのデータを保持
+- CSV／PDFのセッター別集計も同じ対象に統一

@@ -1,4 +1,4 @@
-// V98.4: compact one-line position UI and independent player identities
+// V98.6: compact rotation UI and persistent per-setter report aggregation
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -16,7 +16,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 984;
+const DATA_SCHEMA_VERSION = 986;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -733,6 +733,16 @@ function setterNumbers(){
     .filter(n=>n!=="0" || liveNums.has(n) || playerNums.has(n));
   s.setterNums=cleaned.slice(0,2);
   return s.setterNums.slice();
+}
+// レポートでは「現在コート上のセッター」だけでなく、
+// この試合で実際にトスを記録した全セッターを表示する。
+function reportSetterNumbers(){
+  const active=setterNumbers();
+  const fromLogs=(s.logs||[])
+    .filter(x=>x && x.type==='トス')
+    .map(x=>String(x.playerNumberSnapshot||x.num||'').trim())
+    .filter(n=>n && n!=='-' && n!=='undefined' && n!=='null');
+  return [...new Set([...active,...fromLogs])];
 }
 function isSetterNumber(num){ return setterNumbers().includes(String(num)); }
 function transferSetterRole(outNum,inNum){
@@ -1655,7 +1665,7 @@ function getAquilaAdviceForSetter(num){
   return advice;
 }
 function buildSetterDetailReports(){
-  const setters=setterNumbers();
+  const setters=reportSetterNumbers();
   if(!setters.length) return '';
   const labels=['レフト','センター','ライト','バック','ツー'];
   return `<div class="setterDetailGrid">${setters.map((n,idx)=>{
@@ -1676,7 +1686,7 @@ function buildSetterDetailReports(){
   }).join('')}</div>`;
 }
 function buildTwoSetterSummary(){
-  const setters=setterNumbers();
+  const setters=reportSetterNumbers();
   if(!setters.length) return '';
   const cards=setters.map((n,idx)=>{
     const a=currentSetterAnalysisFor(n);
@@ -2189,7 +2199,8 @@ function buildSetterInsight(){
 }
 
 function downloadCSV(){
-  const analyses=Object.fromEntries(setterNumbers().map((n,i)=>[String(n),{idx:i+1,a:currentSetterAnalysisFor(n)}]));
+  const reportSetters=reportSetterNumbers();
+  const analyses=Object.fromEntries(reportSetters.map((n,i)=>[String(n),{idx:i+1,a:currentSetterAnalysisFor(n)}]));
   const rows=[["No","Set","Rotation","Type","Number","Name","SecondBall","SetterRole","SetterIQ","SetterTossTotal","SetterTossMiss","SetterTossSuccessRate","SetterLeft","SetterCenter","SetterRight","SetterBack","SetterTwo","Position","Result","TossMiss","Point","Score","Time","PlayerId"]];
   s.logs.forEach(x=>{
     const d=analyses[String(x.num)];
@@ -2200,7 +2211,7 @@ function downloadCSV(){
   rows.push(["Metadata","DataVersion",DATA_SCHEMA_VERSION,"UserId",s.userId||"","TeamId",s.teamId||"","MatchId",s.matchId||"","SetId",s.setId||""]);
   rows.push([]);
   rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two","PlayerId"]);
-  setterNumbers().forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0,ensureStablePlayerId(a.name,n)]);});
+  reportSetters.forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0,playerIdForNumber(n)]);});
   rows.push([]);
   rows.push(["SecondBallSummary","Number","Name","Total","Left","Center","Right","Back","Two"]);
   secondBallAnalysis().players.forEach(p=>rows.push(["SecondBallSummary",p.num,p.name,p.total,p.counts["レフト"],p.counts["センター"],p.counts["ライト"],p.counts["バック"],p.counts["ツー"]]));
@@ -2240,7 +2251,8 @@ function printMatchPdfReport(){
   const iqBreakdown = iqBreakdown20(setterAnalysis);
   const aquilaAdvice = getCurrentAquilaAdviceItems();
   const aquilaIcon = `${location.origin}/icons/aquila-192.png`;
-  const perSetterPdfCards=setterNumbers().map((n,i)=>{
+  const reportSetters=reportSetterNumbers();
+  const perSetterPdfCards=reportSetters.map((n,i)=>{
     const a=currentSetterAnalysisFor(n), rank=setterIqRank(a.setterIq||0), b=iqBreakdown20(a), advice=getAquilaAdviceForSetter(n);
     const dist=['レフト','センター','ライト','バック','ツー'].map(k=>`${k} ${a.counts[k]||0}本`).join(' / ');
     const rot=a.rotationRows.filter(x=>x.total>0).map(x=>`${x.rot} ${x.total}本 成功${x.rate}%`).join(' / ') || '記録なし';
@@ -2356,7 +2368,7 @@ function printMatchPdfReport(){
   </style></head><body>
     <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
     <main class="sheet">
-      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${setterNumbers().map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
+      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
       <div class="pdfLead">
         <div class="pdfIqCard"><div class="title">Setter IQ</div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div><div class="pdfIqBreakdown"><span>配球 ${iqBreakdown.balance}/20</span><span>多様性 ${iqBreakdown.diversity}/20</span><span>ミドル ${iqBreakdown.quick}/20</span><span>勝負所 ${iqBreakdown.clutch}/20</span><span>安定性 ${iqBreakdown.stability}/20</span><span>合計 ${iqBreakdown.total}/100</span></div></div>
         <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
@@ -2369,7 +2381,7 @@ function printMatchPdfReport(){
       </div>
       <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
       ${perSetterPdfCards}
-      <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], setterNumbers().map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&String(x.num)===String(n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
+      <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], reportSetters.map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&logBelongsToPlayer(x,n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
       <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
       <div class="twoCol">
         <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
