@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v98-database-integrity';
-const ASSETS=['./','index.html','app.js?v=97-database-integrity','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
+const CACHE_NAME = 'setter-theory-v98-2-setter-sync';
+const ASSETS=['./','index.html','app.js?v=98-2-double-substitution','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
 self.addEventListener('fetch',e=>{

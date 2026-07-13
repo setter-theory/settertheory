@@ -1,4 +1,4 @@
-// V98: match integrity, immutable player-linked logs, and explicit match completion
+// V98.2: player positions and automatic active-setter recognition for double substitutions
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -7,6 +7,7 @@ let s = {
   nums:["1","2","3","4","5","7"], setterIndex:3, setterNums:["4"],
   positions:["ライト後衛","ライト前衛","センター前衛","レフト前衛","レフト後衛","センター後衛"],
   players:{"1":"","2":"","3":"","4":"","5":"","7":""},
+  playerPositions:{},
   benchCount:6,
   lastSubstitution:null,
   substitutionCounts:{},
@@ -15,7 +16,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 98;
+const DATA_SCHEMA_VERSION = 982;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -30,6 +31,7 @@ function ensureAppIdentity(state){
   state.matchId=String(state.matchId||createEntityId('match'));
   state.setId=String(state.setId||`${state.matchId}_set_${state.setNo||1}`);
   state.playerIdentities=state.playerIdentities&&typeof state.playerIdentities==='object'&&!Array.isArray(state.playerIdentities)?state.playerIdentities:{};
+  state.playerPositions=state.playerPositions&&typeof state.playerPositions==='object'&&!Array.isArray(state.playerPositions)?state.playerPositions:{};
   const nums=[...(state.nums||[]),...Object.keys(state.players||{})].map(String);
   nums.forEach(num=>{
     const name=String((state.players||{})[num]||'').trim();
@@ -50,6 +52,56 @@ function playerIdForNumber(num){
   }
   return id;
 }
+const PLAYER_POSITION_OPTIONS=[
+  {value:'',label:'未設定'},
+  {value:'S',label:'セッター'},
+  {value:'OP',label:'オポジット'},
+  {value:'OH',label:'アウトサイド'},
+  {value:'MB',label:'ミドル'},
+  {value:'L',label:'リベロ'},
+  {value:'OTHER',label:'その他'}
+];
+function playerPositionForNumber(num){
+  const id=playerIdForNumber(num);
+  return id ? String((s.playerPositions||{})[id]||'') : '';
+}
+function playerPositionLabel(code){
+  return (PLAYER_POSITION_OPTIONS.find(x=>x.value===String(code||''))||PLAYER_POSITION_OPTIONS[0]).label;
+}
+function setPlayerPosition(num,code,{rerender=true}={}){
+  const id=playerIdForNumber(num);
+  if(!id) return;
+  if(!s.playerPositions||typeof s.playerPositions!=='object') s.playerPositions={};
+  code=String(code||'');
+  if(code) s.playerPositions[id]=code; else delete s.playerPositions[id];
+  save();
+  if(rerender){ renderSetup(); renderMatchNumberBank(); render(); }
+}
+function hasAssignedPlayerPositions(){
+  return Object.values(s.playerPositions||{}).some(Boolean);
+}
+function syncActiveSettersFromCourt({incomingNum='',outgoingNum='',legacyTransfer=false}={}){
+  const court=(s.nums||[]).map(String).filter(Boolean);
+  const courtSet=new Set(court);
+  const old=setterNumbers();
+  if(!hasAssignedPlayerPositions()){
+    if(legacyTransfer && outgoingNum && incomingNum) transferSetterRole(outgoingNum,incomingNum);
+    return setterNumbers();
+  }
+  const onCourtSetters=court.filter(n=>playerPositionForNumber(n)==='S');
+  let next=old.filter(n=>courtSet.has(String(n)) && playerPositionForNumber(n)==='S');
+  const incoming=String(incomingNum||'');
+  if(incoming && courtSet.has(incoming) && playerPositionForNumber(incoming)==='S' && !next.includes(incoming)) next.unshift(incoming);
+  onCourtSetters.forEach(n=>{ if(!next.includes(n)) next.push(n); });
+  s.setterNums=[...new Set(next)].slice(0,2);
+  s.setterIndex=Math.max(0,court.indexOf(String(s.setterNums[0]||'')));
+  return s.setterNums.slice();
+}
+function positionSelectHtml(num,compact=false){
+  const current=playerPositionForNumber(num);
+  return `<select class="playerPositionSelect${compact?' compact':''}" aria-label="${escapeAttr(num)}番の基本ポジション" onchange="setPlayerPosition('${escapeAttr(num)}',this.value)">${PLAYER_POSITION_OPTIONS.map(x=>`<option value="${x.value}" ${current===x.value?'selected':''}>${x.label}</option>`).join('')}</select>`;
+}
+
 function logBelongsToPlayer(log,num){
   const targetId=playerIdForNumber(num);
   const logId=String(log&&log.playerId||'').trim();
@@ -73,6 +125,7 @@ function validateStateForSave(state){
   if(!Array.isArray(state.logs)) state.logs=[];
   if(!Array.isArray(state.hist)) state.hist=[];
   if(!state.players||typeof state.players!=='object'||Array.isArray(state.players)) state.players={};
+  if(!state.playerPositions||typeof state.playerPositions!=='object'||Array.isArray(state.playerPositions)) state.playerPositions={};
   if(!Array.isArray(state.nums)) state.nums=[];
   state.logs=state.logs.filter(x=>x&&typeof x==='object').map((x,i)=>({
     ...x,
@@ -578,6 +631,7 @@ function load(){
   if(!s.setterNums.length && s.nums[0]) s.setterNums=[String(s.nums[0])];
   s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   if(!s.players) s.players={};
+  if(!s.playerPositions||typeof s.playerPositions!=='object'||Array.isArray(s.playerPositions)) s.playerPositions={};
   if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
   s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
   if(s.lastSubstitution===undefined) s.lastSubstitution=null;
@@ -676,6 +730,40 @@ function setterNumbers(){
   return s.setterNums.slice();
 }
 function isSetterNumber(num){ return setterNumbers().includes(String(num)); }
+function transferSetterRole(outNum,inNum){
+  outNum=String(outNum||''); inNum=String(inNum||'');
+  if(!outNum||!inNum||outNum===inNum) return false;
+  const list=setterNumbers();
+  const idx=list.indexOf(outNum);
+  if(idx<0) return false;
+  list[idx]=inNum;
+  s.setterNums=[...new Set(list)].slice(0,2);
+  s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0]||inNum)));
+  return true;
+}
+function preservePlayerIdentityOnNumberChange(outNum,inNum){
+  outNum=String(outNum||''); inNum=String(inNum||'');
+  if(!outNum||!inNum||outNum===inNum) return;
+  const outName=String((s.players||{})[outNum]||'').trim();
+  const inName=String((s.players||{})[inNum]||'').trim();
+  if(outName && inName && normalizeGrowthPlayerName(outName)===normalizeGrowthPlayerName(inName)){
+    if(!s.playerIdentities||typeof s.playerIdentities!=='object') s.playerIdentities={};
+    const oldId=playerIdForNumber(outNum);
+    if(oldId) s.playerIdentities[inNum]=oldId;
+  }
+}
+function replaceCourtNumber(index,newNum,{transferSetter=true}={}){
+  index=Number(index); newNum=String(newNum||'');
+  const oldNum=String((s.nums||[])[index]||'');
+  if(index<0||index>5||!newNum) return {oldNum,newNum,setterTransferred:false};
+  if(!s.players||typeof s.players!=='object') s.players={};
+  if(s.players[newNum]===undefined) s.players[newNum]='';
+  preservePlayerIdentityOnNumberChange(oldNum,newNum);
+  s.nums[index]=newNum;
+  const setterTransferred=transferSetter ? transferSetterRole(oldNum,newNum) : false;
+  s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(setterNumbers()[0]||'')));
+  return {oldNum,newNum,setterTransferred};
+}
 function rotatedSetterNum(){ return setterNumbers()[0] || ''; }
 function rotatedSetterNums(){ return setterNumbers(); }
 function nextRot(){ s.rot=s.rot%6+1; }
@@ -699,12 +787,16 @@ function playLabel(){
 function addPlayerName(){
   const no=document.getElementById("newPlayerNo").value.trim();
   const name=document.getElementById("newPlayerName").value.trim();
+  const pos=document.getElementById("newPlayerPosition")?.value||'';
   if(!no){ alert("背番号を入力してください"); return; }
   if(!s.players) s.players={};
   s.players[no]=name;
   if(!numberPool.includes(no)) numberPool.push(no);
+  const id=playerIdForNumber(no);
+  if(pos && id){ if(!s.playerPositions||typeof s.playerPositions!=='object') s.playerPositions={}; s.playerPositions[id]=pos; }
   document.getElementById("newPlayerNo").value="";
   document.getElementById("newPlayerName").value="";
+  const posEl=document.getElementById("newPlayerPosition"); if(posEl) posEl.value='';
   save(); renderSetup(); renderMatchNumberBank(); render();
 }
 
@@ -726,7 +818,8 @@ function setBenchCount(v){
   renderSubModal();
 }
 function rosterItemHtml(n, fallback){
-  return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span>${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span></div>`;
+  const pos=playerPositionForNumber(n);
+  return `<div class="rosterItem"><b>${escapeHtml(n)}</b><span class="rosterPlayerName">${escapeHtml(getPlayerName(n)||fallback||'未登録')}</span><span class="positionBadge ${pos?'set':''}">${escapeHtml(playerPositionLabel(pos))}</span>${positionSelectHtml(n,true)}</div>`;
 }
 function renderRosterPanel(){
   const starterBox=document.getElementById('starterRoster');
@@ -792,9 +885,11 @@ function applySubstitution(inNum){
 
   try{
     snap();
-    s.nums[idx]=inNum;
-    if(!s.players || typeof s.players!=='object') s.players={};
-    if(s.players[inNum]===undefined) s.players[inNum]='';
+    const setterWasChanged=isSetterNumber(outNum);
+    const usePositionRecognition=hasAssignedPlayerPositions();
+    replaceCourtNumber(idx,inNum,{transferSetter:!usePositionRecognition});
+    syncActiveSettersFromCourt({incomingNum:inNum,outgoingNum:outNum,legacyTransfer:!usePositionRecognition});
+    const incomingIsSetter=isSetterNumber(inNum);
 
     const subTime=new Date().toLocaleTimeString();
     const pair=[outNum,inNum].sort((a,b)=>(Number(a)||0)-(Number(b)||0));
@@ -820,7 +915,7 @@ function applySubstitution(inNum){
     requestAnimationFrame(()=>{
       try{
         render();
-        showInputToast(`交代：${outNum}番 → ${inNum}番`);
+        showInputToast(`交代：${outNum}番 → ${inNum}番${incomingIsSetter?'（新セッターを認識）':setterWasChanged?'（セッター交代処理中）':''}`);
       }finally{
         setSubstitutionUiBusy(false);
       }
@@ -956,14 +1051,14 @@ function renderSetup(){
     pool.forEach(n=>{
       const btn=document.createElement("button");
       btn.className="numBtn";
-      btn.innerHTML=`<b>${escapeHtml(n)}</b>${getPlayerName(n)?`<span>${escapeHtml(getPlayerName(n))}</span>`:""}`;
+      btn.innerHTML=`<b>${escapeHtml(n)}</b>${getPlayerName(n)?`<span>${escapeHtml(getPlayerName(n))}</span>`:""}<small class="numPosition">${escapeHtml(playerPositionLabel(playerPositionForNumber(n)))}</small>`;
       if(used.has(n))btn.classList.add("used"); else btn.classList.add("benchPlayer");
       if(s.nums[setupSelected]===n)btn.classList.add("active");
       btn.onclick=()=>{
         if(setupHoldTriggered){ setupHoldTriggered=false; return; }
         if(setupCarry){ placeSetupCarryAtCourt(setupSelected); return; }
         setupSelected=setupSelected;
-        s.nums[setupSelected]=n; if(!s.players) s.players={}; if(s.players[n]===undefined) s.players[n]=""; save(); renderSetup(); renderMatchNumberBank();
+        replaceCourtNumber(setupSelected,n,{transferSetter:true}); save(); renderSetup(); renderMatchNumberBank(); render();
       };
       setupLongPressBind(btn, used.has(n)?'court':'bench', used.has(n)?s.nums.map(String).indexOf(String(n)):n);
       bank.appendChild(btn);
@@ -976,8 +1071,8 @@ function addNumber(){
   numberPool.push(n);
   if(!s.players) s.players={};
   if(s.players[n]===undefined) s.players[n]="";
-  s.nums[setupSelected]=n;
-  save(); renderSetup(); renderMatchNumberBank();
+  replaceCourtNumber(setupSelected,n,{transferSetter:true});
+  save(); renderSetup(); renderMatchNumberBank(); render();
 }
 function toggleSetter(){
   const num=String((s.nums||[])[setupSelected]||'');
@@ -989,6 +1084,7 @@ function toggleSetter(){
   }else{
     if(list.length>=2){ alert("セッターは最大2人です。解除するセッターを先に選んでください"); return; }
     s.setterNums=[...list,num];
+    if(!playerPositionForNumber(num)) setPlayerPosition(num,'S',{rerender:false});
   }
   s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   save(); renderSetup(); render();
@@ -1001,7 +1097,8 @@ function startMatch(){
   s.setNo=document.getElementById("setNo").value;
   s.serve=document.getElementById("startServe").value;
   s.setterNums=setterNumbers().filter(n=>starters.includes(String(n))).slice(0,2);
-  if(!s.setterNums.length){ alert("セッターを1人以上設定してください"); return; }
+  if(hasAssignedPlayerPositions()) syncActiveSettersFromCourt();
+  if(!s.setterNums.length){ alert("セッターを1人以上設定するか、基本ポジションを『セッター』にしてください"); return; }
   s.setterIndex=Math.max(0,starters.indexOf(String(s.setterNums[0])));
   s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
   s.matchActive=true; s.matchStartedAt=new Date().toISOString();
@@ -3361,9 +3458,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.querySelectorAll(".nameSelect").forEach(sel=>sel.addEventListener("change",(e)=>{
     const i=Number(e.target.dataset.nameSelect);
     const no=e.target.value;
-    s.nums[i]=no;
-    if(!s.players) s.players={};
-    if(s.players[no]===undefined) s.players[no]="";
+    replaceCourtNumber(i,no,{transferSetter:true});
     setupSelected=i;
     save(); renderSetup(); renderMatchNumberBank(); render();
   }));

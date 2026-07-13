@@ -1,110 +1,16 @@
-# Setter Theory V93
+# Setter Theory V98.2
 
-- トス項目内に「二段トス」モードを追加
-- 操作: 選手番号 → 二段トス → トス先
-- 通常トスと二段トスを完全に別集計
-- セッター本人の二段トスもSecond Ball Analysisへ集計
-- Setter IQ・通常トス配球には二段トスを含めない
-- レポート・CSV・PDFへ二段トス分析を追加
+## 主な変更
+- 選手登録とローテーション設定に「基本ポジション」を追加
+- セッター / オポジット / アウトサイド / ミドル / リベロ / その他を登録可能
+- 二枚替えで新しく入ったセッターをコート上の選手と基本ポジションから自動認識
+- 新セッターを青表示し、以降のトスログを新しい playerId に記録
+- 交代前のセッターの過去ログは保持
+- 基本ポジション未設定の既存データは従来の手動セッター引継ぎを維持
 
-# Setter Theory V92
-
-- ツーセッター対応（最大2人）
-- ローテーション設定・コート入力で両セッターを青表示
-- CSVにSetterRole列を追加
-- 画面レポート・PDFに登録セッター別トス数と成功率を追加
-
-## V91 通知位置調整
-- 入力通知を画面下中央から右上へ移動
-- 約0.8秒で自動消去
-- ブロックシャットなど下部操作との重なりを解消
-
-# Setter Theory V90.3.2
-
-- 相手ミスだけ横長になる旧CSS（grid-column: 1 / -1）を最終上書きで無効化
-- 相手関連4ボタンを同じ幅・高さの2列×2段に固定
-- 各ローテーション一覧の表示スペースを維持
-
-# Setter Theory V90.3.1
-
-- 相手ミス／相手ミス取消／相手得点／相手得点取消を同じ幅・高さの2列×2段へ統一
-- 相手ミスだけ横長になるCSS競合を最終スタイルで解消
-- 左下エリアの余白と試合情報カードを圧縮
-- 「各ローテを見る」ボタンがiPad横画面で隠れないよう表示領域を確保
-- V90.3までの機能を維持
-
-
-## V90.4 入力項目の並び替え
-- ≡メニューに「入力項目の並び替え」を追加
-- 自サーブ時／相手サーブ時を別々に保存
-- 項目を長押し後、移動先をタップして並び替え
-- 初期配置へ戻す機能
-- サーブ権に応じてコート入力画面の並びを自動反映
-
-
-V92.1: セッター2人のIQ・配球・トス技術・ローテ別トス・Aquila Adviceを画面/PDF/CSVで個別集計。
-
-
-## V93.1
-- 二段トス分析を選手別・トス先別に明確化
-- 白背景で文字が見えない配色不具合を修正
-- 選手番号・名前・合計本数・各ゾーン本数を表示
-
-
-## V93.3
-- 試合レポートのプレー割合に二段トス専用色（水色）を追加
-- 円グラフと凡例の色を統一
-
-
-V93.5: CSV登録セッター0表示、セッター別配球・ローテ・Aquila Adviceの配色、円グラフ中央総数の視認性を修正。
-
-
-## V93.6
-- PDFレポートに各項目ランキングTOP3を追加
-- 攻撃・サーブ・レセプション・ブロック・ディグ・通常トス・二段トスを掲載
-- 選手へLINE共有したPDFだけで主要ランキングを確認可能
-
-
-V93.7: ホーム画面の保存試合・試合比較・成長ダッシュボードの文字色を修正。保存試合の追加・削除・起動時に成長ダッシュボードを自動再生成。
-
-
-## V93.8
-- 成長ダッシュボードに「チーム全体／選手別」切替を追加
-- 登録セッターごとに Setter IQ、トス成功率、トスミス率、センター使用率の推移を表示
-- ツーセッター時も選手を切り替えて個別比較可能
-
-
-## V93.9 one-setter growth compatibility
-- Older one-setter CSVs without SetterSummary/SetterRole are inferred from normal toss logs.
-- Player growth identity now prioritizes jersey number so old and new saved matches are linked.
-- Existing name-based growth selection is migrated automatically.
-
-
-## V94
-- 成長ダッシュボードの選手同一性を名前優先に変更（背番号変更対応）
-- 累計トス成功率／ミス率を全保存試合の通常トス母数で再計算
-- SetterSummaryから母数・ミス数を復元し旧CSVにも対応
-
-
-## V95
-- 選手ごとに固定 playerId を導入し、背番号変更後も同一選手として成長履歴を統合。
-- 旧保存データへ playerId を自動付与する互換移行を追加。
-- Setter1/Setter2 の役割名だけで別選手の集計行へ誤一致する問題を修正。
-- トス成功率・トスミス率を「総トス－トスミス」で再計算し、0%/100%の誤表示を防止。
-- CSVへ PlayerId を追加し、今後の保存・再読込でも選手本人を固定識別。
-
-
-## V96
-- 個人成長ダッシュボードの累計トス成功率・累計トスミス率の差分を、最新試合追加前の累計との比較に修正。
-- 累計93.3%の横に-100%など、試合単体比較による誤解を招く表示を解消。
-- Aquilaコメントも同じ累計差分を使用。
-
-
-V97: Database integrity update. Added dataVersion/userId/teamId/matchId/setId, stable player identity migration, and save-time validation.
-
-
-## V98 Match Integrity
-- Logs now retain immutable playerId/name/number snapshots.
-- Setter analysis follows playerId across number changes and substitutions.
-- Added explicit “試合を保存して終了” action.
-- Match completion stores status and ended timestamp.
+## 二枚替え確認手順
+1. 先発セッターと控えセッターの基本ポジションを「セッター」に設定
+2. 先発セッター OUT → ミドル IN
+3. セッター対角 OUT → 控えセッター IN
+4. 控えセッターが青表示になることを確認
+5. トス入力が控えセッターへ記録されることを確認
