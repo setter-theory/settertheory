@@ -1,4 +1,4 @@
-// V98.2: player positions and automatic active-setter recognition for double substitutions
+// V98.3: editable positions for already registered players and double-substitution recognition
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -16,7 +16,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 982;
+const DATA_SCHEMA_VERSION = 983;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
