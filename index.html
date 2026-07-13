@@ -3330,6 +3330,12 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <style id="v92-1-two-setter-detail">
 .setterDetailGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 14px}.setterDetailCard{min-width:0}.setterDetailHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.setterDetailHead small{color:#93c5fd;font-weight:900}.setterDetailHead h3{margin:2px 0 0}.setterDetailIq{display:flex;align-items:baseline;gap:3px;background:#0f172a;border:1px solid rgba(96,165,250,.4);border-radius:12px;padding:7px 10px}.setterDetailIq b{font-size:28px;color:#60a5fa}.setterDetailIq span{font-size:11px;color:#cbd5e1}.setterDetailIq small{display:block;color:#fbbf24;font-weight:900;margin-left:5px}.setterDetailMetrics,.setterDetailBreakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.setterDetailBreakdown{grid-template-columns:repeat(5,1fr)}.setterDetailMetrics span,.setterDetailBreakdown span{background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.22);border-radius:9px;padding:7px;text-align:center;color:#cbd5e1;font-size:11px}.setterDetailMetrics b{display:block;color:#fff;font-size:17px}.setterDetailSection{margin-top:10px}.setterDetailSection>b,.setterDetailAdvice>b{display:block;color:#fbbf24;margin-bottom:5px}.setterDetailSection>div{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.setterDetailSection span{background:rgba(30,64,175,.15);border-radius:8px;padding:6px;color:#cbd5e1;font-size:10px;text-align:center}.setterDetailSection span b{display:block;color:#fff}.setterDetailAdvice{margin-top:10px;background:rgba(30,64,175,.1);border-radius:10px;padding:9px}.setterDetailAdvice ul{margin:0;padding-left:18px;color:#e2e8f0;font-size:12px;line-height:1.5}.setterDetailAdvice li+li{margin-top:4px}@media(max-width:900px){.setterDetailGrid{grid-template-columns:1fr}.setterDetailBreakdown,.setterDetailSection>div{grid-template-columns:repeat(3,1fr)}}
 </style>
+
+<style id="v98-match-integrity-style">
+.finishMatchMenuBtn{background:#7f1d1d!important;color:#fff!important;font-weight:1000!important}
+.finishMatchBottom{background:#991b1b;color:#fff;border:0;border-radius:12px;font-weight:1000;padding:10px 12px}
+@media(max-width:700px){.finishMatchBottom{font-size:12px;padding:8px 9px}}
+</style>
 </head>
 <body>
 
@@ -3714,6 +3720,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   <button onclick="menuGo('match')">🏐 試合入力</button>
   <button onclick="openInputOrderModal()">↕️ 入力項目の並び替え</button>
   <button onclick="menuGo('report')">📊 レポート</button>
+  <button class="finishMatchMenuBtn" onclick="finishMatch()">🏁 試合を保存して終了</button>
   <button onclick="menuGo('growth')">📈 成長ダッシュボード</button>
   <button onclick="menuGo('csv')">📁 CSV管理</button>
   <button onclick="menuGo('about')">ℹ️ アプリについて</button>
@@ -3724,6 +3731,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   <button class="undoBtn" onclick="undo()">取り消し</button>
   <button class="orange reportIqBtn" onclick="showReport()"><span>レポート</span><b id="reportIqValue" class="reportIqValue iqEmpty">--/100</b></button>
   <button class="blue" onclick="downloadCSV()">CSV</button>
+  <button class="finishMatchBottom" onclick="finishMatch()">試合終了</button>
 </div>
 
 <div id="inputOrderModal" class="inputOrderModal" role="dialog" aria-modal="true" aria-label="入力項目の並び替え">
@@ -3754,7 +3762,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=97-database-integrity"></script>
+<script src="app.js?v=98-match-integrity"></script>
 
 
 

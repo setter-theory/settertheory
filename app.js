@@ -1,4 +1,4 @@
-// V97: database integrity, stable IDs, schema migration, and save validation
+// V98: match integrity, immutable player-linked logs, and explicit match completion
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -15,7 +15,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 97;
+const DATA_SCHEMA_VERSION = 98;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -37,6 +37,36 @@ function ensureAppIdentity(state){
     if(id) state.playerIdentities[num]=id;
   });
   return state;
+}
+function playerIdForNumber(num){
+  num=String(num||'').trim();
+  if(!num || num==='-') return '';
+  const name=String((s.players||{})[num]||'').trim();
+  const preferred=String((s.playerIdentities||{})[num]||'').trim();
+  const id=ensureStablePlayerId(name,num,preferred);
+  if(id){
+    if(!s.playerIdentities||typeof s.playerIdentities!=='object') s.playerIdentities={};
+    s.playerIdentities[num]=id;
+  }
+  return id;
+}
+function logBelongsToPlayer(log,num){
+  const targetId=playerIdForNumber(num);
+  const logId=String(log&&log.playerId||'').trim();
+  if(targetId && logId) return targetId===logId;
+  return String(log&&log.num||'')===String(num||'');
+}
+function stampPlayerOnLog(log,num){
+  num=String(num||'');
+  return {
+    ...log,
+    num,
+    playerId:playerIdForNumber(num),
+    playerNameSnapshot:String((s.players||{})[num]||''),
+    playerNumberSnapshot:num,
+    matchId:String(s.matchId||''),
+    setId:String(s.setId||'')
+  };
 }
 function validateStateForSave(state){
   ensureAppIdentity(state);
@@ -779,7 +809,7 @@ function applySubstitution(inNum){
     s.substitutionCounts[pairKey].lastRot='S'+s.rot;
     s.lastSubstitution={outNum, inNum, pos:String(idx+1), rot:'S'+s.rot, score:s.my+'-'+s.op, time:subTime};
     if(!Array.isArray(s.logs)) s.logs=[];
-    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:subTime});
+    s.logs.push({no:s.logs.length+1,set:s.setNo,rot:'S'+s.rot,type:'交代',num:`${outNum}→${inNum}`,pos:String(idx+1),result:'選手交代',point:'-',score:s.my+'-'+s.op,time:subTime,matchId:s.matchId,setId:s.setId,outPlayerId:playerIdForNumber(outNum),inPlayerId:playerIdForNumber(inNum),outNameSnapshot:String((s.players||{})[outNum]||''),inNameSnapshot:String((s.players||{})[inNum]||'')});
     selectedCourtNum=inNum;
 
     // 状態保存を先に完了させ、モーダルを閉じてから1回だけ再描画する
@@ -977,9 +1007,21 @@ function startMatch(){
   s.matchActive=true; s.matchStartedAt=new Date().toISOString();
   s.matchId=createEntityId('match');
   s.setId=`${s.matchId}_set_${s.setNo||1}`;
-  s.playerIdentities={};
+  s.playerIdentities=s.playerIdentities&&typeof s.playerIdentities==='object'?s.playerIdentities:{};
   ensureAppIdentity(s);
+  starters.forEach(n=>playerIdForNumber(n));
   save(); show("match");
+}
+function finishMatch(){
+  if(!s.matchActive){ alert('進行中の試合がありません。'); return; }
+  if(!confirm('この試合を保存して終了しますか？\n終了後も保存データは確認できます。')) return;
+  s.matchActive=false;
+  s.matchEndedAt=new Date().toISOString();
+  s.status='completed';
+  save();
+  alert('試合を保存して終了しました。');
+  show('home');
+  updateHomeMatchControls();
 }
 function pointByResult(result){
   const before=s.serve;
@@ -1040,11 +1082,11 @@ function recordSelectedPlayerPlay(){
   snap();
   const recordedLabel=playLabel();
   const point=pointByResult(s.result);
-  s.logs.push({
+  s.logs.push(stampPlayerOnLog({
     no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:s.mode,
-    num:num,pos:pos,result:s.result,point:point,
+    pos:pos,result:s.result,point:point,
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
-  });
+  },num));
   if(s.mode==="二段トス"){
     secondBallMode=false;
     updateSecondBallModeUi();
@@ -1441,7 +1483,7 @@ function quick(){
 
 function currentSetterAnalysisFor(num){
   const setterNum=String(num||'');
-  const toss=s.logs.filter(x=>x.type==='トス' && String(x.num)===setterNum);
+  const toss=s.logs.filter(x=>x.type==='トス' && logBelongsToPlayer(x,setterNum));
   const counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
   const terminalCounts={};
   toss.forEach(x=>{
@@ -2017,7 +2059,7 @@ function downloadCSV(){
   s.logs.forEach(x=>{
     const d=analyses[String(x.num)];
     const a=d&&d.a;
-    rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,ensureStablePlayerId(getPlayerName(x.num),x.num)]);
+    rows.push([x.no,x.set,x.rot,x.type,x.num,(x.playerNameSnapshot||getPlayerName(x.num)),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,(x.playerId||ensureStablePlayerId(x.playerNameSnapshot||getPlayerName(x.num),x.playerNumberSnapshot||x.num))]);
   });
   rows.push([]);
   rows.push(["Metadata","DataVersion",DATA_SCHEMA_VERSION,"UserId",s.userId||"","TeamId",s.teamId||"","MatchId",s.matchId||"","SetId",s.setId||""]);

@@ -101,3 +101,10 @@ V93.7: ホーム画面の保存試合・試合比較・成長ダッシュボー�
 
 
 V97: Database integrity update. Added dataVersion/userId/teamId/matchId/setId, stable player identity migration, and save-time validation.
+
+
+## V98 Match Integrity
+- Logs now retain immutable playerId/name/number snapshots.
+- Setter analysis follows playerId across number changes and substitutions.
+- Added explicit “試合を保存して終了” action.
+- Match completion stores status and ended timestamp.
