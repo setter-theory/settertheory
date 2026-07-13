@@ -1,4 +1,4 @@
-// V93.5: restore registered setters correctly from imported CSV
+// V95: stable player identity, correct setter summary matching, and growth-rate fixes
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -1965,15 +1965,15 @@ function buildSetterInsight(){
 
 function downloadCSV(){
   const analyses=Object.fromEntries(setterNumbers().map((n,i)=>[String(n),{idx:i+1,a:currentSetterAnalysisFor(n)}]));
-  const rows=[["No","Set","Rotation","Type","Number","Name","SecondBall","SetterRole","SetterIQ","SetterTossTotal","SetterTossMiss","SetterTossSuccessRate","SetterLeft","SetterCenter","SetterRight","SetterBack","SetterTwo","Position","Result","TossMiss","Point","Score","Time"]];
+  const rows=[["No","Set","Rotation","Type","Number","Name","SecondBall","SetterRole","SetterIQ","SetterTossTotal","SetterTossMiss","SetterTossSuccessRate","SetterLeft","SetterCenter","SetterRight","SetterBack","SetterTwo","Position","Result","TossMiss","Point","Score","Time","PlayerId"]];
   s.logs.forEach(x=>{
     const d=analyses[String(x.num)];
     const a=d&&d.a;
-    rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time]);
+    rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,ensureStablePlayerId(getPlayerName(x.num),x.num)]);
   });
   rows.push([]);
-  rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two"]);
-  setterNumbers().forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0]);});
+  rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two","PlayerId"]);
+  setterNumbers().forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0,ensureStablePlayerId(a.name,n)]);});
   rows.push([]);
   rows.push(["SecondBallSummary","Number","Name","Total","Left","Center","Right","Back","Two"]);
   secondBallAnalysis().players.forEach(p=>rows.push(["SecondBallSummary",p.num,p.name,p.total,p.counts["レフト"],p.counts["センター"],p.counts["ライト"],p.counts["バック"],p.counts["ツー"]]));
@@ -2399,10 +2399,55 @@ function buildCoachCards(a){
 }
 
 function savedMatchesKey(){ return 'setterTheorySavedMatchesV21'; }
-function getSavedMatches(){
-  try{return JSON.parse(localStorage.getItem(savedMatchesKey())||'[]') || [];}catch(e){return [];}
+function playerRegistryKey(){ return 'setterTheoryPlayerRegistryV1'; }
+function createStablePlayerId(){
+  try{ if(globalThis.crypto && crypto.randomUUID) return `player_${crypto.randomUUID()}`; }catch(e){}
+  return `player_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
 }
-function setSavedMatches(list){ localStorage.setItem(savedMatchesKey(), JSON.stringify(list)); }
+function getPlayerRegistry(){
+  try{ const v=JSON.parse(localStorage.getItem(playerRegistryKey())||'{}'); return v&&typeof v==='object'&&!Array.isArray(v)?v:{}; }catch(e){ return {}; }
+}
+function setPlayerRegistry(v){ localStorage.setItem(playerRegistryKey(),JSON.stringify(v||{})); }
+function identityLookupKey(name,num=''){
+  const n=normalizeGrowthPlayerName(name);
+  if(n) return `name:${n}`;
+  const no=String(num||'').trim();
+  return no&&no!=='-'&&no!=='0'?`legacy-num:${no}`:'';
+}
+function ensureStablePlayerId(name,num='',preferredId=''){
+  if(preferredId) return String(preferredId);
+  const key=identityLookupKey(name,num);
+  if(!key) return '';
+  const registry=getPlayerRegistry();
+  if(!registry[key]) registry[key]={playerId:createStablePlayerId(),name:String(name||''),numbers:[]};
+  const no=String(num||'').trim();
+  if(no && !registry[key].numbers.includes(no)) registry[key].numbers.push(no);
+  if(name) registry[key].name=String(name);
+  setPlayerRegistry(registry);
+  return registry[key].playerId;
+}
+function migrateSavedMatchIdentities(match){
+  if(!match || typeof match!=='object') return match;
+  const metas=savedMatchSetterMeta(match);
+  match.playerIdentities=match.playerIdentities&&typeof match.playerIdentities==='object'?match.playerIdentities:{};
+  metas.forEach(meta=>{
+    const old=meta.playerId||match.playerIdentities[String(meta.num||'')];
+    const id=ensureStablePlayerId(meta.name,meta.num,old);
+    if(id) match.playerIdentities[String(meta.num||'')]=id;
+  });
+  match.schemaVersion=Math.max(Number(match.schemaVersion||0),95);
+  return match;
+}
+function getSavedMatches(){
+  try{
+    const list=JSON.parse(localStorage.getItem(savedMatchesKey())||'[]') || [];
+    let changed=false;
+    list.forEach(m=>{ const before=JSON.stringify(m.playerIdentities||{}); migrateSavedMatchIdentities(m); if(before!==JSON.stringify(m.playerIdentities||{})) changed=true; });
+    if(changed) localStorage.setItem(savedMatchesKey(),JSON.stringify(list));
+    return list;
+  }catch(e){return [];}
+}
+function setSavedMatches(list){ localStorage.setItem(savedMatchesKey(), JSON.stringify((list||[]).map(migrateSavedMatchIdentities))); }
 function suggestedMatchName(){
   const d=new Date();
   const day=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
@@ -2433,7 +2478,9 @@ function saveCurrentMatch(){
     savedAt:new Date().toISOString(),
     memo:memoEl ? memoEl.value : '',
     csv:importedCsv,
-    summary
+    summary,
+    schemaVersion:95,
+    playerIdentities:Object.fromEntries(savedMatchSetterMeta({csv:importedCsv}).map(meta=>[String(meta.num||''),ensureStablePlayerId(meta.name,meta.num,meta.playerId)]).filter(x=>x[0]&&x[1]))
   };
   list.unshift(saved);
   setSavedMatches(list.slice(0,50));
@@ -2714,9 +2761,9 @@ function normalizeGrowthPlayerName(value){
 function growthPlayerIdentity(meta){
   const num=String(meta?.num||'').trim();
   const name=String(meta?.name||'').trim();
+  const playerId=String(meta?.playerId||'').trim() || ensureStablePlayerId(name,num);
+  if(playerId) return `id:${playerId}`;
   const normalizedName=normalizeGrowthPlayerName(name);
-  // 成長履歴は選手本人を追跡するため、名前がある場合は名前を優先する。
-  // これにより #4 けんと → #5 けんと でも同一人物として集計できる。
   if(normalizedName) return `name:${normalizedName}`;
   return num && num!=='-' && num!=='0' ? `num:${num}` : 'unknown';
 }
@@ -2758,7 +2805,11 @@ function savedMatchSetterMeta(match){
   try{
     const parsed=match?.csv||{};
     const explicit=importedSetterMeta(parsed);
-    return explicit.length ? explicit : inferLegacySetterMeta(parsed);
+    const metas=explicit.length ? explicit : inferLegacySetterMeta(parsed);
+    return metas.map(meta=>{
+      const stored=match?.playerIdentities?.[String(meta.num||'')] || meta.playerId || '';
+      return {...meta,playerId:ensureStablePlayerId(meta.name,meta.num,stored)};
+    });
   }catch(e){return [];}
 }
 function allGrowthPlayers(saved){
@@ -2780,10 +2831,10 @@ function renderGrowthPlayerSelector(saved){
   const players=allGrowthPlayers(saved);
   let wanted=localStorage.getItem(growthPlayerStorageKey())||localStorage.getItem('setterTheoryGrowthPlayerV1')||'team';
   select.innerHTML='<option value="team">チーム全体</option>'+players.map(p=>`<option value="${escapeHtml(p.key)}">#${escapeHtml(p.num)} ${escapeHtml(p.name||'名前未登録')}</option>`).join('');
-  // V93.8で保存された name:形式の選択値を、背番号優先の新形式へ自動移行する。
-  if(wanted.startsWith('name:')){
-    const oldName=wanted.slice(5);
-    const migrated=players.find(p=>p.name===oldName);
+  // 旧 name:/num: 形式の選択値を固定 playerId 形式へ自動移行する。
+  if(wanted.startsWith('name:') || wanted.startsWith('num:')){
+    const oldValue=wanted.slice(wanted.indexOf(':')+1);
+    const migrated=players.find(p=>normalizeGrowthPlayerName(p.name)===normalizeGrowthPlayerName(oldValue) || String(p.num)===String(oldValue));
     if(migrated) wanted=migrated.key;
   }
   const valid=[...select.options].some(o=>o.value===wanted)?wanted:'team';
@@ -2802,23 +2853,32 @@ function savedMatchSetterSummary(match,meta){
   const rows=match?.csv?.data||[];
   const role=String(meta?.role||'').trim();
   const num=String(meta?.num||'').trim();
+  const playerId=String(meta?.playerId||'').trim();
   const nameKey=normalizeGrowthPlayerName(meta?.name||'');
+  const candidates=[];
   for(const r of rows){
     if(String(r?.[0]||'').trim()!=='SetterSummary') continue;
-    // 見出し行は除外
     if(String(r?.[1]||'').trim()==='Role') continue;
     const rowRole=String(r?.[1]||'').trim();
     const rowNum=String(r?.[2]||'').trim();
     const rowName=String(r?.[3]||'').trim();
-    if((role && rowRole===role) || (num && rowNum===num) || (nameKey && normalizeGrowthPlayerName(rowName)===nameKey)){
-      return {
-        setterIq:Number(r?.[4]||0), total:Number(r?.[5]||0), miss:Number(r?.[6]||0),
-        successRate:Number(r?.[7]||0),
-        counts:{レフト:Number(r?.[8]||0),センター:Number(r?.[9]||0),ライト:Number(r?.[10]||0),バック:Number(r?.[11]||0),ツー:Number(r?.[12]||0)}
-      };
-    }
+    const rowPlayerId=String(r?.[13]||'').trim();
+    let score=0;
+    if(playerId && rowPlayerId && playerId===rowPlayerId) score=100;
+    else if(nameKey && normalizeGrowthPlayerName(rowName)===nameKey) score=80;
+    else if(num && rowNum===num) score=60;
+    else if(!playerId && !nameKey && !num && role && rowRole===role) score=20;
+    if(score) candidates.push({score,row:r});
   }
-  return null;
+  if(!candidates.length) return null;
+  const r=candidates.sort((a,b)=>b.score-a.score)[0].row;
+  const total=Math.max(0,Number(r?.[5]||0));
+  const miss=Math.max(0,Math.min(total,Number(r?.[6]||0)));
+  return {
+    setterIq:Number(r?.[4]||0), total, miss,
+    successRate:total?Math.round((total-miss)/total*1000)/10:0,
+    counts:{レフト:Number(r?.[8]||0),センター:Number(r?.[9]||0),ライト:Number(r?.[10]||0),バック:Number(r?.[11]||0),ツー:Number(r?.[12]||0)}
+  };
 }
 function analyzeSetterForSavedMatch(match,key){
   const metas=savedMatchSetterMeta(match);
@@ -3018,22 +3078,23 @@ function importedSetterMeta(parsed){
   const nameCol=find(['Name','選手名']);
   const roleCol=find(['SetterRole','セッター区分','Role']);
   const found=[];
-  const push=(role,num,name)=>{
+  const push=(role,num,name,playerId='')=>{
     num=String(num||'').trim();
     name=String(name||'').trim();
     role=String(role||'').trim();
+    playerId=String(playerId||'').trim();
     if(!num || num==='-' || num==='0' || /^number$/i.test(num)) return;
     const order=(role.match(/(\d+)/)||[])[1] ? Number((role.match(/(\d+)/)||[])[1]) : 99;
-    if(!found.some(x=>x.num===num)) found.push({role,num,name,order});
-    else if(name){ const x=found.find(x=>x.num===num); if(x&&!x.name)x.name=name; }
+    if(!found.some(x=>x.num===num)) found.push({role,num,name,playerId,order});
+    else { const x=found.find(x=>x.num===num); if(x&&name&&!x.name)x.name=name; if(x&&playerId&&!x.playerId)x.playerId=playerId; }
   };
 
   // downloadCSV() が末尾へ追加する可変幅のSetterSummary行を読む。
   rows.forEach(r=>{
     if(String(getCell(r,[noCol])||'').trim()!=='SetterSummary') return;
-    const role=getCell(r,[setCol]);
+    const role=String(r?.[1]||'').trim();
     if(!/^Setter\d+$/i.test(role)) return; // 見出し行は除外
-    push(role,getCell(r,[rotCol]),getCell(r,[typeCol]));
+    push(role,r?.[2],r?.[3],r?.[13]);
   });
 
   // Summaryが無い旧CSVでは、通常ログ行のSetterRole列から復元する。

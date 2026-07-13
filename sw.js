@@ -1,4 +1,4 @@
-const CACHE_NAME = 'setter-theory-v94-growth-identity-rate-fix';
+const CACHE_NAME = 'setter-theory-v95-player-id-growth-fix';
 const ASSETS=['./','index.html','app.js?v=93-7-home-dashboard-fix','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
