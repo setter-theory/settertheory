@@ -1,4 +1,4 @@
-// V96: correct cumulative growth deltas and player-growth comments
+// V97: database integrity, stable IDs, schema migration, and save validation
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -14,6 +14,46 @@ let s = {
   mode:"スパイク", result:"成功", logs:[], hist:[],
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
+
+const DATA_SCHEMA_VERSION = 97;
+function createEntityId(prefix){
+  try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
+}
+function ensureAppIdentity(state){
+  state=state&&typeof state==='object'?state:{};
+  state.dataVersion=DATA_SCHEMA_VERSION;
+  state.userId=String(state.userId||localStorage.getItem('setterTheoryUserId')||createEntityId('user'));
+  localStorage.setItem('setterTheoryUserId',state.userId);
+  state.teamId=String(state.teamId||localStorage.getItem('setterTheoryTeamId')||createEntityId('team'));
+  localStorage.setItem('setterTheoryTeamId',state.teamId);
+  state.matchId=String(state.matchId||createEntityId('match'));
+  state.setId=String(state.setId||`${state.matchId}_set_${state.setNo||1}`);
+  state.playerIdentities=state.playerIdentities&&typeof state.playerIdentities==='object'&&!Array.isArray(state.playerIdentities)?state.playerIdentities:{};
+  const nums=[...(state.nums||[]),...Object.keys(state.players||{})].map(String);
+  nums.forEach(num=>{
+    const name=String((state.players||{})[num]||'').trim();
+    const id=ensureStablePlayerId(name,num,state.playerIdentities[num]);
+    if(id) state.playerIdentities[num]=id;
+  });
+  return state;
+}
+function validateStateForSave(state){
+  ensureAppIdentity(state);
+  if(!Array.isArray(state.logs)) state.logs=[];
+  if(!Array.isArray(state.hist)) state.hist=[];
+  if(!state.players||typeof state.players!=='object'||Array.isArray(state.players)) state.players={};
+  if(!Array.isArray(state.nums)) state.nums=[];
+  state.logs=state.logs.filter(x=>x&&typeof x==='object').map((x,i)=>({
+    ...x,
+    logId:String(x.logId||`${state.matchId}_log_${i+1}`),
+    matchId:String(x.matchId||state.matchId),
+    setId:String(x.setId||state.setId),
+    playerId:String(x.playerId||state.playerIdentities?.[String(x.num||'')]||'')
+  }));
+  return state;
+}
+
 let setupSelected = 0;
 let setupCarry = null;
 let setupHoldTimer = null;
@@ -484,6 +524,7 @@ function goHome(){
 function save(){
   try{
     s.lastSavedAt=new Date().toISOString();
+    validateStateForSave(s);
     localStorage.setItem("setterTheoryV2", JSON.stringify(s));
   }catch(e){
     console.error("autosave failed",e);
@@ -494,6 +535,7 @@ function load(){
   if(x){
     try{s=JSON.parse(x);}catch(e){}
   }
+  ensureAppIdentity(s);
   if(!s.positions) s.positions=defaultPositions.slice();
   if(!s.hist) s.hist=[];
   if(!s.logs) s.logs=[];
@@ -514,7 +556,9 @@ function load(){
   if(s.lastSavedAt===undefined) s.lastSavedAt=null;
   if(!s.substitutionCounts || typeof s.substitutionCounts!=="object" || Array.isArray(s.substitutionCounts)) s.substitutionCounts={};
   s.nums.forEach(n=>{ if(s.players[n]===undefined) s.players[n]=""; });
+  validateStateForSave(s);
 }
+
 function snap(){
   s.hist.push(JSON.stringify({...s,hist:[]}));
   if(s.hist.length>300)s.hist.shift();
@@ -931,6 +975,10 @@ function startMatch(){
   s.setterIndex=Math.max(0,starters.indexOf(String(s.setterNums[0])));
   s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
   s.matchActive=true; s.matchStartedAt=new Date().toISOString();
+  s.matchId=createEntityId('match');
+  s.setId=`${s.matchId}_set_${s.setNo||1}`;
+  s.playerIdentities={};
+  ensureAppIdentity(s);
   save(); show("match");
 }
 function pointByResult(result){
@@ -1972,6 +2020,8 @@ function downloadCSV(){
     rows.push([x.no,x.set,x.rot,x.type,x.num,getPlayerName(x.num),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,ensureStablePlayerId(getPlayerName(x.num),x.num)]);
   });
   rows.push([]);
+  rows.push(["Metadata","DataVersion",DATA_SCHEMA_VERSION,"UserId",s.userId||"","TeamId",s.teamId||"","MatchId",s.matchId||"","SetId",s.setId||""]);
+  rows.push([]);
   rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two","PlayerId"]);
   setterNumbers().forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0,ensureStablePlayerId(a.name,n)]);});
   rows.push([]);
@@ -2400,10 +2450,7 @@ function buildCoachCards(a){
 
 function savedMatchesKey(){ return 'setterTheorySavedMatchesV21'; }
 function playerRegistryKey(){ return 'setterTheoryPlayerRegistryV1'; }
-function createStablePlayerId(){
-  try{ if(globalThis.crypto && crypto.randomUUID) return `player_${crypto.randomUUID()}`; }catch(e){}
-  return `player_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
-}
+function createStablePlayerId(){ return createEntityId('player'); }
 function getPlayerRegistry(){
   try{ const v=JSON.parse(localStorage.getItem(playerRegistryKey())||'{}'); return v&&typeof v==='object'&&!Array.isArray(v)?v:{}; }catch(e){ return {}; }
 }
@@ -2428,6 +2475,13 @@ function ensureStablePlayerId(name,num='',preferredId=''){
 }
 function migrateSavedMatchIdentities(match){
   if(!match || typeof match!=='object') return match;
+  match.dataVersion=DATA_SCHEMA_VERSION;
+  match.schemaVersion=DATA_SCHEMA_VERSION;
+  match.userId=String(match.userId||localStorage.getItem('setterTheoryUserId')||createEntityId('user'));
+  match.teamId=String(match.teamId||localStorage.getItem('setterTheoryTeamId')||createEntityId('team'));
+  match.id=String(match.id||createEntityId('match'));
+  match.matchId=String(match.matchId||match.id);
+  match.setId=String(match.setId||`${match.matchId}_set_${match?.csv?.setNo||1}`);
   const metas=savedMatchSetterMeta(match);
   match.playerIdentities=match.playerIdentities&&typeof match.playerIdentities==='object'?match.playerIdentities:{};
   metas.forEach(meta=>{
@@ -2435,14 +2489,18 @@ function migrateSavedMatchIdentities(match){
     const id=ensureStablePlayerId(meta.name,meta.num,old);
     if(id) match.playerIdentities[String(meta.num||'')]=id;
   });
-  match.schemaVersion=Math.max(Number(match.schemaVersion||0),95);
+  if(match.csv&&typeof match.csv==='object'){
+    match.csv.dataVersion=DATA_SCHEMA_VERSION;
+    match.csv.matchId=match.matchId;
+    match.csv.setId=match.setId;
+  }
   return match;
 }
 function getSavedMatches(){
   try{
     const list=JSON.parse(localStorage.getItem(savedMatchesKey())||'[]') || [];
     let changed=false;
-    list.forEach(m=>{ const before=JSON.stringify(m.playerIdentities||{}); migrateSavedMatchIdentities(m); if(before!==JSON.stringify(m.playerIdentities||{})) changed=true; });
+    list.forEach(m=>{ const before=JSON.stringify(m); migrateSavedMatchIdentities(m); if(before!==JSON.stringify(m)) changed=true; });
     if(changed) localStorage.setItem(savedMatchesKey(),JSON.stringify(list));
     return list;
   }catch(e){return [];}
@@ -2472,14 +2530,19 @@ function saveCurrentMatch(){
   const list=getSavedMatches();
   const summary=currentAnalysisSummary();
   const saved={
-    id:`match_${Date.now()}`,
+    id:createEntityId('match'),
     title,
     fileName:importedCsv.fileName || 'CSV',
     savedAt:new Date().toISOString(),
     memo:memoEl ? memoEl.value : '',
     csv:importedCsv,
     summary,
-    schemaVersion:95,
+    dataVersion:DATA_SCHEMA_VERSION,
+    schemaVersion:DATA_SCHEMA_VERSION,
+    userId:String(s.userId||localStorage.getItem('setterTheoryUserId')||''),
+    teamId:String(s.teamId||localStorage.getItem('setterTheoryTeamId')||''),
+    matchId:String(s.matchId||createEntityId('match')),
+    setId:String(s.setId||''),
     playerIdentities:Object.fromEntries(savedMatchSetterMeta({csv:importedCsv}).map(meta=>[String(meta.num||''),ensureStablePlayerId(meta.name,meta.num,meta.playerId)]).filter(x=>x[0]&&x[1]))
   };
   list.unshift(saved);

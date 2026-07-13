@@ -16,3 +16,6 @@ V93.7: ホーム画面の保存試合・試合比較・成長ダッシュボー�
 - 個人成長ダッシュボードの累計トス成功率・累計トスミス率の差分を、最新試合追加前の累計との比較に修正。
 - 累計93.3%の横に-100%など、試合単体比較による誤解を招く表示を解消。
 - Aquilaコメントも同じ累計差分を使用。
+
+
+V97: Database integrity update. Added dataVersion/userId/teamId/matchId/setId, stable player identity migration, and save-time validation.
