@@ -1,4 +1,4 @@
-// V98.8: setup court fit and Setter IQ text contrast fix
+// V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
 
@@ -16,7 +16,7 @@ let s = {
   matchActive:false, matchStartedAt:null, lastSavedAt:null
 };
 
-const DATA_SCHEMA_VERSION = 987;
+const DATA_SCHEMA_VERSION = 990;
 function createEntityId(prefix){
   try{ if(globalThis.crypto && crypto.randomUUID) return `${prefix}_${crypto.randomUUID()}`; }catch(e){}
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -1354,13 +1354,37 @@ function returnToMatchFromReport(){
   render();
 }
 
+function describeLogForField(log){
+  if(!log) return "まだ記録はありません";
+  const player = log.num && log.num!=="-" ? `${log.num}番${log.playerName||getPlayerName(log.num)||""}` : "";
+  const play = [log.type, log.result].filter(Boolean).join(" / ");
+  const score = log.score ? `｜${log.score}` : "";
+  return [player, play].filter(Boolean).join("｜") + score;
+}
+function updateFieldReadyStatus(){
+  const last=(s.logs||[])[(s.logs||[]).length-1]||null;
+  const lastEl=document.getElementById("lastActionText");
+  if(lastEl) lastEl.textContent=describeLogForField(last);
+  const saveEl=document.getElementById("autosaveStateText");
+  if(saveEl){
+    saveEl.textContent=s.lastSavedAt ? "自動保存済" : "自動保存";
+    saveEl.classList.toggle("saved",!!s.lastSavedAt);
+  }
+  const canUndo=Array.isArray(s.hist)&&s.hist.length>0;
+  document.querySelectorAll('.undoBtn').forEach(btn=>{
+    btn.disabled=!canUndo;
+    btn.setAttribute('aria-disabled',canUndo?'false':'true');
+  });
+}
 function undo(){
+  const before=(s.logs||[])[(s.logs||[]).length-1]||null;
   const h=s.hist.pop();
-  if(!h){ alert("取り消す記録がありません"); return; }
+  if(!h){ showInputToast("取り消す記録がありません"); return; }
   const keep=s.hist;
   s=JSON.parse(h);
   s.hist=keep;
   save(); render();
+  showInputToast(before ? `取り消しました：${describeLogForField(before)}` : "直前の操作を取り消しました");
 }
 function clearLogs(){
   if(!confirm("すべての記録を消しますか？")) return;
@@ -1439,6 +1463,7 @@ function render(){
   document.querySelectorAll(".fastBtn").forEach(b=>b.classList.remove("active"));
   applyInputView();
   renderMatchNumberBank();
+  updateFieldReadyStatus();
   quick();
 }
 function renderMatchNumberBank(){
