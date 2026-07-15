@@ -2176,7 +2176,6 @@ function report(){
       <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
-    <div class="reportPanel tossHeatmapPanel">${buildTossHeatmap()}</div>
     <div class="bottomGrid">
       <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
@@ -2830,34 +2829,18 @@ function saveCurrentMatch(){
   alert('試合を保存しました。');
 }
 function loadSavedMatch(id){
-  try{
-    const m=getSavedMatches().find(x=>String(x.id)===String(id));
-    if(!m){ alert('保存データが見つかりません。'); return; }
-    let csv=m.csv || m.importedCsv || m.data || null;
-    if(!csv){ alert('この保存試合にはレポート用データがありません。'); return; }
-    // 旧版保存形式（配列のみ／dataのみ）も現在のCSV形式へ正規化する。
-    if(Array.isArray(csv)) csv={fileName:m.fileName||m.title||'保存済みCSV',headers:Object.keys(csv[0]||{}),data:csv};
-    if(csv && !Array.isArray(csv.data) && Array.isArray(m.data)) csv={fileName:m.fileName||m.title||'保存済みCSV',headers:Object.keys(m.data[0]||{}),data:m.data};
-    if(csv && Array.isArray(csv.data) && !Array.isArray(csv.headers)) csv.headers=Object.keys(csv.data[0]||{});
-    importedCsv=csv;
-    localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
-    show('home');
-    renderCsvAnalysis(importedCsv);
-    renderCsvPreview(importedCsv, importedCsv.fileName || m.fileName || m.title || '保存済みCSV');
+  const m=getSavedMatches().find(x=>x.id===id);
+  if(!m){ alert('保存データが見つかりません。'); return; }
+  importedCsv=m.csv;
+  localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
+  renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
+  renderCsvAnalysis(importedCsv);
+  setTimeout(()=>{
     const memo=document.getElementById('setterMemo');
     if(memo) memo.value=m.memo || '';
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        const card=document.getElementById('csvImportCard');
-        const box=document.getElementById('csvAnalysisBox');
-        const target=(box && box.innerHTML.trim()) ? box : card;
-        if(target) target.scrollIntoView({behavior:'auto',block:'start'});
-      });
-    });
-  }catch(err){
-    console.error('saved report open failed',err);
-    alert('保存試合のレポートを開けませんでした。データ形式を確認してください。');
-  }
+    const box=document.getElementById('csvAnalysisBox');
+    if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
+  },0);
 }
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
@@ -2898,7 +2881,7 @@ function renderSavedMatches(){
       </div>
       <div class="savedMatchActions">
         <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
-        <button class="miniBtn savedReportBtn" type="button" data-saved-report-id="${escapeHtml(String(m.id))}">Report</button>
+        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">Report</button>
         <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
         <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
       </div>
@@ -2906,21 +2889,6 @@ function renderSavedMatches(){
   }).join('');
 }
 
-// V102.4: iPad Safariでも保存試合Reportタップを確実に拾う。
-(function bindSavedReportDelegation(){
-  let lastTouchAt=0;
-  function openFromEvent(e){
-    const btn=e.target && e.target.closest ? e.target.closest('[data-saved-report-id]') : null;
-    if(!btn) return;
-    if(e.type==='click' && Date.now()-lastTouchAt<700) return;
-    if(e.type==='touchend') lastTouchAt=Date.now();
-    e.preventDefault();
-    e.stopPropagation();
-    loadSavedMatch(btn.getAttribute('data-saved-report-id'));
-  }
-  document.addEventListener('click',openFromEvent,false);
-  document.addEventListener('touchend',openFromEvent,{passive:false});
-})();
 
 function matchOptionLabel(m){
   const d=m.savedAt ? new Date(m.savedAt) : new Date();
