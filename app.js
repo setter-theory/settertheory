@@ -1861,40 +1861,6 @@ function buildRotationPointAnalysis(){
   </div>`;
 }
 
-function buildTossHeatmap(){
-  try{
-  const logs=(s && Array.isArray(s.logs)) ? s.logs : [];
-  const toss=logs.filter(x=>x && x.type==="トス");
-  const labels=["レフト","センター","ライト","バック","ツー"];
-  const data={};
-  labels.forEach(label=>{
-    const count=toss.filter(x=>x.result===label).length;
-    data[label]={count,pct:safePct(count,toss.length)};
-  });
-  const alpha=pct=>pct<=0?0.05:Math.min(0.92,0.18+(pct/100)*1.15);
-  const zone=(label,cls)=>{
-    const x=data[label];
-    return `<div class="tossHeatZone ${cls}" style="--heat:${alpha(x.pct)}"><span>${label}</span><b>${x.pct}%</b><small>${x.count}本</small></div>`;
-  };
-  return `<div class="tossHeatmapWrap">
-    <div class="tossHeatmapHead"><div><b>トスヒートマップ</b><small>色が濃いほど使用率が高い</small></div><div class="tossHeatTotal">総トス <b>${toss.length}</b>本</div></div>
-    <div class="tossHeatCourt ${toss.length?'':'isEmpty'}">
-      <div class="tossHeatNet"><span>NET</span></div>
-      ${zone("レフト","heatLeft")}
-      ${zone("センター","heatCenter")}
-      ${zone("ライト","heatRight")}
-      ${zone("バック","heatBack")}
-      ${zone("ツー","heatTwo")}
-      ${toss.length?'':`<div class="tossHeatEmpty">トス先を記録すると<br>ここにヒートマップが表示されます</div>`}
-    </div>
-    <div class="tossHeatScale"><span>低</span><i></i><span>高</span></div>
-  </div>`;
-  }catch(err){
-    console.error("toss heatmap render failed",err);
-    return `<div class="tossHeatmapWrap"><div class="tossHeatmapHead"><div><b>トスヒートマップ</b><small>ヒートマップのみ表示できませんでした</small></div></div></div>`;
-  }
-}
-
 function buildTossUsageAnalysis(){
   const toss=s.logs.filter(x=>x.type==="トス");
   const labels=["レフト","センター","ライト","バック","ツー"];
@@ -2889,7 +2855,6 @@ function renderSavedMatches(){
   }).join('');
 }
 
-
 function matchOptionLabel(m){
   const d=m.savedAt ? new Date(m.savedAt) : new Date();
   const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
@@ -3558,10 +3523,7 @@ function printCsvReport(){
 function renderCsvAnalysis(parsed){
   const box=document.getElementById('csvAnalysisBox');
   if(!box) return;
-  try{
-  if(Array.isArray(parsed)) parsed={headers:Object.keys(parsed[0]||{}),data:parsed};
-  if(parsed && Array.isArray(parsed.data) && !Array.isArray(parsed.headers)) parsed.headers=Object.keys(parsed.data[0]||{});
-  if(!parsed || !Array.isArray(parsed.data) || !parsed.data.length){ box.style.display='none'; box.innerHTML=''; return; }
+  if(!parsed || !(parsed.data||[]).length){ box.style.display='none'; box.innerHTML=''; return; }
   const unified=buildImportedUnifiedReport(parsed);
   const a=analyzeImportedCsv(parsed);
   const csvRank=setterIqRank(a.setterIq||0);
@@ -3575,11 +3537,6 @@ function renderCsvAnalysis(parsed){
     <div class="saveCurrentBox"><input id="matchSaveName" value="${escapeHtml(suggestedMatchName())}" placeholder="試合名"><button class="csvFileBtn" type="button" onclick="saveCurrentMatch()">💾 この試合を保存</button></div>
     <div class="csvMemo"><b>📝 セッター思考メモ</b><textarea id="setterMemo" placeholder="例：相手MBがライト寄りだったので、序盤にセンターを見せてからレフトを使った。"></textarea><div class="csvSmall">このメモは保存データに残せます。</div></div>
   `;
-  }catch(err){
-    console.error("CSV report render failed",err);
-    box.style.display='block';
-    box.innerHTML=`<div class="reportPanel"><h3>レポートを表示できませんでした</h3><p style="font-weight:800;line-height:1.6">CSV自体は読み込めています。旧形式の保存データにも対応するため、もう一度この画面を開いてください。</p></div>`;
-  }
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
