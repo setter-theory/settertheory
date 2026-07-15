@@ -1862,31 +1862,44 @@ function buildRotationPointAnalysis(){
 }
 
 function buildTossHeatmap(){
-  const toss=s.logs.filter(x=>x.type==="トス");
-  const labels=["レフト","センター","ライト","バック","ツー"];
-  const data={};
-  labels.forEach(label=>{
-    const count=toss.filter(x=>x.result===label).length;
-    data[label]={count,pct:safePct(count,toss.length)};
-  });
-  const alpha=pct=>pct<=0?0.05:Math.min(0.92,0.18+(pct/100)*1.15);
-  const zone=(label,cls)=>{
-    const x=data[label];
-    return `<div class="tossHeatZone ${cls}" style="--heat:${alpha(x.pct)}"><span>${label}</span><b>${x.pct}%</b><small>${x.count}本</small></div>`;
-  };
-  return `<div class="tossHeatmapWrap">
-    <div class="tossHeatmapHead"><div><b>トスヒートマップ</b><small>色が濃いほど使用率が高い</small></div><div class="tossHeatTotal">総トス <b>${toss.length}</b>本</div></div>
-    <div class="tossHeatCourt ${toss.length?'':'isEmpty'}">
-      <div class="tossHeatNet"><span>NET</span></div>
-      ${zone("レフト","heatLeft")}
-      ${zone("センター","heatCenter")}
-      ${zone("ライト","heatRight")}
-      ${zone("バック","heatBack")}
-      ${zone("ツー","heatTwo")}
-      ${toss.length?'':`<div class="tossHeatEmpty">トス先を記録すると<br>ここにヒートマップが表示されます</div>`}
-    </div>
-    <div class="tossHeatScale"><span>低</span><i></i><span>高</span></div>
-  </div>`;
+  // Older saved matches and imported CSV files may not contain the fields
+  // introduced for the heatmap. In that case, skip only the heatmap so the
+  // rest of the match report can still be rendered.
+  try{
+    const logs=(s && Array.isArray(s.logs))
+      ? s.logs.filter(x=>x && typeof x==="object")
+      : [];
+    if(!logs.length) return "";
+
+    const toss=logs.filter(x=>x.type==="トス");
+    const labels=["レフト","センター","ライト","バック","ツー"];
+    const data={};
+    labels.forEach(label=>{
+      const count=toss.filter(x=>x.result===label).length;
+      data[label]={count,pct:safePct(count,toss.length)};
+    });
+    const alpha=pct=>pct<=0?0.05:Math.min(0.92,0.18+(pct/100)*1.15);
+    const zone=(label,cls)=>{
+      const x=data[label];
+      return `<div class="tossHeatZone ${cls}" style="--heat:${alpha(x.pct)}"><span>${label}</span><b>${x.pct}%</b><small>${x.count}本</small></div>`;
+    };
+    return `<div class="tossHeatmapWrap">
+      <div class="tossHeatmapHead"><div><b>トスヒートマップ</b><small>色が濃いほど使用率が高い</small></div><div class="tossHeatTotal">総トス <b>${toss.length}</b>本</div></div>
+      <div class="tossHeatCourt ${toss.length?'':'isEmpty'}">
+        <div class="tossHeatNet"><span>NET</span></div>
+        ${zone("レフト","heatLeft")}
+        ${zone("センター","heatCenter")}
+        ${zone("ライト","heatRight")}
+        ${zone("バック","heatBack")}
+        ${zone("ツー","heatTwo")}
+        ${toss.length?'':`<div class="tossHeatEmpty">トス先を記録すると<br>ここにヒートマップが表示されます</div>`}
+      </div>
+      <div class="tossHeatScale"><span>低</span><i></i><span>高</span></div>
+    </div>`;
+  }catch(err){
+    console.warn("Toss heatmap skipped:",err);
+    return "";
+  }
 }
 
 function buildTossUsageAnalysis(){

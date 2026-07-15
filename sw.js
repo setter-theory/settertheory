@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v103-report-cache-recovery';
-const APP_JS = './app.js?v=103-report-cache-recovery';
+const CACHE_NAME = 'setter-theory-v103-1-heatmap-guard';
+const APP_JS = './app.js?v=103-1-heatmap-guard';
 const ASSETS = [
   './',
   './index.html',
