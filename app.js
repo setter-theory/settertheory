@@ -2823,58 +2823,20 @@ function saveCurrentMatch(){
   renderSavedMatches();
   alert('試合を保存しました。');
 }
-function normalizeSavedCsvPayload(match){
-  if(!match || typeof match!=='object') return null;
-  let csv=match.csv || match.importedCsv || match.parsed || null;
-  if(typeof csv==='string'){
-    try{ csv=JSON.parse(csv); }catch(e){ return null; }
-  }
-  if(Array.isArray(csv)) csv={data:csv,fileName:match.fileName||match.title||'保存済みCSV'};
-  if(csv && !Array.isArray(csv.data)){
-    if(Array.isArray(csv.rows)) csv={...csv,data:csv.rows};
-    else if(Array.isArray(csv.records)) csv={...csv,data:csv.records};
-  }
-  return csv && Array.isArray(csv.data) ? csv : null;
-}
 function loadSavedMatch(id){
-  try{
-    const m=getSavedMatches().find(x=>String(x.id)===String(id));
-    if(!m){ alert('保存データが見つかりません。'); return; }
-    const savedCsv=normalizeSavedCsvPayload(m);
-    if(!savedCsv){
-      alert('この保存試合のデータ形式を読み込めません。');
-      return;
-    }
-    importedCsv=savedCsv;
-    localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
-    renderCsvPreview(importedCsv, importedCsv.fileName || m.fileName || m.title || '保存済みCSV');
-    renderCsvAnalysis(importedCsv);
-    setTimeout(()=>{
-      const memo=document.getElementById('setterMemo');
-      if(memo) memo.value=m.memo || '';
-      const box=document.getElementById('csvAnalysisBox');
-      if(box){
-        box.style.display='block';
-        box.scrollIntoView({behavior:'smooth',block:'start'});
-      }
-    },0);
-  }catch(err){
-    console.error('saved match report open failed',err);
-    alert('保存した試合のレポートを開けませんでした。画面を再読み込みして、もう一度お試しください。');
-  }
+  const m=getSavedMatches().find(x=>x.id===id);
+  if(!m){ alert('保存データが見つかりません。'); return; }
+  importedCsv=m.csv;
+  localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
+  renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
+  renderCsvAnalysis(importedCsv);
+  setTimeout(()=>{
+    const memo=document.getElementById('setterMemo');
+    if(memo) memo.value=m.memo || '';
+    const box=document.getElementById('csvAnalysisBox');
+    if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
+  },0);
 }
-window.loadSavedMatch=loadSavedMatch;
-
-function openSavedReport(event,button){
-  if(event){ event.preventDefault(); event.stopPropagation(); }
-  const id=button && button.dataset ? button.dataset.savedId : '';
-  if(!id) return false;
-  loadSavedMatch(id);
-  return false;
-}
-window.openSavedReport=openSavedReport;
-
-
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
   setSavedMatches(getSavedMatches().filter(x=>x.id!==id));
@@ -2914,7 +2876,7 @@ function renderSavedMatches(){
       </div>
       <div class="savedMatchActions">
         <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
-        <button class="miniBtn savedReportBtn" type="button" data-saved-id="${escapeHtml(String(m.id||''))}" onclick="return openSavedReport(event,this)">Report</button>
+        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">Report</button>
         <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
         <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
       </div>
@@ -3607,20 +3569,6 @@ function renderCsvAnalysis(parsed){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-  const savedList=document.getElementById('savedMatchList');
-  if(savedList){
-    const handleSavedReport=(e)=>{
-      const target=e.target && e.target.closest ? e.target.closest('.savedReportBtn') : null;
-      if(!target) return;
-      // Inline onclick is the primary iPad-safe path. This is a fallback for cached markup.
-      if(e.type==='click' && target.getAttribute('onclick')) return;
-      e.preventDefault();
-      e.stopPropagation();
-      openSavedReport(e,target);
-    };
-    savedList.addEventListener('click',handleSavedReport,false);
-    savedList.addEventListener('touchend',handleSavedReport,{passive:false});
-  }
   setupCsvImport();
   renderSavedMatches();
   renderCompareSelectors();
