@@ -2824,19 +2824,33 @@ function saveCurrentMatch(){
   alert('試合を保存しました。');
 }
 function loadSavedMatch(id){
-  const m=getSavedMatches().find(x=>x.id===id);
-  if(!m){ alert('保存データが見つかりません。'); return; }
-  importedCsv=m.csv;
-  localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
-  renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
-  renderCsvAnalysis(importedCsv);
-  setTimeout(()=>{
-    const memo=document.getElementById('setterMemo');
-    if(memo) memo.value=m.memo || '';
-    const box=document.getElementById('csvAnalysisBox');
-    if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
-  },0);
+  try{
+    const m=getSavedMatches().find(x=>String(x.id)===String(id));
+    if(!m){ alert('保存データが見つかりません。'); return; }
+    if(!m.csv || !Array.isArray(m.csv.data)){
+      alert('この保存試合のデータ形式を読み込めません。');
+      return;
+    }
+    importedCsv=m.csv;
+    localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
+    renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
+    renderCsvAnalysis(importedCsv);
+    setTimeout(()=>{
+      const memo=document.getElementById('setterMemo');
+      if(memo) memo.value=m.memo || '';
+      const box=document.getElementById('csvAnalysisBox');
+      if(box){
+        box.style.display='block';
+        box.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    },0);
+  }catch(err){
+    console.error('saved match report open failed',err);
+    alert('保存した試合のレポートを開けませんでした。画面を再読み込みして、もう一度お試しください。');
+  }
 }
+window.loadSavedMatch=loadSavedMatch;
+
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
   setSavedMatches(getSavedMatches().filter(x=>x.id!==id));
@@ -2876,7 +2890,7 @@ function renderSavedMatches(){
       </div>
       <div class="savedMatchActions">
         <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
-        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">Report</button>
+        <button class="miniBtn savedReportBtn" type="button" data-saved-id="${escapeHtml(String(m.id||''))}">Report</button>
         <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
         <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
       </div>
@@ -3569,6 +3583,15 @@ function renderCsvAnalysis(parsed){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
+  const savedList=document.getElementById('savedMatchList');
+  if(savedList){
+    savedList.addEventListener('click',(e)=>{
+      const btn=e.target.closest('.savedReportBtn');
+      if(!btn) return;
+      e.preventDefault();
+      loadSavedMatch(btn.dataset.savedId);
+    });
+  }
   setupCsvImport();
   renderSavedMatches();
   renderCompareSelectors();
