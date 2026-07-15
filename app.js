@@ -1862,7 +1862,9 @@ function buildRotationPointAnalysis(){
 }
 
 function buildTossHeatmap(){
-  const toss=s.logs.filter(x=>x.type==="トス");
+  try{
+  const logs=(s && Array.isArray(s.logs)) ? s.logs : [];
+  const toss=logs.filter(x=>x && x.type==="トス");
   const labels=["レフト","センター","ライト","バック","ツー"];
   const data={};
   labels.forEach(label=>{
@@ -1887,6 +1889,10 @@ function buildTossHeatmap(){
     </div>
     <div class="tossHeatScale"><span>低</span><i></i><span>高</span></div>
   </div>`;
+  }catch(err){
+    console.error("toss heatmap render failed",err);
+    return `<div class="tossHeatmapWrap"><div class="tossHeatmapHead"><div><b>トスヒートマップ</b><small>ヒートマップのみ表示できませんでした</small></div></div></div>`;
+  }
 }
 
 function buildTossUsageAnalysis(){
@@ -2827,8 +2833,12 @@ function loadSavedMatch(id){
   try{
     const m=getSavedMatches().find(x=>String(x.id)===String(id));
     if(!m){ alert('保存データが見つかりません。'); return; }
-    const csv=m.csv || m.importedCsv || m.data || null;
+    let csv=m.csv || m.importedCsv || m.data || null;
     if(!csv){ alert('この保存試合にはレポート用データがありません。'); return; }
+    // 旧版保存形式（配列のみ／dataのみ）も現在のCSV形式へ正規化する。
+    if(Array.isArray(csv)) csv={fileName:m.fileName||m.title||'保存済みCSV',headers:Object.keys(csv[0]||{}),data:csv};
+    if(csv && !Array.isArray(csv.data) && Array.isArray(m.data)) csv={fileName:m.fileName||m.title||'保存済みCSV',headers:Object.keys(m.data[0]||{}),data:m.data};
+    if(csv && Array.isArray(csv.data) && !Array.isArray(csv.headers)) csv.headers=Object.keys(csv.data[0]||{});
     importedCsv=csv;
     localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
     show('home');
@@ -3580,7 +3590,10 @@ function printCsvReport(){
 function renderCsvAnalysis(parsed){
   const box=document.getElementById('csvAnalysisBox');
   if(!box) return;
-  if(!parsed || !(parsed.data||[]).length){ box.style.display='none'; box.innerHTML=''; return; }
+  try{
+  if(Array.isArray(parsed)) parsed={headers:Object.keys(parsed[0]||{}),data:parsed};
+  if(parsed && Array.isArray(parsed.data) && !Array.isArray(parsed.headers)) parsed.headers=Object.keys(parsed.data[0]||{});
+  if(!parsed || !Array.isArray(parsed.data) || !parsed.data.length){ box.style.display='none'; box.innerHTML=''; return; }
   const unified=buildImportedUnifiedReport(parsed);
   const a=analyzeImportedCsv(parsed);
   const csvRank=setterIqRank(a.setterIq||0);
@@ -3594,6 +3607,11 @@ function renderCsvAnalysis(parsed){
     <div class="saveCurrentBox"><input id="matchSaveName" value="${escapeHtml(suggestedMatchName())}" placeholder="試合名"><button class="csvFileBtn" type="button" onclick="saveCurrentMatch()">💾 この試合を保存</button></div>
     <div class="csvMemo"><b>📝 セッター思考メモ</b><textarea id="setterMemo" placeholder="例：相手MBがライト寄りだったので、序盤にセンターを見せてからレフトを使った。"></textarea><div class="csvSmall">このメモは保存データに残せます。</div></div>
   `;
+  }catch(err){
+    console.error("CSV report render failed",err);
+    box.style.display='block';
+    box.innerHTML=`<div class="reportPanel"><h3>レポートを表示できませんでした</h3><p style="font-weight:800;line-height:1.6">CSV自体は読み込めています。旧形式の保存データにも対応するため、もう一度この画面を開いてください。</p></div>`;
+  }
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
