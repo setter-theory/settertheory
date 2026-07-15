@@ -1861,6 +1861,34 @@ function buildRotationPointAnalysis(){
   </div>`;
 }
 
+function buildTossHeatmap(){
+  const toss=s.logs.filter(x=>x.type==="トス");
+  const labels=["レフト","センター","ライト","バック","ツー"];
+  const data={};
+  labels.forEach(label=>{
+    const count=toss.filter(x=>x.result===label).length;
+    data[label]={count,pct:safePct(count,toss.length)};
+  });
+  const alpha=pct=>pct<=0?0.05:Math.min(0.92,0.18+(pct/100)*1.15);
+  const zone=(label,cls)=>{
+    const x=data[label];
+    return `<div class="tossHeatZone ${cls}" style="--heat:${alpha(x.pct)}"><span>${label}</span><b>${x.pct}%</b><small>${x.count}本</small></div>`;
+  };
+  return `<div class="tossHeatmapWrap">
+    <div class="tossHeatmapHead"><div><b>トスヒートマップ</b><small>色が濃いほど使用率が高い</small></div><div class="tossHeatTotal">総トス <b>${toss.length}</b>本</div></div>
+    <div class="tossHeatCourt ${toss.length?'':'isEmpty'}">
+      <div class="tossHeatNet"><span>NET</span></div>
+      ${zone("レフト","heatLeft")}
+      ${zone("センター","heatCenter")}
+      ${zone("ライト","heatRight")}
+      ${zone("バック","heatBack")}
+      ${zone("ツー","heatTwo")}
+      ${toss.length?'':`<div class="tossHeatEmpty">トス先を記録すると<br>ここにヒートマップが表示されます</div>`}
+    </div>
+    <div class="tossHeatScale"><span>低</span><i></i><span>高</span></div>
+  </div>`;
+}
+
 function buildTossUsageAnalysis(){
   const toss=s.logs.filter(x=>x.type==="トス");
   const labels=["レフト","センター","ライト","バック","ツー"];
@@ -2142,6 +2170,7 @@ function report(){
       <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
+    <div class="reportPanel tossHeatmapPanel">${buildTossHeatmap()}</div>
     <div class="bottomGrid">
       <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>

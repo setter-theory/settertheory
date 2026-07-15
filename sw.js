@@ -1,8 +1,57 @@
-const CACHE_NAME = 'setter-theory-v99-field-ready';
-const ASSETS=['./','index.html','app.js?v=99-field-ready','manifest.json','sw.js','icons/aquila-192.png','icons/aquila-512.png'];
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET') return;
-  e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put(e.request,copy)).catch(()=>{});return r;}).catch(()=>caches.match(e.request).then(r=>r||caches.match('index.html'))));
+const CACHE_NAME = 'setter-theory-v103-report-cache-recovery';
+const APP_JS = './app.js?v=103-report-cache-recovery';
+const ASSETS = [
+  './',
+  './index.html',
+  APP_JS,
+  './manifest.json',
+  './icons/aquila-192.png',
+  './icons/aquila-512.png'
+];
+
+self.addEventListener('install', event => {
+  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+
+  // HTML navigation must be refreshed first so an installed iPad PWA cannot
+  // keep mixing an old index.html with a new app.js (or the reverse).
+  if (event.request.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
+        const fresh = await fetch('./index.html', { cache: 'no-store' });
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put('./index.html', fresh.clone());
+        return fresh;
+      } catch (_) {
+        return (await caches.match('./index.html')) || Response.error();
+      }
+    })());
+    return;
+  }
+
+  event.respondWith((async () => {
+    try {
+      const fresh = await fetch(event.request, { cache: 'no-store' });
+      if (fresh && fresh.ok && url.origin === self.location.origin) {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(event.request, fresh.clone());
+      }
+      return fresh;
+    } catch (_) {
+      return (await caches.match(event.request)) || Response.error();
+    }
+  })());
 });
