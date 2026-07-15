@@ -2824,18 +2824,30 @@ function saveCurrentMatch(){
   alert('試合を保存しました。');
 }
 function loadSavedMatch(id){
-  const m=getSavedMatches().find(x=>x.id===id);
-  if(!m){ alert('保存データが見つかりません。'); return; }
-  importedCsv=m.csv;
-  localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
-  renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
-  renderCsvAnalysis(importedCsv);
-  setTimeout(()=>{
+  try{
+    const m=getSavedMatches().find(x=>String(x.id)===String(id));
+    if(!m){ alert('保存データが見つかりません。'); return; }
+    const csv=m.csv || m.importedCsv || m.data || null;
+    if(!csv){ alert('この保存試合にはレポート用データがありません。'); return; }
+    importedCsv=csv;
+    localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
+    show('home');
+    renderCsvAnalysis(importedCsv);
+    renderCsvPreview(importedCsv, importedCsv.fileName || m.fileName || m.title || '保存済みCSV');
     const memo=document.getElementById('setterMemo');
     if(memo) memo.value=m.memo || '';
-    const box=document.getElementById('csvAnalysisBox');
-    if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
-  },0);
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const card=document.getElementById('csvImportCard');
+        const box=document.getElementById('csvAnalysisBox');
+        const target=(box && box.innerHTML.trim()) ? box : card;
+        if(target) target.scrollIntoView({behavior:'auto',block:'start'});
+      });
+    });
+  }catch(err){
+    console.error('saved report open failed',err);
+    alert('保存試合のレポートを開けませんでした。データ形式を確認してください。');
+  }
 }
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
@@ -2876,13 +2888,29 @@ function renderSavedMatches(){
       </div>
       <div class="savedMatchActions">
         <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
-        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">Report</button>
+        <button class="miniBtn savedReportBtn" type="button" data-saved-report-id="${escapeHtml(String(m.id))}">Report</button>
         <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
         <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
       </div>
     </div>`;
   }).join('');
 }
+
+// V102.4: iPad Safariでも保存試合Reportタップを確実に拾う。
+(function bindSavedReportDelegation(){
+  let lastTouchAt=0;
+  function openFromEvent(e){
+    const btn=e.target && e.target.closest ? e.target.closest('[data-saved-report-id]') : null;
+    if(!btn) return;
+    if(e.type==='click' && Date.now()-lastTouchAt<700) return;
+    if(e.type==='touchend') lastTouchAt=Date.now();
+    e.preventDefault();
+    e.stopPropagation();
+    loadSavedMatch(btn.getAttribute('data-saved-report-id'));
+  }
+  document.addEventListener('click',openFromEvent,false);
+  document.addEventListener('touchend',openFromEvent,{passive:false});
+})();
 
 function matchOptionLabel(m){
   const d=m.savedAt ? new Date(m.savedAt) : new Date();
