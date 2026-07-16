@@ -1,5 +1,6 @@
-# Setter Theory V107 — Heatmap Layout Only
+Setter Theory V104 Report Recovery
 
-- Based on stable V106
-- Adds static heatmap court layout only
-- No toss data, saved-match data, CSV data, PDF logic, or storage logic is read or changed by the heatmap component
+- V99 app/report logic restored exactly
+- Heatmap removed
+- PWA cache version updated
+- Existing localStorage saved matches are not deleted
