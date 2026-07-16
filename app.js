@@ -2053,6 +2053,43 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
   </div>`;
 }
 
+// V107: static heatmap layout only. No match, saved-match, or CSV data is read here.
+function buildHeatmapLayoutV107(){
+  return `<section class="reportPanel v107HeatmapPanel" aria-label="トスヒートマップ レイアウト確認版">
+    <style>
+      .v107HeatmapPanel{grid-column:1/-1;overflow:hidden}
+      .v107HeatmapHead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+      .v107HeatmapHead h3{margin:0}
+      .v107HeatmapHead p{margin:3px 0 0;color:#64748b;font-size:11px;font-weight:800}
+      .v107HeatmapBadge{flex:0 0 auto;border:1px solid #cbd5e1;border-radius:999px;padding:5px 9px;background:#f8fafc;color:#475569;font-size:10px;font-weight:950}
+      .v107CourtShell{position:relative;padding-top:18px}
+      .v107Net{position:absolute;left:0;right:0;top:0;height:14px;border-top:4px solid #7c4a1f;border-bottom:3px solid #7c4a1f;background:repeating-linear-gradient(90deg,transparent 0 8px,#7c4a1f 8px 11px);z-index:3}
+      .v107NetLabel{position:absolute;top:-2px;left:50%;transform:translateX(-50%);z-index:4;background:#fff;color:#713f12;border-radius:5px;padding:1px 6px;font-size:9px;font-weight:1000;letter-spacing:.08em}
+      .v107Court{position:relative;display:grid;grid-template-columns:40% 20% 40%;grid-template-rows:minmax(128px,1fr) minmax(132px,1fr);min-height:290px;border:4px solid #f8fafc;outline:2px solid #c97a2b;border-radius:8px;background:#df8734;box-shadow:inset 0 0 28px rgba(120,53,15,.13),0 10px 24px rgba(15,23,42,.12);overflow:hidden}
+      .v107Zone{display:flex;align-items:center;justify-content:center;position:relative;color:#fff;font-weight:1000;text-shadow:0 2px 3px rgba(0,0,0,.35);border-right:2px solid rgba(255,255,255,.74)}
+      .v107Zone span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:15px}
+      .v107Zone small{font-size:10px;opacity:.86;font-weight:900}
+      .v107Left{grid-column:1;grid-row:1}.v107Center{grid-column:2;grid-row:1}.v107Right{grid-column:3;grid-row:1;border-right:0}
+      .v107Back{grid-column:1/-1;grid-row:2;border-right:0;border-top:5px solid rgba(255,255,255,.92)}
+      .v107Back:before{content:'3m LINE';position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:#fff;color:#9a541d;border-radius:5px;padding:1px 6px;font-size:8px;letter-spacing:.08em;text-shadow:none}
+      .v107Two{position:absolute;z-index:5;top:30px;left:64%;transform:translateX(-50%);width:70px;height:74px;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.95);border-radius:13px;background:rgba(124,58,237,.38);color:#fff;text-align:center;font-size:13px;font-weight:1000;text-shadow:0 2px 3px rgba(0,0,0,.38);box-shadow:0 8px 18px rgba(30,41,59,.24)}
+      .v107Two small{display:block;font-size:8px;margin-top:3px}
+      @media(max-width:620px){.v107Court{min-height:245px;grid-template-rows:minmax(108px,1fr) minmax(112px,1fr)}.v107Zone span{font-size:13px}.v107Two{width:58px;height:64px;left:65%;top:27px;font-size:12px}}
+    </style>
+    <div class="v107HeatmapHead"><div><h3>トスヒートマップ</h3><p>V107 レイアウト確認版（データ未接続）</p></div><span class="v107HeatmapBadge">LAYOUT ONLY</span></div>
+    <div class="v107CourtShell">
+      <div class="v107Net" aria-hidden="true"></div><div class="v107NetLabel">NET</div>
+      <div class="v107Court">
+        <div class="v107Zone v107Left"><span>レフト<small>LEFT</small></span></div>
+        <div class="v107Zone v107Center"><span>センター<small>CENTER</small></span></div>
+        <div class="v107Zone v107Right"><span>ライト<small>RIGHT</small></span></div>
+        <div class="v107Zone v107Back"><span>バック<small>BACK ATTACK</small></span></div>
+        <div class="v107Two">ツー<small>SETTER ATTACK</small></div>
+      </div>
+    </div>
+  </section>`;
+}
+
 function report(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
   const total=actionLogs.length;
@@ -2142,6 +2179,7 @@ function report(){
       <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
+    ${buildHeatmapLayoutV107()}
     <div class="bottomGrid">
       <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
