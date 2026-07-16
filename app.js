@@ -2797,13 +2797,22 @@ function saveCurrentMatch(){
 function loadSavedMatch(id){
   const m=getSavedMatches().find(x=>x.id===id);
   if(!m){ alert('保存データが見つかりません。'); return; }
-  importedCsv=m.csv;
-  localStorage.setItem('vollyzeImportedCsv', JSON.stringify(importedCsv));
-  renderCsvPreview(importedCsv, importedCsv.fileName || m.title || '保存済みCSV');
-  renderCsvAnalysis(importedCsv);
+  const source=m.csv||m.parsed||m.data||m;
+  const normalized=normalizeImportedCsvPayload(source,m.fileName||m.title||'保存済みデータ');
+  if(!normalized){ alert('保存試合の内容を読み取れませんでした。データ自体は削除していません。'); return; }
+  importedCsv=normalized;
+  localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv));
+  try{
+    renderCsvPreview(importedCsv,importedCsv.fileName||m.title||'保存済みデータ');
+    renderCsvAnalysis(importedCsv);
+  }catch(error){
+    console.error('saved report open failed',error);
+    const box=document.getElementById('csvAnalysisBox');
+    if(box){ box.style.display='block'; box.innerHTML=buildImportedFallbackReport(importedCsv,error); }
+  }
   setTimeout(()=>{
     const memo=document.getElementById('setterMemo');
-    if(memo) memo.value=m.memo || '';
+    if(memo) memo.value=m.memo||'';
     const box=document.getElementById('csvAnalysisBox');
     if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
   },0);
@@ -3381,6 +3390,63 @@ function buildPlainDiagnosis(a){
 }
 
 
+
+// V104.1: imported/saved data compatibility layer.
+function normalizeImportedCsvPayload(value, fallbackName='保存済みデータ'){
+  if(!value) return null;
+  if(typeof value==='string'){
+    try{
+      const obj=JSON.parse(value);
+      return normalizeImportedCsvPayload(obj,fallbackName);
+    }catch(e){
+      const parsed=parseCSVText(value);
+      return {fileName:fallbackName,...parsed};
+    }
+  }
+  if(Array.isArray(value)){
+    if(!value.length) return {fileName:fallbackName,headers:[],data:[]};
+    if(value.every(x=>x&&typeof x==='object'&&!Array.isArray(x))){
+      const headers=[...new Set(value.flatMap(x=>Object.keys(x)))];
+      return {fileName:fallbackName,headers,data:value};
+    }
+    if(Array.isArray(value[0])){
+      const headers=value[0].map((h,i)=>String(h||`列${i+1}`).trim());
+      const data=value.slice(1).map(r=>Object.fromEntries(headers.map((h,i)=>[h,String((r||[])[i]??'').trim()])));
+      return {fileName:fallbackName,headers,data};
+    }
+  }
+  if(typeof value==='object'){
+    if(Array.isArray(value.headers)&&Array.isArray(value.data)){
+      const headers=value.headers.map((h,i)=>String(h||`列${i+1}`).trim());
+      const data=value.data.map(r=>{
+        if(r&&typeof r==='object'&&!Array.isArray(r)) return r;
+        if(Array.isArray(r)) return Object.fromEntries(headers.map((h,i)=>[h,String(r[i]??'').trim()]));
+        return {};
+      });
+      return {...value,fileName:value.fileName||fallbackName,headers,data};
+    }
+    if(Array.isArray(value.logs)){
+      const headers=['No','Set','Rotation','Type','Number','Name','Position','Result','TossMiss','Point','Score','Time'];
+      const data=value.logs.map((x,i)=>({
+        No:String(x?.no??i+1), Set:String(x?.set??value.setNo??'1'), Rotation:String(x?.rot??'S1'),
+        Type:String(x?.type??''), Number:String(x?.num??'-'), Name:String((value.players||{})[String(x?.num??'')]||''),
+        Position:String(x?.pos??''), Result:String(x?.result??''), TossMiss:x?.tossMist?'1':'',
+        Point:String(x?.point??''), Score:String(x?.score??''), Time:String(x?.time??'')
+      }));
+      return {fileName:value.fileName||fallbackName,headers,data};
+    }
+    if(value.csv) return normalizeImportedCsvPayload(value.csv,value.fileName||fallbackName);
+    if(value.parsed) return normalizeImportedCsvPayload(value.parsed,value.fileName||fallbackName);
+  }
+  return null;
+}
+function buildImportedFallbackReport(parsed,error){
+  const a=analyzeImportedCsv(parsed||{headers:[],data:[]});
+  const items=(a.items||[]).filter(x=>x.count>0);
+  const bars=items.length?items.map(x=>`<div class="rotationRow"><div class="rotationLabel">${escapeHtml(x.label)}</div><div class="rotationPct">${x.pct}% (${x.count}本)</div><div class="rotationTrack"><div class="rotationFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div></div>`).join(''):'<div class="csvSmall">トスデータはありません。CSVのプレビューは正常に読み込まれています。</div>';
+  if(error) console.error('Imported unified report failed; fallback used.',error);
+  return `<div class="reportGrid"><div class="reportPanel"><h3>トス配分</h3>${bars}</div><div class="reportPanel"><h3>読み込み結果</h3><div class="summaryCards">${metricCard('総トス',a.total||0,'読み取れたトス本数','blue','🏐',100)}${metricCard('Setter IQ',a.setterIq||0,'CSV解析値','purple','🦅',a.setterIq||0)}</div></div>${buildOverallDiagnosis(a)}</div>`;
+}
 // V93.5: CSV末尾のSetterSummary、または各ログ行のSetterRoleから登録セッターを復元する。
 function importedSetterMeta(parsed){
   const headers=parsed?.headers||[];
@@ -3490,30 +3556,41 @@ function importedCsvToMatchState(parsed){
   };
 }
 function withImportedMatchState(parsed,fn){
+  const normalized=normalizeImportedCsvPayload(parsed,'読み込みデータ');
+  if(!normalized) throw new Error('読み込みデータを変換できませんでした。');
   const original=s;
-  s=importedCsvToMatchState(parsed);
-  try{return fn(s);}finally{s=original;}
+  s=ensureAppIdentity(importedCsvToMatchState(normalized));
+  s.logs=Array.isArray(s.logs)?s.logs:[];
+  s.hist=Array.isArray(s.hist)?s.hist:[];
+  s.nums=Array.isArray(s.nums)&&s.nums.length?s.nums.map(String):original.nums.slice();
+  s.players=s.players&&typeof s.players==='object'?s.players:{};
+  try{return fn(s,normalized);}finally{s=original;}
 }
 function buildImportedUnifiedReport(parsed){
+  const normalized=normalizeImportedCsvPayload(parsed,'読み込みデータ');
+  if(!normalized) return buildImportedFallbackReport({headers:[],data:[]},new Error('データ変換失敗'));
   const dash=document.getElementById('reportDashboard');
   const sub=document.getElementById('reportSub');
-  if(!dash) return '';
+  if(!dash) return buildImportedFallbackReport(normalized,new Error('reportDashboard not found'));
   const oldDash=dash.innerHTML;
   const oldSub=sub?sub.textContent:'';
   let html='';
-  withImportedMatchState(parsed,()=>{
-    report();
-    // CSV画面には上部の共通ヘッダーを別途表示するため、
-    // 試合レポート側の重複ヘッダー（PDF/CSVボタンを含む）は除外する。
-    const holder=document.createElement('div');
-    holder.innerHTML=dash.innerHTML;
-    const duplicateBrand=holder.querySelector('.unifiedReportBrand');
-    if(duplicateBrand) duplicateBrand.remove();
-    html=holder.innerHTML;
-  });
-  dash.innerHTML=oldDash;
-  if(sub) sub.textContent=oldSub;
-  return html;
+  try{
+    withImportedMatchState(normalized,()=>{
+      report();
+      const holder=document.createElement('div');
+      holder.innerHTML=dash.innerHTML;
+      const duplicateBrand=holder.querySelector('.unifiedReportBrand');
+      if(duplicateBrand) duplicateBrand.remove();
+      html=holder.innerHTML;
+    });
+  }catch(error){
+    html=buildImportedFallbackReport(normalized,error);
+  }finally{
+    dash.innerHTML=oldDash;
+    if(sub) sub.textContent=oldSub;
+  }
+  return html||buildImportedFallbackReport(normalized,new Error('empty report html'));
 }
 function printCsvReport(){
   if(!importedCsv){ alert('CSVを読み込んでからPDF出力してください。'); return; }
@@ -3689,7 +3766,7 @@ function setupCsvImport(){
       if(!file) return;
       const text = await file.text();
       const parsed = parseCSVText(text);
-      importedCsv = {fileName:file.name, ...parsed};
+      importedCsv = normalizeImportedCsvPayload({fileName:file.name,...parsed},file.name);
       localStorage.setItem("vollyzeImportedCsv", JSON.stringify(importedCsv));
       renderCsvPreview(importedCsv, file.name);
       renderCsvAnalysis(importedCsv);
@@ -3710,7 +3787,8 @@ function setupCsvImport(){
   const saved = localStorage.getItem("vollyzeImportedCsv");
   if(saved){
     try{
-      importedCsv = JSON.parse(saved);
+      importedCsv = normalizeImportedCsvPayload(JSON.parse(saved),'保存済みCSV');
+      if(!importedCsv) throw new Error('saved imported CSV normalize failed');
       renderCsvPreview(importedCsv, importedCsv.fileName || "保存済みCSV");
       renderCsvAnalysis(importedCsv);
     }catch(e){}
