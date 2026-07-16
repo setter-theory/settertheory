@@ -2794,28 +2794,68 @@ function saveCurrentMatch(){
   renderSavedMatches();
   alert('試合を保存しました。');
 }
-function loadSavedMatch(id){
-  const m=getSavedMatches().find(x=>x.id===id);
-  if(!m){ alert('保存データが見つかりません。'); return; }
-  const source=m.csv||m.parsed||m.data||m;
-  const normalized=normalizeImportedCsvPayload(source,m.fileName||m.title||'保存済みデータ');
-  if(!normalized){ alert('保存試合の内容を読み取れませんでした。データ自体は削除していません。'); return; }
-  importedCsv=normalized;
-  localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv));
+
+
+// V105: independent recovery report path.
+function recoveryNormalizePayload(value, fallbackName='読み込みデータ'){
   try{
+    if(!value) return {fileName:fallbackName,headers:[],data:[]};
+    if(typeof value==='string'){
+      try{return recoveryNormalizePayload(JSON.parse(value),fallbackName);}catch(_){ const parsed=parseCSVText(value); return {fileName:fallbackName,headers:parsed.headers||[],data:parsed.data||[]}; }
+    }
+    if(value.csv) return recoveryNormalizePayload(value.csv,value.fileName||fallbackName);
+    if(value.parsed) return recoveryNormalizePayload(value.parsed,value.fileName||fallbackName);
+    if(Array.isArray(value.data)){
+      let headers=Array.isArray(value.headers)?value.headers.map(String):[];
+      let data=value.data;
+      if(data.length && Array.isArray(data[0])){
+        if(!headers.length){ headers=data[0].map((x,i)=>String(x||`列${i+1}`)); data=data.slice(1); }
+        data=data.map(row=>Object.fromEntries(headers.map((h,i)=>[h,String((row||[])[i]??'')])));
+      }else if(data.length && typeof data[0]==='object' && !headers.length){ headers=[...new Set(data.flatMap(row=>Object.keys(row||{})))]; }
+      return {...value,fileName:value.fileName||fallbackName,headers,data};
+    }
+    if(Array.isArray(value.logs)){
+      const headers=['No','Set','Rotation','Type','Number','Name','Position','Result','TossMiss','Point','Score','Time'];
+      const players=value.players&&typeof value.players==='object'?value.players:{};
+      const data=value.logs.map((x,i)=>({No:String(x?.no??i+1),Set:String(x?.set??value.setNo??'1'),Rotation:String(x?.rot??'S1'),Type:String(x?.type??''),Number:String(x?.num??'-'),Name:String(players[String(x?.num??'')]||''),Position:String(x?.pos??''),Result:String(x?.result??''),TossMiss:x?.tossMist?'1':'',Point:String(x?.point??''),Score:String(x?.score??''),Time:String(x?.time??'')}));
+      return {fileName:value.fileName||fallbackName,headers,data};
+    }
+    if(Array.isArray(value)){
+      if(!value.length) return {fileName:fallbackName,headers:[],data:[]};
+      if(typeof value[0]==='object'&&!Array.isArray(value[0])) return {fileName:fallbackName,headers:[...new Set(value.flatMap(x=>Object.keys(x||{})))],data:value};
+      if(Array.isArray(value[0])){ const headers=value[0].map((x,i)=>String(x||`列${i+1}`)); const data=value.slice(1).map(row=>Object.fromEntries(headers.map((h,i)=>[h,String((row||[])[i]??'')]))); return {fileName:fallbackName,headers,data}; }
+    }
+  }catch(error){ console.error('recovery normalize failed',error); }
+  return {fileName:fallbackName,headers:[],data:[]};
+}
+function recoveryCell(row,names){
+  if(!row||typeof row!=='object') return '';
+  const keys=Object.keys(row);
+  for(const name of names){ const key=keys.find(k=>String(k).trim().toLowerCase()===String(name).trim().toLowerCase()); if(key!==undefined && row[key]!==undefined && row[key]!==null) return String(row[key]).trim(); }
+  return '';
+}
+function buildRecoveryReport(payload,title='試合レポート'){
+  const parsed=recoveryNormalizePayload(payload,title); const rows=Array.isArray(parsed.data)?parsed.data:[];
+  const labels=['レフト','センター','ライト','バック','ツー']; const counts=Object.fromEntries(labels.map(x=>[x,0])); let tossTotal=0,miss=0;
+  rows.forEach(row=>{ const type=recoveryCell(row,['Type','種類','Action','Skill','Play','プレー','項目','動作']); const pos=recoveryCell(row,['Position','位置','ポジション','Course','コース']); const result=recoveryCell(row,['Result','結果','Outcome','評価','Eval','Grade']); const tm=recoveryCell(row,['TossMiss','トスミス','Toss Mistake']); if(type==='トス'){ tossTotal++; const label=labels.find(x=>pos.includes(x)); if(label) counts[label]++; if(/ミス/.test(result)||['1','true','yes'].includes(tm.toLowerCase())) miss++; }});
+  const bars=labels.map(label=>{ const count=counts[label],pct=tossTotal?Math.round(count/tossTotal*100):0; return `<div class="rotationRow"><div class="rotationLabel">${escapeHtml(label)}</div><div class="rotationPct">${pct}%（${count}本）</div><div class="rotationTrack"><div class="rotationFill" style="width:${pct}%;background:${colorForLabel(label)}"></div></div></div>`; }).join('');
+  const score=tossTotal?Math.max(0,Math.round(100-miss/tossTotal*100)):0;
+  return `<div class="csvAnalysisHead"><div><h2>${escapeHtml(title)}</h2><div class="csvSmall">${escapeHtml(parsed.fileName||'読み込みデータ')} ／ ${rows.length}行を復元</div></div></div><div class="reportGrid"><div class="reportPanel"><h3>読み込み結果</h3><div class="summaryCards">${metricCard('総トス',tossTotal,'読み取れた通常トス','blue','🏐',100)}${metricCard('トスミス',miss,'読み取れたミス','red','⚠️',tossTotal?Math.round(miss/tossTotal*100):0)}${metricCard('復旧スコア',score,'独立経路で計算','purple','🦅',score)}</div></div><div class="reportPanel"><h3>トス配分</h3>${bars}</div></div>`;
+}
+function showRecoveryReport(payload,title){
+  const box=document.getElementById('csvAnalysisBox'); if(!box){ alert('レポート表示欄が見つかりません。'); return false; }
+  box.style.display='block'; box.innerHTML=buildRecoveryReport(payload,title); setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),0); return true;
+}
+function loadSavedMatch(id){
+  try{
+    const m=getSavedMatches().find(x=>String(x.id)===String(id));
+    if(!m){ alert('保存データが見つかりません。'); return; }
+    const source=m.csv||m.parsed||m.data||m;
+    importedCsv=recoveryNormalizePayload(source,m.fileName||m.title||'保存済みデータ');
+    try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv)); }catch(_){}
     renderCsvPreview(importedCsv,importedCsv.fileName||m.title||'保存済みデータ');
-    renderCsvAnalysis(importedCsv);
-  }catch(error){
-    console.error('saved report open failed',error);
-    const box=document.getElementById('csvAnalysisBox');
-    if(box){ box.style.display='block'; box.innerHTML=buildImportedFallbackReport(importedCsv,error); }
-  }
-  setTimeout(()=>{
-    const memo=document.getElementById('setterMemo');
-    if(memo) memo.value=m.memo||'';
-    const box=document.getElementById('csvAnalysisBox');
-    if(box) box.scrollIntoView({behavior:'smooth',block:'start'});
-  },0);
+    showRecoveryReport(importedCsv,m.title||'保存試合レポート');
+  }catch(error){ console.error('saved report recovery failed',error); alert('保存試合のレポート表示中にエラーが発生しました。データは削除されていません。'); }
 }
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
@@ -3390,63 +3430,6 @@ function buildPlainDiagnosis(a){
 }
 
 
-
-// V104.1: imported/saved data compatibility layer.
-function normalizeImportedCsvPayload(value, fallbackName='保存済みデータ'){
-  if(!value) return null;
-  if(typeof value==='string'){
-    try{
-      const obj=JSON.parse(value);
-      return normalizeImportedCsvPayload(obj,fallbackName);
-    }catch(e){
-      const parsed=parseCSVText(value);
-      return {fileName:fallbackName,...parsed};
-    }
-  }
-  if(Array.isArray(value)){
-    if(!value.length) return {fileName:fallbackName,headers:[],data:[]};
-    if(value.every(x=>x&&typeof x==='object'&&!Array.isArray(x))){
-      const headers=[...new Set(value.flatMap(x=>Object.keys(x)))];
-      return {fileName:fallbackName,headers,data:value};
-    }
-    if(Array.isArray(value[0])){
-      const headers=value[0].map((h,i)=>String(h||`列${i+1}`).trim());
-      const data=value.slice(1).map(r=>Object.fromEntries(headers.map((h,i)=>[h,String((r||[])[i]??'').trim()])));
-      return {fileName:fallbackName,headers,data};
-    }
-  }
-  if(typeof value==='object'){
-    if(Array.isArray(value.headers)&&Array.isArray(value.data)){
-      const headers=value.headers.map((h,i)=>String(h||`列${i+1}`).trim());
-      const data=value.data.map(r=>{
-        if(r&&typeof r==='object'&&!Array.isArray(r)) return r;
-        if(Array.isArray(r)) return Object.fromEntries(headers.map((h,i)=>[h,String(r[i]??'').trim()]));
-        return {};
-      });
-      return {...value,fileName:value.fileName||fallbackName,headers,data};
-    }
-    if(Array.isArray(value.logs)){
-      const headers=['No','Set','Rotation','Type','Number','Name','Position','Result','TossMiss','Point','Score','Time'];
-      const data=value.logs.map((x,i)=>({
-        No:String(x?.no??i+1), Set:String(x?.set??value.setNo??'1'), Rotation:String(x?.rot??'S1'),
-        Type:String(x?.type??''), Number:String(x?.num??'-'), Name:String((value.players||{})[String(x?.num??'')]||''),
-        Position:String(x?.pos??''), Result:String(x?.result??''), TossMiss:x?.tossMist?'1':'',
-        Point:String(x?.point??''), Score:String(x?.score??''), Time:String(x?.time??'')
-      }));
-      return {fileName:value.fileName||fallbackName,headers,data};
-    }
-    if(value.csv) return normalizeImportedCsvPayload(value.csv,value.fileName||fallbackName);
-    if(value.parsed) return normalizeImportedCsvPayload(value.parsed,value.fileName||fallbackName);
-  }
-  return null;
-}
-function buildImportedFallbackReport(parsed,error){
-  const a=analyzeImportedCsv(parsed||{headers:[],data:[]});
-  const items=(a.items||[]).filter(x=>x.count>0);
-  const bars=items.length?items.map(x=>`<div class="rotationRow"><div class="rotationLabel">${escapeHtml(x.label)}</div><div class="rotationPct">${x.pct}% (${x.count}本)</div><div class="rotationTrack"><div class="rotationFill" style="width:${x.pct}%;background:${colorForLabel(x.label)}"></div></div></div>`).join(''):'<div class="csvSmall">トスデータはありません。CSVのプレビューは正常に読み込まれています。</div>';
-  if(error) console.error('Imported unified report failed; fallback used.',error);
-  return `<div class="reportGrid"><div class="reportPanel"><h3>トス配分</h3>${bars}</div><div class="reportPanel"><h3>読み込み結果</h3><div class="summaryCards">${metricCard('総トス',a.total||0,'読み取れたトス本数','blue','🏐',100)}${metricCard('Setter IQ',a.setterIq||0,'CSV解析値','purple','🦅',a.setterIq||0)}</div></div>${buildOverallDiagnosis(a)}</div>`;
-}
 // V93.5: CSV末尾のSetterSummary、または各ログ行のSetterRoleから登録セッターを復元する。
 function importedSetterMeta(parsed){
   const headers=parsed?.headers||[];
@@ -3556,41 +3539,30 @@ function importedCsvToMatchState(parsed){
   };
 }
 function withImportedMatchState(parsed,fn){
-  const normalized=normalizeImportedCsvPayload(parsed,'読み込みデータ');
-  if(!normalized) throw new Error('読み込みデータを変換できませんでした。');
   const original=s;
-  s=ensureAppIdentity(importedCsvToMatchState(normalized));
-  s.logs=Array.isArray(s.logs)?s.logs:[];
-  s.hist=Array.isArray(s.hist)?s.hist:[];
-  s.nums=Array.isArray(s.nums)&&s.nums.length?s.nums.map(String):original.nums.slice();
-  s.players=s.players&&typeof s.players==='object'?s.players:{};
-  try{return fn(s,normalized);}finally{s=original;}
+  s=importedCsvToMatchState(parsed);
+  try{return fn(s);}finally{s=original;}
 }
 function buildImportedUnifiedReport(parsed){
-  const normalized=normalizeImportedCsvPayload(parsed,'読み込みデータ');
-  if(!normalized) return buildImportedFallbackReport({headers:[],data:[]},new Error('データ変換失敗'));
   const dash=document.getElementById('reportDashboard');
   const sub=document.getElementById('reportSub');
-  if(!dash) return buildImportedFallbackReport(normalized,new Error('reportDashboard not found'));
+  if(!dash) return '';
   const oldDash=dash.innerHTML;
   const oldSub=sub?sub.textContent:'';
   let html='';
-  try{
-    withImportedMatchState(normalized,()=>{
-      report();
-      const holder=document.createElement('div');
-      holder.innerHTML=dash.innerHTML;
-      const duplicateBrand=holder.querySelector('.unifiedReportBrand');
-      if(duplicateBrand) duplicateBrand.remove();
-      html=holder.innerHTML;
-    });
-  }catch(error){
-    html=buildImportedFallbackReport(normalized,error);
-  }finally{
-    dash.innerHTML=oldDash;
-    if(sub) sub.textContent=oldSub;
-  }
-  return html||buildImportedFallbackReport(normalized,new Error('empty report html'));
+  withImportedMatchState(parsed,()=>{
+    report();
+    // CSV画面には上部の共通ヘッダーを別途表示するため、
+    // 試合レポート側の重複ヘッダー（PDF/CSVボタンを含む）は除外する。
+    const holder=document.createElement('div');
+    holder.innerHTML=dash.innerHTML;
+    const duplicateBrand=holder.querySelector('.unifiedReportBrand');
+    if(duplicateBrand) duplicateBrand.remove();
+    html=holder.innerHTML;
+  });
+  dash.innerHTML=oldDash;
+  if(sub) sub.textContent=oldSub;
+  return html;
 }
 function printCsvReport(){
   if(!importedCsv){ alert('CSVを読み込んでからPDF出力してください。'); return; }
@@ -3764,12 +3736,16 @@ function setupCsvImport(){
     input.addEventListener("change", async (e)=>{
       const file = e.target.files && e.target.files[0];
       if(!file) return;
-      const text = await file.text();
-      const parsed = parseCSVText(text);
-      importedCsv = normalizeImportedCsvPayload({fileName:file.name,...parsed},file.name);
-      localStorage.setItem("vollyzeImportedCsv", JSON.stringify(importedCsv));
-      renderCsvPreview(importedCsv, file.name);
-      renderCsvAnalysis(importedCsv);
+      try{
+        let text='';
+        if(typeof file.text==='function') text=await file.text();
+        else text=await new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(String(r.result||'')); r.onerror=reject; r.readAsText(file); });
+        const parsed=parseCSVText(text);
+        importedCsv=recoveryNormalizePayload({fileName:file.name,...parsed},file.name);
+        try{ localStorage.setItem("vollyzeImportedCsv",JSON.stringify(importedCsv)); }catch(_){}
+        renderCsvPreview(importedCsv,file.name);
+        showRecoveryReport(importedCsv,`${file.name} レポート`);
+      }catch(error){ console.error('CSV recovery import failed',error); alert('CSVを読み込めませんでした。ファイルは変更されていません。'); }
     });
   }
 
@@ -3787,10 +3763,9 @@ function setupCsvImport(){
   const saved = localStorage.getItem("vollyzeImportedCsv");
   if(saved){
     try{
-      importedCsv = normalizeImportedCsvPayload(JSON.parse(saved),'保存済みCSV');
-      if(!importedCsv) throw new Error('saved imported CSV normalize failed');
+      importedCsv = JSON.parse(saved);
       renderCsvPreview(importedCsv, importedCsv.fileName || "保存済みCSV");
-      renderCsvAnalysis(importedCsv);
+      showRecoveryReport(importedCsv,`${importedCsv.fileName||'保存済みCSV'} レポート`);
     }catch(e){}
   }
 }
