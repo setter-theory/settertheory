@@ -2846,6 +2846,24 @@ function showRecoveryReport(payload,title){
   const box=document.getElementById('csvAnalysisBox'); if(!box){ alert('レポート表示欄が見つかりません。'); return false; }
   box.style.display='block'; box.innerHTML=buildRecoveryReport(payload,title); setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),0); return true;
 }
+
+// V106: restore the normal full report through the verified V105 import path.
+function showRestoredFullReport(payload,title='試合レポート') {
+  const normalized=recoveryNormalizePayload(payload,title);
+  importedCsv=normalized;
+  try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(normalized)); }catch(_){}
+  try{
+    renderCsvAnalysis(normalized);
+    const box=document.getElementById('csvAnalysisBox');
+    if(!box || box.style.display==='none' || !String(box.innerHTML||'').trim()) throw new Error('full report was not rendered');
+    setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),0);
+    return true;
+  }catch(error){
+    console.error('V106 full report restore failed; using safe recovery report',error);
+    return showRecoveryReport(normalized,title);
+  }
+}
+
 function loadSavedMatch(id){
   try{
     const m=getSavedMatches().find(x=>String(x.id)===String(id));
@@ -2854,7 +2872,7 @@ function loadSavedMatch(id){
     importedCsv=recoveryNormalizePayload(source,m.fileName||m.title||'保存済みデータ');
     try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv)); }catch(_){}
     renderCsvPreview(importedCsv,importedCsv.fileName||m.title||'保存済みデータ');
-    showRecoveryReport(importedCsv,m.title||'保存試合レポート');
+    showRestoredFullReport(importedCsv,m.title||'保存試合レポート');
   }catch(error){ console.error('saved report recovery failed',error); alert('保存試合のレポート表示中にエラーが発生しました。データは削除されていません。'); }
 }
 function deleteSavedMatch(id){
@@ -3744,7 +3762,7 @@ function setupCsvImport(){
         importedCsv=recoveryNormalizePayload({fileName:file.name,...parsed},file.name);
         try{ localStorage.setItem("vollyzeImportedCsv",JSON.stringify(importedCsv)); }catch(_){}
         renderCsvPreview(importedCsv,file.name);
-        showRecoveryReport(importedCsv,`${file.name} レポート`);
+        showRestoredFullReport(importedCsv,`${file.name} レポート`);
       }catch(error){ console.error('CSV recovery import failed',error); alert('CSVを読み込めませんでした。ファイルは変更されていません。'); }
     });
   }
@@ -3765,7 +3783,7 @@ function setupCsvImport(){
     try{
       importedCsv = JSON.parse(saved);
       renderCsvPreview(importedCsv, importedCsv.fileName || "保存済みCSV");
-      showRecoveryReport(importedCsv,`${importedCsv.fileName||'保存済みCSV'} レポート`);
+      showRestoredFullReport(importedCsv,`${importedCsv.fileName||'保存済みCSV'} レポート`);
     }catch(e){}
   }
 }
