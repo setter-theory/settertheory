@@ -1779,6 +1779,17 @@ let reportRankType = localStorage.getItem("vollyzeReportRankType") || "スパイ
 if(reportRankType === "トス") reportRankType = "スパイク";
 let reportSortType = localStorage.getItem("vollyzeReportSortType") || "rate";
 
+function setReportRankType(value){
+  reportRankType = value;
+  localStorage.setItem("vollyzeReportRankType", value);
+  report();
+}
+function setReportSortType(value){
+  reportSortType = value;
+  localStorage.setItem("vollyzeReportSortType", value);
+  report();
+}
+
 function safePct(part,total){ return total ? Math.round(part/total*100) : 0; }
 function cssClassByPct(pct){ if(pct>=70)return ""; if(pct>=50)return "mid"; return "bad"; }
 function donutStyle(items){
@@ -1839,10 +1850,10 @@ function buildPersonalRanking(){
       <div class="bigBarBadge ${cssClassByPct(r.pct)}">${r.pct}%</div>
     </div>`).join("");
   return `<div class="rankControls">
-    <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="reportRankType=this.value;localStorage.setItem('vollyzeReportRankType',this.value);report();">
+    <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="setReportRankType(this.value)">
       ${["スパイク","サーブ","レセプ","ディグ","ブロック"].map(t=>`<option value="${t}" ${reportRankType===t?"selected":""}>${rankConfig(t).title}</option>`).join("")}
     </select></div>
-    <div><label>並び替え</label><br><select id="rankSortSelect" onchange="reportSortType=this.value;localStorage.setItem('vollyzeReportSortType',this.value);report();">
+    <div><label>並び替え</label><br><select id="rankSortSelect" onchange="setReportSortType(this.value)">
       <option value="rate" ${reportSortType==="rate"?"selected":""}>成功率順</option>
       <option value="success" ${reportSortType==="success"?"selected":""}>成功数順</option>
       <option value="tries" ${reportSortType==="tries"?"selected":""}>試行数順</option>
