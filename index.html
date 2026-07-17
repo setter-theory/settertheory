@@ -1941,6 +1941,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .setterIqRadar .radarLabels text{font-size:14px;font-weight:1000;fill:#334155}
 .setterIqRadar .radarLabels tspan+ tspan{font-size:13px;font-weight:1000;fill:#1d4ed8}
 @media(max-width:800px){.setterIqRadar{max-width:700px;width:100%}}
+/* V112: reduce only the match report radar size; CSV analysis remains unchanged */
+#report .setterIqRadar{max-width:575px}
+#report .setterIqRadar svg{max-width:555px}
+@media(max-width:700px){#report .setterIqRadar{max-width:100%}#report .setterIqRadar svg{max-width:100%}}
 
 
 /* V111 per-setter vertical IQ and advice layout */
@@ -4379,7 +4383,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V111 INDIVIDUAL ADVICE</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V112 REPORT RADAR SIZE</div>
 </body>
 </html>
 
