@@ -2083,17 +2083,35 @@ function buildSetterIqRadarChart(breakdown){
     </svg>
   </div>`;
 }
+function buildSetterIqPanelFor(num, index){
+  const a=currentSetterAnalysisFor(num);
+  const setterLabel=`セッター${index+1}　${escapeHtml(num)}番 ${escapeHtml(a.name||'')}`;
+  if(!a.total){
+    return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>${setterLabel}</span><b>--</b><small>/100</small></div><p>このセッターのトスを記録するとSetter IQを表示します。</p></div></div></div>`;
+  }
+  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
+  const rank=setterIqRank(a.setterIq);
+  const breakdown=iqBreakdown20(a);
+  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
+    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
+    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+}
 function buildCurrentSetterIqPanel(){
+  const setters=reportSetterNumbers();
+  if(setters.length>1){
+    return `<div class="setterIqMultiGrid">${setters.map((n,i)=>buildSetterIqPanelFor(n,i)).join('')}</div>`;
+  }
+  if(setters.length===1) return buildSetterIqPanelFor(setters[0],0);
   const a=currentMatchSetterAnalysis();
   if(!a.total){
     return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>Setter IQ</span><b>--</b><small>/100</small></div><p>トスを記録すると、配球バランスをもとにSetter IQを表示します。</p></div></div></div>`;
   }
-  const top=a.items[0]||{label:'-',pct:0};
+  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
   const breakdown=iqBreakdown20(a);
   return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
     <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
-    <p><b>採点内訳</b>：5項目を各20点で評価し、合計がSetter IQと一致します。</p><p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentAquilaAdvice(){
   const advice=getCurrentAquilaAdviceItems();
@@ -2360,6 +2378,13 @@ function printMatchPdfReport(){
     const rot=a.rotationRows.filter(x=>x.total>0).map(x=>`${x.rot} ${x.total}本 成功${x.rate}%`).join(' / ') || '記録なし';
     return `<section class="section setterPdfCard"><h2>セッター${i+1}：${esc(n)}番 ${esc(a.name)}</h2><div class="setterPdfTop"><b>IQ ${a.total?a.setterIq:'--'}/100 ${a.total?rank.label:''}</b><span>総トス ${a.quality.total} / ミス ${a.quality.miss} / 成功率 ${a.quality.successRate}%</span></div><div class="setterPdfBreak"><span>配球 ${b.balance}/20</span><span>多様性 ${b.diversity}/20</span><span>ミドル ${b.quick}/20</span><span>勝負所 ${b.clutch}/20</span><span>安定性 ${b.stability}/20</span></div><p class="note"><b>配球：</b>${esc(dist)}</p><p class="note"><b>ローテ別：</b>${esc(rot)}</p><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`;
   }).join('');
+  const pdfSetterIqCards=(reportSetters.length>1 ? reportSetters : [null]).map((n,i)=>{
+    const a=n===null ? setterAnalysis : currentSetterAnalysisFor(n);
+    const score=a.total?a.setterIq:0, rank=setterIqRank(score), breakdown=iqBreakdown20(a);
+    const title=n===null?'Setter IQ・能力バランス':`セッター${i+1}：${esc(n)}番 ${esc(a.name||'')}`;
+    return `<div class="pdfIqCard"><div class="title">${title}</div><div class="pdfIqScoreRow"><div><div class="score">${score||'--'}<small>/100</small></div><div class="rank">${score?rank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(breakdown)}</div></div>`;
+  }).join('');
+  const pdfHeaderIq=reportSetters.length>1 ? `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${reportSetters.length}</b><span>SETTERS</span></div><div class="rank">INDIVIDUAL IQ</div>` : `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div>`;
 
   function table(headers, rows, emptyText){
     const body = rows && rows.length ? rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${headers.length}" class="empty">${esc(emptyText||'記録がありません。')}</td></tr>`;
@@ -2471,9 +2496,9 @@ function printMatchPdfReport(){
   </style></head><body>
     <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
     <main class="sheet">
-      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
+      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div>${pdfHeaderIq}</div></div></header>
       <div class="pdfLead">
-        <div class="pdfIqCard"><div class="title">Setter IQ・能力バランス</div><div class="pdfIqScoreRow"><div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(iqBreakdown)}</div></div>
+        <div class="pdfIqCardsWrap">${pdfSetterIqCards}</div>
         <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
       </div>
       <div class="summary">
