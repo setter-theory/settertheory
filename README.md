@@ -1,3 +1,4 @@
+V115: PDF専用レーダーチャートの本体を縮小し、項目名と「20/20」などの点数を外側へ分離。PDF上で数字とグラフが重ならないよう専用描画へ変更。CSV画面・試合レポートは変更なし。
 Setter Theory V104 Report Recovery
 
 - V99 app/report logic restored exactly

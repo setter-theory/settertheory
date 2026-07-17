@@ -2082,6 +2082,39 @@ function buildSetterIqRadarChart(breakdown){
     </svg>
   </div>`;
 }
+
+function buildSetterIqRadarChartPdf(breakdown){
+  const items=[
+    {label:'配球',value:Number(breakdown?.balance)||0},
+    {label:'多様性',value:Number(breakdown?.diversity)||0},
+    {label:'ミドル',value:Number(breakdown?.quick)||0},
+    {label:'勝負所',value:Number(breakdown?.clutch)||0},
+    {label:'安定性',value:Number(breakdown?.stability)||0}
+  ];
+  // PDF専用：グラフ本体を小さくし、項目名・点数を外側へ離して重なりを防ぐ。
+  const cx=170, cy=142, radius=72;
+  const point=(index,ratio=1)=>{
+    const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
+    return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
+  };
+  const polygon=ratio=>items.map((_,i)=>point(i,ratio).map(v=>v.toFixed(1)).join(',')).join(' ');
+  const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
+  const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
+  const labels=items.map((item,i)=>{
+    const [x,y]=point(i,1.62);
+    const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="17">${item.value}/20</tspan></text>`;
+  }).join('');
+  return `<div class="setterIqRadar pdfSetterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
+    <svg viewBox="0 0 340 300" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
+      <g class="radarGrid"><polygon points="${polygon(1)}"/><polygon points="${polygon(.75)}"/><polygon points="${polygon(.5)}"/><polygon points="${polygon(.25)}"/>${axes}</g>
+      <polygon class="radarData" points="${dataPoints}"/>
+      <g class="radarDots">${items.map((item,i)=>{const [x,y]=point(i,Math.max(0,Math.min(20,item.value))/20);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join('')}</g>
+      <g class="radarLabels">${labels}</g>
+    </svg>
+  </div>`;
+}
+
 function buildSetterIqPanelFor(num, index){
   const a=currentSetterAnalysisFor(num);
   const setterLabel=`セッター${index+1}　${escapeHtml(num)}番 ${escapeHtml(a.name||'')}`;
@@ -2389,7 +2422,7 @@ function printMatchPdfReport(){
     const title=n===null?'Setter IQ・能力バランス':`セッター${i+1}：${esc(n)}番 ${esc(a.name||'')}`;
     const advice=n===null ? aquilaAdvice : getAquilaAdviceForSetter(n);
     const adviceTitle=n===null?'Aquila Advice':`Aquila Advice　セッター${i+1} ${esc(n)}番 ${esc(a.name||'')}`;
-    return `<div class="pdfSetterLeadPerson"><div class="pdfIqCard"><div class="title">${title}</div><div class="pdfIqScoreRow"><div><div class="score">${score||'--'}<small>/100</small></div><div class="rank">${score?rank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(breakdown)}</div></div><div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>${adviceTitle}</span></div><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
+    return `<div class="pdfSetterLeadPerson"><div class="pdfIqCard"><div class="title">${title}</div><div class="pdfIqScoreRow"><div><div class="score">${score||'--'}<small>/100</small></div><div class="rank">${score?rank.label:'NO DATA'}</div></div>${buildSetterIqRadarChartPdf(breakdown)}</div></div><div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>${adviceTitle}</span></div><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
   }).join('');
   const pdfHeaderIq=reportSetters.length>1 ? `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${reportSetters.length}</b><span>SETTERS</span></div><div class="rank">INDIVIDUAL IQ</div>` : `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div>`;
 
@@ -2489,7 +2522,7 @@ function printMatchPdfReport(){
     .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
     .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
     .pdfLead{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0 12px;align-items:stretch}.pdfSetterLeadPerson{display:grid;grid-template-columns:1fr;gap:8px;break-inside:avoid;page-break-inside:avoid}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:36px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:13px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:5px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:9px;font-weight:950}.pdfIqScoreRow{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;font-size:8px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
-    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:175px;overflow:visible}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:13px;font-weight:1000;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:12px;font-weight:1000;fill:#1d4ed8}
+    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:190px;overflow:hidden}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:12px;font-weight:1000;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:11px;font-weight:1000;fill:#1d4ed8}
     .pdfAdviceTitle{display:flex;align-items:center;gap:7px}.pdfAdviceTitle img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #f4b63f;padding:2px}.pdfAdviceTitle span{font-size:12px;font-weight:950;color:#1e3a8a}
     .setterPdfCard{border:1px solid #93c5fd;border-radius:12px;padding:9px;background:#f8fbff}.setterPdfTop{display:flex;justify-content:space-between;gap:8px;font-size:11px}.setterPdfTop b{color:#1d4ed8}.setterPdfBreak{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0}.setterPdfBreak span{background:#dbeafe;border-radius:6px;padding:4px;text-align:center;font-size:9px}.setterPdfCard ul{margin:5px 0 0;padding-left:17px;font-size:9px;line-height:1.45}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
