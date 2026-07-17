@@ -1929,22 +1929,22 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .undoBtn:disabled{opacity:.42;filter:grayscale(.4);cursor:not-allowed}
 @media(max-width:700px){.fieldReadyStatus{padding:6px 8px;margin:6px 0 8px}.lastActionLine>b{max-width:47vw;font-size:10px}.autosaveState{font-size:9px;padding:3px 6px}}
 
-/* V109: separate Setter IQ and radar charts for each setter in two-setter matches */
+/* V110: Setter IQ above Aquila advice with larger radar charts */
 .setterIqVisualGrid{display:block;margin:12px 0}
-.setterIqRadar{background:linear-gradient(180deg,#f8fafc,#eef2ff);border:1px solid #dbeafe;border-radius:16px;padding:10px 8px 2px;min-width:0;max-width:430px;margin:0 auto}
+.setterIqRadar{background:linear-gradient(180deg,#f8fafc,#eef2ff);border:1px solid #dbeafe;border-radius:16px;padding:10px 8px 2px;min-width:0;max-width:520px;margin:0 auto}
 .setterIqRadarTitle{text-align:center;font-weight:1000;color:#1e3a8a;font-size:14px;margin:2px 0 -2px}
-.setterIqRadar svg{display:block;width:100%;max-width:410px;margin:0 auto;overflow:visible}
+.setterIqRadar svg{display:block;width:100%;max-width:500px;margin:0 auto;overflow:visible}
 .setterIqRadar .radarGrid polygon,.setterIqRadar .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}
 .setterIqRadar .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}
 .setterIqRadar .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}
 .setterIqRadar .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}
 .setterIqRadar .radarLabels text{font-size:14px;font-weight:1000;fill:#334155}
 .setterIqRadar .radarLabels tspan+ tspan{font-size:13px;font-weight:1000;fill:#1d4ed8}
-@media(max-width:800px){.setterIqRadar{max-width:410px;width:100%}}
+@media(max-width:800px){.setterIqRadar{max-width:500px;width:100%}}
 
 
-/* V109 two-setter IQ layout */
-.setterIqMultiGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.setterIqMultiGrid .setterIqLive{min-width:0}.pdfIqCardsWrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media(max-width:760px){.setterIqMultiGrid{grid-template-columns:1fr}}
+/* V110 two-setter IQ layout */
+.setterIqMultiGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.setterIqMultiGrid .setterIqLive{min-width:0}.pdfIqCardsWrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media(max-width:760px){.setterIqMultiGrid{grid-template-columns:1fr}}
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -3053,7 +3053,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
 <style id="v72-aquila-report">
 /* V72: IQ and Aquila Advice are the first visual conclusion of the report. */
-#report .reportLeadGrid{order:-10;margin-top:0!important;grid-template-columns:minmax(300px,.9fr) minmax(360px,1.45fr)!important;gap:16px!important}
+#report .reportLeadGrid{order:-10;margin-top:0!important;grid-template-columns:1fr!important;gap:16px!important}
 #report .reportLeadPanel{border:2px solid #bfdbfe!important;background:linear-gradient(145deg,#ffffff,#eff6ff)!important;box-shadow:0 14px 30px rgba(37,99,235,.12)!important;overflow:hidden}
 #report .aquilaHeroTop{display:flex;align-items:center;gap:14px}
 #report .aquilaHeroTop>img{width:76px;height:76px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid #fbbf24;padding:4px;box-shadow:0 7px 16px rgba(15,23,42,.15)}
@@ -3839,7 +3839,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=108-radar-labels"></script>
+<script src="app.js?v=110-iq-advice-stacked"></script>
 
 
 
@@ -4378,7 +4378,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V109 TWO SETTER IQ</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V110 TWO SETTER IQ</div>
 </body>
 </html>
 
