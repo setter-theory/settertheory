@@ -2113,9 +2113,19 @@ function buildCurrentSetterIqPanel(){
     <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
     <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
-function buildCurrentAquilaAdvice(){
-  const advice=getCurrentAquilaAdviceItems();
-  return `<div class="aquilaLiveAdvice aquilaAdviceHero"><div class="aquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>Aquilaのアドバイス</b></div>${advice.length===1?`<p>${escapeHtml(advice[0])}</p>`:`<ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`}</div>`;
+function buildCurrentAquilaAdvice(num=null,index=0){
+  const advice=num===null ? getCurrentAquilaAdviceItems() : getAquilaAdviceForSetter(num);
+  const a=num===null ? null : currentSetterAnalysisFor(num);
+  const title=num===null ? 'Aquilaのアドバイス' : `Aquilaのアドバイス　セッター${index+1} ${escapeHtml(num)}番 ${escapeHtml(a?.name||'')}`;
+  return `<div class="aquilaLiveAdvice aquilaAdviceHero"><div class="aquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>${title}</b></div>${advice.length===1?`<p>${escapeHtml(advice[0])}</p>`:`<ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`}</div>`;
+}
+function buildCurrentIqAdviceLead(){
+  const setters=reportSetterNumbers();
+  if(setters.length>1){
+    return `<div class="setterIqAdviceStack">${setters.map((n,i)=>`<div class="setterIqAdvicePerson"><div class="reportPanel reportLeadPanel">${buildSetterIqPanelFor(n,i)}</div><div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice(n,i)}</div></div>`).join('')}</div>`;
+  }
+  const num=setters.length===1?setters[0]:null;
+  return `<div class="setterIqAdviceStack"><div class="setterIqAdvicePerson"><div class="reportPanel reportLeadPanel">${buildCurrentSetterIqPanel()}</div><div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice(num,0)}</div></div></div>`;
 }
 
 function buildUnifiedReportBrandHeader(state, analysis, options={}){
@@ -2206,10 +2216,7 @@ function report(){
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
-    <div class="setterIqAdviceGrid reportLeadGrid">
-      <div class="reportPanel reportLeadPanel">${buildCurrentSetterIqPanel()}</div>
-      <div class="reportPanel reportLeadPanel">${buildCurrentAquilaAdvice()}</div>
-    </div>
+    ${buildCurrentIqAdviceLead()}
     ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
@@ -2378,11 +2385,13 @@ function printMatchPdfReport(){
     const rot=a.rotationRows.filter(x=>x.total>0).map(x=>`${x.rot} ${x.total}本 成功${x.rate}%`).join(' / ') || '記録なし';
     return `<section class="section setterPdfCard"><h2>セッター${i+1}：${esc(n)}番 ${esc(a.name)}</h2><div class="setterPdfTop"><b>IQ ${a.total?a.setterIq:'--'}/100 ${a.total?rank.label:''}</b><span>総トス ${a.quality.total} / ミス ${a.quality.miss} / 成功率 ${a.quality.successRate}%</span></div><div class="setterPdfBreak"><span>配球 ${b.balance}/20</span><span>多様性 ${b.diversity}/20</span><span>ミドル ${b.quick}/20</span><span>勝負所 ${b.clutch}/20</span><span>安定性 ${b.stability}/20</span></div><p class="note"><b>配球：</b>${esc(dist)}</p><p class="note"><b>ローテ別：</b>${esc(rot)}</p><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`;
   }).join('');
-  const pdfSetterIqCards=(reportSetters.length>1 ? reportSetters : [null]).map((n,i)=>{
+  const pdfSetterLeadCards=(reportSetters.length>1 ? reportSetters : [null]).map((n,i)=>{
     const a=n===null ? setterAnalysis : currentSetterAnalysisFor(n);
     const score=a.total?a.setterIq:0, rank=setterIqRank(score), breakdown=iqBreakdown20(a);
     const title=n===null?'Setter IQ・能力バランス':`セッター${i+1}：${esc(n)}番 ${esc(a.name||'')}`;
-    return `<div class="pdfIqCard"><div class="title">${title}</div><div class="pdfIqScoreRow"><div><div class="score">${score||'--'}<small>/100</small></div><div class="rank">${score?rank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(breakdown)}</div></div>`;
+    const advice=n===null ? aquilaAdvice : getAquilaAdviceForSetter(n);
+    const adviceTitle=n===null?'Aquila Advice':`Aquila Advice　セッター${i+1} ${esc(n)}番 ${esc(a.name||'')}`;
+    return `<div class="pdfSetterLeadPerson"><div class="pdfIqCard"><div class="title">${title}</div><div class="pdfIqScoreRow"><div><div class="score">${score||'--'}<small>/100</small></div><div class="rank">${score?rank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(breakdown)}</div></div><div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>${adviceTitle}</span></div><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
   }).join('');
   const pdfHeaderIq=reportSetters.length>1 ? `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${reportSetters.length}</b><span>SETTERS</span></div><div class="rank">INDIVIDUAL IQ</div>` : `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div>`;
 
@@ -2481,8 +2490,8 @@ function printMatchPdfReport(){
     .brand h1{margin:0;font-size:25px;letter-spacing:.02em;color:#0f172a}.brand p{margin:4px 0 0;color:#64748b;font-size:12px}.badge{font-weight:900;background:#0f172a;color:#fbbf24;border-radius:999px;padding:7px 10px;font-size:11px;white-space:nowrap;}
     .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
     .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
-    .pdfLead{display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0 12px;align-items:stretch}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:36px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:13px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:5px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:9px;font-weight:950}.pdfIqScoreRow{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;font-size:8px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
-    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:210px;overflow:visible}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:13px;font-weight:1000;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:12px;font-weight:1000;fill:#1d4ed8}
+    .pdfLead{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0 12px;align-items:stretch}.pdfSetterLeadPerson{display:grid;grid-template-columns:1fr;gap:8px;break-inside:avoid;page-break-inside:avoid}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:36px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:13px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:5px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:9px;font-weight:950}.pdfIqScoreRow{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;font-size:8px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
+    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:175px;overflow:visible}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:13px;font-weight:1000;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:12px;font-weight:1000;fill:#1d4ed8}
     .pdfAdviceTitle{display:flex;align-items:center;gap:7px}.pdfAdviceTitle img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #f4b63f;padding:2px}.pdfAdviceTitle span{font-size:12px;font-weight:950;color:#1e3a8a}
     .setterPdfCard{border:1px solid #93c5fd;border-radius:12px;padding:9px;background:#f8fbff}.setterPdfTop{display:flex;justify-content:space-between;gap:8px;font-size:11px}.setterPdfTop b{color:#1d4ed8}.setterPdfBreak{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0}.setterPdfBreak span{background:#dbeafe;border-radius:6px;padding:4px;text-align:center;font-size:9px}.setterPdfCard ul{margin:5px 0 0;padding-left:17px;font-size:9px;line-height:1.45}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
@@ -2497,10 +2506,7 @@ function printMatchPdfReport(){
     <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
     <main class="sheet">
       <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div>${pdfHeaderIq}</div></div></header>
-      <div class="pdfLead">
-        <div class="pdfIqCardsWrap">${pdfSetterIqCards}</div>
-        <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
-      </div>
+      <div class="pdfLead">${pdfSetterLeadCards}</div>
       <div class="summary">
         <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
         <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>
