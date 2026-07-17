@@ -1941,7 +1941,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .setterIqRadar .radarLabels text{font-size:14px;font-weight:1000;fill:#334155}
 .setterIqRadar .radarLabels tspan+ tspan{font-size:13px;font-weight:1000;fill:#1d4ed8}
 @media(max-width:800px){.setterIqRadar{max-width:700px;width:100%}}
-/* V112: reduce only the match report radar size; CSV analysis remains unchanged */
+/* V113: reduce only the match report radar size; CSV analysis remains unchanged */
 #report .setterIqRadar{max-width:575px}
 #report .setterIqRadar svg{max-width:555px}
 @media(max-width:700px){#report .setterIqRadar{max-width:100%}#report .setterIqRadar svg{max-width:100%}}
@@ -1950,6 +1950,22 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 /* V111 per-setter vertical IQ and advice layout */
 .setterIqMultiGrid{display:grid;grid-template-columns:1fr;gap:16px}.setterIqMultiGrid .setterIqLive{min-width:0}
 .setterIqAdviceStack{display:grid;grid-template-columns:1fr;gap:18px}.setterIqAdvicePerson{display:grid;grid-template-columns:1fr;gap:10px;min-width:0}.setterIqAdvicePerson+.setterIqAdvicePerson{padding-top:18px;border-top:2px solid #cbd5e1}
+
+/* V113: registered setters first, compact IQ cards with radar and individual advice */
+#report .setterDetailGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+#report .setterIqCompactCard{padding:13px!important;min-width:0!important}
+#report .setterIqCompactCard .setterDetailHead{margin-bottom:8px!important}
+#report .setterIqCompactCard .setterDetailMetrics{margin:6px 0 8px!important}
+#report .setterCompactRadar{max-width:330px;margin:0 auto 8px}
+#report .setterCompactRadar .setterIqRadar{max-width:330px;padding:4px 4px 0;border-radius:12px}
+#report .setterCompactRadar .setterIqRadarTitle{display:none}
+#report .setterCompactRadar .setterIqRadar svg{max-width:320px}
+#report .setterCompactRadar .setterIqRadar .radarLabels text{font-size:12px}
+#report .setterCompactRadar .setterIqRadar .radarLabels tspan+tspan{font-size:11px}
+#report .setterIqCompactCard .setterDetailAdvice{margin-top:8px!important}
+#report .setterDetailMore{margin-top:9px;border-top:1px solid #dbeafe;padding-top:7px}
+#report .setterDetailMore summary{cursor:pointer;color:#1d4ed8;font-weight:1000;font-size:12px}
+@media(max-width:760px){#report .setterDetailGrid{grid-template-columns:1fr!important}#report .setterCompactRadar{max-width:300px}}
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -4383,7 +4399,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V112 REPORT RADAR SIZE</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V113 REPORT RADAR SIZE</div>
 </body>
 </html>
 

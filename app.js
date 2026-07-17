@@ -1727,13 +1727,12 @@ function buildSetterDetailReports(){
     const advice=getAquilaAdviceForSetter(n);
     const dist=labels.map(label=>{const it=a.items.find(x=>x.label===label)||{count:0,pct:0};return `<span><b>${label}</b>${it.count}本 / ${it.pct}%</span>`}).join('');
     const rots=a.rotationRows.filter(x=>x.total>0).map(x=>`<span><b>${x.rot}</b>${x.total}本・成功${x.rate}%</span>`).join('')||'<span>ローテ別記録なし</span>';
-    return `<section class="reportPanel setterDetailCard">
+    return `<section class="reportPanel setterDetailCard setterIqCompactCard">
       <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
       <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
-      <div class="setterDetailBreakdown"><span>配球 ${b.balance}/20</span><span>多様性 ${b.diversity}/20</span><span>ミドル ${b.quick}/20</span><span>勝負所 ${b.clutch}/20</span><span>安定性 ${b.stability}/20</span></div>
-      <div class="setterDetailSection"><b>配球</b><div>${dist}</div></div>
-      <div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div>
+      <div class="setterCompactRadar">${buildSetterIqRadarChart(b)}</div>
       <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <details class="setterDetailMore"><summary>詳しい配球・ローテデータ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div><div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div></details>
     </section>`;
   }).join('')}</div>`;
 }
@@ -2216,7 +2215,6 @@ function report(){
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
-    ${buildCurrentIqAdviceLead()}
     ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
