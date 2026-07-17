@@ -743,15 +743,33 @@ function setterNumbers(){
   s.setterNums=cleaned.slice(0,2);
   return s.setterNums.slice();
 }
-// レポートでは「現在コート上のセッター」だけでなく、
-// この試合で実際にトスを記録した全セッターを表示する。
+// レポートには、登録済みセッターと実際に交代で担当したセッターだけを表示する。
+// 単発の二段トス・アタッカーのトスを「セッター2」と誤認しないよう、
+// ログだけから追加する場合は十分な通常トス記録がある選手に限定する。
 function reportSetterNumbers(){
   const active=setterNumbers();
-  const fromLogs=(s.logs||[])
-    .filter(x=>x && x.type==='トス')
+  const out=[...active];
+  const candidates=[...new Set((s.logs||[])
+    .filter(x=>x && x.type==='トス' && String(x.result||'')!=='二段トス')
     .map(x=>String(x.playerNumberSnapshot||x.num||'').trim())
-    .filter(n=>n && n!=='-' && n!=='undefined' && n!=='null');
-  return [...new Set([...active,...fromLogs])];
+    .filter(n=>n && n!=='-' && n!=='undefined' && n!=='null'))];
+
+  // 基本ポジションで明示されたセッターは、トス本数に関係なく保持する。
+  candidates.forEach(n=>{
+    if(isSetterPosition(playerPositionForNumber(n)) && !out.includes(n)) out.push(n);
+  });
+
+  // 旧データのセッター交代を復元するための補助判定。
+  // 最多セッターに対して35%以上、かつ2本以上の通常トスがある場合だけ追加する。
+  const tossCounts=candidates.map(n=>({
+    num:n,
+    count:(s.logs||[]).filter(x=>x && x.type==='トス' && String(x.result||'')!=='二段トス' && logBelongsToPlayer(x,n)).length
+  })).sort((a,b)=>b.count-a.count);
+  const maxCount=tossCounts[0]?.count||0;
+  tossCounts.forEach(x=>{
+    if(!out.includes(x.num) && x.count>=2 && x.count>=Math.ceil(maxCount*0.35)) out.push(x.num);
+  });
+  return [...new Set(out)].slice(0,2);
 }
 function isSetterNumber(num){ return setterNumbers().includes(String(num)); }
 function transferSetterRole(outNum,inNum){

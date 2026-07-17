@@ -19,3 +19,8 @@ V93.7: ホーム画面の保存試合・試合比較・成長ダッシュボー�
 
 
 V97: Database integrity update. Added dataVersion/userId/teamId/matchId/setId, stable player identity migration, and save-time validation.
+
+V106.1 修正
+- ワンセッター試合で、アタッカーの単発トスが「セッター2」として表示される不具合を修正。
+- 明示登録されたセッターと、十分なトス記録がある交代セッターだけをレポート対象に変更。
+- 既存デザイン・ヒートマップ・保存仕様は変更なし。
