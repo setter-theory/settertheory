@@ -1779,15 +1779,23 @@ let reportRankType = localStorage.getItem("vollyzeReportRankType") || "スパイ
 if(reportRankType === "トス") reportRankType = "スパイク";
 let reportSortType = localStorage.getItem("vollyzeReportSortType") || "rate";
 
+function refreshPersonalRanking(){
+  const host=document.getElementById("personalRankingHost");
+  if(host){
+    host.innerHTML=buildPersonalRanking();
+  }else{
+    report();
+  }
+}
 function setReportRankType(value){
   reportRankType = value;
   localStorage.setItem("vollyzeReportRankType", value);
-  report();
+  refreshPersonalRanking();
 }
 function setReportSortType(value){
   reportSortType = value;
   localStorage.setItem("vollyzeReportSortType", value);
-  report();
+  refreshPersonalRanking();
 }
 
 function safePct(part,total){ return total ? Math.round(part/total*100) : 0; }
@@ -1836,9 +1844,9 @@ function buildPersonalRanking(){
     return {n,name:getPlayerName(n)||`${n}番`, ok,total:all.length,pct};
   });
   rows.sort((a,b)=>{
-    if(reportSortType==="success") return b.ok-a.ok || b.pct-a.pct;
-    if(reportSortType==="tries") return b.total-a.total || b.pct-a.pct;
-    return b.pct-a.pct || b.ok-a.ok || b.total-a.total;
+    if(reportSortType==="success") return b.ok-a.ok || b.pct-a.pct || b.total-a.total || Number(a.n)-Number(b.n);
+    if(reportSortType==="tries") return b.total-a.total || b.pct-a.pct || b.ok-a.ok || Number(a.n)-Number(b.n);
+    return b.pct-a.pct || b.ok-a.ok || b.total-a.total || Number(a.n)-Number(b.n);
   });
   const list=rows.map((r,i)=>`
     <div class="bigBarRow">
@@ -1850,10 +1858,10 @@ function buildPersonalRanking(){
       <div class="bigBarBadge ${cssClassByPct(r.pct)}">${r.pct}%</div>
     </div>`).join("");
   return `<div class="rankControls">
-    <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="setReportRankType(this.value)">
+    <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="setReportRankType(this.value)" oninput="setReportRankType(this.value)">
       ${["スパイク","サーブ","レセプ","ディグ","ブロック"].map(t=>`<option value="${t}" ${reportRankType===t?"selected":""}>${rankConfig(t).title}</option>`).join("")}
     </select></div>
-    <div><label>並び替え</label><br><select id="rankSortSelect" onchange="setReportSortType(this.value)">
+    <div><label>並び替え</label><br><select id="rankSortSelect" onchange="setReportSortType(this.value)" oninput="setReportSortType(this.value)">
       <option value="rate" ${reportSortType==="rate"?"selected":""}>成功率順</option>
       <option value="success" ${reportSortType==="success"?"selected":""}>成功数順</option>
       <option value="tries" ${reportSortType==="tries"?"selected":""}>試行数順</option>
@@ -2164,7 +2172,7 @@ function report(){
     </div>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
-      <div class="reportPanel">${buildPersonalRanking()}</div>
+      <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
       <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
     </div>
     <div class="wideGrid">
