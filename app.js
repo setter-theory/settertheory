@@ -2052,6 +2052,37 @@ function iqBreakdown20(a){
     total:values.reduce((sum,v)=>sum+v,0)
   };
 }
+function buildSetterIqRadarChart(breakdown){
+  const items=[
+    {label:'配球',value:Number(breakdown?.balance)||0},
+    {label:'多様性',value:Number(breakdown?.diversity)||0},
+    {label:'ミドル',value:Number(breakdown?.quick)||0},
+    {label:'勝負所',value:Number(breakdown?.clutch)||0},
+    {label:'安定性',value:Number(breakdown?.stability)||0}
+  ];
+  const cx=150, cy=132, radius=88;
+  const point=(index,ratio=1)=>{
+    const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
+    return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
+  };
+  const polygon=ratio=>items.map((_,i)=>point(i,ratio).map(v=>v.toFixed(1)).join(',')).join(' ');
+  const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
+  const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
+  const labels=items.map((item,i)=>{
+    const [x,y]=point(i,1.25);
+    const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="15">${item.value}/20</tspan></text>`;
+  }).join('');
+  return `<div class="setterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
+    <div class="setterIqRadarTitle">能力バランス</div>
+    <svg viewBox="0 0 300 270" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
+      <g class="radarGrid"><polygon points="${polygon(1)}"/><polygon points="${polygon(.75)}"/><polygon points="${polygon(.5)}"/><polygon points="${polygon(.25)}"/>${axes}</g>
+      <polygon class="radarData" points="${dataPoints}"/>
+      <g class="radarDots">${items.map((item,i)=>{const [x,y]=point(i,Math.max(0,Math.min(20,item.value))/20);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join('')}</g>
+      <g class="radarLabels">${labels}</g>
+    </svg>
+  </div>`;
+}
 function buildCurrentSetterIqPanel(){
   const a=currentMatchSetterAnalysis();
   if(!a.total){
@@ -2061,7 +2092,7 @@ function buildCurrentSetterIqPanel(){
   const rank=setterIqRank(a.setterIq);
   const breakdown=iqBreakdown20(a);
   return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
-    <div class="setterIqMetrics"><span>配球バランス <b>${breakdown.balance}/20</b></span><span>攻撃の多様性 <b>${breakdown.diversity}/20</b></span><span>ミドル活用 <b>${breakdown.quick}/20</b></span><span>勝負どころ <b>${breakdown.clutch}/20</b></span><span>配球安定性 <b>${breakdown.stability}/20</b></span><span>合計 <b>${breakdown.total}/100</b></span></div>
+    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}<div class="setterIqMetrics"><span>配球バランス <b>${breakdown.balance}/20</b></span><span>攻撃の多様性 <b>${breakdown.diversity}/20</b></span><span>ミドル活用 <b>${breakdown.quick}/20</b></span><span>勝負どころ <b>${breakdown.clutch}/20</b></span><span>配球安定性 <b>${breakdown.stability}/20</b></span><span>合計 <b>${breakdown.total}/100</b></span></div></div>
     <p><b>採点内訳</b>：5項目を各20点で評価し、合計がSetter IQと一致します。</p><p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentAquilaAdvice(){
