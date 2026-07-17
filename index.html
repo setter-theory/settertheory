@@ -4403,7 +4403,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V115 PDF RADAR LABEL CLEARANCE</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V116 RADAR DETAIL READABILITY</div>
 </body>
 </html>
 
@@ -7560,5 +7560,58 @@ body.menuOpen .sideOverlay{
  .rosterGrid{grid-template-columns:1fr!important}
  .rosterItem{grid-template-columns:30px minmax(64px,1fr) minmax(98px,118px)!important}
  .rosterItem .playerPositionSelect{grid-column:auto!important;max-width:118px!important}
+}
+
+/* V116: radar title clearance + consistent detail data wrapping */
+#report .setterCompactRadar .setterIqRadarTitle,
+#csvAnalysisBox .importedUnifiedReport .setterCompactRadar .setterIqRadarTitle{
+  display:block!important;
+  margin:2px 0 8px!important;
+  line-height:1.2!important;
+}
+#report .setterCompactRadar .setterIqRadar svg,
+#csvAnalysisBox .importedUnifiedReport .setterCompactRadar .setterIqRadar svg{
+  margin-top:2px!important;
+}
+#report .setterDetailSection>div,
+#csvAnalysisBox .importedUnifiedReport .setterDetailSection>div{
+  grid-template-columns:repeat(5,minmax(78px,1fr))!important;
+  align-items:stretch!important;
+}
+#report .setterDetailSection span,
+#csvAnalysisBox .importedUnifiedReport .setterDetailSection span{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  min-width:0!important;
+  line-height:1.35!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+}
+#report .setterDetailSection span b,
+#report .setterDetailSection span em,
+#csvAnalysisBox .importedUnifiedReport .setterDetailSection span b,
+#csvAnalysisBox .importedUnifiedReport .setterDetailSection span em{
+  display:block!important;
+  white-space:nowrap!important;
+  font-style:normal!important;
+}
+#report .setterDetailSection span em,
+#csvAnalysisBox .importedUnifiedReport .setterDetailSection span em{
+  margin-top:2px!important;
+}
+#report .setterDetailSection .setterDetailEmpty,
+#csvAnalysisBox .importedUnifiedReport .setterDetailSection .setterDetailEmpty{
+  grid-column:1/-1!important;
+  white-space:nowrap!important;
+}
+@media(max-width:900px){
+  #report .setterDetailSection>div,
+  #csvAnalysisBox .importedUnifiedReport .setterDetailSection>div{grid-template-columns:repeat(3,minmax(86px,1fr))!important}
+}
+@media(max-width:520px){
+  #report .setterDetailSection>div,
+  #csvAnalysisBox .importedUnifiedReport .setterDetailSection>div{grid-template-columns:repeat(2,minmax(96px,1fr))!important}
 }
 </style>
