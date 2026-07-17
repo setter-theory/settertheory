@@ -4,3 +4,5 @@ Setter Theory V104 Report Recovery
 - Heatmap removed
 - PWA cache version updated
 - Existing localStorage saved matches are not deleted
+
+V108: レーダーチャート外の重複内訳を削除し、グラフ内ラベルを拡大。画面・PDF双方に反映。

@@ -2060,7 +2060,7 @@ function buildSetterIqRadarChart(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  const cx=150, cy=132, radius=88;
+  const cx=150, cy=132, radius=96;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2069,9 +2069,9 @@ function buildSetterIqRadarChart(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.25);
+    const [x,y]=point(i,1.18);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="15">${item.value}/20</tspan></text>`;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18">${item.value}/20</tspan></text>`;
   }).join('');
   return `<div class="setterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
     <div class="setterIqRadarTitle">能力バランス</div>
@@ -2092,7 +2092,7 @@ function buildCurrentSetterIqPanel(){
   const rank=setterIqRank(a.setterIq);
   const breakdown=iqBreakdown20(a);
   return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
-    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}<div class="setterIqMetrics"><span>配球バランス <b>${breakdown.balance}/20</b></span><span>攻撃の多様性 <b>${breakdown.diversity}/20</b></span><span>ミドル活用 <b>${breakdown.quick}/20</b></span><span>勝負どころ <b>${breakdown.clutch}/20</b></span><span>配球安定性 <b>${breakdown.stability}/20</b></span><span>合計 <b>${breakdown.total}/100</b></span></div></div>
+    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
     <p><b>採点内訳</b>：5項目を各20点で評価し、合計がSetter IQと一致します。</p><p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentAquilaAdvice(){
@@ -2457,7 +2457,7 @@ function printMatchPdfReport(){
     .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
     .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
     .pdfLead{display:grid;grid-template-columns:1.35fr 1.65fr;gap:10px;margin:10px 0 12px;align-items:stretch}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:36px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:13px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:5px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:9px;font-weight:950}.pdfIqScoreRow{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:center}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;font-size:8px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
-    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:126px;overflow:visible}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:10px;font-weight:900;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:9px;fill:#1d4ed8}
+    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:150px;overflow:visible}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:13px;font-weight:1000;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:12px;font-weight:1000;fill:#1d4ed8}
     .pdfAdviceTitle{display:flex;align-items:center;gap:7px}.pdfAdviceTitle img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #f4b63f;padding:2px}.pdfAdviceTitle span{font-size:12px;font-weight:950;color:#1e3a8a}
     .setterPdfCard{border:1px solid #93c5fd;border-radius:12px;padding:9px;background:#f8fbff}.setterPdfTop{display:flex;justify-content:space-between;gap:8px;font-size:11px}.setterPdfTop b{color:#1d4ed8}.setterPdfBreak{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0}.setterPdfBreak span{background:#dbeafe;border-radius:6px;padding:4px;text-align:center;font-size:9px}.setterPdfCard ul{margin:5px 0 0;padding-left:17px;font-size:9px;line-height:1.45}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
@@ -2473,7 +2473,7 @@ function printMatchPdfReport(){
     <main class="sheet">
       <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div><div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div></div></header>
       <div class="pdfLead">
-        <div class="pdfIqCard"><div class="title">Setter IQ・能力バランス</div><div class="pdfIqScoreRow"><div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(iqBreakdown)}</div><div class="pdfIqBreakdown"><span>配球 ${iqBreakdown.balance}/20</span><span>多様性 ${iqBreakdown.diversity}/20</span><span>ミドル ${iqBreakdown.quick}/20</span><span>勝負所 ${iqBreakdown.clutch}/20</span><span>安定性 ${iqBreakdown.stability}/20</span><span>合計 ${iqBreakdown.total}/100</span></div></div>
+        <div class="pdfIqCard"><div class="title">Setter IQ・能力バランス</div><div class="pdfIqScoreRow"><div><div class="score">${setterIq||'--'}<small>/100</small></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div></div>${buildSetterIqRadarChart(iqBreakdown)}</div></div>
         <div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>Aquila Advice</span></div><ul>${aquilaAdvice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
       </div>
       <div class="summary">

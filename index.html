@@ -1929,18 +1929,18 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .undoBtn:disabled{opacity:.42;filter:grayscale(.4);cursor:not-allowed}
 @media(max-width:700px){.fieldReadyStatus{padding:6px 8px;margin:6px 0 8px}.lastActionLine>b{max-width:47vw;font-size:10px}.autosaveState{font-size:9px;padding:3px 6px}}
 
-/* V107: Setter IQ radar chart (existing 5 x 20 scoring stays unchanged) */
-.setterIqVisualGrid{display:grid;grid-template-columns:minmax(250px,340px) 1fr;gap:16px;align-items:center;margin:12px 0}
-.setterIqRadar{background:linear-gradient(180deg,#f8fafc,#eef2ff);border:1px solid #dbeafe;border-radius:16px;padding:10px 10px 4px;min-width:0}
+/* V108: simplify Setter IQ radar chart and enlarge in-chart labels */
+.setterIqVisualGrid{display:block;margin:12px 0}
+.setterIqRadar{background:linear-gradient(180deg,#f8fafc,#eef2ff);border:1px solid #dbeafe;border-radius:16px;padding:10px 8px 2px;min-width:0;max-width:430px;margin:0 auto}
 .setterIqRadarTitle{text-align:center;font-weight:1000;color:#1e3a8a;font-size:14px;margin:2px 0 -2px}
-.setterIqRadar svg{display:block;width:100%;max-width:330px;margin:0 auto;overflow:visible}
+.setterIqRadar svg{display:block;width:100%;max-width:410px;margin:0 auto;overflow:visible}
 .setterIqRadar .radarGrid polygon,.setterIqRadar .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}
 .setterIqRadar .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}
 .setterIqRadar .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}
 .setterIqRadar .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}
-.setterIqRadar .radarLabels text{font-size:11px;font-weight:900;fill:#334155}
-.setterIqRadar .radarLabels tspan+ tspan{font-size:10px;fill:#1d4ed8}
-@media(max-width:800px){.setterIqVisualGrid{grid-template-columns:1fr}.setterIqRadar{max-width:390px;margin:0 auto;width:100%}}
+.setterIqRadar .radarLabels text{font-size:14px;font-weight:1000;fill:#334155}
+.setterIqRadar .radarLabels tspan+ tspan{font-size:13px;font-weight:1000;fill:#1d4ed8}
+@media(max-width:800px){.setterIqRadar{max-width:410px;width:100%}}
 
 </style>
 
@@ -3836,7 +3836,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=1063-ranking-order-fix"></script>
+<script src="app.js?v=108-radar-labels"></script>
 
 
 
@@ -4375,7 +4375,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V107 RADAR CHART</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V108 RADAR LABELS</div>
 </body>
 </html>
 
