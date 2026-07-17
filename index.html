@@ -1951,6 +1951,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .setterIqMultiGrid{display:grid;grid-template-columns:1fr;gap:16px}.setterIqMultiGrid .setterIqLive{min-width:0}
 .setterIqAdviceStack{display:grid;grid-template-columns:1fr;gap:18px}.setterIqAdvicePerson{display:grid;grid-template-columns:1fr;gap:10px;min-width:0}.setterIqAdvicePerson+.setterIqAdvicePerson{padding-top:18px;border-top:2px solid #cbd5e1}
 
+
+/* V114: CSV radar top score label clearance; match report remains unchanged */
+.importedUnifiedReport .setterIqRadar .radarLabels text:first-child{transform:translateY(-11px)}
+
 /* V113: registered setters first, compact IQ cards with radar and individual advice */
 #report .setterDetailGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
 #report .setterIqCompactCard{padding:13px!important;min-width:0!important}
@@ -4399,7 +4403,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V113 REPORT RADAR SIZE</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V114 CSV RADAR PDF IQ TOP</div>
 </body>
 </html>
 

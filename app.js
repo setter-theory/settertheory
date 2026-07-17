@@ -2512,7 +2512,6 @@ function printMatchPdfReport(){
         <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
       </div>
       <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
-      ${perSetterPdfCards}
       <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], reportSetters.map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&logBelongsToPlayer(x,n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
       <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
       <div class="twoCol">
