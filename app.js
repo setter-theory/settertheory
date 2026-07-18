@@ -613,7 +613,10 @@ function updateHomeMatchControls(){
   if(note){ note.style.display=active?"block":"none"; note.textContent=active?matchResumeSummary():""; }
 }
 function resumeMatch(){
-  load();
+  // V121: 同じ画面内でホーム／ダッシュボードから戻る場合は、
+  // localStorageを再読込せず、直前まで入力していた最新のメモリ状態を使う。
+  // ブラウザ再起動直後など、メモリ上に途中試合が無い場合だけ保存データを読む。
+  if(!hasInProgressMatch()) load();
   if(!hasInProgressMatch()){
     alert("再開できる途中データがありません");
     updateHomeMatchControls();

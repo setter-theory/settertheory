@@ -1,1 +1,1 @@
-V120 navigation unblock + best-effort autosave
+Setter Theory V121 - Resume Current State Fix
