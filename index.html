@@ -4010,7 +4010,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v139_clean_result_colors.js?v=139-clean-result-colors"></script>
+<script src="app_v140_home_csv_clean_colors.js?v=140-home-csv-clean-colors"></script>
 
 
 
@@ -7852,4 +7852,45 @@ body.menuOpen .sideOverlay{
   .csvLogSummary{grid-template-columns:38px minmax(95px,1fr) 68px 56px 18px;gap:6px;padding:8px;}
   .csvLogDetails{grid-template-columns:1fr;}
 }
+</style>
+
+<style id="v140-home-csv-clean-colors">
+/* V140: ホームのCSVレポート側も白背景・カラー文字へ統一 */
+.v135ActionBars{gap:0!important;}
+.v135ActionBarRow{
+  padding:14px 4px 15px!important;
+  border:0!important;
+  border-bottom:1px solid rgba(148,163,184,.28)!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.v135ActionBarRow:last-child{border-bottom:0!important;}
+.v135ActionBarLabel,.v135ActionBarValue{color:#2563eb!important;}
+.v135ActionBarRow.good .v135ActionBarLabel,.v135ActionBarRow.good .v135ActionBarValue{color:#16a34a!important;}
+.v135ActionBarRow.bad .v135ActionBarLabel,.v135ActionBarRow.bad .v135ActionBarValue{color:#dc2626!important;}
+.v135ActionBarSub{color:#64748b!important;font-weight:850!important;}
+.v135ActionBarRow.good .v135ActionBarSub{color:#15803d!important;}
+.v135ActionBarRow.bad .v135ActionBarSub{color:#b91c1c!important;}
+.v135ActionBarTrack{background:rgba(148,163,184,.16)!important;}
+
+.v137DivergingBars{gap:0!important;}
+.v137DivergingRow{
+  padding:14px 4px 15px!important;
+  border:0!important;
+  border-bottom:1px solid rgba(148,163,184,.28)!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.v137DivergingRow:last-child{border-bottom:0!important;}
+.v137DivergingHead b{color:#2563eb!important;}
+.v137DivergingHead .positive{color:#16a34a!important;}
+.v137DivergingHead .negative{color:#dc2626!important;}
+.v137DivergingHead .even{color:#64748b!important;}
+.v137DivergingSide{background:rgba(148,163,184,.16)!important;}
+.v137DivergingSide.loss em{color:#dc2626!important;}
+.v137DivergingSide.gain em{color:#16a34a!important;}
+.v137DivergingMeta span:nth-child(1){color:#dc2626!important;}
+.v137DivergingMeta span:nth-child(2){color:#2563eb!important;}
+.v137DivergingMeta span:nth-child(3){color:#16a34a!important;}
+.v137DivergingRow small{color:#7c3aed!important;}
 </style>
