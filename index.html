@@ -2050,6 +2050,19 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v137DivergingMeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;font-size:11px;font-weight:900;color:var(--muted);}.v137DivergingMeta span:nth-child(1){text-align:left;}.v137DivergingMeta span:nth-child(2){text-align:center;}.v137DivergingMeta span:nth-child(3){text-align:right;}
 .v137DivergingRow small{display:block;margin-top:7px;text-align:right;color:var(--muted);font-size:11px;font-weight:900;}
 
+
+/* V138: overall points/losses diverging bar */
+.v138PointDiverging{display:grid;gap:12px;margin-top:8px;padding:4px 0;}
+.v138PointLegend{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;padding:0 8px;font-size:11px;font-weight:1000;color:var(--muted);}
+.v138PointLegend .loss{text-align:right;color:#dc2626}.v138PointLegend b{text-align:center;color:var(--text)}.v138PointLegend .gain{text-align:left;color:#16a34a}
+.v138PointHead{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;font-weight:1000}.v138PointHead strong{font-size:13px}.v138PointHead .positive{color:#16a34a}.v138PointHead .negative{color:#dc2626}.v138PointHead .even{color:var(--muted)}
+.v138PointChart{display:grid;grid-template-columns:1fr 2px 1fr;align-items:center;height:28px}
+.v138PointAxis{height:34px;background:rgba(15,23,42,.78);border-radius:2px;z-index:2}
+.v138PointSide{position:relative;height:20px;background:rgba(148,163,184,.22);display:flex;align-items:center;overflow:visible}
+.v138PointSide.loss{justify-content:flex-end;border-radius:999px 0 0 999px}.v138PointSide.gain{justify-content:flex-start;border-radius:0 999px 999px 0}
+.v138PointSide span{display:block;height:100%;min-width:0}.v138PointSide.loss span{background:linear-gradient(90deg,#f97316,#dc2626);border-radius:999px 0 0 999px}.v138PointSide.gain span{background:linear-gradient(90deg,#16a34a,#84cc16);border-radius:0 999px 999px 0}
+.v138PointSide em{position:absolute;top:50%;transform:translateY(-50%);font-style:normal;font-size:12px;font-weight:1000;color:var(--text)}.v138PointSide.loss em{right:8px}.v138PointSide.gain em{left:8px}
+.v138PointMeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px;font-weight:900;color:var(--muted)}.v138PointMeta span:nth-child(1){text-align:left;color:#dc2626}.v138PointMeta span:nth-child(2){text-align:center}.v138PointMeta span:nth-child(3){text-align:right;color:#f97316}
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -3988,7 +4001,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v136ResultBarTrack span{display:block;height:100%;border-radius:999px;min-width:0;}
 .v136ResultBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
 </style>
-<script src="app_v137_rotation_point_diverging_bars.js?v=137-rotation-point-diverging-bars"></script>
+<script src="app_v138_point_diverging_bars.js?v=138-point-diverging-bars"></script>
 
 
 
@@ -4527,7 +4540,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V137 ROTATION POINT BARS</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V138 POINT DIVERGING BARS</div>
 </body>
 </html>
 
