@@ -1987,24 +1987,24 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #report .setterDetailMore summary{cursor:pointer;color:#1d4ed8;font-weight:1000;font-size:12px}
 @media(max-width:760px){#report .setterDetailGrid{grid-template-columns:1fr!important}#report .setterCompactRadar{max-width:300px}}
 
-/* V131: the page handles vertical movement; the CSV log itself scrolls horizontally only.
-   The first six identity columns (No / Set / Rotation / Type / Number / Name) stay visible. */
+/* V132: CSV log shows 10 rows at once, then scrolls vertically; horizontal scroll keeps No through Name frozen. */
 .csvPreviewBox{
   width:100%!important;
   max-width:100%!important;
-  height:auto!important;
-  max-height:none!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  overscroll-behavior-x:contain!important;
-  overscroll-behavior-y:auto!important;
+  max-height:390px!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
   -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x pan-y!important;
+  position:relative!important;
 }
 .csvPreviewBox table{
   width:max-content!important;
   min-width:100%!important;
   max-width:none!important;
   table-layout:auto!important;
+  border-collapse:separate!important;
+  border-spacing:0!important;
 }
 .csvPreviewBox th,.csvPreviewBox td{
   white-space:nowrap!important;
@@ -2013,21 +2013,25 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   padding:8px 10px!important;
   font-size:11px!important;
   min-width:72px!important;
+  height:34px!important;
+  box-sizing:border-box!important;
 }
 .csvPreviewBox thead th{
-  position:relative!important;
-  top:auto!important;
-  z-index:2!important;
+  position:sticky!important;
+  top:0!important;
+  z-index:12!important;
+  background:#dbe4f0!important;
+  color:#0f172a!important;
 }
+.csvPreviewBox tbody td{background:#fff!important;color:#0f172a!important;}
 .csvPreviewBox th:nth-child(1),.csvPreviewBox td:nth-child(1){position:sticky!important;left:0!important;min-width:48px!important;width:48px!important;max-width:48px!important;}
 .csvPreviewBox th:nth-child(2),.csvPreviewBox td:nth-child(2){position:sticky!important;left:48px!important;min-width:50px!important;width:50px!important;max-width:50px!important;}
 .csvPreviewBox th:nth-child(3),.csvPreviewBox td:nth-child(3){position:sticky!important;left:98px!important;min-width:86px!important;width:86px!important;max-width:86px!important;}
 .csvPreviewBox th:nth-child(4),.csvPreviewBox td:nth-child(4){position:sticky!important;left:184px!important;min-width:72px!important;width:72px!important;max-width:72px!important;}
 .csvPreviewBox th:nth-child(5),.csvPreviewBox td:nth-child(5){position:sticky!important;left:256px!important;min-width:66px!important;width:66px!important;max-width:66px!important;}
-.csvPreviewBox th:nth-child(6),.csvPreviewBox td:nth-child(6){position:sticky!important;left:322px!important;min-width:110px!important;width:110px!important;max-width:110px!important;}
-.csvPreviewBox thead th:nth-child(-n+6){z-index:8!important;background:#dbe4f0!important;}
-.csvPreviewBox tbody td:nth-child(-n+6){z-index:5!important;background:#fff!important;}
-.csvPreviewBox th:nth-child(6),.csvPreviewBox td:nth-child(6){box-shadow:4px 0 6px rgba(15,23,42,.12)!important;}
+.csvPreviewBox th:nth-child(6),.csvPreviewBox td:nth-child(6){position:sticky!important;left:322px!important;min-width:110px!important;width:110px!important;max-width:110px!important;box-shadow:4px 0 6px rgba(15,23,42,.12)!important;}
+.csvPreviewBox thead th:nth-child(-n+6){z-index:20!important;background:#dbe4f0!important;}
+.csvPreviewBox tbody td:nth-child(-n+6){z-index:8!important;background:#fff!important;}
 
 </style>
 
@@ -4480,7 +4484,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V131 LOG HORIZONTAL ONLY</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V132 LOG FROZEN COLUMNS + 10 ROW SCROLL</div>
 </body>
 </html>
 

@@ -1,4 +1,4 @@
-// V131: CSV preview uses page vertical scrolling and table horizontal scrolling with frozen identity columns
+// V132: CSV preview shows 10 rows, scrolls vertically after row 10, and freezes No through Name during horizontal scrolling
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -4056,7 +4056,7 @@ function renderCsvPreview(parsed, fileName){
     return;
   }
 
-  const previewRows = rows.slice(0, 10);
+  const previewRows = rows;
   box.style.display = "block";
   box.innerHTML = `
     <table>
@@ -4065,7 +4065,7 @@ function renderCsvPreview(parsed, fileName){
         ${previewRows.map(r=>`<tr>${headers.map(h=>`<td>${escapeHtml(r[h] || "")}</td>`).join("")}</tr>`).join("")}
       </tbody>
     </table>
-    <div class="csvSmall" style="padding:10px 12px">先頭10行を表示中。次の版で、このデータから自動分析します。</div>
+    <div class="csvSmall" style="padding:10px 12px">10行まではそのまま表示し、11行目以降は縦スクロール。右側の項目は横スクロールできます。</div>
   `;
 }
 
