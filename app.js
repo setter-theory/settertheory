@@ -1,4 +1,4 @@
-// V130: CSV preview table supports horizontal/vertical scroll with frozen identity columns
+// V131: CSV preview uses page vertical scrolling and table horizontal scrolling with frozen identity columns
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.

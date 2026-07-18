@@ -8,4 +8,4 @@ V128 LOG TABLE STABILITY FIX
 
 V129: CSV/log preview table is fixed to the card width on iPad. Horizontal/diagonal panning is disabled; vertical scrolling remains available.
 
-V130: CSVログ表に縦・横スクロールを追加。ヘッダーと No / Set / Rotation / Type / Number / Name の6列を固定。
+V131: ページ全体は縦スクロール、CSVログ表は横スクロールだけに分離。No / Set / Rotation / Type / Number / Name の6列固定は維持。
