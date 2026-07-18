@@ -2033,6 +2033,23 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .csvPreviewBox thead th:nth-child(-n+6){z-index:20!important;background:#dbe4f0!important;}
 .csvPreviewBox tbody td:nth-child(-n+6){z-index:8!important;background:#fff!important;}
 
+
+/* V137: rotation point differential diverging bars */
+.v137DivergingBars{display:grid;gap:14px;margin-top:8px;}
+.v137DivergingLegend{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;font-size:11px;font-weight:1000;color:var(--muted);padding:0 8px;}
+.v137DivergingLegend .loss{text-align:right;color:#dc2626;}.v137DivergingLegend b{text-align:center;color:var(--text);}.v137DivergingLegend .gain{text-align:left;color:#16a34a;}
+.v137DivergingRow{padding:12px 14px;border:1px solid rgba(148,163,184,.22);border-radius:14px;background:rgba(15,23,42,.24);}
+.v137DivergingRow.good{border-color:rgba(34,197,94,.38);}.v137DivergingRow.bad{border-color:rgba(239,68,68,.42);}
+.v137DivergingHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;}.v137DivergingHead b{font-size:15px;font-weight:1000;}.v137DivergingHead strong{font-size:13px;font-weight:1000;}.v137DivergingHead .positive{color:#16a34a;}.v137DivergingHead .negative{color:#dc2626;}.v137DivergingHead .even{color:var(--muted);}
+.v137DivergingChart{display:grid;grid-template-columns:1fr 2px 1fr;align-items:center;height:20px;}
+.v137DivergingAxis{height:28px;background:rgba(15,23,42,.72);border-radius:2px;z-index:2;}
+.v137DivergingSide{position:relative;height:16px;background:rgba(148,163,184,.22);overflow:visible;display:flex;align-items:center;}
+.v137DivergingSide.loss{justify-content:flex-end;border-radius:999px 0 0 999px;}.v137DivergingSide.gain{justify-content:flex-start;border-radius:0 999px 999px 0;}
+.v137DivergingSide span{display:block;height:100%;min-width:0;}.v137DivergingSide.loss span{background:linear-gradient(90deg,#f97316,#dc2626);border-radius:999px 0 0 999px;}.v137DivergingSide.gain span{background:linear-gradient(90deg,#16a34a,#84cc16);border-radius:0 999px 999px 0;}
+.v137DivergingSide em{position:absolute;top:50%;transform:translateY(-50%);font-style:normal;font-size:11px;font-weight:1000;color:var(--text);}.v137DivergingSide.loss em{right:7px;}.v137DivergingSide.gain em{left:7px;}
+.v137DivergingMeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;font-size:11px;font-weight:900;color:var(--muted);}.v137DivergingMeta span:nth-child(1){text-align:left;}.v137DivergingMeta span:nth-child(2){text-align:center;}.v137DivergingMeta span:nth-child(3){text-align:right;}
+.v137DivergingRow small{display:block;margin-top:7px;text-align:right;color:var(--muted);font-size:11px;font-weight:900;}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -3971,7 +3988,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v136ResultBarTrack span{display:block;height:100%;border-radius:999px;min-width:0;}
 .v136ResultBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
 </style>
-<script src="app_v136_result_ratio_bars.js?v=136-result-ratio-bars"></script>
+<script src="app_v137_rotation_point_diverging_bars.js?v=137-rotation-point-diverging-bars"></script>
 
 
 
@@ -4510,7 +4527,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V136 RESULT RATIO BARS</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V137 ROTATION POINT BARS</div>
 </body>
 </html>
 
