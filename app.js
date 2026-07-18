@@ -1,4 +1,4 @@
-// V123: saved-match PDF/CSV export choices and direct archive landing
+// V124: automatic in-app backup for saved matches; CSV remains optional export
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -2973,16 +2973,60 @@ function migrateSavedMatchIdentities(match){
   }
   return match;
 }
-function getSavedMatches(){
-  try{
-    const list=JSON.parse(localStorage.getItem(savedMatchesKey())||'[]') || [];
-    let changed=false;
-    list.forEach(m=>{ const before=JSON.stringify(m); migrateSavedMatchIdentities(m); if(before!==JSON.stringify(m)) changed=true; });
-    if(changed) localStorage.setItem(savedMatchesKey(),JSON.stringify(list));
-    return list;
-  }catch(e){return [];}
+function savedMatchesBackupKey(){ return 'setterTheorySavedMatchesV21Backup'; }
+function normalizeSavedMatchList(value){
+  if(!Array.isArray(value)) return null;
+  return value.map(migrateSavedMatchIdentities);
 }
-function setSavedMatches(list){ localStorage.setItem(savedMatchesKey(), JSON.stringify((list||[]).map(migrateSavedMatchIdentities))); }
+function readSavedMatchStore(key){
+  try{
+    const raw=localStorage.getItem(key);
+    if(!raw) return null;
+    const parsed=JSON.parse(raw);
+    // V124 backup envelope: {savedAt, list}. Old plain-array data is also supported.
+    if(Array.isArray(parsed)) return {savedAt:'',list:normalizeSavedMatchList(parsed)};
+    if(parsed && Array.isArray(parsed.list)) return {savedAt:String(parsed.savedAt||''),list:normalizeSavedMatchList(parsed.list)};
+  }catch(error){ console.error('saved match store read failed',key,error); }
+  return null;
+}
+function getSavedMatches(){
+  const primary=readSavedMatchStore(savedMatchesKey());
+  const backup=readSavedMatchStore(savedMatchesBackupKey());
+  let chosen=primary;
+  if(!chosen && backup) chosen=backup;
+  else if(primary && backup && backup.savedAt && primary.savedAt && backup.savedAt>primary.savedAt) chosen=backup;
+  const list=(chosen&&chosen.list)||[];
+  // If primary is missing/corrupt, restore it from the automatic in-app backup.
+  if((!primary || chosen===backup) && backup){
+    try{ localStorage.setItem(savedMatchesKey(),JSON.stringify(list)); }catch(error){ console.error('saved match primary restore failed',error); }
+  }
+  return list;
+}
+function setSavedMatches(list){
+  const normalized=(list||[]).map(migrateSavedMatchIdentities);
+  const savedAt=new Date().toISOString();
+  const serialized=JSON.stringify(normalized);
+  const backupSerialized=JSON.stringify({savedAt,list:normalized});
+  // App-internal storage is the main record. The second key is an automatic recovery copy,
+  // so users do not need to export a CSV after every match.
+  localStorage.setItem(savedMatchesKey(),serialized);
+  localStorage.setItem(savedMatchesBackupKey(),backupSerialized);
+  try{
+    const verified=JSON.parse(localStorage.getItem(savedMatchesKey())||'null');
+    if(!Array.isArray(verified) || verified.length!==normalized.length) throw new Error('saved match verification failed');
+  }catch(error){
+    console.error('saved match verification failed',error);
+    throw error;
+  }
+  updateSavedMatchBackupState(savedAt);
+}
+function updateSavedMatchBackupState(savedAt){
+  const el=document.getElementById('savedMatchBackupState');
+  if(!el) return;
+  const d=savedAt?new Date(savedAt):null;
+  const time=d&&!Number.isNaN(d.getTime())?`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:'';
+  el.textContent=time?`アプリ内自動バックアップ済み ${time}`:'アプリ内自動バックアップ有効';
+}
 function suggestedMatchName(){
   const d=new Date();
   const day=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
@@ -3177,10 +3221,12 @@ function renderSavedMatches(){
   if(!listEl) return;
   const list=getSavedMatches();
   if(countEl) countEl.textContent=`${list.length}件`;
+  const backup=readSavedMatchStore(savedMatchesBackupKey());
+  updateSavedMatchBackupState(backup&&backup.savedAt);
   renderCompareSelectors();
   // V93.7: 保存件数の変化を成長ダッシュボードへ即時反映する。
   setTimeout(()=>{ try{ renderGrowthDashboard(); }catch(e){ console.error('growth dashboard render failed',e); } },0);
-  if(!list.length){ listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。CSV解析後に「この試合を保存」を押してください。</div>'; return; }
+  if(!list.length){ listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。試合終了後、ここへ自動保存されます。</div>'; return; }
   listEl.innerHTML=list.map(m=>{
     const d=m.savedAt ? new Date(m.savedAt) : new Date();
     const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;

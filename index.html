@@ -585,7 +585,7 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 /* v23 standalone pdf print */
 .savedMatchCard{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06)}
 .savedMatchHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-.savedMatchHead h3{margin:0;font-size:17px}.savedMatchCount{font-size:12px;color:var(--muted);font-weight:900}
+.savedMatchHead h3{margin:0;font-size:17px}.savedMatchCount{font-size:12px;color:var(--muted);font-weight:900}.savedMatchStatusWrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.savedMatchBackupState{font-size:10px;color:#047857;font-weight:900}.savedMatchGuide{margin:-2px 0 10px;padding:9px 11px;border-radius:12px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:12px;font-weight:800;line-height:1.5}
 .savedMatchList{display:grid;gap:8px}.savedMatchItem{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px}
 .savedMatchTitle{font-weight:1000;color:var(--ink);font-size:14px}.savedMatchMeta{font-size:12px;color:var(--muted);font-weight:800;margin-top:2px}.savedMatchIq{font-weight:1000;color:#0f172a;font-size:13px;margin-top:5px}
 .savedMatchActions{flex-wrap:wrap;justify-content:flex-end}
@@ -3447,8 +3447,9 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <div class="savedMatchCard" id="savedMatchesCard">
   <div class="savedMatchHead">
     <h3>💾 保存した試合</h3>
-    <span class="savedMatchCount" id="savedMatchCount">0件</span>
+    <div class="savedMatchStatusWrap"><span class="savedMatchCount" id="savedMatchCount">0件</span><span class="savedMatchBackupState" id="savedMatchBackupState">アプリ内自動バックアップ有効</span></div>
   </div>
+  <div class="savedMatchGuide">通常はアプリ内保存だけで大丈夫です。PDFは共有用、CSVは機種変更・復旧用のバックアップとして必要な時だけ使います。</div>
   <div id="savedMatchList" class="savedMatchList">保存された試合はまだありません。</div>
 </div>
 
@@ -3864,7 +3865,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app.js?v=123-saved-match-export-choice"></script>
+<script src="app.js?v=124-auto-in-app-backup"></script>
 
 
 
@@ -4403,7 +4404,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V123 SAVED MATCH PDF + CSV</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V124 AUTO IN-APP BACKUP</div>
 </body>
 </html>
 
