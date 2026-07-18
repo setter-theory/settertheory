@@ -1,4 +1,4 @@
-// V132: CSV preview shows 10 rows, scrolls vertically after row 10, and freezes No through Name during horizontal scrolling
+// V133: CSV log preview uses tap-to-expand cards for stable iPad viewing
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -4048,7 +4048,7 @@ function renderCsvPreview(parsed, fileName){
   const rows = parsed.data || [];
   const headers = parsed.headers || [];
 
-  status.innerHTML = `✅ 読み込み完了：${fileName}<div class="csvSmall">列数 ${headers.length} / データ行 ${rows.length}</div>`;
+  status.innerHTML = `✅ 読み込み完了：${escapeHtml(fileName)}<div class="csvSmall">列数 ${headers.length} / データ行 ${rows.length}</div>`;
 
   if(!headers.length){
     box.style.display = "block";
@@ -4056,19 +4056,58 @@ function renderCsvPreview(parsed, fileName){
     return;
   }
 
-  const previewRows = rows;
+  const aliases = {
+    no:["No","NO","No.","NO.","番号","ログNo","ログ番号"],
+    type:["Type","種類","プレー","項目"],
+    name:["Name","名前","選手名","Player"],
+    result:["Result","結果","判定"],
+    score:["Score","スコア","得点"]
+  };
+  const findHeader = (keys)=>{
+    const lower = headers.map(h=>String(h).trim().toLowerCase());
+    for(const key of keys){
+      const idx = lower.indexOf(String(key).trim().toLowerCase());
+      if(idx >= 0) return headers[idx];
+    }
+    return "";
+  };
+  const keyMap = Object.fromEntries(Object.entries(aliases).map(([k,v])=>[k,findHeader(v)]));
+  const valueFor = (row,key,fallback="-")=>{
+    const h=keyMap[key];
+    const value=h ? row[h] : "";
+    return String(value ?? "").trim() || fallback;
+  };
+
   box.style.display = "block";
   box.innerHTML = `
-    <table>
-      <thead><tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr></thead>
-      <tbody>
-        ${previewRows.map(r=>`<tr>${headers.map(h=>`<td>${escapeHtml(r[h] || "")}</td>`).join("")}</tr>`).join("")}
-      </tbody>
-    </table>
-    <div class="csvSmall" style="padding:10px 12px">10行まではそのまま表示し、11行目以降は縦スクロール。右側の項目は横スクロールできます。</div>
+    <div class="csvLogCards">
+      ${rows.map((row,index)=>{
+        const no=valueFor(row,"no",String(index+1));
+        const type=valueFor(row,"type");
+        const name=valueFor(row,"name");
+        const result=valueFor(row,"result");
+        const score=valueFor(row,"score");
+        const details=headers.map(h=>{
+          const value=String(row[h] ?? "").trim();
+          if(!value) return "";
+          return `<div class="csvLogDetailItem"><span>${escapeHtml(h)}</span><strong>${escapeHtml(value)}</strong></div>`;
+        }).join("");
+        return `
+          <details class="csvLogCard">
+            <summary class="csvLogSummary">
+              <span class="csvLogNo">${escapeHtml(no)}</span>
+              <span class="csvLogMain"><strong>${escapeHtml(type)}</strong><small>${escapeHtml(name)}</small></span>
+              <span class="csvLogResult">${escapeHtml(result)}</span>
+              <span class="csvLogScore">${escapeHtml(score)}</span>
+              <span class="csvLogChevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="csvLogDetails">${details || '<div class="csvLogEmpty">詳細データはありません</div>'}</div>
+          </details>`;
+      }).join("") || '<div class="csvLogEmpty">ログデータはありません</div>'}
+    </div>
+    <div class="csvSmall" style="padding:10px 12px">各ログをタップすると、すべての詳細項目を確認できます。</div>
   `;
 }
-
 
 function escapeAttr(v){ return String(v).replace(/\\/g,"\\\\").replace(/\'/g,"\\\'").replace(/"/g,"&quot;"); }
 function escapeHtml(v){

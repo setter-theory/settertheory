@@ -4484,7 +4484,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V132 LOG FROZEN COLUMNS + 10 ROW SCROLL</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V133 TAP TO EXPAND LOG</div>
 </body>
 </html>
 
@@ -7731,5 +7731,60 @@ body.menuOpen .sideOverlay{
 @media(max-width:420px){
   #report .setterDetailSection>div,
   #csvAnalysisBox .importedUnifiedReport .setterDetailSection>div{grid-template-columns:1fr!important}
+}
+</style>
+
+<style>
+/* V133: stable tap-to-expand CSV log cards */
+.csvPreviewBox{
+  display:none;
+  margin-top:10px;
+  border:0!important;
+  border-radius:14px;
+  background:#f8fafc!important;
+  overflow:visible!important;
+  max-height:none!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:auto!important;
+}
+.csvPreviewBox table{display:none!important;}
+.csvLogCards{display:grid;gap:8px;padding:10px;}
+.csvLogCard{
+  border:1px solid #dbe3ee;
+  border-radius:12px;
+  background:#fff;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(15,23,42,.05);
+}
+.csvLogSummary{
+  list-style:none;
+  display:grid;
+  grid-template-columns:40px minmax(110px,1.3fr) minmax(72px,.8fr) 64px 20px;
+  gap:8px;
+  align-items:center;
+  min-height:58px;
+  padding:9px 10px;
+  cursor:pointer;
+  color:#0f172a;
+  -webkit-tap-highlight-color:transparent;
+}
+.csvLogSummary::-webkit-details-marker{display:none;}
+.csvLogSummary:active{background:#eff6ff;}
+.csvLogNo{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#e2e8f0;font-weight:1000;font-size:13px;}
+.csvLogMain{display:flex;min-width:0;flex-direction:column;gap:2px;}
+.csvLogMain strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.csvLogMain small{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.csvLogResult{font-size:12px;font-weight:900;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.csvLogScore{font-size:13px;font-weight:1000;text-align:center;color:#1d4ed8;white-space:nowrap;}
+.csvLogChevron{font-size:20px;line-height:1;color:#64748b;transition:transform .18s ease;}
+.csvLogCard[open] .csvLogChevron{transform:rotate(180deg);}
+.csvLogDetails{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:10px;border-top:1px solid #e2e8f0;background:#f8fafc;}
+.csvLogDetailItem{display:flex;flex-direction:column;gap:2px;min-width:0;padding:8px;border-radius:9px;background:#fff;border:1px solid #e2e8f0;}
+.csvLogDetailItem span{font-size:10px;font-weight:900;color:#64748b;overflow-wrap:anywhere;}
+.csvLogDetailItem strong{font-size:13px;color:#0f172a;overflow-wrap:anywhere;}
+.csvLogEmpty{padding:16px;text-align:center;color:#64748b;font-weight:800;}
+@media(max-width:680px){
+  .csvLogSummary{grid-template-columns:38px minmax(95px,1fr) 68px 56px 18px;gap:6px;padding:8px;}
+  .csvLogDetails{grid-template-columns:1fr;}
 }
 </style>
