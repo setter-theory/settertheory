@@ -1,4 +1,4 @@
-// V125: home cleanup; saved matches are primary and CSV import moved into Data Management
+// V126: saved match report button opens the hidden Data Management report area before rendering
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -3145,11 +3145,18 @@ function loadSavedMatch(id){
   try{
     const m=getSavedMatches().find(x=>String(x.id)===String(id));
     if(!m){ alert('保存データが見つかりません。'); return; }
+
+    // V126: the report host is inside the collapsed Data Management panel.
+    // Open it first so the rendered report is actually visible on iPad/Safari.
+    const dataManagement=document.getElementById('dataManagementCard');
+    if(dataManagement) dataManagement.open=true;
+
     const source=m.csv||m.parsed||m.data||m;
     importedCsv=recoveryNormalizePayload(source,m.fileName||m.title||'保存済みデータ');
     try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv)); }catch(_){}
     renderCsvPreview(importedCsv,importedCsv.fileName||m.title||'保存済みデータ');
-    showRestoredFullReport(importedCsv,m.title||'保存試合レポート');
+    const shown=showRestoredFullReport(importedCsv,m.title||'保存試合レポート');
+    if(shown===false) throw new Error('saved report could not be displayed');
   }catch(error){ console.error('saved report recovery failed',error); alert('保存試合のレポート表示中にエラーが発生しました。データは削除されていません。'); }
 }
 function savedMatchFileBase(match){
