@@ -1,2 +1,1 @@
-V124: 保存試合をアプリ内へ自動バックアップ。通常はCSV書き出し不要。PDFは共有用、CSVは復旧・移行時のみ。
-Setter Theory V123 saved match PDF and CSV export choices
+V125: ホーム画面を整理。保存した試合を主役にし、Vollyze CSV読み込みを折りたたみ式の「データ管理」へ移動。常時表示していたバックアップ説明を削除。

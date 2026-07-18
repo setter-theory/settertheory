@@ -3413,6 +3413,20 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .finishMatchBottom{background:#991b1b;color:#fff;border:0;border-radius:12px;font-weight:1000;padding:10px 12px}
 @media(max-width:700px){.finishMatchBottom{font-size:12px;padding:8px 9px}}
 </style>
+
+<style id="v125-home-cleanup">
+.dataManagementCard{margin-top:14px;background:#0f1f35;border:1px solid #294461;border-radius:18px;overflow:hidden;box-shadow:0 8px 22px rgba(15,23,42,.14)}
+.dataManagementCard>summary{list-style:none;cursor:pointer;padding:15px 17px;color:#e2e8f0;font-weight:1000;font-size:16px;display:flex;align-items:center;justify-content:space-between}
+.dataManagementCard>summary::-webkit-details-marker{display:none}
+.dataManagementCard>summary::after{content:'＋';font-size:21px;line-height:1;color:#93c5fd}
+.dataManagementCard[open]>summary::after{content:'−'}
+.dataManagementBody{padding:0 14px 14px}
+.dataManagementBody .csvImportCard{margin:0;background:#10233c;border-color:#294461;box-shadow:none}
+.dataManagementBody .csvImportCard h2{color:#f8fafc}
+.dataManagementBody .csvImportCard .muted{color:#94a3b8!important}
+@media(max-width:720px){.dataManagementCard>summary{padding:13px 14px;font-size:15px}.dataManagementBody{padding:0 10px 10px}}
+</style>
+
 </head>
 <body>
 
@@ -3429,27 +3443,11 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<div class="card csvImportCard" id="csvImportCard">
-  <h2>📂 Vollyze CSV読み込み</h2>
-  <p class="muted">Vollyzeから出力したCSVを選択すると、内容を読み込んで確認できます。</p>
-  <div class="csvActions">
-    <label class="csvFileBtn">
-      CSVを選択
-      <input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
-    </label>
-    <button id="clearCsvBtn" class="ghostBtn" type="button">読み込み解除</button>
-  </div>
-  <div id="csvImportStatus" class="csvImportStatus">未読み込み</div>
-  <div id="csvAnalysisBox" class="csvAnalysisBox"></div>
-  <div id="csvPreviewBox" class="csvPreviewBox"></div>
-</div>
-
 <div class="savedMatchCard" id="savedMatchesCard">
   <div class="savedMatchHead">
     <h3>💾 保存した試合</h3>
-    <div class="savedMatchStatusWrap"><span class="savedMatchCount" id="savedMatchCount">0件</span><span class="savedMatchBackupState" id="savedMatchBackupState">アプリ内自動バックアップ有効</span></div>
+    <span class="savedMatchCount" id="savedMatchCount">0件</span>
   </div>
-  <div class="savedMatchGuide">通常はアプリ内保存だけで大丈夫です。PDFは共有用、CSVは機種変更・復旧用のバックアップとして必要な時だけ使います。</div>
   <div id="savedMatchList" class="savedMatchList">保存された試合はまだありません。</div>
 </div>
 
@@ -3482,6 +3480,25 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
+<details class="dataManagementCard" id="dataManagementCard">
+  <summary>⚙️ データ管理</summary>
+  <div class="dataManagementBody">
+    <div class="card csvImportCard" id="csvImportCard">
+      <h2>📂 Vollyze CSV読み込み</h2>
+      <p class="muted">必要なときだけCSVを選択して、内容を読み込みます。</p>
+      <div class="csvActions">
+        <label class="csvFileBtn">
+          CSVを選択
+          <input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
+        </label>
+        <button id="clearCsvBtn" class="ghostBtn" type="button">読み込み解除</button>
+      </div>
+      <div id="csvImportStatus" class="csvImportStatus">未読み込み</div>
+      <div id="csvAnalysisBox" class="csvAnalysisBox"></div>
+      <div id="csvPreviewBox" class="csvPreviewBox"></div>
+    </div>
+  </div>
+</details>
 
     <p>自由な発想で、コート全体を見渡す。</p>
   </div>
@@ -4404,7 +4421,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V124 AUTO IN-APP BACKUP</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V125 HOME CLEANUP</div>
 </body>
 </html>
 

@@ -1,4 +1,4 @@
-// V124: automatic in-app backup for saved matches; CSV remains optional export
+// V125: home cleanup; saved matches are primary and CSV import moved into Data Management
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
