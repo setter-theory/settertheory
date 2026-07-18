@@ -1,4 +1,4 @@
-// V118: immediate autosave + verified screen-transition save
+// V119: navigation snapshot fix for Home/Growth Dashboard
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -207,6 +207,28 @@ function show(id){
 }
 function openSideMenu(){ document.body.classList.add("menuOpen"); }
 function closeSideMenu(){ document.body.classList.remove("menuOpen"); }
+function persistNavigationSnapshot(target="home"){
+  // V119: Home / Growth Dashboard navigation must persist the exact in-memory score
+  // before any home-side render or later resume/load can read localStorage.
+  const expectedMy=Number(s.my||0);
+  const expectedOp=Number(s.op||0);
+  const expectedLogs=Array.isArray(s.logs)?s.logs.length:0;
+  if(!save(`navigation-${target}`)) return false;
+  try{
+    const stored=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
+    const ok=!!stored && Number(stored.my||0)===expectedMy && Number(stored.op||0)===expectedOp && (Array.isArray(stored.logs)?stored.logs.length:0)===expectedLogs;
+    if(!ok){
+      // One immediate retry protects against a stale overwrite from a preceding UI event.
+      localStorage.setItem("setterTheoryV2", JSON.stringify(s));
+      const retried=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
+      return !!retried && Number(retried.my||0)===expectedMy && Number(retried.op||0)===expectedOp && (Array.isArray(retried.logs)?retried.logs.length:0)===expectedLogs;
+    }
+    return true;
+  }catch(e){
+    console.error("navigation snapshot verification failed",target,e);
+    return false;
+  }
+}
 function menuGo(target){
   closeSideMenu();
   if(target==="report"){ showReport(); return; }
@@ -215,9 +237,13 @@ function menuGo(target){
     show("setup");
     return;
   }
-  save();
+  if(!persistNavigationSnapshot(target)){
+    showInputToast("保存に失敗しました。もう一度押してください");
+    return;
+  }
   show("home");
   updateHomeMatchControls();
+  if(target==="growth") renderGrowthDashboard();
   setTimeout(()=>{
     const map={growth:"growthDashboardCard",csv:"csvImportCard",about:"growthDashboardCard"};
     const el=document.getElementById(map[target]||"");
@@ -618,8 +644,11 @@ function startNewMatchSetup(){
   show("setup");
 }
 function goHome(){
-  save();
   if(confirm("ホームへ戻りますか？\n途中データは自動保存され、ホームから再開できます。")){
+    if(!persistNavigationSnapshot("home-button")){
+      showInputToast("保存に失敗しました。もう一度押してください");
+      return;
+    }
     show("home");
     updateHomeMatchControls();
   }

@@ -1,5 +1,2 @@
-V118 VERIFIED AUTOSAVE
-- 1プレー入力ごとに即時保存（既存動作を検証強化）
-- 試合画面から移動する直前に強制保存
-- アプリ切替・終了時にも保存
-- 保存完了確認後のみ「途中データ保存済 HH:MM:SS」と表示
+V119 navigation snapshot fix
+Home/Growth Dashboard navigation now saves and verifies the exact current score and log count before moving.

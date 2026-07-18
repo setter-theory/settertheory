@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v118-verified-autosave';
-const ASSETS=['./','./index.html','./app.js?v=118-verified-autosave','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME = 'setter-theory-v119-navigation-snapshot-fix';
+const ASSETS=['./','./index.html','./app.js?v=119-navigation-snapshot-fix','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
