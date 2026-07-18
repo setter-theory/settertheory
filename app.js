@@ -1,4 +1,4 @@
-// V119: navigation snapshot fix for Home/Growth Dashboard
+// V120: restore Home/Growth navigation; save without blocking screen transition
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -208,24 +208,13 @@ function show(id){
 function openSideMenu(){ document.body.classList.add("menuOpen"); }
 function closeSideMenu(){ document.body.classList.remove("menuOpen"); }
 function persistNavigationSnapshot(target="home"){
-  // V119: Home / Growth Dashboard navigation must persist the exact in-memory score
-  // before any home-side render or later resume/load can read localStorage.
-  const expectedMy=Number(s.my||0);
-  const expectedOp=Number(s.op||0);
-  const expectedLogs=Array.isArray(s.logs)?s.logs.length:0;
-  if(!save(`navigation-${target}`)) return false;
+  // V120: 保存失敗が画面遷移を止めないよう、同期保存はベストエフォートにする。
+  // プレー入力時点ですでに即時保存されるため、ここでは移動直前の保険として保存する。
   try{
-    const stored=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
-    const ok=!!stored && Number(stored.my||0)===expectedMy && Number(stored.op||0)===expectedOp && (Array.isArray(stored.logs)?stored.logs.length:0)===expectedLogs;
-    if(!ok){
-      // One immediate retry protects against a stale overwrite from a preceding UI event.
-      localStorage.setItem("setterTheoryV2", JSON.stringify(s));
-      const retried=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
-      return !!retried && Number(retried.my||0)===expectedMy && Number(retried.op||0)===expectedOp && (Array.isArray(retried.logs)?retried.logs.length:0)===expectedLogs;
-    }
+    save(`navigation-${target}`);
     return true;
   }catch(e){
-    console.error("navigation snapshot verification failed",target,e);
+    console.error("navigation snapshot failed",target,e);
     return false;
   }
 }
@@ -237,10 +226,7 @@ function menuGo(target){
     show("setup");
     return;
   }
-  if(!persistNavigationSnapshot(target)){
-    showInputToast("保存に失敗しました。もう一度押してください");
-    return;
-  }
+  persistNavigationSnapshot(target);
   show("home");
   updateHomeMatchControls();
   if(target==="growth") renderGrowthDashboard();
@@ -645,10 +631,7 @@ function startNewMatchSetup(){
 }
 function goHome(){
   if(confirm("ホームへ戻りますか？\n途中データは自動保存され、ホームから再開できます。")){
-    if(!persistNavigationSnapshot("home-button")){
-      showInputToast("保存に失敗しました。もう一度押してください");
-      return;
-    }
+    persistNavigationSnapshot("home-button");
     show("home");
     updateHomeMatchControls();
   }
