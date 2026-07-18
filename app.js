@@ -1,4 +1,4 @@
-// V127: CSV preview table text color fixed for white backgrounds
+// V129: CSV preview table fixed to card width; vertical scrolling only
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.

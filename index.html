@@ -519,7 +519,10 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 }
 .csvPreviewBox{
   margin-top:12px;
-  overflow:auto;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
   max-height:280px;
   border:1px solid var(--line);
   border-radius:14px;
@@ -528,19 +531,23 @@ td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;font-size:
 }
 .csvPreviewBox table{
   width:100%;
+  max-width:100%;
+  table-layout:fixed;
   border-collapse:collapse;
-  font-size:12px;
+  font-size:10px;
 }
 .csvPreviewBox th,
 .csvPreviewBox td{
   border-bottom:1px solid #e5e7eb;
   padding:8px;
-  text-align:left;
-  white-space:nowrap;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  line-height:1.25;
 }
 .csvPreviewBox th{
-  position:static!important;
-  top:auto!important;
+  position:static;
   background:#e2e8f0!important;
   color:#0f172a!important;
   opacity:1!important;
@@ -1979,6 +1986,13 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #report .setterDetailMore{margin-top:9px;border-top:1px solid #dbeafe;padding-top:7px}
 #report .setterDetailMore summary{cursor:pointer;color:#1d4ed8;font-weight:1000;font-size:12px}
 @media(max-width:760px){#report .setterDetailGrid{grid-template-columns:1fr!important}#report .setterCompactRadar{max-width:300px}}
+
+/* V129: imported log table is locked to the card width on iPad.
+   Only vertical scrolling is allowed, preventing diagonal/horizontal panning. */
+@media (min-width:768px) and (max-width:1366px){
+  .csvPreviewBox th,.csvPreviewBox td{padding:6px 3px!important;font-size:9px!important;}
+}
+
 </style>
 
 <!-- V37.3 tablet landscape layout fix -->
@@ -4430,7 +4444,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V128 LOG TABLE STABILITY FIX</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V129 LOG TABLE FIXED WIDTH</div>
 </body>
 </html>
 
