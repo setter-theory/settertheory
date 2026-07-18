@@ -1,4 +1,4 @@
-// V126: saved match report button opens the hidden Data Management report area before rendering
+// V127: CSV preview table text color fixed for white backgrounds
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
