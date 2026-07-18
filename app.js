@@ -1,3 +1,4 @@
+// V118: immediate autosave + verified screen-transition save
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -191,9 +192,14 @@ const rateActionTypes=["スパイク","サーブ","レセプ","ディグ","ブ�
 const defaultPositions=["ライト後衛","ライト前衛","センター前衛","レフト前衛","レフト後衛","センター後衛"];
 
 function show(id){
+  // V118: 試合入力画面を離れる直前にも同期保存する。
+  const activeScreen=document.querySelector(".screen.active");
+  if(activeScreen && activeScreen.id==="match" && id!=="match") save("screen-change");
   closeSideMenu && closeSideMenu();
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const next=document.getElementById(id);
+  if(!next) return;
+  next.classList.add("active");
   if(id==="match") ensureMatchRosterState();
   const bottom=document.getElementById("bottomBar");
   if(bottom) bottom.classList.add("hidden");
@@ -618,13 +624,40 @@ function goHome(){
     updateHomeMatchControls();
   }
 }
-function save(){
+function save(reason="auto"){
   try{
-    s.lastSavedAt=new Date().toISOString();
+    const savedAt=new Date().toISOString();
+    s.lastSavedAt=savedAt;
     validateStateForSave(s);
-    localStorage.setItem("setterTheoryV2", JSON.stringify(s));
+    const serialized=JSON.stringify(s);
+    localStorage.setItem("setterTheoryV2", serialized);
+    // V118: 書き込み後に同じ保存時刻が読めることまで確認してから保存済み扱いにする。
+    const verified=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
+    if(!verified || verified.lastSavedAt!==savedAt) throw new Error("autosave verification failed");
+    updateAutosaveIndicator(savedAt);
+    return true;
   }catch(e){
-    console.error("autosave failed",e);
+    console.error("autosave failed",reason,e);
+    updateAutosaveIndicator(null,true);
+    return false;
+  }
+}
+function updateAutosaveIndicator(savedAt=s.lastSavedAt,failed=false){
+  const saveEl=document.getElementById("autosaveStateText");
+  if(!saveEl) return;
+  if(failed){
+    saveEl.textContent="保存に失敗";
+    saveEl.classList.remove("saved");
+    return;
+  }
+  if(savedAt){
+    const d=new Date(savedAt);
+    const time=Number.isNaN(d.getTime()) ? "" : ` ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+    saveEl.textContent="途中データ保存済"+time;
+    saveEl.classList.add("saved");
+  }else{
+    saveEl.textContent="自動保存";
+    saveEl.classList.remove("saved");
   }
 }
 function load(){
@@ -1383,11 +1416,7 @@ function updateFieldReadyStatus(){
   const last=(s.logs||[])[(s.logs||[]).length-1]||null;
   const lastEl=document.getElementById("lastActionText");
   if(lastEl) lastEl.textContent=describeLogForField(last);
-  const saveEl=document.getElementById("autosaveStateText");
-  if(saveEl){
-    saveEl.textContent=s.lastSavedAt ? "自動保存済" : "自動保存";
-    saveEl.classList.toggle("saved",!!s.lastSavedAt);
-  }
+  updateAutosaveIndicator(s.lastSavedAt,false);
   const canUndo=Array.isArray(s.hist)&&s.hist.length>0;
   document.querySelectorAll('.undoBtn').forEach(btn=>{
     btn.disabled=!canUndo;
@@ -3931,3 +3960,10 @@ function setupCsvImport(){
     if(editing && !isEditableOrControl(e.target)) active.blur();
   }, {passive:true});
 })();
+
+// V118: アプリ切替・タブ非表示・終了時にも途中データを同期保存する。
+window.addEventListener("pagehide",()=>{ try{ save("pagehide"); }catch(_){} });
+window.addEventListener("beforeunload",()=>{ try{ save("beforeunload"); }catch(_){} });
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden"){ try{ save("visibility-hidden"); }catch(_){} }
+});
