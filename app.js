@@ -1,4 +1,4 @@
-// V120: restore Home/Growth navigation; save without blocking screen transition
+// V122: persistent autosave recovery and finished-match archive
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -644,9 +644,16 @@ function save(reason="auto"){
     const savedAt=new Date().toISOString();
     s.lastSavedAt=savedAt;
     validateStateForSave(s);
+
+    // V122: 先に軽量な緊急スナップショットを保存し、その後に完全データを保存する。
+    // iPadでアプリを閉じる瞬間に完全保存が中断されても、最新得点とログを復元できる。
+    const emergency={...s,hist:[]};
+    localStorage.setItem("setterTheoryV2Emergency", JSON.stringify(emergency));
+
     const serialized=JSON.stringify(s);
     localStorage.setItem("setterTheoryV2", serialized);
-    // V118: 書き込み後に同じ保存時刻が読めることまで確認してから保存済み扱いにする。
+    localStorage.setItem("setterTheoryV2Backup", serialized);
+
     const verified=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
     if(!verified || verified.lastSavedAt!==savedAt) throw new Error("autosave verification failed");
     updateAutosaveIndicator(savedAt);
@@ -676,9 +683,13 @@ function updateAutosaveIndicator(savedAt=s.lastSavedAt,failed=false){
   }
 }
 function load(){
-  const x=localStorage.getItem("setterTheoryV2");
-  if(x){
-    try{s=JSON.parse(x);}catch(e){}
+  // V122: primary / backup / emergency のうち、保存時刻が最も新しい状態を復元する。
+  const candidates=["setterTheoryV2","setterTheoryV2Backup","setterTheoryV2Emergency"]
+    .map(key=>{ try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):null; }catch(_){ return null; } })
+    .filter(x=>x&&typeof x==="object");
+  if(candidates.length){
+    candidates.sort((a,b)=>String(b.lastSavedAt||"").localeCompare(String(a.lastSavedAt||"")));
+    s=candidates[0];
   }
   ensureAppIdentity(s);
   if(!s.positions) s.positions=defaultPositions.slice();
@@ -693,7 +704,7 @@ function load(){
   if(!s.setterNums.length && s.nums[0]) s.setterNums=[String(s.nums[0])];
   s.setterIndex=Math.max(0,(s.nums||[]).map(String).indexOf(String(s.setterNums[0])));
   if(!s.players) s.players={};
-  if(!s.playerPositions||typeof s.playerPositions!=='object'||Array.isArray(s.playerPositions)) s.playerPositions={};
+  if(!s.playerPositions||typeof s.playerPositions!=="object"||Array.isArray(s.playerPositions)) s.playerPositions={};
   if(s.benchCount===undefined || s.benchCount===null) s.benchCount=6;
   s.benchCount=Math.max(0, Math.min(12, Number(s.benchCount)||0));
   if(s.lastSubstitution===undefined) s.lastSubstitution=null;
@@ -1232,17 +1243,61 @@ function startMatch(){
   starters.forEach(n=>playerIdForNumber(n));
   save(); show("match");
 }
+function currentMatchAsImportedCsv(){
+  const headers=["No","Set","Rotation","Type","Number","Name","Position","Result","Point","Score","Time","PlayerId"];
+  const data=(s.logs||[]).map(x=>({
+    No:x.no, Set:x.set||s.setNo, Rotation:x.rot, Type:x.type, Number:x.num,
+    Name:x.playerNameSnapshot||getPlayerName(x.num), Position:x.pos, Result:x.result,
+    Point:x.point, Score:x.score, Time:x.time, PlayerId:x.playerId||""
+  }));
+  return {fileName:`${s.team||"自チーム"}_vs_${s.oppTeam||"相手"}_Set${s.setNo||1}.csv`,headers,data};
+}
+function archiveFinishedCurrentMatch(){
+  const parsed=currentMatchAsImportedCsv();
+  const analysis=analyzeImportedCsv(parsed);
+  const now=new Date();
+  const title=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")} ${s.team||"自チーム"} vs ${s.oppTeam||"相手"} ${s.my||0}-${s.op||0}`;
+  const list=getSavedMatches();
+  const saved=migrateSavedMatchIdentities({
+    id:String(s.matchId||createEntityId("match")), title, fileName:parsed.fileName,
+    savedAt:now.toISOString(), memo:"", csv:parsed, summary:{
+      total:analysis.total, setterIq:analysis.setterIq, balance:analysis.balance,
+      diversity:analysis.diversity, quick:analysis.quick, clutch:analysis.clutch,
+      foreshadow:analysis.foreshadow, blockInduce:analysis.blockInduce,
+      sideDepend:analysis.sideDepend, centerPct:analysis.centerPct, items:analysis.items,
+      bySet:analysis.bySet, byRot:analysis.byRot, byScore:analysis.byScore, byPass:analysis.byPass,
+      terminalCounts:analysis.terminalCounts, usedFallback:analysis.usedFallback
+    },
+    liveState:JSON.parse(JSON.stringify({...s,hist:[]})),
+    dataVersion:DATA_SCHEMA_VERSION, schemaVersion:DATA_SCHEMA_VERSION,
+    userId:s.userId, teamId:s.teamId, matchId:s.matchId, setId:s.setId,
+    playerIdentities:{...(s.playerIdentities||{})}
+  });
+  const withoutSame=list.filter(m=>String(m.matchId||m.id)!==String(saved.matchId));
+  withoutSame.unshift(saved);
+  setSavedMatches(withoutSame.slice(0,50));
+  return saved;
+}
 function finishMatch(){
   if(!s.matchActive){ alert('進行中の試合がありません。'); return; }
   if(!confirm('この試合を保存して終了しますか？\n終了後も保存データは確認できます。')) return;
-  s.matchActive=false;
-  s.matchEndedAt=new Date().toISOString();
-  s.status='completed';
-  save();
-  alert('試合を保存して終了しました。');
-  show('home');
-  updateHomeMatchControls();
+  try{
+    // V122: 終了フラグを立てる前に、現在の試合を「保存した試合」へ確実に複製する。
+    archiveFinishedCurrentMatch();
+    s.matchActive=false;
+    s.matchEndedAt=new Date().toISOString();
+    s.status='completed';
+    save('finish-match');
+    renderSavedMatches();
+    alert('試合を保存して終了しました。');
+    show('home');
+    updateHomeMatchControls();
+  }catch(error){
+    console.error('finish match save failed',error);
+    alert('試合の保存に失敗したため、終了していません。データは入力画面に残っています。');
+  }
 }
+
 function pointByResult(result){
   const before=s.serve;
 
