@@ -2391,10 +2391,11 @@ function v372ActionStats(){
   return cfgs.map(c=>{ const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); return {...c,total:all.length,ok:ok.length,pct:safePct(ok.length,all.length),eff:effectRate(all)}; });
 }
 function buildActionSuccessAnalysis(){
-  const stats=v372ActionStats();
-  return `<div class="v372RateGrid">${stats.map(c=>`<div class="v372RateCard ${c.pct>=70?'good':c.pct<45&&c.total>0?'bad':''}">
-    <div class="v372RateLabel">${c.label}</div><div class="v372RateValue">${c.pct}%</div><div class="v372RateSub">成功 ${c.ok}/${c.total}　効果率 ${c.eff}%</div>
-    <div class="v372MiniTrack"><span style="width:${c.pct}%"></span></div>
+  const stats=v372ActionStats().slice().sort((a,b)=>b.pct-a.pct || b.total-a.total || a.label.localeCompare(b.label,'ja'));
+  return `<div class="v135ActionBars">${stats.map(c=>`<div class="v135ActionBarRow ${c.pct>=70?'good':c.pct<45&&c.total>0?'bad':''}">
+    <div class="v135ActionBarHead"><span class="v135ActionBarLabel">${c.label}</span><span class="v135ActionBarValue">${c.pct}%</span></div>
+    <div class="v135ActionBarTrack"><span style="width:${c.pct}%"></span></div>
+    <div class="v135ActionBarSub">成功 ${c.ok}/${c.total}　効果率 ${c.eff}%</div>
   </div>`).join("")}</div>`;
 }
 function buildTossUsageAnalysis(){

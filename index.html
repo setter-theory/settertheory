@@ -3490,6 +3490,19 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 @media(max-width:720px){.dataManagementCard>summary{padding:13px 14px;font-size:15px}.dataManagementBody{padding:0 10px 10px}}
 </style>
 
+
+/* V135: play success rate horizontal bar chart */
+#report .v135ActionBars{display:grid;gap:14px;margin-top:8px;}
+#report .v135ActionBarRow{padding:12px 14px;border:1px solid rgba(148,163,184,.22);border-radius:14px;background:rgba(15,23,42,.24);}
+#report .v135ActionBarHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+#report .v135ActionBarLabel{font-weight:900;font-size:14px;}
+#report .v135ActionBarValue{font-weight:1000;font-size:18px;line-height:1;}
+#report .v135ActionBarTrack{height:16px;border-radius:999px;background:rgba(148,163,184,.24);overflow:hidden;}
+#report .v135ActionBarTrack span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#fbbf24);min-width:0;}
+#report .v135ActionBarRow.good .v135ActionBarTrack span{background:linear-gradient(90deg,#16a34a,#84cc16);}
+#report .v135ActionBarRow.bad .v135ActionBarTrack span{background:linear-gradient(90deg,#dc2626,#f97316);}
+#report .v135ActionBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
+
 </head>
 <body>
 
@@ -4484,7 +4497,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V134 CLEAN MATCH LOG</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V135 PLAY SUCCESS BARS</div>
 </body>
 </html>
 
