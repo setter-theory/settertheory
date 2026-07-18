@@ -2323,7 +2323,14 @@ function report(){
     {label:"ミス",count:actionLogs.filter(x=>x.result==="ミス"||x.result==="レセプミス"||x.result==="ブロックミス").length,color:"#ef4444"},
     {label:"被ブロック",count:actionLogs.filter(x=>x.result==="被ブロック").length,color:"#f59e0b"},
   ].filter(x=>x.count>0);
-  const resultDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(resultGroups)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(resultGroups,total)}</div>`;
+  const resultBars=`<div class="v136ResultBars">${resultGroups
+    .map(item=>({...item,pct:safePct(item.count,total)}))
+    .sort((a,b)=>b.pct-a.pct || b.count-a.count)
+    .map(item=>`<div class="v136ResultBarRow">
+      <div class="v136ResultBarHead"><span class="v136ResultBarLabel">${escapeHtml(item.label)}</span><strong class="v136ResultBarValue">${item.pct}%</strong></div>
+      <div class="v136ResultBarTrack"><span style="width:${Math.max(0,Math.min(100,item.pct))}%;background:${item.color}"></span></div>
+      <div class="v136ResultBarSub">${item.count}件 / 全${total}プレー</div>
+    </div>`).join('')}</div>`;
 
   const pointItems=[
     {label:"自チーム得点",count:myPts,color:"#22c55e"},
@@ -2363,7 +2370,7 @@ function report(){
     ${summary}
     <div class="panelGrid">
       <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
-      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultDonut}</div>
+      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
       <div class="reportPanel"><h3>得点・失点</h3>${pointDonut}<div class="lossBreakdown"><span>自ミス等 <b>${ownErrorLossCount}</b></span><span>相手得点 <b>${opponentPointCount}</b></span></div></div>
     </div>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>

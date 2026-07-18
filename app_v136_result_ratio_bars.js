@@ -1,3 +1,4 @@
+// V136: result ratio horizontal bars; V135 play success bars retained
 // V135 corrected: play success rate horizontal bars in original renderer
 // V99: Field Ready - last action visibility, safer undo, autosave status
 

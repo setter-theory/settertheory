@@ -3959,7 +3959,19 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   </div>
 </div>
 
-<script src="app_v135_saved_report_fix.js?v=135-saved-report-fixed2"></script>
+
+<style id="v136-result-ratio-bars">
+/* V136: result ratio horizontal bar chart */
+.v136ResultBars{display:grid;gap:14px;margin-top:8px;}
+.v136ResultBarRow{padding:12px 14px;border:1px solid rgba(148,163,184,.22);border-radius:14px;background:rgba(15,23,42,.24);}
+.v136ResultBarHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.v136ResultBarLabel{font-weight:1000;font-size:14px;}
+.v136ResultBarValue{font-weight:1000;font-size:18px;line-height:1;}
+.v136ResultBarTrack{height:16px;border-radius:999px;background:rgba(148,163,184,.24);overflow:hidden;}
+.v136ResultBarTrack span{display:block;height:100%;border-radius:999px;min-width:0;}
+.v136ResultBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
+</style>
+<script src="app_v136_result_ratio_bars.js?v=136-result-ratio-bars"></script>
 
 
 
@@ -4498,7 +4510,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V135 SAVED REPORT BARS FIXED</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V136 RESULT RATIO BARS</div>
 </body>
 </html>
 
