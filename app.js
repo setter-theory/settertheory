@@ -1,4 +1,4 @@
-// V133: CSV log preview uses tap-to-expand cards for stable iPad viewing
+// V134: CSV log preview hides internal summary rows and shows only field-useful details
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -4078,19 +4078,42 @@ function renderCsvPreview(parsed, fileName){
     return String(value ?? "").trim() || fallback;
   };
 
+  const noHeader=keyMap.no;
+  const playableRows=rows.filter(row=>{
+    const raw=noHeader ? String(row[noHeader] ?? "").trim() : "";
+    return /^\d+$/.test(raw);
+  });
+  const detailFields=[
+    {label:"セット", aliases:["Set","セット"]},
+    {label:"ローテーション", aliases:["Rotation","ローテーション","Rot","ローテ"]},
+    {label:"背番号", aliases:["Number","背番号"]},
+    {label:"ポジション", aliases:["Position","ポジション"]},
+    {label:"結果詳細", aliases:["Result","結果","判定"]},
+    {label:"トスミス", aliases:["TossMiss","トスミス"]},
+    {label:"ポイント", aliases:["Point","ポイント","得点状況"]},
+    {label:"スコア", aliases:["Score","スコア"]},
+    {label:"プレー時間", aliases:["Time","時間"]},
+    {label:"セッターIQ", aliases:["SetterIQ","セッターIQ"]},
+    {label:"トス成功率", aliases:["SetterTossSuccessRate","トス成功率"]}
+  ];
+  const detailHeaderMap=detailFields.map(field=>({
+    ...field,
+    header:findHeader(field.aliases)
+  })).filter(field=>field.header);
+
   box.style.display = "block";
   box.innerHTML = `
     <div class="csvLogCards">
-      ${rows.map((row,index)=>{
+      ${playableRows.map((row,index)=>{
         const no=valueFor(row,"no",String(index+1));
         const type=valueFor(row,"type");
         const name=valueFor(row,"name");
         const result=valueFor(row,"result");
         const score=valueFor(row,"score");
-        const details=headers.map(h=>{
-          const value=String(row[h] ?? "").trim();
+        const details=detailHeaderMap.map(field=>{
+          const value=String(row[field.header] ?? "").trim();
           if(!value) return "";
-          return `<div class="csvLogDetailItem"><span>${escapeHtml(h)}</span><strong>${escapeHtml(value)}</strong></div>`;
+          return `<div class="csvLogDetailItem"><span>${escapeHtml(field.label)}</span><strong>${escapeHtml(value)}</strong></div>`;
         }).join("");
         return `
           <details class="csvLogCard">
@@ -4103,9 +4126,9 @@ function renderCsvPreview(parsed, fileName){
             </summary>
             <div class="csvLogDetails">${details || '<div class="csvLogEmpty">詳細データはありません</div>'}</div>
           </details>`;
-      }).join("") || '<div class="csvLogEmpty">ログデータはありません</div>'}
+      }).join("") || '<div class="csvLogEmpty">試合ログはありません</div>'}
     </div>
-    <div class="csvSmall" style="padding:10px 12px">各ログをタップすると、すべての詳細項目を確認できます。</div>
+    <div class="csvSmall" style="padding:10px 12px">各ログをタップすると、試合確認に必要な詳細を表示できます。</div>
   `;
 }
 
