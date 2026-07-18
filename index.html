@@ -7894,3 +7894,19 @@ body.menuOpen .sideOverlay{
 .v137DivergingMeta span:nth-child(3){color:#16a34a!important;}
 .v137DivergingRow small{color:#7c3aed!important;}
 </style>
+<style>
+/* V141: ローテーション別トス配分 */
+.rotationTossPanel{grid-column:1/-1}
+.rotationTossDistribution{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rotationTossCard{border:1px solid #dbe3ee;border-radius:14px;padding:14px;background:#fff}
+.rotationTossCardHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.rotationTossCardHead b{font-size:18px;color:#0f172a}.rotationTossCardHead span{font-size:12px;font-weight:900;color:#64748b}
+.rotationTossBars{display:grid;gap:9px}.rotationTossLine{display:grid;grid-template-columns:58px minmax(0,1fr) 70px;align-items:center;gap:9px}
+.rotationTossLabel{font-size:13px;font-weight:950;color:var(--toss-color)}
+.rotationTossTrack{height:12px;border-radius:999px;background:#edf2f7;overflow:hidden}
+.rotationTossTrack span{display:block;height:100%;border-radius:999px;background:var(--toss-color);min-width:0}
+.rotationTossValue{display:flex;align-items:baseline;justify-content:flex-end;gap:5px;color:var(--toss-color)}
+.rotationTossValue strong{font-size:14px}.rotationTossValue small{font-size:10px;font-weight:900}
+.rotationTossEmpty{padding:18px;text-align:center;color:#64748b;font-weight:800}
+@media(max-width:760px){.rotationTossDistribution{grid-template-columns:1fr}.rotationTossCard{padding:12px}.rotationTossLine{grid-template-columns:52px minmax(0,1fr) 64px}}
+</style>

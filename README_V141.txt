@@ -1,1 +1,8 @@
-V141 placeholder package for rotation toss distribution feature.
+Setter Theory V141
+
+変更内容
+- レポートに「ローテーション別 トス配分」を追加
+- S1〜S6ごとにレフト・センター・ライト・バック・ツーを本数と割合で表示
+- 色付き横棒グラフで配球傾向を比較
+- コート入力後レポートと保存試合／CSVレポートの両方に反映
+- V140までの機能を維持
