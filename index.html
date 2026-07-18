@@ -1987,10 +1987,43 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 #report .setterDetailMore summary{cursor:pointer;color:#1d4ed8;font-weight:1000;font-size:12px}
 @media(max-width:760px){#report .setterDetailGrid{grid-template-columns:1fr!important}#report .setterCompactRadar{max-width:300px}}
 
-/* V129: imported log table is locked to the card width on iPad.
-   Only vertical scrolling is allowed, preventing diagonal/horizontal panning. */
+/* V130: CSV log table supports vertical + horizontal scrolling.
+   Header and the first six identity columns (No / Set / Rotation / Type / Number / Name) stay visible. */
+.csvPreviewBox{
+  overflow:auto!important;
+  touch-action:pan-x pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.csvPreviewBox table{
+  width:max-content!important;
+  min-width:100%!important;
+  max-width:none!important;
+  table-layout:auto!important;
+}
+.csvPreviewBox th,.csvPreviewBox td{
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  padding:8px 10px!important;
+  font-size:11px!important;
+  min-width:72px!important;
+}
+.csvPreviewBox thead th{
+  position:sticky!important;
+  top:0!important;
+  z-index:12!important;
+}
+.csvPreviewBox th:nth-child(1),.csvPreviewBox td:nth-child(1){position:sticky!important;left:0!important;min-width:48px!important;width:48px!important;max-width:48px!important;}
+.csvPreviewBox th:nth-child(2),.csvPreviewBox td:nth-child(2){position:sticky!important;left:48px!important;min-width:50px!important;width:50px!important;max-width:50px!important;}
+.csvPreviewBox th:nth-child(3),.csvPreviewBox td:nth-child(3){position:sticky!important;left:98px!important;min-width:86px!important;width:86px!important;max-width:86px!important;}
+.csvPreviewBox th:nth-child(4),.csvPreviewBox td:nth-child(4){position:sticky!important;left:184px!important;min-width:72px!important;width:72px!important;max-width:72px!important;}
+.csvPreviewBox th:nth-child(5),.csvPreviewBox td:nth-child(5){position:sticky!important;left:256px!important;min-width:66px!important;width:66px!important;max-width:66px!important;}
+.csvPreviewBox th:nth-child(6),.csvPreviewBox td:nth-child(6){position:sticky!important;left:322px!important;min-width:110px!important;width:110px!important;max-width:110px!important;}
+.csvPreviewBox thead th:nth-child(-n+6){z-index:20!important;background:#dbe4f0!important;}
+.csvPreviewBox tbody td:nth-child(-n+6){z-index:6!important;background:#fff!important;}
+.csvPreviewBox th:nth-child(6),.csvPreviewBox td:nth-child(6){box-shadow:4px 0 6px rgba(15,23,42,.12)!important;}
 @media (min-width:768px) and (max-width:1366px){
-  .csvPreviewBox th,.csvPreviewBox td{padding:6px 3px!important;font-size:9px!important;}
+  .csvPreviewBox{max-height:340px!important;}
 }
 
 </style>
@@ -4444,7 +4477,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V129 LOG TABLE FIXED WIDTH</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V130 LOG TABLE FROZEN COLUMNS</div>
 </body>
 </html>
 

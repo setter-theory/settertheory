@@ -2,3 +2,5 @@ V127: CSV読み込み後のログテーブルで白背景に白文字となる�
 
 
 V129: CSV/log preview table is fixed to the card width on iPad. Horizontal/diagonal panning is disabled; vertical scrolling remains available.
+
+V130: CSVログ表に縦・横スクロールを追加。ヘッダーと No / Set / Rotation / Type / Number / Name の6列を固定。
