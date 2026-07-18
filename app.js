@@ -1,4 +1,4 @@
-// V122: persistent autosave recovery and finished-match archive
+// V123: saved-match PDF/CSV export choices and direct archive landing
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -1292,6 +1292,10 @@ function finishMatch(){
     alert('試合を保存して終了しました。');
     show('home');
     updateHomeMatchControls();
+    setTimeout(()=>{
+      const card=document.getElementById('savedMatchesCard');
+      if(card) card.scrollIntoView({behavior:'smooth',block:'start'});
+    },80);
   }catch(error){
     console.error('finish match save failed',error);
     alert('試合の保存に失敗したため、終了していません。データは入力画面に残っています。');
@@ -3104,6 +3108,54 @@ function loadSavedMatch(id){
     showRestoredFullReport(importedCsv,m.title||'保存試合レポート');
   }catch(error){ console.error('saved report recovery failed',error); alert('保存試合のレポート表示中にエラーが発生しました。データは削除されていません。'); }
 }
+function savedMatchFileBase(match){
+  const raw=String((match&&match.title)||(match&&match.fileName)||'setter_theory_match')
+    .replace(/\.csv$/i,'')
+    .replace(/[\\/:*?"<>|]+/g,'_')
+    .trim();
+  return raw || 'setter_theory_match';
+}
+function savedMatchCsvText(match){
+  const parsed=recoveryNormalizePayload((match&&match.csv)||match,(match&&match.fileName)||(match&&match.title)||'保存試合');
+  const headers=Array.isArray(parsed.headers)&&parsed.headers.length
+    ? parsed.headers.map(String)
+    : [...new Set((parsed.data||[]).flatMap(row=>Object.keys(row||{})))];
+  const rows=[headers,...(parsed.data||[]).map(row=>headers.map(h=>row&&row[h]!==undefined?row[h]:''))];
+  return rows.map(row=>row.map(value=>`"${String(value??'').replaceAll('"','""')}"`).join(',')).join('\n');
+}
+function exportSavedMatchCsv(id){
+  try{
+    const match=getSavedMatches().find(x=>String(x.id)===String(id));
+    if(!match){ alert('保存データが見つかりません。'); return; }
+    const csv=savedMatchCsvText(match);
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`${savedMatchFileBase(match)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(error){
+    console.error('saved CSV export failed',error);
+    alert('CSVの保存に失敗しました。保存試合のデータは削除されていません。');
+  }
+}
+function printSavedMatchPdf(id){
+  try{
+    const match=getSavedMatches().find(x=>String(x.id)===String(id));
+    if(!match){ alert('保存データが見つかりません。'); return; }
+    const parsed=recoveryNormalizePayload(match.csv||match,match.fileName||match.title||'保存試合');
+    importedCsv=parsed;
+    try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(parsed)); }catch(_){}
+    printCsvReport();
+  }catch(error){
+    console.error('saved PDF export failed',error);
+    alert('PDFの作成に失敗しました。保存試合のデータは削除されていません。');
+  }
+}
+
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
   setSavedMatches(getSavedMatches().filter(x=>x.id!==id));
@@ -3143,7 +3195,9 @@ function renderSavedMatches(){
       </div>
       <div class="savedMatchActions">
         <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
-        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">Report</button>
+        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">レポート</button>
+        <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id}')">PDF</button>
+        <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id}')">CSV</button>
         <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
         <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
       </div>
