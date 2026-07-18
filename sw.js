@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v138-point-diverging-bars';
-const ASSETS=['./','./index.html','./app_v138_point_diverging_bars.js?v=138-point-diverging-bars','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME = 'setter-theory-v139-clean-result-colors';
+const ASSETS=['./','./index.html','./app_v139_clean_result_colors.js?v=139-clean-result-colors','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{

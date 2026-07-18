@@ -3990,18 +3990,27 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 </div>
 
 
-<style id="v136-result-ratio-bars">
-/* V136: result ratio horizontal bar chart */
-.v136ResultBars{display:grid;gap:14px;margin-top:8px;}
-.v136ResultBarRow{padding:12px 14px;border:1px solid rgba(148,163,184,.22);border-radius:14px;background:rgba(15,23,42,.24);}
-.v136ResultBarHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
-.v136ResultBarLabel{font-weight:1000;font-size:14px;}
-.v136ResultBarValue{font-weight:1000;font-size:18px;line-height:1;}
-.v136ResultBarTrack{height:16px;border-radius:999px;background:rgba(148,163,184,.24);overflow:hidden;}
+<style id="v139-clean-result-colors">
+/* V139: remove gray result-card backgrounds and color-code labels/numbers */
+.v136ResultBars{display:grid;gap:0;margin-top:8px;}
+.v136ResultBarRow{padding:14px 4px 15px;border:0;border-bottom:1px solid rgba(148,163,184,.28);border-radius:0;background:transparent!important;}
+.v136ResultBarRow:last-child{border-bottom:0;}
+.v136ResultBarHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;}
+.v136ResultBarLabel{font-weight:1000;font-size:14px;color:var(--result-color)!important;}
+.v136ResultBarValue{font-weight:1000;font-size:19px;line-height:1;color:var(--result-color)!important;}
+.v136ResultBarTrack{height:15px;border-radius:999px;background:rgba(148,163,184,.20);overflow:hidden;}
 .v136ResultBarTrack span{display:block;height:100%;border-radius:999px;min-width:0;}
-.v136ResultBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
+.v136ResultBarSub{margin-top:7px;font-size:11px;text-align:right;}
+.v136ResultBarSub strong{color:var(--result-color);font-weight:1000;}
+.v136ResultBarSub span{color:var(--muted);font-weight:800;}
+/* 得点・失点も数値を得点色・失点色で統一 */
+.v138PointSide.loss em{color:#dc2626!important;}
+.v138PointSide.gain em{color:#16a34a!important;}
+.v138PointLegend .loss,.v138PointMeta span:nth-child(1){color:#dc2626!important;}
+.v138PointLegend .gain{color:#16a34a!important;}
+.v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v138_point_diverging_bars.js?v=138-point-diverging-bars"></script>
+<script src="app_v139_clean_result_colors.js?v=139-clean-result-colors"></script>
 
 
 
@@ -4540,7 +4549,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V138 POINT DIVERGING BARS</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V139 CLEAN RESULT COLORS</div>
 </body>
 </html>
 
