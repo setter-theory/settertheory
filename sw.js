@@ -1,4 +1,4 @@
-const CACHE_NAME = 'setter-theory-v135-saved-report-fix';
+const CACHE_NAME = 'setter-theory-v135-saved-report-fixed2';
 const ASSETS=['./','./index.html','./app_v135_saved_report_fix.js?v=135-saved-report-fix','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
