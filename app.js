@@ -1,4 +1,4 @@
-// V134: CSV log preview hides internal summary rows and shows only field-useful details
+// V135: play success rate horizontal bar chart; based on V134 clean match log
 // V99: Field Ready - last action visibility, safer undo, autosave status
 
 // V74: unify imported CSV analysis with the in-match report engine.
@@ -2391,10 +2391,14 @@ function v372ActionStats(){
   return cfgs.map(c=>{ const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); return {...c,total:all.length,ok:ok.length,pct:safePct(ok.length,all.length),eff:effectRate(all)}; });
 }
 function buildActionSuccessAnalysis(){
-  const stats=v372ActionStats().slice().sort((a,b)=>b.pct-a.pct || b.total-a.total || a.label.localeCompare(b.label,'ja'));
+  const stats=v372ActionStats().slice().sort((a,b)=>{
+    if(b.pct!==a.pct) return b.pct-a.pct;
+    if(b.total!==a.total) return b.total-a.total;
+    return a.label.localeCompare(b.label,'ja');
+  });
   return `<div class="v135ActionBars">${stats.map(c=>`<div class="v135ActionBarRow ${c.pct>=70?'good':c.pct<45&&c.total>0?'bad':''}">
-    <div class="v135ActionBarHead"><span class="v135ActionBarLabel">${c.label}</span><span class="v135ActionBarValue">${c.pct}%</span></div>
-    <div class="v135ActionBarTrack"><span style="width:${c.pct}%"></span></div>
+    <div class="v135ActionBarHead"><span class="v135ActionBarLabel">${c.label}</span><strong class="v135ActionBarValue">${c.pct}%</strong></div>
+    <div class="v135ActionBarTrack"><span style="width:${Math.max(0,Math.min(100,c.pct))}%"></span></div>
     <div class="v135ActionBarSub">成功 ${c.ok}/${c.total}　効果率 ${c.eff}%</div>
   </div>`).join("")}</div>`;
 }
