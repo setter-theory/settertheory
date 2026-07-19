@@ -1377,7 +1377,7 @@ function recordSelectedPlayerPlay(){
   const recordedLabel=playLabel();
   const point=pointByResult(s.result);
   s.logs.push(stampPlayerOnLog({
-    no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,type:s.mode,
+    no:s.logs.length+1,set:s.setNo,rot:"S"+s.rot,setterRot:(idx>=0 ? "S"+(idx+1) : ""),type:s.mode,
     pos:pos,result:s.result,point:point,
     score:s.my+"-"+s.op,time:new Date().toLocaleTimeString()
   },num));
@@ -1811,10 +1811,21 @@ function currentSetterAnalysisFor(num){
   const total=toss.length;
   const items=analysisItemsFromCounts(counts,total);
   const quality=tossQualityStats(toss);
+  // V144: セッター別ローテーションはチームのローテ番号ではなく、
+  // そのプレー時にセッター本人が立っていたコート位置（S1〜S6）で集計する。
+  // 途中交代後も log.pos が交代先の位置を保持するため、表示がずれない。
+  const setterRotationForLog=(log)=>{
+    const saved=String(log&&log.setterRot||'').trim();
+    if(/^S[1-6]$/.test(saved)) return saved;
+    const pos=Number(log&&log.pos);
+    if(pos>=1 && pos<=6) return 'S'+pos;
+    return String(log&&log.rot||'');
+  };
   const rotationRows=[1,2,3,4,5,6].map(r=>{
-    const logs=toss.filter(x=>x.rot==='S'+r);
+    const rot='S'+r;
+    const logs=toss.filter(x=>setterRotationForLog(x)===rot);
     const miss=logs.filter(isTossMissLog).length;
-    return {rot:'S'+r,total:logs.length,miss,success:Math.max(0,logs.length-miss),rate:logs.length?Math.round((logs.length-miss)/logs.length*100):0};
+    return {rot,total:logs.length,miss,success:Math.max(0,logs.length-miss),rate:logs.length?Math.round((logs.length-miss)/logs.length*100):0};
   });
   return {num:setterNum,name:getPlayerName(setterNum),total,items,counts,terminalCounts,quality,rotationRows,...calcScores(counts,total,terminalCounts)};
 }
