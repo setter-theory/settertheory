@@ -1967,7 +1967,7 @@ function legendHtml(items,total){
 function metricCard(label,value,sub,color,icon,pct){
   const c=color==='blue'?'#2563eb':color==='red'?'#dc2626':color==='green'?'#16a34a':color==='orange'?'#f97316':'#7c3aed';
   return `<div class="statCard">
-    <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
+    <div class="statTop"><span class="statIcon">${icon}</span><span class="statLabel">${label}</span><strong class="statHeaderValue ${color}">${value}</strong></div>
     <div class="statValue ${color}">${value}</div>
     <div class="miniTrack">
       <div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div>

@@ -4156,7 +4156,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-11-iq-block-complete"></script>
+<script src="app_v141_setter_split.js?v=146-14-match-summary-value-align"></script>
 
 
 
@@ -8465,12 +8465,19 @@ body.menuOpen .sideOverlay{
 #report .v14613BlockHead>b{font-size:21px;line-height:1;color:#2563eb;white-space:nowrap;}
 #report .v14613MatchSummaryBlock>.summaryCards{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;}
 #report .v14613MatchSummaryBlock .statCard{min-height:92px!important;padding:10px 11px!important;border-radius:13px!important;box-shadow:none!important;}
-#report .v14613MatchSummaryBlock .statTop{gap:5px!important;}
-#report .v14613MatchSummaryBlock .statLabel{font-size:11px!important;}
-#report .v14613MatchSummaryBlock .statIcon{font-size:15px!important;}
-#report .v14613MatchSummaryBlock .statValue{font-size:29px!important;line-height:1.05!important;margin-top:3px!important;}
-#report .v14613MatchSummaryBlock .statSub{font-size:10px!important;line-height:1.25!important;margin-top:4px!important;}
-#report .v14613MatchSummaryBlock .miniTrack{height:5px!important;margin-top:7px!important;}
+#report .v14613MatchSummaryBlock .statTop{display:flex!important;align-items:center!important;gap:5px!important;min-width:0!important;}
+#report .v14613MatchSummaryBlock .statLabel{font-size:11px!important;line-height:1.15!important;white-space:nowrap!important;}
+#report .v14613MatchSummaryBlock .statIcon{font-size:15px!important;flex:0 0 auto!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue{display:block!important;margin-left:auto!important;font-size:18px!important;line-height:1!important;font-weight:1000!important;letter-spacing:-.3px!important;white-space:nowrap!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.blue{color:#2563eb!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.red{color:#dc2626!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.green{color:#16a34a!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.orange{color:#f97316!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.purple{color:#7c3aed!important;}
+#report .v14613MatchSummaryBlock .statValue{display:none!important;}
+#report .v14613MatchSummaryBlock .barValue{display:none!important;}
+#report .v14613MatchSummaryBlock .statSub{font-size:10px!important;line-height:1.25!important;margin-top:5px!important;}
+#report .v14613MatchSummaryBlock .miniTrack{height:5px!important;margin-top:9px!important;}
 #report .v14613OverviewGrid{grid-template-columns:1.05fr 1fr 1.15fr!important;gap:8px!important;}
 #report .v14613OverviewGrid>.reportPanel{padding:11px!important;border-radius:13px!important;box-shadow:none!important;min-width:0;}
 #report .v14613OverviewGrid h3{font-size:14px!important;margin:0 0 8px!important;}
