@@ -612,11 +612,7 @@ function vibrateTap(){
 }
 
 function hasInProgressMatch(){
-  // V146.1 recovery fix: V147/restoreで matchActive フラグだけが false になっても、
-  // 得点またはプレーログが残っていれば途中試合として安全に復元する。
-  const hasProgress=!!(s && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
-  if(hasProgress && !s.matchActive) s.matchActive=true;
-  return hasProgress;
+  return !!(s && s.matchActive && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
 }
 function matchResumeSummary(){
   const saved=s.lastSavedAt ? new Date(s.lastSavedAt).toLocaleString() : "保存時刻不明";
@@ -1857,47 +1853,18 @@ function buildSetterDetailReports(){
     const a=currentSetterAnalysisFor(n);
     const rank=setterIqRank(a.setterIq||0);
     const b=iqBreakdown20(a);
+    const advice=getAquilaAdviceForSetter(n);
     const dist=labels.map(label=>{const it=a.items.find(x=>x.label===label)||{count:0,pct:0};return `<span><b>${label}</b><em>${it.count}本 / ${it.pct}%</em></span>`}).join('');
-    const rots=a.rotationRows.map(x=>`<span class="v14625RotCell ${x.total?'hasData':'isEmpty'}"><b>${x.rot}</b><em>${x.total}本</em><em>${x.total?`成功${x.rate}%`:'記録なし'}</em></span>`).join('');
+    const rots=a.rotationRows.filter(x=>x.total>0).map(x=>`<span><b>${x.rot}</b><em>${x.total}本</em><em>成功${x.rate}%</em></span>`).join('')||'<span class="setterDetailEmpty">ローテ別記録なし</span>';
     return `<section class="reportPanel setterDetailCard setterIqCompactCard">
       <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
       <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
-      <div class="setterDetailSection v14624RotationVisible v14625RotationMain"><b>ローテーション別トス配分</b><div>${rots}</div></div>
-      <details class="setterDetailMore"><summary>詳しい配球データ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div></details>
+      <div class="setterCompactRadar">${buildSetterIqRadarChart(b)}</div>
+      <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <details class="setterDetailMore"><summary>詳しい配球・ローテデータ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div><div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div></details>
     </section>`;
   }).join('')}</div>`;
 }
-
-function buildSetterRotationDistributionCards(){
-  const setters=reportSetterNumbers();
-  if(!setters.length) return '';
-  const labels=['レフト','センター','ライト','バック','ツー'];
-  const setterRotationForLog=(log)=>{
-    const saved=String(log&&log.setterRot||'').trim();
-    if(/^S[1-6]$/.test(saved)) return saved;
-    const pos=Number(log&&log.pos);
-    if(pos>=1 && pos<=6) return 'S'+pos;
-    return String(log&&log.rot||'');
-  };
-  return `<div class="v14626RotationGrid">${setters.map((n,idx)=>{
-    const toss=s.logs.filter(x=>x.type==='トス' && logBelongsToPlayer(x,String(n)));
-    const columns=[1,2,3,4,5,6].map(r=>{
-      const rot='S'+r;
-      const logs=toss.filter(x=>setterRotationForLog(x)===rot);
-      const counts=Object.fromEntries(labels.map(label=>[label,0]));
-      logs.forEach(x=>{
-        const label=counts[x.result]!==undefined ? x.result : classifyTossTarget(x.result);
-        if(counts[label]!==undefined) counts[label]++;
-      });
-      const total=logs.length;
-      const most=total ? labels.slice().sort((a,b)=>counts[b]-counts[a])[0] : '-';
-      const rows=labels.map(label=>`<span class="v14626RotLine"><i>${label}</i><b>${total?Math.round(counts[label]/total*100):0}%</b></span>`).join('');
-      return `<div class="v14626RotColumn"><div class="v14626RotHead"><strong>${rot}</strong><small>総トス</small><b>${total}本</b></div><div class="v14626RotRows">${rows}</div><div class="v14626RotMost"><small>最多配球先</small><b>${most}</b></div></div>`;
-    }).join('');
-    return `<section class="reportPanel v14626RotationCard"><div class="v14626RotationTitle"><span>セッター${idx+1}</span><b>${escapeHtml(n)}番 ${escapeHtml(getPlayerName(n)||'')}</b></div><h3>ローテーション別トス配分</h3><div class="v14626RotationColumns">${columns}</div></section>`;
-  }).join('')}</div>`;
-}
-
 function buildTwoSetterSummary(){
   const setters=reportSetterNumbers();
   if(!setters.length) return '';
@@ -1976,7 +1943,7 @@ function legendHtml(items,total){
 function metricCard(label,value,sub,color,icon,pct){
   const c=color==='blue'?'#2563eb':color==='red'?'#dc2626':color==='green'?'#16a34a':color==='orange'?'#f97316':'#7c3aed';
   return `<div class="statCard">
-    <div class="statTop"><span class="statIcon">${icon}</span><span class="statLabel">${label}</span><strong class="statHeaderValue ${color}">${value}</strong></div>
+    <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
     <div class="statValue ${color}">${value}</div>
     <div class="miniTrack">
       <div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div>
@@ -2357,8 +2324,12 @@ function buildSetterIqPanelFor(num, index){
   if(!a.total){
     return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>${setterLabel}</span><b>--</b><small>/100</small></div><p>このセッターのトスを記録するとSetter IQを表示します。</p></div></div></div>`;
   }
+  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
-  return `<div class="setterIqLive aquilaHeroCard v14623IqCompact"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div></div>`;
+  const breakdown=iqBreakdown20(a);
+  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
+    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
+    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentSetterIqPanel(){
   const setters=reportSetterNumbers();
@@ -2370,8 +2341,12 @@ function buildCurrentSetterIqPanel(){
   if(!a.total){
     return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>Setter IQ</span><b>--</b><small>/100</small></div><p>トスを記録すると、配球バランスをもとにSetter IQを表示します。</p></div></div></div>`;
   }
+  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
-  return `<div class="setterIqLive aquilaHeroCard v14623IqCompact"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div></div>`;
+  const breakdown=iqBreakdown20(a);
+  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
+    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
+    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
 function buildCurrentAquilaAdvice(num=null,index=0){
   const advice=num===null ? getCurrentAquilaAdviceItems() : getAquilaAdviceForSetter(num);
@@ -2389,29 +2364,23 @@ function buildCurrentIqAdviceLead(){
 }
 
 function buildUnifiedReportBrandHeader(state, analysis, options={}){
-  const title=options.title||'試合レポート';
-  const dateText=options.dateText||new Date().toLocaleDateString('ja-JP');
+  const rank=setterIqRank(analysis.setterIq||0);
+  const title=options.title||'Setter Theory Match Report';
+  const dateText=options.dateText||new Date().toLocaleDateString();
   const actions=options.actionsHtml||'';
-  const myTeam=state.myTeam||state.team||'自チーム';
-  const oppTeam=state.oppTeam||'相手チーム';
-  const setCount=state.setNo||1;
-  const myScore=Number(state.my||0);
-  const oppScore=Number(state.op||0);
-  const setterCount=reportSetterNumbers().length;
-  const setterMode=setterCount>1?'ツーセッター':'ワンセッター';
-  return `<div class="unifiedReportBrand v1463ReportHeader">
-    <div class="v1463BrandLockup">
-      <img src="icons/aquila-192.png" alt="Aquila">
-      <div><div class="v1463AquilaWord">AQUILA</div><div class="v1463ReportName">${escapeHtml(title)}</div></div>
-      <span class="v1463SetterMode">${setterMode}</span>
+  return `<div class="unifiedReportBrand">
+    <div class="unifiedReportIdentity">
+      <div class="unifiedReportEyebrow">AQUILA REPORT</div>
+      <div class="unifiedReportTitle">${escapeHtml(title)}</div>
+      <div class="unifiedReportMeta">${escapeHtml(state.myTeam||state.team||'自チーム')} vs ${escapeHtml(state.oppTeam||'相手')} / Set ${escapeHtml(state.setNo||'1')} / ${escapeHtml(dateText)}</div>
     </div>
-    <div class="v1463MetaStrip">
-      <div class="v1463MetaCell"><span>試合名</span><b>${escapeHtml(myTeam)} vs ${escapeHtml(oppTeam)}</b></div>
-      <div class="v1463MetaCell"><span>日付</span><b>${escapeHtml(dateText)}</b></div>
-      <div class="v1463MetaCell compact"><span>セット</span><b>${escapeHtml(setCount)}</b></div>
-      <div class="v1463MetaCell result"><span>現在スコア</span><b>${myScore} - ${oppScore}</b></div>
+    <div class="unifiedReportRight">
+      <div class="unifiedAquilaBadge">
+        <img src="icons/aquila-192.png" alt="Aquila">
+        <div><div class="small">SETTER IQ</div><div class="iqLine"><b>${analysis.setterIq||'--'}</b><span>/100</span></div><div class="rank">${analysis.setterIq?rank.label:'NO DATA'}</div></div>
+      </div>
+      ${actions}
     </div>
-    <div class="unifiedReportRight v1463HeaderActions">${actions}</div>
   </div>`;
 }
 
@@ -2498,8 +2467,7 @@ function report(){
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
     ${buildTwoSetterSummary()}
-    <div class="reportPanel v141SetterAnalysisPanel reportSetterPrimary"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
-    ${buildSetterRotationDistributionCards()}
+    ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
     ${summary}
     <div class="panelGrid">
@@ -2517,6 +2485,7 @@ function report(){
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
     <div class="bottomGrid">
+      <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
   </div>`;

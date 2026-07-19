@@ -612,11 +612,7 @@ function vibrateTap(){
 }
 
 function hasInProgressMatch(){
-  // V146.1 recovery fix: V147/restoreで matchActive フラグだけが false になっても、
-  // 得点またはプレーログが残っていれば途中試合として安全に復元する。
-  const hasProgress=!!(s && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
-  if(hasProgress && !s.matchActive) s.matchActive=true;
-  return hasProgress;
+  return !!(s && s.matchActive && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
 }
 function matchResumeSummary(){
   const saved=s.lastSavedAt ? new Date(s.lastSavedAt).toLocaleString() : "保存時刻不明";
@@ -1872,31 +1868,11 @@ function buildSetterDetailReports(){
 function buildTwoSetterSummary(){
   const setters=reportSetterNumbers();
   if(!setters.length) return '';
-  const labels=['レフト','センター','ライト','バック','ツー'];
-  const colors={レフト:'#ef4444',センター:'#2563eb',ライト:'#22c55e',バック:'#f59e0b',ツー:'#64748b'};
   const cards=setters.map((n,idx)=>{
     const a=currentSetterAnalysisFor(n);
-    const items=labels.map(label=>({label,count:Number(a.counts[label]||0),color:colors[label]}));
-    const visible=items.filter(x=>x.count>0);
-    const donut=visible.length ? donutStyle(visible) : 'conic-gradient(#e5e7eb 0deg 360deg)';
-    const legend=items.map(item=>{
-      const pct=a.quality.total?safePct(item.count,a.quality.total):0;
-      return `<div class="v1466LegendRow"><span class="v1466LegendDot" style="background:${item.color}"></span><b>${item.label}</b><em>${pct}% (${item.count})</em></div>`;
-    }).join('');
-    return `<section class="v1466SetterSummaryCard">
-      <div class="v1466SetterSummaryTitle"><span>セッター</span><strong>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</strong></div>
-      <div class="v1466SetterSummaryBody">
-        <div class="v1466Legend">${legend}</div>
-        <div class="v1466Donut" style="background:${donut}"><div class="v1466DonutHole"><span>総数</span><b>${a.quality.total}</b></div></div>
-        <div class="v1466QualityGrid">
-          <div class="v1466QualityCard total"><span>総トス</span><b>${a.quality.total}</b><small>本</small></div>
-          <div class="v1466QualityCard miss"><span>トスミス</span><b>${a.quality.miss}</b><small>本</small></div>
-          <div class="v1466QualityCard success"><span>トス成功率</span><b>${a.quality.successRate}</b><small>%</small></div>
-        </div>
-      </div>
-    </section>`;
+    return `<div class="setterRoleCard"><span>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</span><b>${escapeHtml(n)}番 ${escapeHtml(a.name)}</b><small>IQ ${a.total?a.setterIq:'--'}/100 ・ トス ${a.quality.total}本 ・ ミス ${a.quality.miss}本 ・ 成功率 ${a.quality.successRate}%</small></div>`;
   }).join('');
-  return `<div class="v1466SetterSummaryGrid ${setters.length>1?'two':'one'}">${cards}</div>`;
+  return `<div class="reportPanel setterRolePanel"><h3>登録セッター</h3><div class="setterRoleGrid">${cards}</div></div>`;
 }
 function showReport(){report();show("report");}
 
@@ -1967,7 +1943,7 @@ function legendHtml(items,total){
 function metricCard(label,value,sub,color,icon,pct){
   const c=color==='blue'?'#2563eb':color==='red'?'#dc2626':color==='green'?'#16a34a':color==='orange'?'#f97316':'#7c3aed';
   return `<div class="statCard">
-    <div class="statTop"><span class="statIcon">${icon}</span><span class="statLabel">${label}</span><strong class="statHeaderValue ${color}">${value}</strong></div>
+    <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
     <div class="statValue ${color}">${value}</div>
     <div class="miniTrack">
       <div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div>
@@ -2286,9 +2262,7 @@ function buildSetterIqRadarChart(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V146.9: 上端の「配球 ○/20」とレーダー本体が重ならないよう、
-  // グラフ中心を少し下げ、上側ラベルだけ外側へ離す。
-  const cx=150, cy=144, radius=90;
+  const cx=150, cy=132, radius=96;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2297,8 +2271,7 @@ function buildSetterIqRadarChart(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const labelRatio=i===0?1.34:1.22;
-    const [x,y]=point(i,labelRatio);
+    const [x,y]=point(i,1.18);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
     return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18">${item.value}/20</tspan></text>`;
   }).join('');
@@ -2391,59 +2364,24 @@ function buildCurrentIqAdviceLead(){
 }
 
 function buildUnifiedReportBrandHeader(state, analysis, options={}){
-  const title=options.title||'試合レポート';
-  const dateText=options.dateText||new Date().toLocaleDateString('ja-JP');
+  const rank=setterIqRank(analysis.setterIq||0);
+  const title=options.title||'Setter Theory Match Report';
+  const dateText=options.dateText||new Date().toLocaleDateString();
   const actions=options.actionsHtml||'';
-  const myTeam=state.myTeam||state.team||'自チーム';
-  const oppTeam=state.oppTeam||'相手チーム';
-  const setCount=state.setNo||1;
-  const myScore=Number(state.my||0);
-  const oppScore=Number(state.op||0);
-  const setterCount=reportSetterNumbers().length;
-  const setterMode=setterCount>1?'ツーセッター':'ワンセッター';
-  return `<div class="unifiedReportBrand v1463ReportHeader">
-    <div class="v1463BrandLockup">
-      <img src="icons/aquila-192.png" alt="Aquila">
-      <div><div class="v1463AquilaWord">AQUILA</div><div class="v1463ReportName">${escapeHtml(title)}</div></div>
-      <span class="v1463SetterMode">${setterMode}</span>
+  return `<div class="unifiedReportBrand">
+    <div class="unifiedReportIdentity">
+      <div class="unifiedReportEyebrow">AQUILA REPORT</div>
+      <div class="unifiedReportTitle">${escapeHtml(title)}</div>
+      <div class="unifiedReportMeta">${escapeHtml(state.myTeam||state.team||'自チーム')} vs ${escapeHtml(state.oppTeam||'相手')} / Set ${escapeHtml(state.setNo||'1')} / ${escapeHtml(dateText)}</div>
     </div>
-    <div class="v1463MetaStrip">
-      <div class="v1463MetaCell"><span>試合名</span><b>${escapeHtml(myTeam)} vs ${escapeHtml(oppTeam)}</b></div>
-      <div class="v1463MetaCell"><span>日付</span><b>${escapeHtml(dateText)}</b></div>
-      <div class="v1463MetaCell compact"><span>セット</span><b>${escapeHtml(setCount)}</b></div>
-      <div class="v1463MetaCell result"><span>現在スコア</span><b>${myScore} - ${oppScore}</b></div>
+    <div class="unifiedReportRight">
+      <div class="unifiedAquilaBadge">
+        <img src="icons/aquila-192.png" alt="Aquila">
+        <div><div class="small">SETTER IQ</div><div class="iqLine"><b>${analysis.setterIq||'--'}</b><span>/100</span></div><div class="rank">${analysis.setterIq?rank.label:'NO DATA'}</div></div>
+      </div>
+      ${actions}
     </div>
-    <div class="unifiedReportRight v1463HeaderActions">${actions}</div>
   </div>`;
-}
-
-function buildSubstitutionHistoryBlock(){
-  const rows=(s.logs||[]).filter(log=>String(log.type||'')==='交代').map(log=>{
-    // 現行データは log.num に「OUT→IN」を保存しているため、これを最優先で参照する。
-    // playerId は背番号と一致しない場合があるので表示用の番号には使わない。
-    const pair=String(log.num||'').split(/→|->|＞|>/).map(v=>v.trim());
-    const outNum=pair[0]||String(log.outNum||'').trim();
-    const inNum=pair[1]||String(log.inNum||'').trim();
-    const outName=String(log.outNameSnapshot||((s.players||{})[outNum]||'')).trim();
-    const inName=String(log.inNameSnapshot||((s.players||{})[inNum]||'')).trim();
-    const playerText=(num,name)=>`${escapeHtml(num||'-')}番${name?` ${escapeHtml(name)}`:''}`;
-    const position=String(log.pos||'').trim();
-    return {
-      set:`${escapeHtml(log.set||s.setNo||'-')}セット目`,
-      timing:escapeHtml(log.score||log.time||'-'),
-      out:playerText(outNum,outName),
-      in:playerText(inNum,inName),
-      note:position?`コート位置 ${escapeHtml(position)}`:'選手交代'
-    };
-  });
-  const body=rows.length?rows.map(row=>`<tr><td>${row.set}</td><td>${row.timing}</td><td class="v14615SubOut">${row.out}</td><td class="v14615SubIn">${row.in}</td><td>${row.note}</td></tr>`).join(''):`<tr class="v14615SubEmpty"><td colspan="5">選手交代の記録はありません。</td></tr>`;
-  return `<section class="reportPanel v14615SubstitutionBlock" aria-label="交代履歴（全選手）">
-    <h3><span class="v14615SubIcon">⇄</span>交代履歴 <small>（全選手）</small></h3>
-    <div class="v14615SubTableWrap"><table class="v14615SubTable">
-      <thead><tr><th>セット</th><th>タイミング</th><th>OUT</th><th>IN</th><th>備考</th></tr></thead>
-      <tbody>${body}</tbody>
-    </table></div>
-  </section>`;
 }
 
 function report(){
@@ -2531,15 +2469,12 @@ function report(){
     ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
-    <section class="v14613MatchSummaryBlock" aria-label="試合サマリー">
-      <div class="v14613BlockHead"><div><span>試合サマリー</span><small>試合全体の結果をひと目で確認</small></div><b>${myPts} - ${opPts}</b></div>
-      ${summary}
-      <div class="panelGrid v14613OverviewGrid">
-        <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
-        <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
-        <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
-      </div>
-    </section>
+    ${summary}
+    <div class="panelGrid">
+      <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
+      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+      <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
+    </div>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
       <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
@@ -2553,7 +2488,6 @@ function report(){
       <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
-    ${buildSubstitutionHistoryBlock()}
   </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
