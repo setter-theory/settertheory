@@ -4010,7 +4010,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v142_report_compact_pdf_bars.js?v=142-report-compact-pdf-bars"></script>
+<script src="app_v141_setter_split.js?v=141-final-report-1"></script>
 
 
 
@@ -4549,12 +4549,12 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V142 REPORT COMPACT PDF BARS</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V143 TWO SETTER SIDE BY SIDE</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
 .v141SetterTossList{display:grid;gap:18px}.v141SetterTossBlock{border:1px solid #cbd5e1;border-radius:18px;padding:16px;background:#fff}.v141SetterTossTitle{display:flex;align-items:end;gap:10px;margin-bottom:12px}.v141SetterTossTitle span{font-size:12px;color:#2563eb;font-weight:900}.v141SetterTossTitle strong{font-size:22px;color:#0f172a}.v141SetterTossMain{display:grid;grid-template-columns:minmax(260px,1fr);gap:12px}.v141SetterNoData{padding:30px;text-align:center;color:#94a3b8;background:#f8fafc;border-radius:14px}.v141SetterTossBlock .v141RotationSection{margin-top:16px}.v141SetterTossList.two .v141SetterTossBlock{box-shadow:0 6px 18px rgba(15,23,42,.05)}
-@media(min-width:1100px){.v141SetterTossList.two{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.v141SetterTossList.two .v141CompareCards{grid-template-columns:1fr}.v141SetterTossList.two .v141CompareGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(min-width:760px){.v141SetterTossList.two{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.v141SetterTossList.two .v141CompareCards{grid-template-columns:1fr}.v141SetterTossList.two .v141CompareGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:720px){.v141SetterTossBlock{padding:12px}.v141SetterTossTitle strong{font-size:19px}}
 </style>
 
@@ -4581,72 +4581,6 @@ function closePositionManager(){const m=document.getElementById('positionManager
 .v141CompareItem strong{grid-area:value;font-size:15px;color:#0f172a!important}.v141CompareItem small{grid-area:count;font-size:9px;color:#94a3b8!important}.v141CompareItem.zero{opacity:.45}
 #report .v141RotationSection,#report .v141RotationSection *,#csvAnalysisBox .v141RotationSection,#csvAnalysisBox .v141RotationSection *{visibility:visible!important}
 @media(max-width:760px){.v141CompareCards{grid-template-columns:1fr}.v141CompareGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
-</style>
-
-<style id="v142-report-compact-visibility">
-/* V142: 試合レポートの白文字修正＋Setter IQ以外をコンパクト化 */
-#report .v141SetterTossBlock,
-#report .v141CompareCard,
-#report .v141RotTossRow,
-#report .v141CompareItem,
-#report .v141RotTossDetail{background:#fff!important;color:#0f172a!important;}
-#report .v141SetterTossTitle strong,
-#report .v141RotationSection h4,
-#report .v141CompareCard header strong,
-#report .v141CompareCard header em,
-#report .v141CompareItem strong,
-#report .v141CompareItem small,
-#report .v141CompareLabel,
-#report .v141RotTossHead strong,
-#report .v141RotTossHead span,
-#report .v141RotTossDetail,
-#report .v141RotTossDetail b,
-#report .v141RotTossDetail em,
-#report .v141RotTossSummary,
-#report .v141RotTossSummary b,
-#report .v141RotationNote,
-#report .v141SetterNoData,
-#report .v141SetterTossBlock .legendRow,
-#report .v141SetterTossBlock .legendRow span{color:#334155!important;opacity:1!important;text-shadow:none!important;}
-#report .v141SetterTossTitle span{color:#2563eb!important;}
-#report .v141CompareItem.zero{opacity:.55!important;}
-#report .v141SetterAnalysisPanel{padding:12px!important;}
-#report .v141SetterTossList{gap:10px!important;}
-#report .v141SetterTossBlock{padding:10px!important;border-radius:13px!important;}
-#report .v141SetterTossTitle{margin-bottom:6px!important;}
-#report .v141SetterTossTitle strong{font-size:18px!important;}
-#report .v141SetterTossMain{gap:7px!important;}
-#report .v141SetterTossBlock .tossPanel{grid-template-columns:110px 1fr!important;gap:9px!important;justify-items:stretch!important;}
-#report .v141SetterTossBlock .donut{width:108px!important;height:108px!important;}
-#report .v141SetterTossBlock .donut:after{width:58px!important;height:58px!important;}
-#report .v141SetterTossBlock .donutCenter .label{font-size:10px!important;}
-#report .v141SetterTossBlock .donutCenter .num{font-size:22px!important;}
-#report .v141SetterTossBlock .legend{gap:4px!important;}
-#report .v141SetterTossBlock .legendRow{font-size:11px!important;gap:5px!important;}
-#report .v141SetterTossBlock .dot{width:9px!important;height:9px!important;}
-#report .tossQualityPanel{gap:6px!important;}
-#report .tossQualityMetric{padding:8px!important;min-height:auto!important;}
-#report .tossQualityMetric span{font-size:10px!important;}
-#report .tossQualityMetric b{font-size:22px!important;}
-#report .v141RotationSection{margin-top:10px!important;padding-top:9px!important;}
-#report .v141RotationSection h4{font-size:15px!important;}
-#report .v141RotationNote{font-size:10px!important;}
-#report .v141CompareWrap, #report .v141RotTossWrap{gap:7px!important;margin-top:7px!important;}
-#report .v141CompareCards{gap:7px!important;}
-#report .v141CompareCard, #report .v141RotTossRow{padding:8px!important;border-radius:10px!important;}
-#report .v141CompareCard header{margin-bottom:5px!important;}
-#report .v141CompareCard header strong, #report .v141RotTossHead strong{font-size:15px!important;}
-#report .v141CompareTrack, #report .v141RotTossTrack{height:15px!important;}
-#report .v141CompareGrid, #report .v141RotTossDetails{gap:3px!important;margin-top:6px!important;}
-#report .v141CompareItem, #report .v141RotTossDetail{padding:4px!important;font-size:9px!important;border-radius:7px!important;}
-#report .v141CompareItem strong{font-size:11px!important;}
-/* Setter IQカード・レーダーは縮小対象外 */
-@media(max-width:720px){
- #report .v141SetterTossBlock .tossPanel{grid-template-columns:96px 1fr!important;}
- #report .v141SetterTossBlock .donut{width:94px!important;height:94px!important;}
- #report .v141SetterTossBlock .donut:after{width:50px!important;height:50px!important;}
- #report .v141CompareCards{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-}
 </style>
 </body>
 </html>

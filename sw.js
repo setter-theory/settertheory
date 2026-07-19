@@ -1,5 +1,5 @@
-const CACHE_NAME='setter-theory-v142-report-compact';
-const ASSETS=['./','./index.html','./app_v142_report_compact_pdf_bars.js?v=142-report-compact-pdf-bars','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME='setter-theory-v143-two-setter-side-by-side';
+const ASSETS=['./','./index.html','./app_v143_two_setter_side_by_side.js?v=143-two-setter-side-by-side','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
