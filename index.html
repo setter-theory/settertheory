@@ -4010,7 +4010,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=141-setter-split-2"></script>
+<script src="app_v141_setter_split.js?v=141-final-report-1"></script>
 
 
 
@@ -4549,13 +4549,38 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V141 SETTER SPLIT TOSS ANALYSIS</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V141 SETTER TOSS REPORT FINAL</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
 .v141SetterTossList{display:grid;gap:18px}.v141SetterTossBlock{border:1px solid #cbd5e1;border-radius:18px;padding:16px;background:#fff}.v141SetterTossTitle{display:flex;align-items:end;gap:10px;margin-bottom:12px}.v141SetterTossTitle span{font-size:12px;color:#2563eb;font-weight:900}.v141SetterTossTitle strong{font-size:22px;color:#0f172a}.v141SetterTossMain{display:grid;grid-template-columns:minmax(260px,1fr);gap:12px}.v141SetterNoData{padding:30px;text-align:center;color:#94a3b8;background:#f8fafc;border-radius:14px}.v141SetterTossBlock .v141RotationSection{margin-top:16px}.v141SetterTossList.two .v141SetterTossBlock{box-shadow:0 6px 18px rgba(15,23,42,.05)}
 @media(min-width:1100px){.v141SetterTossList.two{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.v141SetterTossList.two .v141CompareCards{grid-template-columns:1fr}.v141SetterTossList.two .v141CompareGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:720px){.v141SetterTossBlock{padding:12px}.v141SetterTossTitle strong{font-size:19px}}
+</style>
+
+<style>
+/* V141 final: rotation toss cards visible in live report and restored CSV report */
+.v141CompareWrap{margin-top:12px;color:#0f172a!important}
+.v141CompareSummary{display:flex;justify-content:flex-end;align-items:baseline;gap:8px;margin:0 2px 10px;color:#64748b!important;font-size:13px}
+.v141CompareSummary strong{font-size:18px;color:#0f172a!important}
+.v141CompareCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.v141CompareCard{border:1px solid #d7e0ec;border-radius:15px;padding:13px;background:#fff;color:#0f172a!important;min-width:0}
+.v141CompareCard.current{border:2px solid #ef4444;padding:12px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}
+.v141CompareCard.empty{background:#f8fafc;opacity:.72}
+.v141CompareCard header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.v141CompareCard header div{display:flex;align-items:baseline;gap:7px}
+.v141CompareCard header strong{font-size:23px;color:#0f172a!important}
+.v141CompareCard header span{font-size:12px;font-weight:900;color:#64748b!important}
+.v141CompareCard header em{font-style:normal;font-size:11px;font-weight:900;color:#475569!important;text-align:right}
+.v141CompareTrack{height:23px;border-radius:999px;background:#eef2f7;overflow:hidden;display:flex;align-items:center;position:relative}
+.v141CompareSegment{height:100%;display:block;min-width:2px}
+.v141CompareNoData{width:100%;text-align:center;color:#94a3b8!important;font-size:11px;font-weight:800}
+.v141CompareGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:9px}
+.v141CompareItem{display:grid;grid-template-columns:8px minmax(0,1fr);grid-template-areas:'dot label' 'value value' 'count count';gap:1px 4px;padding:6px 4px;border-radius:9px;background:#f8fafc;text-align:center;color:#334155!important;min-width:0}
+.v141CompareDot{grid-area:dot;width:8px;height:8px;border-radius:50%;align-self:center}.v141CompareLabel{grid-area:label;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;color:#64748b!important;text-align:left}
+.v141CompareItem strong{grid-area:value;font-size:15px;color:#0f172a!important}.v141CompareItem small{grid-area:count;font-size:9px;color:#94a3b8!important}.v141CompareItem.zero{opacity:.45}
+#report .v141RotationSection,#report .v141RotationSection *,#csvAnalysisBox .v141RotationSection,#csvAnalysisBox .v141RotationSection *{visibility:visible!important}
+@media(max-width:760px){.v141CompareCards{grid-template-columns:1fr}.v141CompareGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 </style>
 </body>
 </html>

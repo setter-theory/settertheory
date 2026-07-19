@@ -2669,13 +2669,24 @@ function printMatchPdfReport(){
     return [`S${r}`, `${a.length}`, `${ok}`, `${pct(ok,a.length)}%`, `${my}`, `${op}`, `${my-op}`];
   });
 
-  const tossLogs=s.logs.filter(x=>x.type==='トス');
-  const tossQuality=tossQualityStats(tossLogs);
   const tossLabels=['レフト','センター','ライト','バック','ツー'];
-  const tossRows=tossLabels.map(label=>{
-    const count=tossLogs.filter(x=>x.result===label).length;
-    return [label, `${count}`, `${pct(count,tossLogs.length)}%`];
-  }).filter(r=>Number(r[1])>0);
+  const tossColors={'レフト':'#ef4444','センター':'#2563eb','ライト':'#22c55e','バック':'#f59e0b','ツー':'#475569'};
+  const perSetterPdfTossSections=reportSetters.map((n,i)=>{
+    const tossLogs=(s.logs||[]).filter(x=>x&&x.type==='トス'&&logBelongsToPlayer(x,n));
+    const q=tossQualityStats(tossLogs);
+    const distRows=tossLabels.map(label=>{
+      const count=tossLogs.filter(x=>x.result===label).length;
+      const rate=pct(count,tossLogs.length);
+      return `<div class="pdfTossBarRow"><span>${esc(label)}</span><div class="pdfTossTrack"><i style="width:${rate}%;background:${tossColors[label]}"></i></div><b>${rate}%</b><small>${count}本</small></div>`;
+    }).join('');
+    const rotRows=[1,2,3,4,5,6].map(r=>{
+      const logs=tossLogs.filter(x=>Number(String(x.rot||'').replace(/\D/g,''))===r);
+      const total=logs.length;
+      const cells=tossLabels.map(label=>`${pct(logs.filter(x=>x.result===label).length,total)}%`).join(' / ');
+      return [`S${r}`,`${total}`,cells];
+    });
+    return `<section class="section setterPdfToss"><h2>セッター${i+1}：${esc(n)}番 ${esc(getPlayerName(n)||'')}　トス分析</h2><div class="pdfTossSummary"><span>総トス <b>${q.total}</b>本</span><span>トスミス <b>${q.miss}</b>本</span><span>成功率 <b>${q.successRate}%</b></span></div><div class="pdfTossBars">${distRows}</div><h3>ローテーション別トス配分</h3>${table(['ローテ','総トス','レフト / センター / ライト / バック / ツー'],rotRows,'記録なし')}<div class="note">※5項目を0本も含めて表示。ツーセッター時はセッターごとに別集計です。</div></section>`;
+  }).join('');
   const secondBall=secondBallAnalysis();
   const secondBallRows=secondBall.players.map(p=>[`${p.num}番`,p.name||'-',`${p.total}`,`${p.counts['レフト']}`,`${p.counts['センター']}`,`${p.counts['ライト']}`,`${p.counts['バック']}`,`${p.counts['ツー']}`]);
 
@@ -2740,6 +2751,7 @@ function printMatchPdfReport(){
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
     .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
     .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
+    .setterPdfToss{border:1px solid #bfdbfe;border-radius:12px;padding:9px;background:#fbfdff}.setterPdfToss h3{font-size:11px;color:#1e3a8a;margin:9px 0 5px}.pdfTossSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}.pdfTossSummary span{background:#eff6ff;border-radius:7px;padding:6px;text-align:center;font-size:9px;color:#475569}.pdfTossSummary b{font-size:14px;color:#0f172a}.pdfTossBars{display:grid;gap:5px;margin-bottom:8px}.pdfTossBarRow{display:grid;grid-template-columns:45px 1fr 34px 30px;gap:5px;align-items:center;font-size:9px}.pdfTossTrack{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}.pdfTossTrack i{display:block;height:100%;border-radius:999px}.pdfTossBarRow b{text-align:right;color:#0f172a}.pdfTossBarRow small{text-align:right;color:#64748b}
     .pdfRankGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}.pdfRankCard{border:1px solid #cbd5e1;border-radius:10px;padding:7px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid}.pdfRankCard h3{margin:0 0 5px;font-size:12px;color:#1e3a8a}.pdfRankCard table{font-size:9px}.pdfRankCard th,.pdfRankCard td{padding:4px}
     table{width:100%;border-collapse:collapse;margin:0;font-size:10px;table-layout:auto;}th,td{border:1px solid #cbd5e1;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e2e8f0;color:#0f172a;font-weight:900;}td{background:#fff}.empty{text-align:center;color:#64748b;padding:12px!important;}
     .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}.note{font-size:10px;color:#64748b;line-height:1.55;margin-top:5px}.footer{border-top:1px solid #cbd5e1;margin-top:12px;padding-top:8px;color:#64748b;font-size:10px;display:flex;justify-content:space-between;gap:8px;}
@@ -2763,10 +2775,7 @@ function printMatchPdfReport(){
         <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
         <section class="section"><h2>プレー割合</h2>${table(['項目','本数','割合'], playRows, '記録がありません。')}</section>
       </div>
-      <div class="twoCol">
-        <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}</section>
-        <section class="section"><h2>トス技術</h2>${table(['総トス','成功','トスミス','成功率','ミス率'], [[`${tossQuality.total}`,`${tossQuality.success}`,`${tossQuality.miss}`,`${tossQuality.successRate}%`,`${tossQuality.missRate}%`]], 'トス記録がありません。')}<div class="note">※トスミスは得点・失点とは別に、トスの技術的な質として記録します。</div></section>
-      </div>
+      ${perSetterPdfTossSections}
       <section class="section"><h2>二段トス分析</h2>${table(['選手','名前','合計','レフト','センター','ライト','バック','ツー'], secondBallRows, '二段トスの記録がありません。')}<div class="note">※二段トスは通常トス・Setter IQとは別集計です。セッター本人の二段トスもここに含まれます。</div></section>
       <section class="section"><h2>各項目ランキング TOP3</h2><div class="pdfRankGrid">${pdfRankingHtml}</div><div class="note">※通常トスはトスミスを除いた成功本数、二段トスは記録本数で表示します。</div></section>
       <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
