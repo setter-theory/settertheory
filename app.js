@@ -2031,33 +2031,6 @@ function buildActionSuccessAnalysis(){
   </div>`).join("")}</div>`;
 }
 
-
-function buildRotationTossDistribution(){
-  const labels=["レフト","センター","ライト","バック","ツー"];
-  const colors={"レフト":"#2563eb","センター":"#16a34a","ライト":"#f97316","バック":"#7c3aed","ツー":"#d4a017"};
-  const rows=[1,2,3,4,5,6].map(r=>{
-    const key=`S${r}`;
-    const toss=s.logs.filter(x=>x.type==="トス" && String(x.rot||'')===key);
-    const items=labels.map(label=>{
-      const count=toss.filter(x=>x.result===label).length;
-      return {label,count,pct:safePct(count,toss.length),color:colors[label]};
-    });
-    return {key,total:toss.length,items};
-  });
-  const hasAny=rows.some(r=>r.total>0);
-  if(!hasAny) return `<div class="rotationTossEmpty">ローテーション別のトス記録がありません。</div>`;
-  return `<div class="rotationTossDistribution">
-    ${rows.map(row=>`<div class="rotationTossCard">
-      <div class="rotationTossCardHead"><b>${row.key}</b><span>総トス ${row.total}本</span></div>
-      <div class="rotationTossBars">${row.items.map(item=>`<div class="rotationTossLine" style="--toss-color:${item.color}">
-        <div class="rotationTossLabel">${item.label}</div>
-        <div class="rotationTossTrack"><span style="width:${item.pct}%"></span></div>
-        <div class="rotationTossValue"><strong>${item.pct}%</strong><small>${item.count}本</small></div>
-      </div>`).join('')}</div>
-    </div>`).join('')}
-  </div>`;
-}
-
 function buildSetterInsight(){
   const toss=s.logs.filter(x=>x.type==="トス");
   const labels=["レフト","センター","ライト","バック","ツー"];
@@ -2422,7 +2395,6 @@ function report(){
       <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
-    <div class="reportPanel rotationTossPanel"><h3>ローテーション別 トス配分 <small>（S1〜S6の配球傾向）</small></h3>${buildRotationTossDistribution()}</div>
   </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
