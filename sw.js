@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v140-home-csv-clean-colors';
-const ASSETS=['./','./index.html','./app_v140_home_csv_clean_colors.js?v=140-home-csv-clean-colors','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME = 'setter-theory-v141-rotation-toss-distribution';
+const ASSETS=['./','./index.html','./app_v141_rotation_toss_distribution.js?v=141-rotation-toss-distribution','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
