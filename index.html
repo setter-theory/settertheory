@@ -4695,7 +4695,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.25 ROTATION IN SETTER CARD</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.26 ROTATION REPLACES IQ ADVICE</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8738,4 +8738,29 @@ body.menuOpen .sideOverlay{
 #report .v14613MatchSummaryBlock .statSub{
   margin-top:6px!important;
 }
+</style>
+<style>
+/* V146.26: セッターIQ・能力バランス・Aquila Adviceの行を削除し、ローテーション別トス配分へ置換 */
+#report .v14626RotationGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+#report .v14626RotationCard{padding:8px!important;min-width:0}
+#report .v14626RotationTitle{display:flex;align-items:baseline;gap:8px;border-bottom:1px solid #dbe5f2;padding-bottom:4px;margin-bottom:4px;color:#1259b2}
+#report .v14626RotationTitle span{font-size:10px;font-weight:900}
+#report .v14626RotationTitle b{font-size:15px;color:#111827}
+#report .v14626RotationCard h3{margin:3px 0 6px!important;font-size:14px!important;color:#173b77!important}
+#report .v14626RotationColumns{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+#report .v14626RotColumn{border:1px solid #cbd8e8;border-radius:5px;overflow:hidden;background:#fff;min-width:0}
+#report .v14626RotHead{text-align:center;background:#f3f7fc;padding:3px 1px;border-bottom:1px solid #dbe5f2}
+#report .v14626RotHead strong,#report .v14626RotHead small,#report .v14626RotHead b{display:block}
+#report .v14626RotHead strong{font-size:11px;color:#0f3e82}
+#report .v14626RotHead small{font-size:7px;color:#64748b}
+#report .v14626RotHead b{font-size:10px;color:#111827}
+#report .v14626RotRows{padding:3px}
+#report .v14626RotLine{display:flex;justify-content:space-between;gap:2px;font-size:7px;line-height:1.45}
+#report .v14626RotLine i{font-style:normal;color:#475569;white-space:nowrap}
+#report .v14626RotLine b{color:#1d4ed8}
+#report .v14626RotMost{text-align:center;background:#f8fafc;border-top:1px solid #e2e8f0;padding:2px 1px}
+#report .v14626RotMost small,#report .v14626RotMost b{display:block}
+#report .v14626RotMost small{font-size:6px;color:#64748b}
+#report .v14626RotMost b{font-size:8px;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){#report .v14626RotationGrid{grid-template-columns:1fr}}
 </style>

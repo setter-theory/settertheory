@@ -1867,6 +1867,37 @@ function buildSetterDetailReports(){
     </section>`;
   }).join('')}</div>`;
 }
+
+function buildSetterRotationDistributionCards(){
+  const setters=reportSetterNumbers();
+  if(!setters.length) return '';
+  const labels=['レフト','センター','ライト','バック','ツー'];
+  const setterRotationForLog=(log)=>{
+    const saved=String(log&&log.setterRot||'').trim();
+    if(/^S[1-6]$/.test(saved)) return saved;
+    const pos=Number(log&&log.pos);
+    if(pos>=1 && pos<=6) return 'S'+pos;
+    return String(log&&log.rot||'');
+  };
+  return `<div class="v14626RotationGrid">${setters.map((n,idx)=>{
+    const toss=s.logs.filter(x=>x.type==='トス' && logBelongsToPlayer(x,String(n)));
+    const columns=[1,2,3,4,5,6].map(r=>{
+      const rot='S'+r;
+      const logs=toss.filter(x=>setterRotationForLog(x)===rot);
+      const counts=Object.fromEntries(labels.map(label=>[label,0]));
+      logs.forEach(x=>{
+        const label=counts[x.result]!==undefined ? x.result : classifyTossTarget(x.result);
+        if(counts[label]!==undefined) counts[label]++;
+      });
+      const total=logs.length;
+      const most=total ? labels.slice().sort((a,b)=>counts[b]-counts[a])[0] : '-';
+      const rows=labels.map(label=>`<span class="v14626RotLine"><i>${label}</i><b>${total?Math.round(counts[label]/total*100):0}%</b></span>`).join('');
+      return `<div class="v14626RotColumn"><div class="v14626RotHead"><strong>${rot}</strong><small>総トス</small><b>${total}本</b></div><div class="v14626RotRows">${rows}</div><div class="v14626RotMost"><small>最多配球先</small><b>${most}</b></div></div>`;
+    }).join('');
+    return `<section class="reportPanel v14626RotationCard"><div class="v14626RotationTitle"><span>セッター${idx+1}</span><b>${escapeHtml(n)}番 ${escapeHtml(getPlayerName(n)||'')}</b></div><h3>ローテーション別トス配分</h3><div class="v14626RotationColumns">${columns}</div></section>`;
+  }).join('')}</div>`;
+}
+
 function buildTwoSetterSummary(){
   const setters=reportSetterNumbers();
   if(!setters.length) return '';
@@ -2468,7 +2499,7 @@ function report(){
   const dashboard=`${reportBrand}<div class="reportGrid">
     ${buildTwoSetterSummary()}
     <div class="reportPanel v141SetterAnalysisPanel reportSetterPrimary"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
-    ${buildCurrentIqAdviceLead()}
+    ${buildSetterRotationDistributionCards()}
     ${buildSecondBallAnalysis()}
     ${summary}
     <div class="panelGrid">
