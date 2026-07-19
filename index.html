@@ -4010,7 +4010,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_rotation_toss_distribution.js?v=141-rotation-toss-comparison-2"></script>
+<script src="app_v141_two_setter_toss_fix.js?v=141-rotation-toss-distribution"></script>
 
 
 
@@ -4549,17 +4549,8 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V141 ROTATION TOSS DISTRIBUTION FIXED</div>
-\n<style>\n/* V141: ローテーション別トス配分・比較カード */
-.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:20px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}
-.v141CompareWrap{margin-top:12px}.v141CompareSummary{display:flex;justify-content:flex-end;align-items:baseline;gap:7px;margin-bottom:10px;color:#64748b;font-size:13px}.v141CompareSummary strong{font-size:20px;color:#0f172a}
-.v141CompareCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.v141CompareCard{border:1px solid #dbe3ee;border-radius:14px;background:#fff;padding:13px;break-inside:avoid;box-shadow:0 2px 8px rgba(15,23,42,.04)}.v141CompareCard.current{border:2px solid #ef4444;padding:12px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}.v141CompareCard.empty{opacity:.68}
-.v141CompareCard header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.v141CompareCard header div{display:flex;align-items:baseline;gap:7px}.v141CompareCard header strong{font-size:22px;color:#0f172a}.v141CompareCard header span{font-size:12px;font-weight:800;color:#64748b}.v141CompareCard header em{font-size:11px;font-style:normal;font-weight:800;color:#475569;text-align:right}
-.v141CompareTrack{height:18px;border-radius:999px;background:#eef2f7;overflow:hidden;display:flex;align-items:center}.v141CompareSegment{height:100%;display:block;min-width:2px}.v141CompareNoData{width:100%;text-align:center;color:#94a3b8;font-size:10px}
-.v141CompareGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:9px}.v141CompareItem{display:grid;grid-template-columns:7px 1fr;grid-template-areas:'dot label' 'pct pct' 'count count';gap:1px 4px;padding:6px 5px;border-radius:8px;background:#f8fafc;min-width:0}.v141CompareItem.zero{opacity:.42}.v141CompareDot{grid-area:dot;width:7px;height:7px;border-radius:50%;align-self:center}.v141CompareLabel{grid-area:label;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569}.v141CompareItem strong{grid-area:pct;font-size:14px;color:#0f172a}.v141CompareItem small{grid-area:count;font-size:9px;color:#64748b}
-@media(max-width:760px){.v141CompareCards{grid-template-columns:1fr}.v141CompareGrid{grid-template-columns:repeat(5,minmax(0,1fr))}.v141CompareCard{padding:11px}.v141CompareCard.current{padding:10px}.v141CompareCard header strong{font-size:20px}}
-@media print{.v141CompareCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.v141CompareCard{padding:9px}.v141CompareCard.current{padding:8px}.v141CompareCard header{margin-bottom:6px}.v141CompareGrid{gap:3px;margin-top:6px}.v141CompareItem{padding:4px 3px}.v141CompareCard header strong{font-size:18px}.v141CompareTrack{height:14px}}
-</style>\n</body>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V141 TWO SETTER TOSS FIX</div>
+\n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n</body>
 </html>
 
 <style>

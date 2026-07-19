@@ -435,7 +435,7 @@ function isTossMissLog(x){
   return !!(x && x.type==="トス" && (x.tossMist===true || x.tossMist==="1" || x.tossMist==="true" || x.quality==="ミス"));
 }
 function tossQualityStats(logs=s.logs){
-  const toss=(logs||[]).filter(x=>x.type==="トス");
+  const toss=normalSetterTossLogs(logs);
   const miss=toss.filter(isTossMissLog).length;
   const success=Math.max(0,toss.length-miss);
   const successRate=toss.length?Math.round(success/toss.length*1000)/10:0;
@@ -480,7 +480,21 @@ function updateSecondBallModeUi(){
   }
   document.querySelectorAll('.fastGroup[data-acc-group="toss"] .fastBtn.toss, .fastGroup[data-acc-group="toss"] .fastBtn.two').forEach(b=>b.classList.toggle("secondBallTarget",secondBallMode));
 }
-function secondBallLogs(logs=s.logs){ return (logs||[]).filter(x=>x.type==="二段トス"); }
+function normalSetterTossLogs(logs=s.logs){
+  const setters=reportSetterNumbers();
+  return (logs||[]).filter(x=>x && x.type==="トス" && setters.some(n=>logBelongsToPlayer(x,n)));
+}
+function isImplicitSecondBallLog(x){
+  if(!x || x.type!=="トス") return false;
+  const setters=reportSetterNumbers();
+  return !setters.some(n=>logBelongsToPlayer(x,n));
+}
+function effectivePlayType(x){
+  return isImplicitSecondBallLog(x) ? "二段トス" : (x&&x.type||"");
+}
+function secondBallLogs(logs=s.logs){
+  return (logs||[]).filter(x=>x && (x.type==="二段トス" || isImplicitSecondBallLog(x)));
+}
 function secondBallAnalysis(logs=s.logs){
   const rows={};
   const zones=["レフト","センター","ライト","バック","ツー"];
@@ -1712,10 +1726,10 @@ function buildResultSummary(){
   }</div>`;
 }
 function buildActionPercentBars(){
-  const total=s.logs.filter(x=>actionTypes.includes(x.type)).length || 0;
+  const total=s.logs.filter(x=>actionTypes.includes(effectivePlayType(x))).length || 0;
   let html="<div class='bigBarChart'>";
   actionTypes.forEach(t=>{
-    const count=s.logs.filter(x=>x.type===t).length;
+    const count=s.logs.filter(x=>effectivePlayType(x)===t).length;
     const pct=total?Math.round(count/total*100):0;
     html+=`<div class="bigBarRow"><div class="bigBarLabel">${t}</div><div class="bigBarTrack"><div class="bigBarFill" style="width:${pct}%"></div></div><div class="bigBarPct">${pct}%</div></div>`;
   });
@@ -1762,7 +1776,7 @@ function buildIndividualTable(){
   nums.forEach(n=>{
     const logs=s.logs.filter(x=>String(x.num)===String(n));
     html+=`<tr><td>${n}</td>`;
-    actionTypes.forEach(t=>{html+=`<td>${logs.filter(x=>x.type===t).length}</td>`;});
+    actionTypes.forEach(t=>{html+=`<td>${logs.filter(x=>effectivePlayType(x)===t).length}</td>`;});
     html+=`<td>${logs.length}</td></tr>`;
   });
   html+="</table>";
@@ -1986,7 +2000,7 @@ function buildRotationPointAnalysis(){
     const my=logs.filter(x=>x.point==="自").length;
     const op=logs.filter(x=>x.point==="相").length;
     const diff=my-op;
-    const toss=logs.filter(x=>x.type==="トス");
+    const toss=normalSetterTossLogs(logs);
     const dist={};
     toss.forEach(x=>{ dist[x.result]=(dist[x.result]||0)+1; });
     const top=Object.entries(dist).sort((a,b)=>b[1]-a[1])[0];
@@ -2005,7 +2019,7 @@ function buildRotationTossDistribution(){
   const labels=["レフト","センター","ライト","バック","ツー"];
   const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#111827"};
   const currentRot=Number(String(s.rot||"").replace(/\D/g,""));
-  const allToss=s.logs.filter(x=>x.type==="トス" && labels.includes(x.result));
+  const allToss=normalSetterTossLogs().filter(x=>labels.includes(x.result));
 
   const cards=[1,2,3,4,5,6].map(r=>{
     const logs=allToss.filter(x=>Number(String(x.rot||"").replace(/\D/g,""))===r);
@@ -2038,7 +2052,7 @@ function buildRotationTossDistribution(){
 }
 
 function buildTossUsageAnalysis(){
-  const toss=s.logs.filter(x=>x.type==="トス");
+  const toss=normalSetterTossLogs();
   const labels=["レフト","センター","ライト","バック","ツー"];
   return `<div class="v37Bars">${labels.map(label=>{
     const count=toss.filter(x=>x.result===label).length;
@@ -2088,7 +2102,7 @@ function buildSetterInsight(){
 }
 
 function currentMatchSetterAnalysis(){
-  const toss=s.logs.filter(x=>x.type==='トス');
+  const toss=normalSetterTossLogs();
   const counts={レフト:0,センター:0,ライト:0,バック:0,ツー:0};
   const terminalCounts={};
   toss.forEach(x=>{
@@ -2328,7 +2342,7 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
 }
 
 function report(){
-  const actionLogs=s.logs.filter(x=>actionTypes.includes(x.type));
+  const actionLogs=s.logs.filter(x=>actionTypes.includes(effectivePlayType(x)));
   const total=actionLogs.length;
   const success=actionLogs.filter(isSuccessResult).length;
   const loss=s.logs.filter(x=>x.point==="相").length;
@@ -2351,7 +2365,7 @@ function report(){
   </div>`;
 
   const playColors={"サーブ":"#ef4444","レセプ":"#2563eb","スパイク":"#22c55e","トス":"#f59e0b","二段トス":"#06b6d4","ディグ":"#7c3aed","ブロック":"#334155"};
-  const playItems=actionTypes.map(t=>({label:t,count:s.logs.filter(x=>x.type===t).length,color:playColors[t]})).filter(x=>x.count>0);
+  const playItems=actionTypes.map(t=>({label:t,count:s.logs.filter(x=>effectivePlayType(x)===t).length,color:playColors[t]})).filter(x=>x.count>0);
   const playDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(playItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(playItems,total)}</div>`;
 
   const resultGroups=[
@@ -2391,7 +2405,7 @@ function report(){
     return `<div class="rotationRow ${s.rot===r?"currentRotation":""}"><div class="rotationLabel">S${r}</div><div class="rotationPct">${pct}% (${ok}/${a.length})</div><div class="rotationTrack"><div class="rotationFill ${cssClassByPct(pct)}" style="width:${pct}%"></div></div></div>`;
   }).join("");
 
-  const tossLogs=s.logs.filter(x=>x.type==="トス");
+  const tossLogs=normalSetterTossLogs();
   const tossLabels=["レフト","センター","ライト","バック","ツー"];
   const tossColors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#0f172a"};
   const tossItems=tossLabels.map(t=>({label:t,count:tossLogs.filter(x=>x.result===t).length,color:tossColors[t]})).filter(x=>x.count>0);
@@ -2404,7 +2418,7 @@ function report(){
   </div>`;
 
   const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
-  const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${x.type}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join("");
+  const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${effectivePlayType(x)}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join("");
 
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
@@ -2449,7 +2463,7 @@ function v372ActionStats(){
   return cfgs.map(c=>{ const all=s.logs.filter(c.all); const ok=s.logs.filter(c.ok); return {...c,total:all.length,ok:ok.length,pct:safePct(ok.length,all.length),eff:effectRate(all)}; });
 }
 function buildTossUsageAnalysis(){
-  const toss=s.logs.filter(x=>x.type==="トス");
+  const toss=normalSetterTossLogs();
   const labels=["レフト","センター","ライト","バック","ツー"];
   return `<div class="v372TossList">${labels.map(label=>{
     const count=toss.filter(x=>x.result===label).length;
@@ -2529,7 +2543,7 @@ function downloadCSV(){
   s.logs.forEach(x=>{
     const d=analyses[String(x.num)];
     const a=d&&d.a;
-    rows.push([x.no,x.set,x.rot,x.type,x.num,(x.playerNameSnapshot||getPlayerName(x.num)),x.type==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,(x.playerId||ensureStablePlayerId(x.playerNameSnapshot||getPlayerName(x.num),x.playerNumberSnapshot||x.num))]);
+    rows.push([x.no,x.set,x.rot,effectivePlayType(x),x.num,(x.playerNameSnapshot||getPlayerName(x.num)),effectivePlayType(x)==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,(x.playerId||ensureStablePlayerId(x.playerNameSnapshot||getPlayerName(x.num),x.playerNumberSnapshot||x.num))]);
   });
   rows.push([]);
   rows.push(["Metadata","DataVersion",DATA_SCHEMA_VERSION,"UserId",s.userId||"","TeamId",s.teamId||"","MatchId",s.matchId||"","SetId",s.setId||""]);
