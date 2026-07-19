@@ -2417,32 +2417,28 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
   </div>`;
 }
 
-function buildSetterSubstitutionHistoryBlock(){
-  const setterNums=new Set(reportSetterNumbers().map(String));
+function buildSubstitutionHistoryBlock(){
   const rows=(s.logs||[]).filter(log=>String(log.type||'')==='交代').map(log=>{
-    let outNum=String(log.outPlayerId||'').trim();
-    let inNum=String(log.inPlayerId||'').trim();
-    if(!outNum || !inNum){
-      const pair=String(log.num||'').split(/→|->|＞|>/).map(v=>v.trim());
-      if(!outNum) outNum=pair[0]||'';
-      if(!inNum) inNum=pair[1]||'';
-    }
-    const relevant=setterNums.has(outNum)||setterNums.has(inNum);
-    if(!relevant) return null;
+    // 現行データは log.num に「OUT→IN」を保存しているため、これを最優先で参照する。
+    // playerId は背番号と一致しない場合があるので表示用の番号には使わない。
+    const pair=String(log.num||'').split(/→|->|＞|>/).map(v=>v.trim());
+    const outNum=pair[0]||String(log.outNum||'').trim();
+    const inNum=pair[1]||String(log.inNum||'').trim();
     const outName=String(log.outNameSnapshot||((s.players||{})[outNum]||'')).trim();
     const inName=String(log.inNameSnapshot||((s.players||{})[inNum]||'')).trim();
     const playerText=(num,name)=>`${escapeHtml(num||'-')}番${name?` ${escapeHtml(name)}`:''}`;
+    const position=String(log.pos||'').trim();
     return {
       set:`${escapeHtml(log.set||s.setNo||'-')}セット目`,
       timing:escapeHtml(log.score||log.time||'-'),
       out:playerText(outNum,outName),
       in:playerText(inNum,inName),
-      note:'セッター交代'
+      note:position?`コート位置 ${escapeHtml(position)}`:'選手交代'
     };
-  }).filter(Boolean);
-  const body=rows.length?rows.map(row=>`<tr><td>${row.set}</td><td>${row.timing}</td><td class="v14615SubOut">${row.out}</td><td class="v14615SubIn">${row.in}</td><td>${row.note}</td></tr>`).join(''):`<tr class="v14615SubEmpty"><td colspan="5">セッター関連の交代記録はありません。</td></tr>`;
-  return `<section class="reportPanel v14615SubstitutionBlock" aria-label="交代履歴（セッター関連）">
-    <h3><span class="v14615SubIcon">⇄</span>交代履歴 <small>（セッター関連）</small></h3>
+  });
+  const body=rows.length?rows.map(row=>`<tr><td>${row.set}</td><td>${row.timing}</td><td class="v14615SubOut">${row.out}</td><td class="v14615SubIn">${row.in}</td><td>${row.note}</td></tr>`).join(''):`<tr class="v14615SubEmpty"><td colspan="5">選手交代の記録はありません。</td></tr>`;
+  return `<section class="reportPanel v14615SubstitutionBlock" aria-label="交代履歴（全選手）">
+    <h3><span class="v14615SubIcon">⇄</span>交代履歴 <small>（全選手）</small></h3>
     <div class="v14615SubTableWrap"><table class="v14615SubTable">
       <thead><tr><th>セット</th><th>タイミング</th><th>OUT</th><th>IN</th><th>備考</th></tr></thead>
       <tbody>${body}</tbody>
@@ -2557,7 +2553,7 @@ function report(){
       <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
-    ${buildSetterSubstitutionHistoryBlock()}
+    ${buildSubstitutionHistoryBlock()}
   </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
