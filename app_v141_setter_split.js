@@ -612,7 +612,11 @@ function vibrateTap(){
 }
 
 function hasInProgressMatch(){
-  return !!(s && s.matchActive && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
+  // V146.1 recovery fix: V147/restoreで matchActive フラグだけが false になっても、
+  // 得点またはプレーログが残っていれば途中試合として安全に復元する。
+  const hasProgress=!!(s && ((s.logs&&s.logs.length) || Number(s.my||0)>0 || Number(s.op||0)>0));
+  if(hasProgress && !s.matchActive) s.matchActive=true;
+  return hasProgress;
 }
 function matchResumeSummary(){
   const saved=s.lastSavedAt ? new Date(s.lastSavedAt).toLocaleString() : "保存時刻不明";
