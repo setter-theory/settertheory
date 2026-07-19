@@ -4695,7 +4695,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.12 RADAR TITLE TOP</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.13 MATCH SUMMARY BLOCK</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8448,5 +8448,52 @@ body.menuOpen .sideOverlay{
     margin:0 0 8px!important;
     align-self:end!important;
   }
+}
+</style>
+
+<style id="v146-13-match-summary-block">
+/* V146.13: 試合レポートの試合サマリーを一つの完成ブロックへ統合。表示のみ。 */
+#report .v14613MatchSummaryBlock{
+  display:grid;gap:10px;padding:12px;border:1px solid rgba(37,99,235,.18);
+  border-radius:18px;background:linear-gradient(180deg,rgba(239,246,255,.76),rgba(255,255,255,.94));
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+#report .v14613BlockHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 2px;}
+#report .v14613BlockHead>div{display:flex;align-items:baseline;gap:10px;min-width:0;}
+#report .v14613BlockHead span{font-size:18px;font-weight:1000;color:#0f172a;}
+#report .v14613BlockHead small{font-size:11px;font-weight:850;color:#64748b;}
+#report .v14613BlockHead>b{font-size:21px;line-height:1;color:#2563eb;white-space:nowrap;}
+#report .v14613MatchSummaryBlock>.summaryCards{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;}
+#report .v14613MatchSummaryBlock .statCard{min-height:92px!important;padding:10px 11px!important;border-radius:13px!important;box-shadow:none!important;}
+#report .v14613MatchSummaryBlock .statTop{gap:5px!important;}
+#report .v14613MatchSummaryBlock .statLabel{font-size:11px!important;}
+#report .v14613MatchSummaryBlock .statIcon{font-size:15px!important;}
+#report .v14613MatchSummaryBlock .statValue{font-size:29px!important;line-height:1.05!important;margin-top:3px!important;}
+#report .v14613MatchSummaryBlock .statSub{font-size:10px!important;line-height:1.25!important;margin-top:4px!important;}
+#report .v14613MatchSummaryBlock .miniTrack{height:5px!important;margin-top:7px!important;}
+#report .v14613OverviewGrid{grid-template-columns:1.05fr 1fr 1.15fr!important;gap:8px!important;}
+#report .v14613OverviewGrid>.reportPanel{padding:11px!important;border-radius:13px!important;box-shadow:none!important;min-width:0;}
+#report .v14613OverviewGrid h3{font-size:14px!important;margin:0 0 8px!important;}
+#report .v14613OverviewGrid h3 small{font-size:10px!important;}
+#report .v14613OverviewGrid .donutWrap{grid-template-columns:104px minmax(0,1fr)!important;gap:10px!important;}
+#report .v14613OverviewGrid .donut{width:104px!important;height:104px!important;}
+#report .v14613OverviewGrid .donutCenter{width:58px!important;height:58px!important;}
+#report .v14613OverviewGrid .donutCenter .num{font-size:20px!important;}
+#report .v14613OverviewGrid .legend{gap:4px!important;}
+#report .v14613OverviewGrid .legendRow{font-size:10px!important;padding:2px 0!important;}
+#report .v14613OverviewGrid .v136ResultBars{gap:6px!important;}
+#report .v14613OverviewGrid .v136ResultBarRow{padding:5px 0!important;}
+#report .v14613OverviewGrid .v136ResultBarLabel,#report .v14613OverviewGrid .v136ResultBarValue{font-size:11px!important;}
+#report .v14613OverviewGrid .v136ResultBarSub{font-size:9px!important;}
+#report .v14613OverviewGrid .v138PointDiverging{gap:6px!important;}
+#report .v14613OverviewGrid .v138PointHead,#report .v14613OverviewGrid .v138PointLegend,#report .v14613OverviewGrid .v138PointMeta{font-size:10px!important;}
+@media(max-width:900px){
+  #report .v14613MatchSummaryBlock>.summaryCards{grid-template-columns:repeat(5,minmax(110px,1fr))!important;overflow-x:auto;padding-bottom:3px;}
+  #report .v14613OverviewGrid{grid-template-columns:1fr!important;}
+  #report .v14613OverviewGrid .donutWrap{grid-template-columns:110px minmax(0,1fr)!important;}
+}
+@media(max-width:620px){
+  #report .v14613BlockHead>div{display:block;}
+  #report .v14613BlockHead small{display:block;margin-top:2px;}
 }
 </style>

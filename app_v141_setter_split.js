@@ -2502,12 +2502,15 @@ function report(){
     ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
-    ${summary}
-    <div class="panelGrid">
-      <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
-      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
-      <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
-    </div>
+    <section class="v14613MatchSummaryBlock" aria-label="試合サマリー">
+      <div class="v14613BlockHead"><div><span>試合サマリー</span><small>試合全体の結果をひと目で確認</small></div><b>${myPts} - ${opPts}</b></div>
+      ${summary}
+      <div class="panelGrid v14613OverviewGrid">
+        <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
+        <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+        <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
+      </div>
+    </section>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
       <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
