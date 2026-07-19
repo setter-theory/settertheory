@@ -8504,3 +8504,45 @@ body.menuOpen .sideOverlay{
   #report .v14613BlockHead small{display:block;margin-top:2px;}
 }
 </style>
+
+<style id="v146-14-summary-metric-value-fix">
+/* V146.14: 試合サマリー上部5枚カードの数値をタイトル右横へ配置。UIのみ。 */
+#report .v14613MatchSummaryBlock .statTop{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  min-width:0!important;
+}
+#report .v14613MatchSummaryBlock .statHeaderValue{
+  display:inline-block!important;
+  margin-left:auto!important;
+  width:auto!important;
+  min-width:0!important;
+  height:auto!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  font-size:15px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  letter-spacing:-.2px!important;
+  white-space:nowrap!important;
+}
+#report .v14613MatchSummaryBlock .statHeaderValue.blue{color:#2563eb!important;background:transparent!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.red{color:#dc2626!important;background:transparent!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.green{color:#16a34a!important;background:transparent!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.orange{color:#f97316!important;background:transparent!important;}
+#report .v14613MatchSummaryBlock .statHeaderValue.purple{color:#7c3aed!important;background:transparent!important;}
+#report .v14613MatchSummaryBlock .statValue,
+#report .v14613MatchSummaryBlock .barValue{display:none!important;}
+#report .v14613MatchSummaryBlock .miniTrack{
+  height:5px!important;
+  margin-top:8px!important;
+  margin-bottom:0!important;
+}
+#report .v14613MatchSummaryBlock .statSub{
+  margin-top:6px!important;
+}
+</style>
