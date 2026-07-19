@@ -1857,14 +1857,12 @@ function buildSetterDetailReports(){
     const a=currentSetterAnalysisFor(n);
     const rank=setterIqRank(a.setterIq||0);
     const b=iqBreakdown20(a);
-    const advice=getAquilaAdviceForSetter(n);
     const dist=labels.map(label=>{const it=a.items.find(x=>x.label===label)||{count:0,pct:0};return `<span><b>${label}</b><em>${it.count}本 / ${it.pct}%</em></span>`}).join('');
-    const rots=a.rotationRows.filter(x=>x.total>0).map(x=>`<span><b>${x.rot}</b><em>${x.total}本</em><em>成功${x.rate}%</em></span>`).join('')||'<span class="setterDetailEmpty">ローテ別記録なし</span>';
+    const rots=a.rotationRows.map(x=>`<span class="v14625RotCell ${x.total?'hasData':'isEmpty'}"><b>${x.rot}</b><em>${x.total}本</em><em>${x.total?`成功${x.rate}%`:'記録なし'}</em></span>`).join('');
     return `<section class="reportPanel setterDetailCard setterIqCompactCard">
       <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
       <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
-      <div class="setterDetailSection v14624RotationVisible"><b>ローテーション別トス配分</b><div>${rots}</div></div>
-      <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <div class="setterDetailSection v14624RotationVisible v14625RotationMain"><b>ローテーション別トス配分</b><div>${rots}</div></div>
       <details class="setterDetailMore"><summary>詳しい配球データ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div></details>
     </section>`;
   }).join('')}</div>`;
