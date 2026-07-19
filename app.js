@@ -2388,63 +2388,6 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
   </div>`;
 }
 
-
-
-/* V146.2: compact one-screen match report layout.
-   This renderer only reads the existing state and analysis functions.
-   It does not change save/load/localStorage or court-input behavior. */
-function buildV1462SetterCard(num,index){
-  const a=currentSetterAnalysisFor(num);
-  const labels=['レフト','センター','ライト','バック','ツー'];
-  const colors={レフト:'#ef4444',センター:'#2563eb',ライト:'#22c55e',バック:'#f59e0b',ツー:'#94a3b8'};
-  const items=labels.map(label=>{const it=a.items.find(x=>x.label===label)||{count:0,pct:0};return {label,count:it.count,pct:it.pct,color:colors[label]};});
-  const active=items.filter(x=>x.count>0);
-  const donut=`<div class="v1462Donut" style="background:${donutStyle(active)}"><div><small>総数</small><b>${a.quality.total}</b></div></div>`;
-  const legend=items.map(x=>`<div class="v1462LegendRow"><span class="dot" style="background:${x.color}"></span><span>${x.label}</span><b>${x.pct}% <small>(${x.count})</small></b></div>`).join('');
-  const rotRows=a.rotationRows.map(row=>{
-    const logs=s.logs.filter(x=>x.type==='トス' && logBelongsToPlayer(x,String(num)) && ((String(x.setterRot||'')===row.rot)||(!x.setterRot && Number(x.pos)===Number(row.rot.slice(1)))));
-    const counts=labels.map(label=>({label,count:logs.filter(x=>(x.result===label || classifyTossTarget(x.result)===label)).length,color:colors[label]}));
-    const seg=counts.filter(x=>x.count>0).map(x=>`<i style="width:${row.total?x.count/row.total*100:0}%;background:${x.color}"></i>`).join('');
-    const max=counts.slice().sort((x,y)=>y.count-x.count)[0];
-    return `<div class="v1462RotRow"><b>${row.rot}</b><span>${row.total}本</span><div class="v1462RotBar">${seg}</div><em>${max&&max.count?`${max.label} ${Math.round(max.count/row.total*100)}%`:'-'}</em></div>`;
-  }).join('');
-  return `<section class="v1462SetterCard">
-    <header><span>セッター</span><b>${escapeHtml(num)}番 ${escapeHtml(a.name||'')}</b></header>
-    <div class="v1462SetterTop"><div class="v1462Legend">${legend}</div>${donut}<div class="v1462Quality"><div><small>総トス</small><b>${a.quality.total}<i>本</i></b></div><div class="miss"><small>トスミス</small><b>${a.quality.miss}<i>本</i></b></div><div class="success"><small>トス成功率</small><b>${a.quality.successRate}<i>%</i></b></div></div></div>
-    <div class="v1462RotTitle"><div><b>ローテーション別トス配分</b><small>${escapeHtml(num)}番 ${escapeHtml(a.name||'')} / S1〜S6ごとの配球比較</small></div><strong>全ローテーション合計 ${a.quality.total}本</strong></div>
-    <div class="v1462RotHead"><span>ローテ</span><span>総トス</span><span>配球</span><span>最多</span></div>${rotRows}
-  </section>`;
-}
-function buildV1462IqAndAdvice(setters){
-  const iq=setters.map((n,idx)=>{const a=currentSetterAnalysisFor(n),rank=setterIqRank(a.setterIq||0);return `<div class="v1462IqCard"><small>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</small><b>${a.total?a.setterIq:'--'}</b><span>/100点</span><em>${a.total?rank.label:'-'}</em></div>`}).join('');
-  const adv=setters.map(n=>{const a=currentSetterAnalysisFor(n);const lines=getAquilaAdviceForSetter(n);return `<div class="v1462Advice"><b>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</b>${lines.slice(0,2).map(x=>`<p>${escapeHtml(x)}</p>`).join('')}</div>`}).join('');
-  return `<section class="v1462IqAdvice"><div><h3>セッターIQ評価</h3><div class="v1462IqGrid">${iq}</div></div><div><h3>AQUILAからのアドバイス</h3><div class="v1462AdviceGrid">${adv}</div></div></section>`;
-}
-function buildV1462Summary(){
-  const my=Number(s.my||0),op=Number(s.op||0), rallies=(s.logs||[]).length;
-  const sub=Object.values(s.substitutionCounts||{});
-  const setterNums=new Set(reportSetterNumbers().map(String));
-  const subRows=sub.filter(x=>setterNums.has(String(x.a))||setterNums.has(String(x.b))).map((x,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(x.lastScore||'-')}</td><td>${escapeHtml(String(x.a||'-'))}</td><td>${escapeHtml(String(x.b||'-'))}</td><td>${Number(x.count||0)}回</td></tr>`).join('');
-  const actions=[
-    ['アタック成功率','スパイク',x=>x.result==='成功'],['ブロック成功率','ブロック',x=>x.result==='シャット'||x.result==='ワンタッチ'],['サーブ成功率','サーブ',x=>x.result==='成功'||x.result==='エース'],['サーブレセ成功率','レセプ',x=>['Aパス','Bパス','Cパス'].includes(x.result)],['ディグ成功率','ディグ',x=>x.result==='成功']
-  ];
-  const success=actions.map(([label,type,ok])=>{const arr=s.logs.filter(x=>x.type===type),n=arr.filter(ok).length;return `<div><small>${label}</small><b>${safePct(n,arr.length)}%</b><span>${n}/${arr.length}</span></div>`}).join('');
-  const toss=normalSetterTossLogs(), labels=['レフト','センター','ライト','バック','ツー'], colors={レフト:'#ef4444',センター:'#2563eb',ライト:'#22c55e',バック:'#f59e0b',ツー:'#94a3b8'};
-  const items=labels.map(label=>({label,count:toss.filter(x=>x.result===label||classifyTossTarget(x.result)===label).length,color:colors[label]}));
-  return `<div class="v1462Bottom">
-    <section class="v1462Mini"><h3>トス種別割合（全体）</h3><div class="v1462MiniDonut"><div class="v1462Donut" style="background:${donutStyle(items.filter(x=>x.count>0))}"><div><small>総数</small><b>${toss.length}</b></div></div><div>${items.map(x=>`<p><i style="background:${x.color}"></i>${x.label}<b>${safePct(x.count,toss.length)}% (${x.count})</b></p>`).join('')}</div></div></section>
-    <section class="v1462Mini"><h3>各項目成功率（チーム全体）</h3><div class="v1462SuccessGrid">${success}<div><small>トータル成功率</small><b>${safePct(s.logs.filter(isSuccessResult).length,s.logs.filter(x=>actionTypes.includes(effectivePlayType(x))).length)}%</b><span>全体</span></div></div></section>
-    <section class="v1462Mini"><h3>交代履歴（セッター関連）</h3><table><thead><tr><th>回</th><th>スコア</th><th>OUT</th><th>IN</th><th>回数</th></tr></thead><tbody>${subRows||'<tr><td colspan="5">交代なし</td></tr>'}</tbody></table></section>
-    <section class="v1462MatchSummary"><h3>試合サマリー</h3><div><span>総得点（味方）<b>${my}</b></span><span>総得点（相手）<b>${op}</b></span><span>総ラリー数<b>${rallies}</b></span><span>平均ラリー数<b>${rallies?Math.round(rallies/Math.max(1,my+op)*10)/10:0}</b></span><span>セットカウント<b>${escapeHtml(String(s.setNo||1))}</b></span><span>現在スコア<b>${my} - ${op}</b></span></div></section>
-  </div>`;
-}
-function buildV1462CompactReport(){
-  const setters=reportSetterNumbers();
-  const stateAnalysis=currentMatchSetterAnalysis();
-  const header=`<div class="v1462Header"><div class="v1462Brand"><img src="icons/aquila-192.png" alt="Aquila"><b>AQUILA</b><strong>試合レポート</strong><span>${setters.length>1?'ツーセッター':'ワンセッター'}</span></div><div class="v1462Meta"><span><small>試合名</small>${escapeHtml(s.myTeam||'自チーム')} vs ${escapeHtml(s.oppTeam||'相手')}</span><span><small>日付</small>${new Date().toLocaleDateString()}</span><span><small>セット数</small>${escapeHtml(String(s.setNo||1))}セット</span><span><small>結果</small>${Number(s.my||0)} - ${Number(s.op||0)}</span></div><div class="v1462Actions"><button class="pdfBtn" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn" onclick="downloadCSV()">CSV出力</button></div></div>`;
-  return `<div class="v1462Report">${header}<div class="v1462SetterGrid ${setters.length===1?'one':''}">${(setters.length?setters:['-']).map(buildV1462SetterCard).join('')}</div>${buildV1462IqAndAdvice(setters)}${buildV1462Summary()}<footer>※トス成功率＝（総トス−トスミス）÷総トス×100　※表示値は現在入力中のデータをそのまま集計</footer></div>`;
-}
-
 function report(){
   const actionLogs=s.logs.filter(x=>actionTypes.includes(effectivePlayType(x)));
   const total=actionLogs.length;
@@ -2526,7 +2469,30 @@ function report(){
 
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
-  const dashboard=buildV1462CompactReport();
+  const dashboard=`${reportBrand}<div class="reportGrid">
+    ${buildTwoSetterSummary()}
+    ${buildSetterDetailReports()}
+    ${buildSecondBallAnalysis()}
+    ${summary}
+    <div class="panelGrid">
+      <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
+      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+      <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
+    </div>
+    <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
+    <div class="wideGrid">
+      <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
+      <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
+    </div>
+    <div class="wideGrid">
+      <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
+      <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
+    </div>
+    <div class="bottomGrid">
+      <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
+      <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
+    </div>
+  </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
 }
