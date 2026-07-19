@@ -2368,23 +2368,29 @@ function buildCurrentIqAdviceLead(){
 }
 
 function buildUnifiedReportBrandHeader(state, analysis, options={}){
-  const rank=setterIqRank(analysis.setterIq||0);
-  const title=options.title||'Setter Theory Match Report';
-  const dateText=options.dateText||new Date().toLocaleDateString();
+  const title=options.title||'試合レポート';
+  const dateText=options.dateText||new Date().toLocaleDateString('ja-JP');
   const actions=options.actionsHtml||'';
-  return `<div class="unifiedReportBrand">
-    <div class="unifiedReportIdentity">
-      <div class="unifiedReportEyebrow">AQUILA REPORT</div>
-      <div class="unifiedReportTitle">${escapeHtml(title)}</div>
-      <div class="unifiedReportMeta">${escapeHtml(state.myTeam||state.team||'自チーム')} vs ${escapeHtml(state.oppTeam||'相手')} / Set ${escapeHtml(state.setNo||'1')} / ${escapeHtml(dateText)}</div>
+  const myTeam=state.myTeam||state.team||'自チーム';
+  const oppTeam=state.oppTeam||'相手チーム';
+  const setCount=state.setNo||1;
+  const myScore=Number(state.my||0);
+  const oppScore=Number(state.op||0);
+  const setterCount=reportSetterNumbers().length;
+  const setterMode=setterCount>1?'ツーセッター':'ワンセッター';
+  return `<div class="unifiedReportBrand v1463ReportHeader">
+    <div class="v1463BrandLockup">
+      <img src="icons/aquila-192.png" alt="Aquila">
+      <div><div class="v1463AquilaWord">AQUILA</div><div class="v1463ReportName">${escapeHtml(title)}</div></div>
+      <span class="v1463SetterMode">${setterMode}</span>
     </div>
-    <div class="unifiedReportRight">
-      <div class="unifiedAquilaBadge">
-        <img src="icons/aquila-192.png" alt="Aquila">
-        <div><div class="small">SETTER IQ</div><div class="iqLine"><b>${analysis.setterIq||'--'}</b><span>/100</span></div><div class="rank">${analysis.setterIq?rank.label:'NO DATA'}</div></div>
-      </div>
-      ${actions}
+    <div class="v1463MetaStrip">
+      <div class="v1463MetaCell"><span>試合名</span><b>${escapeHtml(myTeam)} vs ${escapeHtml(oppTeam)}</b></div>
+      <div class="v1463MetaCell"><span>日付</span><b>${escapeHtml(dateText)}</b></div>
+      <div class="v1463MetaCell compact"><span>セット</span><b>${escapeHtml(setCount)}</b></div>
+      <div class="v1463MetaCell result"><span>現在スコア</span><b>${myScore} - ${oppScore}</b></div>
     </div>
+    <div class="unifiedReportRight v1463HeaderActions">${actions}</div>
   </div>`;
 }
 

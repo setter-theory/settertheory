@@ -3534,6 +3534,23 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v135ActionBarRow.bad .v135ActionBarTrack span{background:linear-gradient(90deg,#dc2626,#f97316);}
 .v135ActionBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
 </style>
+
+<style id="v1463-report-header-only">
+/* V146.3: 試合レポートのヘッダーだけを理想レイアウトへ変更。集計・保存・再開処理には触れない。 */
+.v1463ReportHeader{
+  grid-template-columns:minmax(250px,auto) minmax(420px,1fr) auto!important;
+  gap:14px!important;padding:10px 14px!important;border-radius:12px!important;
+  background:linear-gradient(90deg,#07111f 0%,#0b1728 62%,#08111d 100%)!important;
+  border:1px solid #26374f!important;box-shadow:0 8px 22px rgba(2,6,23,.24)!important;
+}
+.v1463BrandLockup{display:flex;align-items:center;gap:9px;min-width:0}.v1463BrandLockup>img{width:38px;height:38px;object-fit:contain}
+.v1463AquilaWord{font-size:11px;font-weight:1000;letter-spacing:.08em;color:#f8d675;line-height:1}.v1463ReportName{font-size:21px;font-weight:1000;color:#fff;line-height:1.15;white-space:nowrap}
+.v1463SetterMode{padding-left:12px;border-left:1px solid #334155;color:#e2e8f0;font-size:12px;font-weight:900;white-space:nowrap}
+.v1463MetaStrip{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(112px,.8fr) minmax(74px,.45fr) minmax(108px,.7fr);align-items:stretch;min-width:0}
+.v1463MetaCell{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:2px 13px;border-left:1px solid #26374f;min-width:0}.v1463MetaCell span{font-size:9px;font-weight:900;color:#94a3b8}.v1463MetaCell b{font-size:12px;color:#f8fafc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v1463MetaCell.result b{font-size:15px}.v1463HeaderActions{flex-wrap:nowrap!important;gap:8px!important}.v1463HeaderActions .unifiedReportAction{min-height:38px!important;padding:8px 12px!important;border-radius:8px!important}
+@media(max-width:1050px){.v1463ReportHeader{grid-template-columns:1fr auto!important}.v1463MetaStrip{grid-column:1/-1;order:3}.v1463HeaderActions{grid-column:2;grid-row:1}}
+@media(max-width:700px){.v1463ReportHeader{grid-template-columns:1fr!important}.v1463SetterMode{display:none}.v1463MetaStrip{grid-template-columns:1fr 1fr}.v1463MetaCell{padding:7px 9px}.v1463HeaderActions{grid-column:1;grid-row:auto;display:grid!important;grid-template-columns:1fr 1fr}.v1463ReportName{font-size:18px}}
+</style>
 </head>
 <body>
 
@@ -4010,7 +4027,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-1-resume-recovery"></script>
+<script src="app_v141_setter_split.js?v=146-3-report-header"></script>
 
 
 
@@ -4549,7 +4566,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146 DONUT POSITION ALIGN</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.3 REPORT HEADER</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
