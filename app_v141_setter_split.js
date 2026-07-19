@@ -1872,11 +1872,31 @@ function buildSetterDetailReports(){
 function buildTwoSetterSummary(){
   const setters=reportSetterNumbers();
   if(!setters.length) return '';
+  const labels=['レフト','センター','ライト','バック','ツー'];
+  const colors={レフト:'#ef4444',センター:'#2563eb',ライト:'#22c55e',バック:'#f59e0b',ツー:'#64748b'};
   const cards=setters.map((n,idx)=>{
     const a=currentSetterAnalysisFor(n);
-    return `<div class="setterRoleCard"><span>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</span><b>${escapeHtml(n)}番 ${escapeHtml(a.name)}</b><small>IQ ${a.total?a.setterIq:'--'}/100 ・ トス ${a.quality.total}本 ・ ミス ${a.quality.miss}本 ・ 成功率 ${a.quality.successRate}%</small></div>`;
+    const items=labels.map(label=>({label,count:Number(a.counts[label]||0),color:colors[label]}));
+    const visible=items.filter(x=>x.count>0);
+    const donut=visible.length ? donutStyle(visible) : 'conic-gradient(#e5e7eb 0deg 360deg)';
+    const legend=items.map(item=>{
+      const pct=a.quality.total?safePct(item.count,a.quality.total):0;
+      return `<div class="v1466LegendRow"><span class="v1466LegendDot" style="background:${item.color}"></span><b>${item.label}</b><em>${pct}% (${item.count})</em></div>`;
+    }).join('');
+    return `<section class="v1466SetterSummaryCard">
+      <div class="v1466SetterSummaryTitle"><span>セッター</span><strong>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</strong></div>
+      <div class="v1466SetterSummaryBody">
+        <div class="v1466Legend">${legend}</div>
+        <div class="v1466Donut" style="background:${donut}"><div class="v1466DonutHole"><span>総数</span><b>${a.quality.total}</b></div></div>
+        <div class="v1466QualityGrid">
+          <div class="v1466QualityCard total"><span>総トス</span><b>${a.quality.total}</b><small>本</small></div>
+          <div class="v1466QualityCard miss"><span>トスミス</span><b>${a.quality.miss}</b><small>本</small></div>
+          <div class="v1466QualityCard success"><span>トス成功率</span><b>${a.quality.successRate}</b><small>%</small></div>
+        </div>
+      </div>
+    </section>`;
   }).join('');
-  return `<div class="reportPanel setterRolePanel"><h3>登録セッター</h3><div class="setterRoleGrid">${cards}</div></div>`;
+  return `<div class="v1466SetterSummaryGrid ${setters.length>1?'two':'one'}">${cards}</div>`;
 }
 function showReport(){report();show("report");}
 
