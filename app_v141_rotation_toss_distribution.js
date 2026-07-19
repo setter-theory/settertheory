@@ -2003,28 +2003,38 @@ function buildRotationPointAnalysis(){
 
 function buildRotationTossDistribution(){
   const labels=["レフト","センター","ライト","バック","ツー"];
-  const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#0f172a"};
-  const rows=[1,2,3,4,5,6].map(r=>{
-    const logs=s.logs.filter(x=>x.type==="トス" && x.rot==="S"+r && labels.includes(x.result));
+  const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#111827"};
+  const currentRot=Number(String(s.rot||"").replace(/\D/g,""));
+  const allToss=s.logs.filter(x=>x.type==="トス" && labels.includes(x.result));
+
+  const cards=[1,2,3,4,5,6].map(r=>{
+    const logs=allToss.filter(x=>Number(String(x.rot||"").replace(/\D/g,""))===r);
     const total=logs.length;
-    const segments=labels.map(label=>{
+    const stats=labels.map(label=>{
       const count=logs.filter(x=>x.result===label).length;
-      const pct=total?count/total*100:0;
-      return count?`<span class="v141RotTossSegment" title="${label} ${count}本 (${Math.round(pct)}%)" style="width:${pct}%;background:${colors[label]}"></span>`:"";
-    }).join("");
-    const details=labels.map(label=>{
-      const count=logs.filter(x=>x.result===label).length;
-      const pct=total?Math.round(count/total*100):0;
-      return `<span class="v141RotTossDetail"><i style="background:${colors[label]}"></i>${label}<b>${count}</b><em>${pct}%</em></span>`;
-    }).join("");
-    return `<div class="v141RotTossRow ${s.rot===r?"current":""}">
-      <div class="v141RotTossHead"><strong>S${r}</strong><span>総トス ${total}本</span></div>
-      <div class="v141RotTossTrack">${segments || '<span class="v141RotTossEmpty">記録なし</span>'}</div>
-      <div class="v141RotTossDetails">${details}</div>
-    </div>`;
+      return {label,count,pct:total?Math.round(count/total*100):0};
+    });
+    const dominant=stats.slice().sort((a,b)=>b.count-a.count)[0];
+    const dominantText=total && dominant.count ? `最多：${dominant.label} ${dominant.pct}%` : "記録なし";
+    const segments=stats.filter(x=>x.count>0).map(x=>
+      `<span class="v141CompareSegment" style="width:${x.pct}%;background:${colors[x.label]}" title="${x.label} ${x.count}本 (${x.pct}%)"></span>`
+    ).join("");
+    const items=stats.map(x=>`<div class="v141CompareItem ${x.count===0?'zero':''}">
+      <span class="v141CompareDot" style="background:${colors[x.label]}"></span>
+      <span class="v141CompareLabel">${x.label}</span>
+      <strong>${x.pct}%</strong><small>${x.count}本</small>
+    </div>`).join("");
+    return `<article class="v141CompareCard ${currentRot===r?'current':''} ${total===0?'empty':''}">
+      <header><div><strong>S${r}</strong><span>${total}本</span></div><em>${dominantText}</em></header>
+      <div class="v141CompareTrack">${segments || '<span class="v141CompareNoData">記録なし</span>'}</div>
+      <div class="v141CompareGrid">${items}</div>
+    </article>`;
   }).join("");
-  const total=s.logs.filter(x=>x.type==="トス" && labels.includes(x.result)).length;
-  return `<div class="v141RotTossWrap"><div class="v141RotTossSummary">全ローテーション合計 <b>${total}本</b></div>${rows}</div>`;
+
+  return `<div class="v141CompareWrap">
+    <div class="v141CompareSummary"><span>全ローテーション合計</span><strong>${allToss.length}本</strong></div>
+    <div class="v141CompareCards">${cards}</div>
+  </div>`;
 }
 
 function buildTossUsageAnalysis(){
@@ -2417,9 +2427,8 @@ function report(){
       <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
-    <div class="reportPanel"><h3>ローテーション別 トス配分 <small>（S1〜S6の配球比較）</small></h3>${buildRotationTossDistribution()}</div>
     <div class="bottomGrid">
-      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}</div>
+      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}<div class="v141RotationSection"><h4>ローテーション別 トス配分</h4><div class="v141RotationNote">S1〜S6ごとの配球比較</div>${buildRotationTossDistribution()}</div></div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
   </div>`;
