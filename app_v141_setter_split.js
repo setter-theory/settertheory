@@ -2286,7 +2286,9 @@ function buildSetterIqRadarChart(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  const cx=150, cy=132, radius=96;
+  // V146.9: 上端の「配球 ○/20」とレーダー本体が重ならないよう、
+  // グラフ中心を少し下げ、上側ラベルだけ外側へ離す。
+  const cx=150, cy=144, radius=90;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2295,7 +2297,8 @@ function buildSetterIqRadarChart(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.18);
+    const labelRatio=i===0?1.34:1.22;
+    const [x,y]=point(i,labelRatio);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
     return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18">${item.value}/20</tspan></text>`;
   }).join('');
