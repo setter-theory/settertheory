@@ -2351,7 +2351,7 @@ function buildCurrentSetterIqPanel(){
 function buildCurrentAquilaAdvice(num=null,index=0){
   const advice=num===null ? getCurrentAquilaAdviceItems() : getAquilaAdviceForSetter(num);
   const a=num===null ? null : currentSetterAnalysisFor(num);
-  const title=num===null ? 'Aquilaのアドバイス' : `Aquilaのアドバイス　セッター${index+1} ${escapeHtml(num)}番 ${escapeHtml(a?.name||'')}`;
+  const title=num===null ? 'Aquilaからのアドバイス' : `Aquilaからのアドバイス　セッター${index+1} ${escapeHtml(num)}番 ${escapeHtml(a?.name||'')}`;
   return `<div class="aquilaLiveAdvice aquilaAdviceHero"><div class="aquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>${title}</b></div>${advice.length===1?`<p>${escapeHtml(advice[0])}</p>`:`<ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`}</div>`;
 }
 function buildCurrentIqAdviceLead(){
@@ -2382,6 +2382,38 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
       ${actions}
     </div>
   </div>`;
+}
+
+
+function buildAquilaPickUp(){
+  const setters=reportSetterNumbers();
+  const lines=[];
+  const totalToss=normalSetterTossLogs().length;
+
+  setters.forEach((num,index)=>{
+    const a=currentSetterAnalysisFor(num);
+    if(!a || !a.total) return;
+    const top=a.items.slice().sort((x,y)=>y.count-x.count)[0];
+    const label=`セッター${index+1} ${escapeHtml(num)}番${a.name?` ${escapeHtml(a.name)}`:''}`;
+    if(top && top.count>0) lines.push(`${label}：最多配球は${escapeHtml(top.label)} ${top.pct}%（${top.count}本）`);
+    if(a.quality && Number.isFinite(a.quality.successRate)) lines.push(`${label}：トス成功率 ${a.quality.successRate}%`);
+  });
+
+  if(!lines.length){
+    if(totalToss>0) lines.push(`この試合では通常トスを${totalToss}本記録しています。`);
+    else lines.push('トスを記録すると、この試合の特徴をAquilaが表示します。');
+  }
+
+  const unique=[];
+  for(const line of lines){ if(!unique.includes(line)) unique.push(line); if(unique.length===3) break; }
+  return `<section class="aquilaPickUp" aria-label="Aquila Pick Up">
+    <div class="aquilaPickUpHead"><img src="icons/aquila-152.png" alt="Aquila"><div><span>AQUILA PICK UP</span><b>この試合の注目ポイント</b></div></div>
+    <ul>${unique.map(x=>`<li>${x}</li>`).join('')}</ul>
+  </section>`;
+}
+
+function buildAquilaReportFooter(){
+  return `<footer class="aquilaReportFooter"><span>Setter Theory</span><div><img src="icons/aquila-152.png" alt="Aquila"><b>Powered by AQUILA</b></div></footer>`;
 }
 
 function report(){
@@ -2465,7 +2497,7 @@ function report(){
 
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
-  const dashboard=`${reportBrand}<div class="reportGrid">
+  const dashboard=`${reportBrand}${buildAquilaPickUp()}<div class="reportGrid">
     ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
@@ -2488,7 +2520,7 @@ function report(){
       <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
-  </div>`;
+  </div>${buildAquilaReportFooter()}`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
 }
