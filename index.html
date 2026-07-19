@@ -4156,7 +4156,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-16-all-substitution-history"></script>
+<script src="app_v141_setter_split.js?v=146-17-report-layout-final"></script>
 
 
 
@@ -4695,7 +4695,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.16 ALL SUBSTITUTION HISTORY</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.17 REPORT LAYOUT FINAL</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -5113,6 +5113,47 @@ function closePositionManager(){const m=document.getElementById('positionManager
 #report .v14615SubEmpty td{padding:14px!important;color:#94a3b8!important;font-weight:800!important;}
 @media(max-width:720px){
   #report .v14615SubTable{min-width:560px;}
+}
+</style>
+
+<style id="v146-17-report-layout-final">
+/* V146.17: 試合レポート全体の余白・高さを最終調整。表示のみ。 */
+@media (min-width:901px){
+  #report .reportGrid{gap:8px!important;}
+  #report .setterIqAdviceStack{gap:8px!important;}
+  #report .setterIqAdvicePerson{gap:8px!important;}
+  #report .setterIqAdvicePerson+.setterIqAdvicePerson{padding-top:8px!important;}
+  #report .wideGrid,#report .bottomGrid,#report .panelGrid{gap:8px!important;}
+  #report .reportPanel{padding:11px!important;border-radius:13px!important;box-shadow:0 4px 12px rgba(15,23,42,.055)!important;}
+  #report .reportPanel h3{font-size:14px!important;line-height:1.2!important;margin:0 0 8px!important;}
+  #report .reportPanel small{font-size:10px!important;}
+  #report .setterIqAdvicePerson>.reportLeadPanel:last-child{padding:12px 14px!important;}
+  #report .aquilaAdviceTitle{margin-bottom:8px!important;padding-bottom:7px!important;}
+  #report .aquilaAdviceTitle img{width:34px!important;height:34px!important;flex-basis:34px!important;}
+  #report .aquilaAdviceTitle b{font-size:14px!important;}
+  #report .aquilaAdviceHero li,#report .aquilaAdviceHero p{font-size:11px!important;line-height:1.5!important;}
+  #report .aquilaAdviceHero li+li{margin-top:4px!important;}
+  #report .setterIqCompactCard{column-gap:9px!important;row-gap:6px!important;}
+  #report .setterIqCompactCard .setterDetailHead h3{font-size:16px!important;}
+  #report .setterIqCompactCard .setterDetailIq{min-width:132px!important;padding:5px 8px!important;}
+  #report .setterIqCompactCard .setterDetailIq b{font-size:21px!important;}
+  #report .setterIqCompactCard .setterDetailMetrics{gap:5px!important;}
+  #report .setterIqCompactCard .setterDetailMetrics span{padding:5px 4px!important;}
+  #report .setterIqCompactCard .setterDetailMetrics b{font-size:14px!important;}
+  #report .setterIqCompactCard .setterDetailAdvice{padding:10px!important;}
+  #report .setterIqCompactCard .setterDetailAdvice li{font-size:11px!important;line-height:1.45!important;}
+  #report .v14613MatchSummaryBlock{gap:8px!important;padding:10px!important;border-radius:14px!important;}
+  #report .v14613BlockHead span{font-size:16px!important;}
+  #report .v14613BlockHead>b{font-size:18px!important;}
+  #report .v14613MatchSummaryBlock .statCard{min-height:78px!important;padding:8px 9px!important;}
+  #report .v14613MatchSummaryBlock .statSub{font-size:9px!important;margin-top:4px!important;}
+  #report .v14613MatchSummaryBlock .miniTrack{margin-top:6px!important;}
+  #report .v14613OverviewGrid>.reportPanel{padding:9px!important;}
+  #report .v14615SubstitutionBlock{padding:9px 11px!important;}
+  #report .v14615SubstitutionBlock h3{margin-bottom:6px!important;}
+  #report .v14615SubTable th{padding:6px!important;}
+  #report .v14615SubTable td{padding:7px 6px!important;}
+  #report .timeline{max-height:185px!important;overflow-y:auto!important;}
 }
 </style>
 </body>
