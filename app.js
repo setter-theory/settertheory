@@ -1863,9 +1863,9 @@ function buildSetterDetailReports(){
     return `<section class="reportPanel setterDetailCard setterIqCompactCard">
       <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
       <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
-      <div class="setterCompactRadar">${buildSetterIqRadarChart(b)}</div>
+      <div class="setterDetailSection v14624RotationVisible"><b>ローテーション別トス配分</b><div>${rots}</div></div>
       <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
-      <details class="setterDetailMore"><summary>詳しい配球・ローテデータ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div><div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div></details>
+      <details class="setterDetailMore"><summary>詳しい配球データ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div></details>
     </section>`;
   }).join('')}</div>`;
 }
