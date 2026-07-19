@@ -2015,11 +2015,14 @@ function buildRotationPointAnalysis(){
   </div>`;
 }
 
-function buildRotationTossDistribution(){
+function buildRotationTossDistribution(setterNum=null){
   const labels=["レフト","センター","ライト","バック","ツー"];
   const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#111827"};
   const currentRot=Number(String(s.rot||"").replace(/\D/g,""));
-  const allToss=normalSetterTossLogs().filter(x=>labels.includes(x.result));
+  const source=setterNum
+    ? (s.logs||[]).filter(x=>x && x.type==="トス" && logBelongsToPlayer(x,String(setterNum)))
+    : normalSetterTossLogs();
+  const allToss=source.filter(x=>labels.includes(x.result));
 
   const cards=[1,2,3,4,5,6].map(r=>{
     const logs=allToss.filter(x=>Number(String(x.rot||"").replace(/\D/g,""))===r);
@@ -2049,6 +2052,35 @@ function buildRotationTossDistribution(){
     <div class="v141CompareSummary"><span>全ローテーション合計</span><strong>${allToss.length}本</strong></div>
     <div class="v141CompareCards">${cards}</div>
   </div>`;
+}
+
+function buildSetterTossAnalysisPanel(setterNum){
+  const n=String(setterNum||'');
+  const name=getPlayerName(n)||'';
+  const toss=(s.logs||[]).filter(x=>x && x.type==='トス' && logBelongsToPlayer(x,n));
+  const labels=["レフト","センター","ライト","バック","ツー"];
+  const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#0f172a"};
+  const items=labels.map(label=>({label,count:toss.filter(x=>x.result===label).length,color:colors[label]})).filter(x=>x.count>0);
+  const quality=tossQualityStats(toss);
+  const donut=items.length
+    ? `<div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${legendHtml(items,toss.length)}</div>`
+    : `<div class="v141SetterNoData">トス記録がありません</div>`;
+  const qualityPanel=`<div class="tossQualityPanel">
+    <div class="tossQualityMetric"><span>総トス</span><b>${quality.total}</b><small>本</small></div>
+    <div class="tossQualityMetric miss"><span>トスミス</span><b>${quality.miss}</b><small>本</small></div>
+    <div class="tossQualityMetric success"><span>トス成功率</span><b>${quality.successRate}</b><small>%</small></div>
+  </div>`;
+  return `<section class="v141SetterTossBlock">
+    <div class="v141SetterTossTitle"><span>セッター</span><strong>${escapeHtml(n)}番 ${escapeHtml(name)}</strong></div>
+    <div class="v141SetterTossMain">${donut}${qualityPanel}</div>
+    <div class="v141RotationSection"><h4>ローテーション別 トス配分</h4><div class="v141RotationNote">${escapeHtml(n)}番 ${escapeHtml(name)}／S1〜S6ごとの配球比較</div>${buildRotationTossDistribution(n)}</div>
+  </section>`;
+}
+
+function buildSetterTossAnalysis(){
+  const setters=reportSetterNumbers();
+  if(!setters.length) return '<div class="v141SetterNoData">セッターが設定されていません</div>';
+  return `<div class="v141SetterTossList ${setters.length>1?'two':''}">${setters.map(buildSetterTossAnalysisPanel).join('')}</div>`;
 }
 
 function buildTossUsageAnalysis(){
@@ -2442,7 +2474,7 @@ function report(){
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
     <div class="bottomGrid">
-      <div class="reportPanel"><h3>トス配分 <small>（どこに集めているか）</small></h3>${tossDonut}${tossQualityPanel}${buildTossUsageAnalysis()}<div class="v141RotationSection"><h4>ローテーション別 トス配分</h4><div class="v141RotationNote">S1〜S6ごとの配球比較</div>${buildRotationTossDistribution()}</div></div>
+      <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
   </div>`;
