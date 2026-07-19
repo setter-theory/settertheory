@@ -4695,7 +4695,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.6 SETTER SUMMARY</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146.7 REPORT ROTATION LAYOUT</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -4797,6 +4797,61 @@ function closePositionManager(){const m=document.getElementById('positionManager
   }
 }
 </style>
+
+<style id="v1467-match-report-rotation-layout">
+/* V146.7: 試合レポートだけ、ローテーション別トス配分を見やすく整理。CSV・PDFには影響させない。 */
+#report .v141RotationSection{
+  margin-top:18px!important;
+  padding-top:16px!important;
+  border-top:1px solid #dbe3ee!important;
+}
+#report .v141RotationSection h4{
+  font-size:17px!important;
+  line-height:1.25!important;
+  margin:0!important;
+}
+#report .v141RotationNote{
+  margin-top:4px!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+}
+#report .v141CompareSummary{
+  justify-content:space-between!important;
+  margin:10px 2px 8px!important;
+  padding:7px 10px!important;
+  border-radius:9px!important;
+  background:#f8fafc!important;
+}
+#report .v141CompareCards{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:9px!important;
+}
+#report .v141SetterTossList.two .v141CompareCards{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#report .v141CompareCard{
+  padding:10px!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+}
+#report .v141CompareCard.current{padding:9px!important;}
+#report .v141CompareCard header{margin-bottom:7px!important;}
+#report .v141CompareCard header strong{font-size:20px!important;}
+#report .v141CompareCard header em{font-size:10px!important;}
+#report .v141CompareTrack{height:18px!important;}
+#report .v141CompareGrid{gap:4px!important;margin-top:7px!important;}
+#report .v141CompareItem{padding:5px 3px!important;border-radius:7px!important;}
+#report .v141CompareItem strong{font-size:14px!important;}
+@media(max-width:900px){
+  #report .v141CompareCards,
+  #report .v141SetterTossList.two .v141CompareCards{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:560px){
+  #report .v141CompareCards,
+  #report .v141SetterTossList.two .v141CompareCards{grid-template-columns:1fr!important;}
+}
+</style>
+
 </body>
 </html>
 
