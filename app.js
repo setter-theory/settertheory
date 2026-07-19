@@ -2328,12 +2328,8 @@ function buildSetterIqPanelFor(num, index){
   if(!a.total){
     return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>${setterLabel}</span><b>--</b><small>/100</small></div><p>このセッターのトスを記録するとSetter IQを表示します。</p></div></div></div>`;
   }
-  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
-  const breakdown=iqBreakdown20(a);
-  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
-    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
-    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+  return `<div class="setterIqLive aquilaHeroCard v14623IqCompact"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div></div>`;
 }
 function buildCurrentSetterIqPanel(){
   const setters=reportSetterNumbers();
@@ -2345,12 +2341,8 @@ function buildCurrentSetterIqPanel(){
   if(!a.total){
     return `<div class="setterIqLive empty aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="setterIqLiveHead"><span>Setter IQ</span><b>--</b><small>/100</small></div><p>トスを記録すると、配球バランスをもとにSetter IQを表示します。</p></div></div></div>`;
   }
-  const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
-  const breakdown=iqBreakdown20(a);
-  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
-    <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
-    <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
+  return `<div class="setterIqLive aquilaHeroCard v14623IqCompact"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div></div>`;
 }
 function buildCurrentAquilaAdvice(num=null,index=0){
   const advice=num===null ? getCurrentAquilaAdviceItems() : getAquilaAdviceForSetter(num);
