@@ -1900,10 +1900,12 @@ function legendHtml(items,total){
 }
 function metricCard(label,value,sub,color,icon,pct){
   return `<div class="statCard">
-    <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
-    <div class="statValue ${color}">${value}</div>
-    <div class="statSub">${sub}</div>
-    <div class="miniTrack"><div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:var(--${color==='blue'?'blue':color==='red'?'red':color==='green'?'green':color==='orange'?'orange':'purple'})"></div></div>
+    <div class="statTop" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+      <div style="display:flex;align-items:center;gap:6px;"><span class="statIcon">${icon}</span><span>${label}</span></div>
+      <div class="statValue ${color}" style="font-size:1.15rem;line-height:1;margin:0;">${value}</div>
+    </div>
+    <div class="statSub" style="margin-top:6px;">${sub}</div>
+    <div class="miniTrack" style="margin-top:8px;"><div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:var(--${color==='blue'?'blue':color==='red'?'red':color==='green'?'green':color==='orange'?'orange':'purple'})"></div></div>
   </div>`;
 }
 
