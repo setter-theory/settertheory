@@ -2284,11 +2284,17 @@ function currentMatchSetterAnalysis(){
 }
 function setterIqRank(score){
   const n=Number(score||0);
-  if(n>=95) return {label:'LEGEND',cls:'legend'};
-  if(n>=90) return {label:'ELITE',cls:'elite'};
-  if(n>=80) return {label:'ADVANCED',cls:'advanced'};
-  if(n>=70) return {label:'INTERMEDIATE',cls:'intermediate'};
-  return {label:'DEVELOPING',cls:'developing'};
+  if(n>=95) return {label:'S+',cls:'rank-sp'};
+  if(n>=90) return {label:'S',cls:'rank-s'};
+  if(n>=80) return {label:'A',cls:'rank-a'};
+  if(n>=70) return {label:'B',cls:'rank-b'};
+  if(n>=60) return {label:'C',cls:'rank-c'};
+  return {label:'D',cls:'rank-d'};
+}
+function buildIqRankPyramid(score){
+  const current=setterIqRank(score).label;
+  const ranks=['S+','S','A','B','C','D'];
+  return `<div class="iqRankPyramid" aria-label="今回のランク ${current}">${ranks.map((label,index)=>`<div class="iqRankTier tier-${index+1} ${label===current?'isCurrent':''}"><span>${label}</span>${label===current?'<b>今回</b>':''}</div>`).join('')}</div>`;
 }
 function getCurrentAquilaAdviceItems(){
   const a=currentMatchSetterAnalysis();
@@ -2458,7 +2464,7 @@ function buildSetterIqPanelFor(num, index){
   const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
   const breakdown=iqBreakdown20(a);
-  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
+  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>${setterLabel}</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRankCurrent">今回のランク <b>${rank.label}</b></div>${buildIqRankPyramid(a.setterIq)}</div></div>
     <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
     <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
@@ -2475,7 +2481,7 @@ function buildCurrentSetterIqPanel(){
   const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0};
   const rank=setterIqRank(a.setterIq);
   const breakdown=iqBreakdown20(a);
-  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRank ${rank.cls}">${rank.label}</div></div></div>
+  return `<div class="setterIqLive aquilaHeroCard"><div class="aquilaHeroTop"><img src="icons/aquila-192.png" alt="Aquila"><div class="aquilaHeroBody"><div class="setterIqLiveHead"><span>Setter IQ</span><b>${a.setterIq}</b><small>/100</small></div><div class="iqRankCurrent">今回のランク <b>${rank.label}</b></div>${buildIqRankPyramid(a.setterIq)}</div></div>
     <div class="setterIqVisualGrid">${buildSetterIqRadarChart(breakdown)}</div>
     <p>最多配球は${escapeHtml(top.label)} ${top.pct}%（トス${a.total}本）です。</p></div>`;
 }
