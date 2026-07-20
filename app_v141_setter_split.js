@@ -3032,83 +3032,85 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.3: iPadではプレビュー内の埋め込みscriptが実行されない場合があるため、
-  // 元画面側からプレビューのボタンへ直接イベントを登録する。
+  // V150.5: プレビューの2ボタンは固定イベントとして一度だけ登録する。
+  // 印刷処理は独立した印刷ウィンドウで実行し、元画面・プレビューにはiframeや一時要素を残さない。
   const bindPreviewButtons=()=>{
     try{
       const printButton=w.document.getElementById('pdfPrintButton');
       const backButton=w.document.querySelector('.pdfPreviewTopbar .secondary');
-      if(backButton){
+
+      if(backButton && backButton.dataset.bound!=='1'){
         backButton.removeAttribute('onclick');
-        backButton.onclick=(ev)=>{ ev.preventDefault(); w.close(); };
+        backButton.dataset.bound='1';
+        backButton.addEventListener('click',(ev)=>{
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ w.close(); }catch(e){}
+        },{passive:false});
       }
-      if(printButton){
+
+      if(printButton && printButton.dataset.bound!=='1'){
         printButton.disabled=false;
         printButton.style.pointerEvents='auto';
         printButton.style.touchAction='manipulation';
-        printButton.onclick=(ev)=>{
+        printButton.dataset.bound='1';
+        printButton.addEventListener('click',(ev)=>{
           ev.preventDefault();
           ev.stopPropagation();
           try{
-            // V150.4: iPad Safariが表示中タブの可視領域だけを印刷する挙動を避ける。
-            // 元画面にA4横幅の印刷専用iframeを作り、文書全体の高さまで実体化してから印刷する。
-            const oldFrame=document.getElementById('setterTheoryFullPrintFrame');
-            if(oldFrame) oldFrame.remove();
-            const frame=document.createElement('iframe');
-            frame.id='setterTheoryFullPrintFrame';
-            frame.setAttribute('title','Setter Theory 印刷用');
-            frame.style.position='fixed';
-            frame.style.left='-12000px';
-            frame.style.top='0';
-            frame.style.width='1123px';
-            frame.style.height='794px';
-            frame.style.border='0';
-            frame.style.opacity='0.01';
-            frame.style.pointerEvents='none';
-            frame.style.zIndex='-1';
-            document.body.appendChild(frame);
+            // タップ操作中に同期して印刷専用ウィンドウを開くことで、iPadのポップアップ制限を回避する。
+            const pw=w.open('', '_blank');
+            if(!pw){
+              alert('印刷画面を開けませんでした。Safariのポップアップを許可してください。');
+              return;
+            }
 
-            const printHtml=html.replace(/<div class="pdfPreviewTopbar">[\s\S]*?<\/div><\/div>/,'');
-            const doc=frame.contentDocument||frame.contentWindow.document;
-            doc.open();
-            doc.write(printHtml);
-            doc.close();
+            const printHtml=html
+              .replace(/<div class="pdfPreviewTopbar">[\s\S]*?<\/div><\/div>/,'')
+              .replace('V150.5 ISOLATED PRINT WINDOW','V150.5 ISOLATED PRINT WINDOW');
 
-            const startPrint=()=>{
+            pw.document.open();
+            pw.document.write(printHtml);
+            pw.document.close();
+
+            let printed=false;
+            const runPrint=()=>{
+              if(printed || pw.closed) return;
+              printed=true;
               try{
-                const body=doc.body;
-                const root=doc.documentElement;
-                const fullHeight=Math.max(
-                  body?body.scrollHeight:0,
-                  body?body.offsetHeight:0,
-                  root?root.scrollHeight:0,
-                  root?root.offsetHeight:0,
-                  794
-                );
-                frame.style.height=(fullHeight+40)+'px';
-                const cw=frame.contentWindow;
-                cw.focus();
-                cw.print();
-                setTimeout(()=>{ try{ frame.remove(); }catch(e){} },1500);
+                const d=pw.document;
+                d.documentElement.style.width='297mm';
+                d.documentElement.style.minHeight='210mm';
+                d.body.style.width='297mm';
+                d.body.style.minHeight='210mm';
+                d.body.style.overflow='visible';
+                const sheet=d.querySelector('.pdfPreviewSheet');
+                if(sheet){
+                  sheet.style.width='297mm';
+                  sheet.style.maxWidth='none';
+                  sheet.style.overflow='visible';
+                }
+                pw.focus();
+                pw.print();
               }catch(err){
-                try{ frame.remove(); }catch(e){}
+                try{ pw.close(); }catch(e){}
                 alert('印刷画面を開始できませんでした。');
               }
             };
-            frame.onload=()=>setTimeout(startPrint,350);
-            setTimeout(()=>{
-              if(document.getElementById('setterTheoryFullPrintFrame')) startPrint();
-            },900);
+
+            pw.addEventListener('load',()=>setTimeout(runPrint,500),{once:true});
+            setTimeout(runPrint,1000);
           }catch(err){
             alert('印刷画面を開始できませんでした。');
           }
-        };
+        },{passive:false});
       }
       w.focus();
     }catch(e){}
   };
   setTimeout(bindPreviewButtons,50);
   setTimeout(bindPreviewButtons,300);
+
 }
 
 
