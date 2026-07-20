@@ -1861,11 +1861,10 @@ function buildSetterDetailReports(){
       ? `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${legendHtml(items,toss.length)}</div></div>`
       : `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="v141SetterNoData">トス記録がありません</div></div>`;
     return `<section class="reportPanel setterMasterCard">
-      <div class="setterMasterHead"><div><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
-      <div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
-      <div class="setterMasterCharts"><div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>${donut}</div>
+      <div class="setterMasterHead"><div><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div></div>
+      <div class="setterMasterIqAdvice"><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div><div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div></div>
+      <div class="setterMasterCharts setterMasterChartsWide"><div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>${donut}<div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div></div>
       <div class="setterMasterMetrics"><div><span>総トス</span><b>${a.quality.total}</b><small>本</small></div><div class="miss"><span>トスミス</span><b>${a.quality.miss}</b><small>本</small></div><div class="success"><span>トス成功率</span><b>${a.quality.successRate}</b><small>%</small></div></div>
-      <div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div>
     </section>`;
   }).join('')}</div>`;
 }
