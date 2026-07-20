@@ -2948,14 +2948,19 @@ function printMatchPdfReport(){
     #report #reportDashboard,#report #reportDashboard *{min-width:0}
     #report #reportDashboard .setterMasterGrid.two{grid-template-columns:1fr!important}
     #report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .reportPanel,#report #reportDashboard .singleReportWideGrid{width:100%!important;max-width:100%!important;overflow:hidden!important}
-    #report #reportDashboard .playOverviewCard{grid-template-columns:1fr 1fr!important;gap:10px!important}
-    #report #reportDashboard .playOverviewPlay,#report #reportDashboard .playOverviewRotation{grid-column:1/-1!important}
-    #report #reportDashboard .teamRotationList{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    #report #reportDashboard .setterMasterChartTitle{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.35)!important}
+    #report #reportDashboard .teamAnalysisCard>.playOverviewCard{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:auto!important;gap:12px!important;padding:12px!important}
+    #report #reportDashboard .teamAnalysisCard .playOverviewPlay,#report #reportDashboard .teamAnalysisCard .playOverviewMetrics,#report #reportDashboard .teamAnalysisCard .playOverviewResult,#report #reportDashboard .teamAnalysisCard .playOverviewResultPoint,#report #reportDashboard .teamAnalysisCard .playOverviewRotation{grid-column:1!important;grid-row:auto!important;width:100%!important;margin:0!important;padding:10px!important;border:0!important;border-top:1px solid rgba(148,163,184,.25)!important}
+    #report #reportDashboard .teamAnalysisCard .playOverviewPlay{border-top:0!important}
+    #report #reportDashboard .teamAnalysisCard .playOverviewResultSection,#report #reportDashboard .teamAnalysisCard .playOverviewPointSection{display:block!important;width:100%!important;height:auto!important}
+    #report #reportDashboard .teamAnalysisCard .teamRotationList{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
     #report #reportDashboard table{width:100%!important;max-width:100%!important;table-layout:fixed!important}
     #report #reportDashboard th,#report #reportDashboard td{overflow-wrap:anywhere!important;word-break:break-word!important}
     #report #reportDashboard img{max-width:100%!important;height:auto}
     @media print{
-      html,body{background:#fff!important}
+      html,body{background:#fff!important;width:auto!important;min-height:0!important}
+      body *{visibility:visible!important}
+      #csvAnalysisBox{display:none!important}
       .pdfPreviewTopbar{display:none!important}
       .pdfPreviewSheet{width:auto;margin:0;padding:0;border-radius:0;box-shadow:none}
       #report #reportDashboard{font-size:92%}
@@ -2966,9 +2971,9 @@ function printMatchPdfReport(){
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
-    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">PDF／印刷</button></div></div>
+    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="document.body.classList.add('pdfPrinting');requestAnimationFrame(function(){requestAnimationFrame(function(){window.focus();window.print();});});">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${clone.outerHTML}</section></main>
-  </body></html>`;
+  <script>window.addEventListener('beforeprint',function(){document.body.classList.add('pdfPrinting');});window.addEventListener('afterprint',function(){document.body.classList.remove('pdfPrinting');});window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');});<\/script></body></html>`;
 
   // 元画面の開閉状態は変えずに戻す。
   reportRankingsOpen=previousRankingsOpen;
