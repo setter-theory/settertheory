@@ -4918,6 +4918,39 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 <script>/* cache marker: 146-team-card-three-column-rotation-3x2-1 */</script>
+
+<style id="v146-rotation-grid-final-fix">
+/* V146: ローテーション別分析を常に S1-S3 / S4-S6 の3列×2段で表示 */
+#reportDashboard .teamAnalysisCard .playOverviewRotation{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#reportDashboard .teamAnalysisCard .teamRotationList{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,auto)!important;
+  grid-auto-flow:row!important;
+  width:100%!important;
+  max-width:none!important;
+  gap:8px 10px!important;
+  align-items:stretch!important;
+}
+#reportDashboard .teamAnalysisCard .teamRotationRow{
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:600px){
+  #reportDashboard .teamAnalysisCard .teamRotationList{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+}
+</style>
+<script>/* cache marker: 146-rotation-grid-final-fix-1 */</script>
+
 </body>
 </html>
 
