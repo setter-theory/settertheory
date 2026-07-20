@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.13: A4横の印刷可能幅285mmへ統一し、全ページの左右見切れを防止。
+  // V150.14: V150.11の正常なPDF生成処理を維持。V150.13の余白変更を撤回。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
@@ -3093,8 +3093,8 @@ function printMatchPdfReport(){
               }catch(e){}
             });
 
-            clone.style.width='285mm';
-            clone.style.maxWidth='285mm';
+            clone.style.width='297mm';
+            clone.style.maxWidth='297mm';
             clone.style.height='auto';
             clone.style.overflow='visible';
             clone.style.background='#fff';
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
             holder.style.position='fixed';
             holder.style.left='-20000px';
             holder.style.top='0';
-            holder.style.width='285mm';
+            holder.style.width='297mm';
             holder.style.background='#fff';
             holder.style.zIndex='-1';
             holder.appendChild(clone);
@@ -3111,10 +3111,10 @@ function printMatchPdfReport(){
 
             const filename='setter-theory-report.pdf';
             const options={
-              margin:[4,6,4,6],
+              margin:4,
               filename,
               image:{type:'jpeg',quality:0.96},
-              html2canvas:{scale:0.9,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
+              html2canvas:{scale:0.8,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
               jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
               pagebreak:{mode:['css','legacy'],before:'.pdfPageStart',avoid:['tr','.pdfRankCard','.setterIqAdvicePerson']}
             };
