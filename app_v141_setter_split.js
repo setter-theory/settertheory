@@ -1829,21 +1829,80 @@ function currentSetterAnalysisFor(num){
   });
   return {num:setterNum,name:getPlayerName(setterNum),total,items,counts,terminalCounts,quality,rotationRows,...calcScores(counts,total,terminalCounts)};
 }
-function getAquilaAdviceForSetter(num){
+function getSetterAquilaCoach(num){
   const a=currentSetterAnalysisFor(num);
-  if(!a.total) return [`${a.num}番 ${a.name||''}はトス記録がありません。`];
+  if(!a.total){
+    return {
+      continueText:'トス記録が増えると、継続すべき強みを分析します。',
+      correctionText:'配球やトス精度の課題が見つかると、優先して修正するポイントを表示します。',
+      nextText:'次の試合でセッターが意識する具体的な行動を表示します。',
+      keyPoint:'まずは5本以上のトスを記録し、配球の傾向を確認しましょう。'
+    };
+  }
   const by=Object.fromEntries(a.items.map(x=>[x.label,x]));
-  const left=by['レフト']||{pct:0,count:0}, center=by['センター']||{pct:0,count:0}, right=by['ライト']||{pct:0,count:0};
+  const left=by['レフト']||{pct:0,count:0};
+  const center=by['センター']||{pct:0,count:0};
+  const right=by['ライト']||{pct:0,count:0};
+  const back=by['バック']||{pct:0,count:0};
+  const two=by['ツー']||{pct:0,count:0};
   const top=a.items.slice().sort((x,y)=>y.count-x.count)[0]||{label:'-',pct:0,count:0};
-  const advice=[];
-  if(top.pct<50 && Math.abs(left.pct-right.pct)<=15) advice.push(`配球はレフト${left.pct}%・センター${center.pct}%・ライト${right.pct}%で、大きな偏りを抑えられています。`);
-  else if(top.pct>=55) advice.push(`${top.label}への配球が${top.pct}%です。次は序盤に別方向を1〜2本見せると、終盤の${top.label}が生きます。`);
-  else advice.push(`最多配球は${top.label}${top.pct}%（${top.count}本）です。ローテごとの意図を確認しましょう。`);
-  if(a.quality.miss>0) advice.push(`トスミスは${a.quality.miss}本、成功率は${a.quality.successRate}%です。判断の良さと技術精度を分けて振り返りましょう。`);
-  else advice.push(`トスミスは0本で、トス技術は安定しています。`);
   const used=a.items.filter(x=>x.count>0).length;
-  if(used<=2 && a.total>=5) advice.push(`使用した攻撃ゾーンは${used}種類です。次戦はもう1方向増やすことをテーマにしましょう。`);
-  return advice;
+  const lrGap=Math.abs(left.pct-right.pct);
+  const lowSide=left.pct<=right.pct?'レフト':'ライト';
+  const weakRot=(a.rotationRows||[]).filter(x=>x.total>0).slice().sort((x,y)=>x.rate-y.rate || y.total-x.total)[0]||null;
+
+  let continueText='';
+  if(a.quality.miss===0 && a.quality.total>=5){
+    continueText=`トスミス0本、成功率${a.quality.successRate}%です。ボールの下へ早く入り、同じフォームで供給できている安定性を継続しましょう。`;
+  }else if(top.pct<50 && lrGap<=15 && used>=3){
+    continueText=`レフト${left.pct}%・センター${center.pct}%・ライト${right.pct}%で大きな偏りを抑えられています。相手ブロックに的を絞らせない配球を継続しましょう。`;
+  }else if(center.pct>=18){
+    continueText=`センターを${center.pct}%（${center.count}本）使えています。相手MBを中央に残し、両サイドを生かす組み立てを継続しましょう。`;
+  }else if(back.pct>=10 || two.pct>=8){
+    continueText=`バック${back.pct}%・ツー${two.pct}%を組み込み、前衛3方向だけに限定されない選択ができています。この意外性を継続しましょう。`;
+  }else{
+    continueText=`最多配球は${top.label}${top.pct}%（${top.count}本）です。自分の勝負先を明確にできている点は継続しましょう。`;
+  }
+
+  let correctionText='';
+  let nextText='';
+  let keyPoint='';
+  if(a.quality.miss>=2 || a.quality.successRate<85){
+    correctionText=`トスミスは${a.quality.miss}本、成功率${a.quality.successRate}%です。難しい体勢では速さよりも高さと方向をそろえ、アタッカーが打ち切れるトスを優先しましょう。`;
+    nextText='次の試合では返球がネットから離れた時の逃げ先を一つ決め、苦しい場面でも同じ基準で選択しましょう。';
+    keyPoint='最優先はトス精度です。苦しい返球ほど「打たせるトス」を確実に供給しましょう。';
+  }else if(top.pct>=55){
+    const alt=top.label==='センター'?(left.pct<=right.pct?'レフト':'ライト'):'センター';
+    correctionText=`${top.label}への配球が${top.pct}%に集中しています。序盤に${alt}を1〜2本使い、相手ブロックが${top.label}へ寄るタイミングを遅らせましょう。`;
+    nextText=`次の試合では15点までに${alt}を最低2本使い、終盤に${top.label}を生かせる配球の伏線を作りましょう。`;
+    keyPoint=`${alt}への配球を増やし、最多配球の${top.label}をさらに決まりやすくすることが今回の鍵です。`;
+  }else if(center.pct<12 && a.total>=5){
+    correctionText=`センターは${center.pct}%（${center.count}本）です。良い返球時にセンターを使わないと、相手MBがサイドへ早く移動しやすくなります。`;
+    nextText='次の試合では各ローテーションの最初のA/Bパスで、センターを第一候補として確認しましょう。';
+    keyPoint='良い返球時のセンター使用を増やし、相手MBを中央に残すことが最優先です。';
+  }else if(lrGap>=25){
+    correctionText=`レフトとライトの配球差が${lrGap}ポイントあります。少ない${lowSide}を使う場面を決め、相手ブロックの基準をずらしましょう。`;
+    nextText=`次の試合では${lowSide}への配球を現在より2本増やし、序盤から左右両方を意識させましょう。`;
+    keyPoint=`${lowSide}への配球を2本増やすことが、攻撃全体のバランス改善につながります。`;
+  }else if(weakRot && weakRot.rate<80){
+    correctionText=`${weakRot.rot}のトス成功率は${weakRot.rate}%です。このローテーションで返球が乱れた時の第一候補と逃げ道を整理しましょう。`;
+    nextText=`次の試合では${weakRot.rot}に入る前に、良い返球時の第一候補と苦しい返球時の第二候補を確認しましょう。`;
+    keyPoint=`${weakRot.rot}の選択基準を事前に決め、迷いを減らすことが今回の改善ポイントです。`;
+  }else{
+    correctionText=`配球の大きな偏りはありません。次は最多配球の${top.label}${top.pct}%を、点差・ローテーション・相手ブロックに応じて意図的に使い分けましょう。`;
+    nextText='次の試合ではトスを上げる前に「誰が決めやすいか」と「相手が最も嫌がる場所」を一度整理して選択しましょう。';
+    keyPoint='配球の数ではなく、同じ配球でも「なぜ今そこか」を明確にすることが次の成長ポイントです。';
+  }
+  return {continueText,correctionText,nextText,keyPoint};
+}
+function getAquilaAdviceForSetter(num){
+  const c=getSetterAquilaCoach(num);
+  return [
+    `継続すること：${c.continueText}`,
+    `修正すること：${c.correctionText}`,
+    `次の試合で意識すること：${c.nextText}`,
+    `Aquila Coach's Key Point：${c.keyPoint}`
+  ];
 }
 function buildSetterDetailReports(){
   const setters=reportSetterNumbers();
@@ -1854,7 +1913,7 @@ function buildSetterDetailReports(){
     const a=currentSetterAnalysisFor(n);
     const rank=setterIqRank(a.setterIq||0);
     const b=iqBreakdown20(a);
-    const advice=getAquilaAdviceForSetter(n);
+    const advice=getSetterAquilaCoach(n);
     const toss=(s.logs||[]).filter(x=>x&&x.type==='トス'&&logBelongsToPlayer(x,String(n)));
     const items=labels.map(label=>({label,count:toss.filter(x=>x.result===label).length,color:colors[label]})).filter(x=>x.count>0);
     const donut=items.length
@@ -1871,7 +1930,7 @@ function buildSetterDetailReports(){
         <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
         <div class="setterMasterIqAdviceCard">
           <div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div>
-          <div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+          <div class="setterMasterAdvice"><b>Aquila Advice</b><div class="setterAquilaAdviceList"><div class="continue"><strong>継続すること</strong><p>${escapeHtml(advice.continueText)}</p></div><div class="correction"><strong>修正すること</strong><p>${escapeHtml(advice.correctionText)}</p></div><div class="next"><strong>次の試合で意識すること</strong><p>${escapeHtml(advice.nextText)}</p></div><div class="key"><strong>Aquila Coach's Key Point</strong><p>${escapeHtml(advice.keyPoint)}</p></div></div></div>
         </div>
       </div>
       <div class="setterMasterBottomGrid">
