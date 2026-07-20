@@ -3015,7 +3015,7 @@ function printMatchPdfReport(){
       #report #reportDashboard .setterMasterHeaderRow>*,#report #reportDashboard .setterMasterBottomGrid>*,#report #reportDashboard .singleReportWideGrid>*,#report #reportDashboard .setterUnifiedBottomGrid>*{display:block!important;width:100%!important;max-width:100%!important;margin:0!important}
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
-  </style></head><body>
+  </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
@@ -3032,8 +3032,8 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.6: プレビューと印刷専用画面の戻る／印刷ボタンを固定イベントとして登録する。
-  // 印刷処理は独立した印刷ウィンドウで実行し、元画面・プレビューにはiframeや一時要素を残さない。
+  // V150.7: ボタン登録は固定したまま、押下後だけPDFファイルを生成する。
+  // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
       const printButton=w.document.getElementById('pdfPrintButton');
@@ -3054,74 +3054,85 @@ function printMatchPdfReport(){
         printButton.style.pointerEvents='auto';
         printButton.style.touchAction='manipulation';
         printButton.dataset.bound='1';
-        printButton.addEventListener('click',(ev)=>{
+        printButton.addEventListener('click',async(ev)=>{
           ev.preventDefault();
           ev.stopPropagation();
+
+          // iPadのポップアップ制限対策として、タップ直後にPDF表示先を確保する。
+          const pdfWindow=w.open('', '_blank');
+          if(!pdfWindow){
+            alert('PDF画面を開けませんでした。Safariのポップアップを許可してください。');
+            return;
+          }
+          pdfWindow.document.open();
+          pdfWindow.document.write('<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PDF作成中</title><style>body{margin:0;background:#111827;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:grid;place-items:center;min-height:100vh}.box{text-align:center;padding:24px}.spin{width:38px;height:38px;border:4px solid #475569;border-top-color:#facc15;border-radius:50%;margin:0 auto 16px;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}</style></head><body><div class="box"><div class="spin"></div><b>PDFを作成しています…</b></div></body></html>');
+          pdfWindow.document.close();
+
+          const originalText=printButton.textContent;
+          printButton.disabled=true;
+          printButton.textContent='PDF作成中…';
           try{
-            // タップ操作中に同期して印刷専用ウィンドウを開くことで、iPadのポップアップ制限を回避する。
-            const pw=w.open('', '_blank');
-            if(!pw){
-              alert('印刷画面を開けませんでした。Safariのポップアップを許可してください。');
-              return;
+            if(typeof w.html2pdf!=='function'){
+              throw new Error('PDF生成ライブラリを読み込めませんでした。通信状態を確認してください。');
             }
+            const source=w.document.querySelector('.pdfA4Document');
+            if(!source) throw new Error('PDFにするレポート全体を取得できませんでした。');
 
-            const printToolbar=`<div id="printWindowToolbar" style="position:sticky;top:0;z-index:99999;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#111827;color:#fff;border-bottom:1px solid #374151;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"><b>Setter Theory 印刷画面</b><div style="display:flex;gap:8px;align-items:center"><button id="printWindowBackButton" type="button" style="border:1px solid #6b7280;background:#374151;color:#fff;border-radius:8px;padding:9px 12px;font-weight:800;cursor:pointer;touch-action:manipulation">← PDFプレビューへ戻る</button><button id="printWindowPrintButton" type="button" style="border:0;background:#facc15;color:#111827;border-radius:8px;padding:9px 14px;font-weight:900;cursor:pointer;touch-action:manipulation">印刷する</button></div></div>`;
-            const printHtml=html
-              .replace(/<div class="pdfPreviewTopbar">[\s\S]*?<\/div><\/div>/,printToolbar)
-              .replace('</style>','@media print{#printWindowToolbar{display:none!important}}\n</style>');
-
-            pw.document.open();
-            pw.document.write(printHtml);
-            pw.document.close();
-
-            let printed=false;
-            const runPrint=()=>{
-              if(printed || pw.closed) return;
-              printed=true;
+            // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
+            const clone=source.cloneNode(true);
+            const sourceCanvases=source.querySelectorAll('canvas');
+            const cloneCanvases=clone.querySelectorAll('canvas');
+            sourceCanvases.forEach((canvas,index)=>{
               try{
-                const d=pw.document;
-                d.documentElement.style.width='297mm';
-                d.documentElement.style.minHeight='210mm';
-                d.body.style.width='297mm';
-                d.body.style.minHeight='210mm';
-                d.body.style.overflow='visible';
-                const sheet=d.querySelector('.pdfPreviewSheet');
-                if(sheet){
-                  sheet.style.width='297mm';
-                  sheet.style.maxWidth='none';
-                  sheet.style.overflow='visible';
-                }
-                const back=d.getElementById('printWindowBackButton');
-                const printAgain=d.getElementById('printWindowPrintButton');
-                if(back && back.dataset.bound!=='1'){
-                  back.dataset.bound='1';
-                  back.addEventListener('click',(event)=>{
-                    event.preventDefault();
-                    event.stopPropagation();
-                    try{ w.focus(); }catch(e){}
-                    try{ pw.close(); }catch(e){}
-                  },{passive:false});
-                }
-                if(printAgain && printAgain.dataset.bound!=='1'){
-                  printAgain.dataset.bound='1';
-                  printAgain.addEventListener('click',(event)=>{
-                    event.preventDefault();
-                    event.stopPropagation();
-                    try{ pw.focus(); pw.print(); }catch(e){}
-                  },{passive:false});
-                }
-                pw.focus();
-                pw.print();
-              }catch(err){
-                try{ pw.close(); }catch(e){}
-                alert('印刷画面を開始できませんでした。');
-              }
+                const img=w.document.createElement('img');
+                img.src=canvas.toDataURL('image/png');
+                img.style.width=(canvas.getBoundingClientRect().width||canvas.width)+'px';
+                img.style.maxWidth='100%';
+                img.style.height='auto';
+                if(cloneCanvases[index]) cloneCanvases[index].replaceWith(img);
+              }catch(e){}
+            });
+
+            clone.style.width='297mm';
+            clone.style.maxWidth='297mm';
+            clone.style.height='auto';
+            clone.style.overflow='visible';
+            clone.style.background='#fff';
+            const holder=w.document.createElement('div');
+            holder.id='pdfGenerationHolder';
+            holder.style.position='fixed';
+            holder.style.left='-20000px';
+            holder.style.top='0';
+            holder.style.width='297mm';
+            holder.style.background='#fff';
+            holder.style.zIndex='-1';
+            holder.appendChild(clone);
+            w.document.body.appendChild(holder);
+
+            const filename='setter-theory-report.pdf';
+            const options={
+              margin:[4,4,4,4],
+              filename,
+              image:{type:'jpeg',quality:0.96},
+              html2canvas:{scale:1.5,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:0,windowWidth:holder.scrollWidth,windowHeight:holder.scrollHeight},
+              jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
+              pagebreak:{mode:['css','legacy'],before:'.pdfPageStart',avoid:['tr','.pdfRankCard','.setterIqAdvicePerson']}
             };
 
-            pw.addEventListener('load',()=>setTimeout(runPrint,500),{once:true});
-            setTimeout(runPrint,1000);
+            const blob=await w.html2pdf().set(options).from(clone).outputPdf('blob');
+            holder.remove();
+            const blobUrl=URL.createObjectURL(blob);
+            pdfWindow.location.replace(blobUrl);
+            setTimeout(()=>URL.revokeObjectURL(blobUrl),10*60*1000);
           }catch(err){
-            alert('印刷画面を開始できませんでした。');
+            try{
+              pdfWindow.document.open();
+              pdfWindow.document.write('<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;padding:24px"><h2>PDFを作成できませんでした</h2><p>'+String(err&&err.message?err.message:err).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))+'</p><button onclick="window.close()" style="padding:10px 14px">閉じる</button></body></html>');
+              pdfWindow.document.close();
+            }catch(e){}
+          }finally{
+            printButton.disabled=false;
+            printButton.textContent=originalText;
           }
         },{passive:false});
       }
