@@ -1859,7 +1859,7 @@ function buildSetterDetailReports(){
     return `<section class="reportPanel setterDetailCard setterIqCompactCard">
       <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
       <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
-      <div class="setterCompactRadar">${buildSetterIqRadarChart(b)}</div>
+      <div class="setterCompactRadar">${buildSetterIqRadarChart(b,true)}</div>
       <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
       <details class="setterDetailMore"><summary>詳しい配球・ローテデータ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div><div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div></details>
     </section>`;
@@ -2254,7 +2254,7 @@ function iqBreakdown20(a){
     total:values.reduce((sum,v)=>sum+v,0)
   };
 }
-function buildSetterIqRadarChart(breakdown){
+function buildSetterIqRadarChart(breakdown, compactReport=false){
   const items=[
     {label:'配球',value:Number(breakdown?.balance)||0},
     {label:'多様性',value:Number(breakdown?.diversity)||0},
@@ -2262,16 +2262,24 @@ function buildSetterIqRadarChart(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  const cx=150, cy=132, radius=96;
+  const cx=150, cy=132;
+  // コート入力→試合レポートのコンパクト表示だけ、
+  // 項目名・数値の位置を変えずにレーダー本体を縮小して重なりを防ぐ。
+  const radius=compactReport?84:96;
+  const labelRadius=96*1.18;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
+  };
+  const labelPoint=index=>{
+    const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
+    return [cx+Math.cos(angle)*labelRadius,cy+Math.sin(angle)*labelRadius];
   };
   const polygon=ratio=>items.map((_,i)=>point(i,ratio).map(v=>v.toFixed(1)).join(',')).join(' ');
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.18);
+    const [x,y]=labelPoint(i);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
     return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18">${item.value}/20</tspan></text>`;
   }).join('');
