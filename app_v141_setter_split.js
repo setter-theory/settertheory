@@ -2942,12 +2942,12 @@ function printMatchPdfReport(){
     #report #reportDashboard .reportAccordion{overflow:visible!important}
     #report #reportDashboard .pdfSelectedValue{display:inline-block;border:1px solid #cbd5e1;border-radius:7px;background:#f8fafc;padding:5px 8px;font-size:11px;font-weight:800;color:#334155}
     #report #reportDashboard .pdfPageStart{break-before:page;page-break-before:always;margin-top:0!important}
-    #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .reportPanel,#report #reportDashboard .pdfRankCard{break-inside:avoid;page-break-inside:avoid}
+    #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .pdfRankCard{break-inside:avoid;page-break-inside:avoid}
     #report #reportDashboard canvas,#report #reportDashboard svg{max-width:100%!important}
     #report{display:block!important;width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#0f172a!important;overflow:visible!important}
     #report #reportDashboard,#report #reportDashboard *{min-width:0}
     #report #reportDashboard .setterMasterGrid.two{grid-template-columns:1fr!important}
-    #report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .reportPanel,#report #reportDashboard .singleReportWideGrid{width:100%!important;max-width:100%!important;overflow:hidden!important}
+    #report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .reportPanel,#report #reportDashboard .singleReportWideGrid{width:100%!important;max-width:100%!important;overflow:visible!important}
     #report #reportDashboard .setterMasterChartTitle{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.35)!important}
     #report #reportDashboard .teamAnalysisCard>.playOverviewCard{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:auto!important;gap:12px!important;padding:12px!important}
     #report #reportDashboard .teamAnalysisCard .playOverviewPlay,#report #reportDashboard .teamAnalysisCard .playOverviewMetrics,#report #reportDashboard .teamAnalysisCard .playOverviewResult,#report #reportDashboard .teamAnalysisCard .playOverviewResultPoint,#report #reportDashboard .teamAnalysisCard .playOverviewRotation{grid-column:1!important;grid-row:auto!important;width:100%!important;margin:0!important;padding:10px!important;border:0!important;border-top:1px solid rgba(148,163,184,.25)!important}
@@ -2963,11 +2963,17 @@ function printMatchPdfReport(){
       #csvAnalysisBox{display:none!important}
       .pdfPreviewTopbar{display:none!important}
       .pdfPreviewSheet{width:auto;margin:0;padding:0;border-radius:0;box-shadow:none}
-      #report #reportDashboard{font-size:92%}
-      #report #reportDashboard .reportGrid{gap:8px!important}
-      #report #reportDashboard .reportPanel{box-shadow:none!important}
-      #report #reportDashboard .teamAnalysisCard{break-inside:auto;page-break-inside:auto}
-      #report #reportDashboard .singleReportWideGrid{break-inside:auto;page-break-inside:auto}
+      #report,#report #reportDashboard{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important}
+      #report #reportDashboard{font-size:88%;position:static!important;transform:none!important}
+      #report #reportDashboard .reportGrid,#report #reportDashboard .setterMasterGrid,#report #reportDashboard .singleReportWideGrid{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}
+      #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>* ,#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0 0 8mm!important}
+      #report #reportDashboard .reportPanel,#report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .singleReportWideGrid{display:block!important;height:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
+      #report #reportDashboard .playOverviewPlay,#report #reportDashboard .playOverviewMetrics,#report #reportDashboard .playOverviewResult,#report #reportDashboard .playOverviewResultPoint,#report #reportDashboard .playOverviewRotation,#report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .pdfRankCard,#report #reportDashboard table,#report #reportDashboard tr{break-inside:avoid!important;page-break-inside:avoid!important}
+      #report #reportDashboard .pdfPageStart{break-before:page!important;page-break-before:always!important}
+      #report #reportDashboard [style*="overflow"]{overflow:visible!important}
+      #report #reportDashboard canvas,#report #reportDashboard svg,#report #reportDashboard img{max-width:100%!important;break-inside:avoid!important;page-break-inside:avoid!important}
+      #report #reportDashboard .teamAnalysisCard{break-inside:auto!important;page-break-inside:auto!important}
+      #report #reportDashboard .singleReportWideGrid{break-inside:auto!important;page-break-inside:auto!important}
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
