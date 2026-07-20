@@ -2592,8 +2592,8 @@ function report(){
         </div>
         <div class="playOverviewColumn playOverviewPoint">
           <div class="playOverviewPointSection"><h3>得点・失点</h3>${pointDivergingBars}</div>
-          <div class="playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
         </div>
+        <div class="playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
       </div>
     </section>
     <div class="wideGrid singleReportWideGrid">
