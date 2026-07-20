@@ -1929,7 +1929,7 @@ function buildSetterDetailReports(){
       <div class="setterMasterHeaderRow">
         <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
         <div class="setterMasterIqAdviceCard">
-          <div class="setterDetailIq"><img class="setterIqAquilaLogo" src="icons/aquila-192.png" alt="Aquila"><div class="setterIqScore"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
+          ${buildSetterTheoryEvaluation(a.total?a.setterIq:null)}
           <div class="setterMasterAdvice"><b>Aquila Advice</b><div class="setterAquilaAdviceList"><div class="continue"><strong>継続すること</strong><p>${escapeHtml(advice.continueText)}</p></div><div class="correction"><strong>修正すること</strong><p>${escapeHtml(advice.correctionText)}</p></div><div class="next"><strong>次の試合で意識すること</strong><p>${escapeHtml(advice.nextText)}</p></div><div class="key"><strong>Aquila Coach's Key Point</strong><p>${escapeHtml(advice.keyPoint)}</p></div></div></div>
         </div>
       </div>
@@ -2295,6 +2295,21 @@ function buildIqRankPyramid(score){
   const current=setterIqRank(score).label;
   const ranks=['S+','S','A','B','C','D'];
   return `<div class="iqRankPyramid" aria-label="今回のランク ${current}">${ranks.map((label,index)=>`<div class="iqRankTier tier-${index+1} ${label===current?'isCurrent':''}"><span>${label}</span>${label===current?'<b>今回</b>':''}</div>`).join('')}</div>`;
+}
+function buildSetterTheoryEvaluation(score){
+  const hasScore=score!==null&&score!==undefined&&score!==''&&Number.isFinite(Number(score));
+  if(!hasScore){
+    return `<div class="setterTheoryEvaluation isEmpty"><div class="setterTheoryEvaluationTitle">Setter Theory評価</div><div class="setterTheoryEvaluationRank">--</div><div class="setterTheoryPyramid" aria-hidden="true">${[0,1,2,3,4,5].map(i=>`<i class="level-${i+1}"></i>`).join('')}</div><div class="setterTheoryEvaluationIq">IQ --</div><div class="setterTheoryEvaluationNext">トス記録後に評価します</div></div>`;
+  }
+  const value=Math.max(0,Math.min(100,Math.round(Number(score))));
+  const rank=setterIqRank(value).label;
+  const ranks=['S+','S','A','B','C','D'];
+  const currentIndex=ranks.indexOf(rank);
+  const nextThreshold=rank==='S+'?100:rank==='S'?95:rank==='A'?90:rank==='B'?80:rank==='C'?70:60;
+  const diff=rank==='S+'?0:Math.max(0,nextThreshold-value);
+  const nextText=rank==='S+'?'最高ランク到達':`次のランクまで +${diff}`;
+  const pyramid=ranks.map((label,index)=>`<i class="level-${index+1} ${index>=currentIndex?'isReached':''} ${index===currentIndex?'isCurrent':''}" title="${label}"></i>`).join('');
+  return `<div class="setterTheoryEvaluation ${setterIqRank(value).cls}"><div class="setterTheoryEvaluationTitle">Setter Theory評価</div><div class="setterTheoryEvaluationRank">${rank}</div><div class="setterTheoryPyramid" role="img" aria-label="今回の評価 ${rank}">${pyramid}</div><div class="setterTheoryEvaluationIq">IQ <b>${value}</b><span>/100</span></div><div class="setterTheoryEvaluationNext">${nextText}</div></div>`;
 }
 function getCurrentAquilaAdviceItems(){
   const a=currentMatchSetterAnalysis();

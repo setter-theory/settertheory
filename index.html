@@ -4178,7 +4178,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=14618"></script>
+<script src="app_v141_setter_split.js?v=14619"></script>
 
 
 
@@ -9171,3 +9171,111 @@ body.menuOpen .sideOverlay{
  #reportDashboard .setterMasterAdvice .setterAquilaAdviceList p{font-size:9px}
 }
 </style>
+
+<style id="v146-setter-theory-evaluation-style">
+#reportDashboard .setterMasterIqAdviceCard{
+  grid-template-columns:190px minmax(0,1fr)!important;
+}
+#reportDashboard .setterTheoryEvaluation{
+  box-sizing:border-box;
+  min-height:178px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:7px 10px 8px;
+  border-right:1px solid rgba(148,163,184,.25);
+  color:#e2e8f0;
+}
+#reportDashboard .setterTheoryEvaluationTitle{
+  width:100%;
+  text-align:center;
+  color:#cbd5e1;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+#reportDashboard .setterTheoryEvaluationRank{
+  margin-top:1px;
+  color:#fbbf24;
+  font-size:42px;
+  line-height:1;
+  font-weight:1000;
+  text-shadow:0 0 14px rgba(251,191,36,.25);
+}
+#reportDashboard .setterTheoryPyramid{
+  width:128px;
+  height:63px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  margin:4px 0 3px;
+}
+#reportDashboard .setterTheoryPyramid i{
+  display:block;
+  box-sizing:border-box;
+  height:9px;
+  border:1px solid rgba(148,163,184,.35);
+  background:rgba(71,85,105,.42);
+  transform:skewX(-12deg);
+}
+#reportDashboard .setterTheoryPyramid .level-1{width:24px}
+#reportDashboard .setterTheoryPyramid .level-2{width:42px}
+#reportDashboard .setterTheoryPyramid .level-3{width:60px}
+#reportDashboard .setterTheoryPyramid .level-4{width:78px}
+#reportDashboard .setterTheoryPyramid .level-5{width:98px}
+#reportDashboard .setterTheoryPyramid .level-6{width:120px}
+#reportDashboard .setterTheoryPyramid i.isReached{
+  background:linear-gradient(90deg,#1d4ed8,#60a5fa);
+  border-color:rgba(147,197,253,.8);
+}
+#reportDashboard .setterTheoryPyramid i.isCurrent{
+  background:linear-gradient(90deg,#d97706,#fbbf24);
+  border-color:#fde68a;
+  box-shadow:0 0 8px rgba(251,191,36,.48);
+}
+#reportDashboard .setterTheoryEvaluationIq{
+  color:#cbd5e1;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.1;
+}
+#reportDashboard .setterTheoryEvaluationIq b{
+  margin-left:3px;
+  color:#60a5fa;
+  font-size:20px;
+}
+#reportDashboard .setterTheoryEvaluationIq span{
+  margin-left:2px;
+  color:#94a3b8;
+  font-size:10px;
+}
+#reportDashboard .setterTheoryEvaluationNext{
+  margin-top:4px;
+  color:#fef3c7;
+  font-size:11px;
+  font-weight:800;
+  text-align:center;
+}
+#reportDashboard .setterTheoryEvaluation.isEmpty .setterTheoryEvaluationRank,
+#reportDashboard .setterTheoryEvaluation.isEmpty .setterTheoryEvaluationIq b{
+  color:#64748b;
+  text-shadow:none;
+}
+@media(max-width:900px){
+  #reportDashboard .setterMasterIqAdviceCard{grid-template-columns:165px minmax(0,1fr)!important}
+  #reportDashboard .setterTheoryEvaluation{min-height:168px;padding-left:5px;padding-right:5px}
+  #reportDashboard .setterTheoryPyramid{width:112px}
+  #reportDashboard .setterTheoryPyramid .level-6{width:108px}
+  #reportDashboard .setterTheoryPyramid .level-5{width:89px}
+  #reportDashboard .setterTheoryPyramid .level-4{width:71px}
+  #reportDashboard .setterTheoryPyramid .level-3{width:55px}
+  #reportDashboard .setterTheoryPyramid .level-2{width:39px}
+}
+@media(max-width:720px){
+  #reportDashboard .setterMasterIqAdviceCard{grid-template-columns:1fr!important}
+  #reportDashboard .setterTheoryEvaluation{border-right:0;border-bottom:1px solid rgba(148,163,184,.25)}
+}
+</style>
+<script>/* cache marker: 146-setter-theory-evaluation-1 */</script>
