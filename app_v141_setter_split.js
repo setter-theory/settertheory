@@ -2915,18 +2915,49 @@ function printMatchPdfReport(){
     el.removeAttribute('oninput');
   });
 
-  // A4専用：各主要ブロックを独立した印刷セクションへ再構成する。
+  // V150.17: PDF専用の固定ページ構成。画面側のレポートDOMは変更しない。
   const a4Root=document.createElement('div');
   a4Root.id='reportDashboard';
   a4Root.className='pdfA4Document';
-  const appendPage=(node,extra)=>{ if(!node)return; const page=document.createElement('section'); page.className='pdfA4Page '+(extra||''); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
+  const makePage=(extra)=>{ const page=document.createElement('section'); page.className='pdfA4Page '+(extra||''); return page; };
+  const appendPage=(node,extra)=>{ if(!node)return; const page=makePage(extra); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
   const brand=clone.querySelector('.unifiedReportBrand');
   const setterCards=[...clone.querySelectorAll('.setterAnalysisUnit')];
-  if(setterCards.length){ const first=document.createElement('section'); first.className='pdfA4Page pdfFirstPage'; if(brand)first.appendChild(brand.cloneNode(true)); first.appendChild(setterCards[0].cloneNode(true)); a4Root.appendChild(first); setterCards.slice(1).forEach(x=>appendPage(x,'pdfSetterPage')); }
-  else appendPage(brand,'pdfFirstPage');
+
+  // 1ページ目：PDFにだけ表示する表紙。
+  const cover=makePage('pdfCoverPage');
+  cover.innerHTML=`<div class="pdfCoverInner">
+    <div class="pdfCoverKicker">MATCH ANALYSIS REPORT</div>
+    <div class="pdfCoverTitle">Setter Theory</div>
+    <div class="pdfCoverRule"></div>
+    <div class="pdfCoverSubtitle">試合分析レポート</div>
+    <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
+    <div class="pdfCoverSummary"></div>
+    <div class="pdfCoverVersion">V150.17</div>
+  </div>`;
+  const coverSummary=cover.querySelector('.pdfCoverSummary');
+  if(brand && coverSummary){
+    const brandClone=brand.cloneNode(true);
+    brandClone.querySelectorAll('.unifiedReportAction,button').forEach(el=>el.remove());
+    coverSummary.appendChild(brandClone);
+  }
+  a4Root.appendChild(cover);
+
+  // 2ページ目：セッター分析①。
+  if(setterCards[0]) appendPage(setterCards[0],'pdfSetterPage pdfSetterPageOne');
+  // 3ページ目：セッター分析②。ツーセッター時のみ追加。
+  if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
+  // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  appendPage(clone.querySelector('.singleReportWideGrid'),'pdfDetailsPage');
-  appendPage(clone.querySelector('.setterUnifiedBottomGrid'),'pdfLogsPage');
+  // 5ページ目：ランキングと直近ログを同一ページへまとめる。
+  const finalPage=makePage('pdfFinalPage');
+  const finalGrid=document.createElement('div');
+  finalGrid.className='pdfFinalGrid';
+  const rankings=clone.querySelector('.singleReportWideGrid');
+  const recentLogs=clone.querySelector('.setterUnifiedBottomGrid');
+  if(rankings) finalGrid.appendChild(rankings.cloneNode(true));
+  if(recentLogs) finalGrid.appendChild(recentLogs.cloneNode(true));
+  if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
     .map(el=>el.outerHTML).join('\n');
@@ -2968,6 +2999,18 @@ function printMatchPdfReport(){
     #reportDashboard.pdfA4Document{display:block!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important}
     .pdfA4Page{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;padding:7mm!important;background:#fff!important;break-before:page;page-break-before:always}
     .pdfA4Page:first-child{break-before:auto;page-break-before:auto}
+    .pdfCoverPage{height:190mm!important;min-height:190mm!important;padding:12mm 16mm!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+    .pdfCoverInner{position:relative!important;width:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;border:2px solid #0f172a!important;border-radius:18px!important;padding:12mm!important;background:linear-gradient(145deg,#ffffff 0%,#f8fafc 58%,#e2e8f0 100%)!important}
+    .pdfCoverKicker{font-size:12px!important;font-weight:900!important;letter-spacing:.28em!important;color:#64748b!important;margin-bottom:4mm!important}
+    .pdfCoverTitle{font-size:40px!important;line-height:1!important;font-weight:1000!important;letter-spacing:.02em!important;color:#0f172a!important}
+    .pdfCoverRule{width:72mm!important;height:2px!important;background:#f4b63f!important;margin:6mm auto 4mm!important}
+    .pdfCoverSubtitle{font-size:20px!important;font-weight:900!important;color:#334155!important}
+    .pdfCoverMeta{font-size:13px!important;font-weight:800!important;color:#475569!important;margin-top:4mm!important}
+    .pdfCoverSummary{width:min(235mm,92%)!important;margin-top:9mm!important}
+    .pdfCoverSummary .unifiedReportBrand{box-shadow:none!important;border:1px solid #cbd5e1!important;background:rgba(255,255,255,.88)!important}
+    .pdfCoverVersion{position:absolute!important;right:9mm!important;bottom:7mm!important;font-size:10px!important;font-weight:900!important;color:#64748b!important}
+    .pdfFinalGrid{display:grid!important;grid-template-columns:1.15fr .85fr!important;gap:7mm!important;align-items:start!important;width:100%!important}
+    .pdfFinalGrid .singleReportWideGrid,.pdfFinalGrid .setterUnifiedBottomGrid{display:block!important;width:100%!important;margin:0!important}
     .pdfA4Page>*{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;max-height:none!important;margin:0!important;transform:none!important;overflow:visible!important}
     .pdfA4Page .setterMasterHeaderRow{display:grid!important;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)!important;gap:10px!important}
     .pdfA4Page .setterMasterIqAdviceCard{display:grid!important;grid-template-columns:minmax(145px,.7fr) minmax(0,1.3fr)!important;gap:10px!important}
@@ -3032,7 +3075,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.16: PDF生成処理は維持し、印刷CSSの縦方向だけを圧縮。
+  // V150.17: PDF生成処理は維持し、PDF専用の固定ページ構成へ変更。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
