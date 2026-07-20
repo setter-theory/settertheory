@@ -8885,3 +8885,56 @@ body.menuOpen .sideOverlay{
 }
 </style>
 <script>/* cache marker: 146-team-rotation-graph-enlarge-1 */</script>
+
+<style id="v146-fixed-match-report-toolbar">
+/* V146: Setter Theory Match Reportカードを固定操作ヘッダー化 */
+#report .reportHeader{display:none!important}
+#reportDashboard>.unifiedReportBrand{
+  position:sticky!important;
+  top:0!important;
+  z-index:500!important;
+  margin:0 0 14px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.38)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+}
+#reportDashboard .unifiedReportRight{
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+}
+#reportDashboard .unifiedReportAction{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  height:42px!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:0 14px!important;
+  border-radius:11px!important;
+  font-size:13px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+#reportDashboard .unifiedReportExport{
+  width:108px!important;
+  min-width:108px!important;
+  border-width:2px!important;
+}
+#reportDashboard .unifiedReportBack{
+  width:auto!important;
+  min-width:158px!important;
+  border-width:2px!important;
+}
+#reportDashboard .unifiedReportBack::before{content:none!important}
+@media(max-width:820px){
+  #reportDashboard>.unifiedReportBrand{top:0!important;padding:10px 12px!important;gap:8px!important}
+  #reportDashboard .unifiedReportRight{display:grid!important;grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,.8fr))!important;width:100%!important;gap:7px!important}
+  #reportDashboard .unifiedAquilaBadge{display:none!important}
+  #reportDashboard .unifiedReportAction,
+  #reportDashboard .unifiedReportBack,
+  #reportDashboard .unifiedReportExport{width:100%!important;min-width:0!important;height:40px!important;min-height:40px!important;padding:0 8px!important;font-size:11px!important}
+}
+</style>
+<script>/* cache marker: 146-fixed-match-report-toolbar-1 */</script>

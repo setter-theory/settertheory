@@ -2579,7 +2579,7 @@ function report(){
 
 
   const currentAnalysis=currentMatchSetterAnalysis();
-  const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
+  const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="backLink unifiedReportAction unifiedReportBack" onclick="returnToMatchFromReport()">← 試合入力に戻る</button><button class="pdfBtn unifiedReportAction unifiedReportExport" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction unifiedReportExport" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
     ${buildSetterDetailReports()}
     <section class="reportPanel teamAnalysisCard">
