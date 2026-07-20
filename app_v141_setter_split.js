@@ -2544,21 +2544,46 @@ function report(){
   const weakestRotation=rotationAdviceData.length
     ? rotationAdviceData.slice().sort((a,b)=>a.diff-b.diff || b.total-a.total)[0]
     : null;
-  const teamAdviceItems=[];
-  if(total===0){
-    teamAdviceItems.push('プレーデータを記録すると、チーム全体の傾向を分析します。');
-  }else{
-    if(pointDiffForAdvice>=3) teamAdviceItems.push(`得失点差は+${pointDiffForAdvice}。現在の得点ペースを維持できています。`);
-    else if(pointDiffForAdvice<=-3) teamAdviceItems.push(`得失点差は${pointDiffForAdvice}。失点につながるプレーの整理が必要です。`);
-    else teamAdviceItems.push('得失点は拮抗しています。終盤の1本を確実に取る準備が重要です。');
+  let teamContinueAdvice='プレーデータを記録すると、チームの強みを分析します。';
+  let teamCorrectionAdvice='課題が見つかると、優先して修正するポイントを表示します。';
+  let teamNextActionAdvice='次の試合で意識する具体的な行動を表示します。';
+  if(total>0){
+    // 継続：チーム分析の中で最も良い指標を具体的に評価する。
+    if(successPct>=55){
+      teamContinueAdvice=`成功系プレーが${successPct}%です。得点につながっているプレーのテンポと連係を継続し、同じ形を再現できる状態を保ちましょう。`;
+    }else if(teamMissPct<18){
+      teamContinueAdvice=`ミス率を${teamMissPct}%に抑えられています。無理をせずラリーをつなぎ、攻撃の機会を作る判断を継続しましょう。`;
+    }else if(pointDiffForAdvice>0){
+      teamContinueAdvice=`得失点差は+${pointDiffForAdvice}です。得点後の集中と、次の1本へ素早く切り替える流れを継続しましょう。`;
+    }else{
+      teamContinueAdvice='成功したプレーの前後に共通する動きと声掛けを確認し、再現できた形をチームの基準として継続しましょう。';
+    }
 
-    if(teamMissPct>=25) teamAdviceItems.push(`ミス率が${teamMissPct}%と高めです。まず自失点を減らすことを優先しましょう。`);
-    else if(successPct>=55) teamAdviceItems.push(`成功系プレーが${successPct}%。良い流れを継続できています。`);
-    else teamAdviceItems.push('成功と継続の質を上げ、攻撃につながるプレーを増やしましょう。');
+    // 修正：ミス、弱いローテーション、得失点差の順で優先課題を選ぶ。
+    if(teamMissPct>=25){
+      teamCorrectionAdvice=`ミス率が${teamMissPct}%と高めです。苦しい場面で無理に決めにいかず、返球コースと次の守備位置を揃えて自失点を減らしましょう。`;
+    }else if(weakestRotation && weakestRotation.diff<0){
+      teamCorrectionAdvice=`S${weakestRotation.rot}は得失点差${weakestRotation.diff}です。サーブの狙い、ブロックの基準、最初に使う攻撃をローテーション内で共有して立て直しましょう。`;
+    }else if(pointDiffForAdvice<=-3){
+      teamCorrectionAdvice=`得失点差は${pointDiffForAdvice}です。失点直後に同じ形を繰り返さず、返球の質と攻撃の選択を1本ごとに整理しましょう。`;
+    }else{
+      teamCorrectionAdvice='得失点は拮抗しています。終盤に攻撃が単調にならないよう、良い返球時に使う攻撃と苦しい返球時の安全な選択を分けて準備しましょう。';
+    }
 
-    if(weakestRotation && weakestRotation.diff<0) teamAdviceItems.push(`S${weakestRotation.rot}が得失点差${weakestRotation.diff}。このローテーションの立て直しが改善ポイントです。`);
+    // 次戦：分析結果を、試合前に共有できる一つの行動へ変換する。
+    if(weakestRotation && weakestRotation.diff<0){
+      teamNextActionAdvice=`次の試合ではS${weakestRotation.rot}に入る前に「最初のサーブの狙い」と「1本目の攻撃」を確認し、同じ判断でスタートしましょう。`;
+    }else if(teamMissPct>=25){
+      teamNextActionAdvice='次の試合では連続失点した場面で、全員が「まずラリーを1本つなぐ」ことを共通ルールにしてプレーを立て直しましょう。';
+    }else if(Math.abs(pointDiffForAdvice)<=2){
+      teamNextActionAdvice='次の試合では20点以降に使う第一候補の攻撃と、返球が乱れた時の第二候補を試合前に共有しておきましょう。';
+    }else if(pointDiffForAdvice>2){
+      teamNextActionAdvice='次の試合では良い流れの時ほど、得点した攻撃パターンとサーブの狙いを続け、相手が対応するまで先に変えないことを意識しましょう。';
+    }else{
+      teamNextActionAdvice='次の試合では各ローテーションで最初に狙う得点パターンを一つ決め、迷った時に戻れる共通の形を作りましょう。';
+    }
   }
-  const teamAquilaAdvice=`<div class="teamAquilaAdvice"><div class="teamAquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>Team Aquila Advice</b></div><p>${escapeHtml(teamAdviceItems.slice(0,2).join(' '))}</p></div>`;
+  const teamAquilaAdvice=`<div class="teamAquilaAdvice"><div class="teamAquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>Team Aquila Advice</b></div><div class="teamAquilaAdviceList"><div class="continue"><strong>継続すること</strong><p>${escapeHtml(teamContinueAdvice)}</p></div><div class="correction"><strong>修正すること</strong><p>${escapeHtml(teamCorrectionAdvice)}</p></div><div class="next"><strong>次の試合で意識すること</strong><p>${escapeHtml(teamNextActionAdvice)}</p></div></div></div>`;
 
   const pointMax=Math.max(1,myPts,opPts);
   const pointDiff=myPts-opPts;
