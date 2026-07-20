@@ -2933,7 +2933,7 @@ function printMatchPdfReport(){
   const title=`Setter Theory PDFプレビュー`;
   const html=`<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${styleHtml}<title>${title}</title>
   <style>
-    @page{size:A4 portrait;margin:9mm}
+    @page{size:A4 landscape;margin:7mm}
     *{box-sizing:border-box}
     html,body{margin:0!important;background:#eef2f7!important;color:#0f172a;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
@@ -2964,26 +2964,34 @@ function printMatchPdfReport(){
     #report #reportDashboard table{width:100%!important;max-width:100%!important;table-layout:fixed!important}
     #report #reportDashboard th,#report #reportDashboard td{overflow-wrap:anywhere!important;word-break:break-word!important}
     #report #reportDashboard img{max-width:100%!important;height:auto}
-    .pdfPreviewSheet{width:210mm!important;max-width:calc(100% - 16px)!important;padding:0!important;overflow:visible!important}
+    .pdfPreviewSheet{width:297mm!important;max-width:calc(100% - 16px)!important;padding:0!important;overflow:visible!important}
     #reportDashboard.pdfA4Document{display:block!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important}
-    .pdfA4Page{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;padding:8mm!important;background:#fff!important;break-before:page;page-break-before:always}
+    .pdfA4Page{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;padding:7mm!important;background:#fff!important;break-before:page;page-break-before:always}
     .pdfA4Page:first-child{break-before:auto;page-break-before:auto}
     .pdfA4Page>*{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;max-height:none!important;margin:0!important;transform:none!important;overflow:visible!important}
-    .pdfA4Page .setterMasterHeaderRow{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+    .pdfA4Page .setterMasterHeaderRow{display:grid!important;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)!important;gap:10px!important}
     .pdfA4Page .setterMasterIqAdviceCard{display:grid!important;grid-template-columns:minmax(145px,.7fr) minmax(0,1.3fr)!important;gap:10px!important}
-    .pdfA4Page .setterMasterBottomGrid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+    .pdfA4Page .setterMasterBottomGrid{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.05fr) minmax(0,1.05fr)!important;gap:10px!important;align-items:start!important}
     .pdfA4Page .setterMasterRadar,.pdfA4Page .setterMasterMiddleColumn,.pdfA4Page .setterMasterRotation{width:100%!important;max-width:100%!important;overflow:visible!important}
     .pdfTeamPage .playOverviewCard{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}
     .pdfTeamPage .playOverviewColumn,.pdfTeamPage .playOverviewRotation{display:block!important;position:static!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;margin:0 0 10px!important;padding:10px!important}
-    .pdfTeamPage .teamRotationList{display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
+    .pdfTeamPage .teamRotationList{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
     /* V148.1: A4幅を超える固定幅・最小幅を解除し、内容量に応じて自然に複数ページへ流す */
     .pdfA4Document,.pdfA4Page,.pdfA4Page *{box-sizing:border-box!important}
     .pdfA4Page .setterAnalysisUnit,.pdfA4Page .setterAnalysisUnitBody,.pdfA4Page .setterMasterCard,.pdfA4Page .setterMasterHeaderRow,.pdfA4Page .setterMasterBottomGrid,.pdfA4Page .setterMasterRadar,.pdfA4Page .setterMasterMiddleColumn,.pdfA4Page .setterMasterRotation,.pdfA4Page .teamAnalysisCard,.pdfA4Page .playOverviewCard,.pdfA4Page .singleReportWideGrid,.pdfA4Page .setterUnifiedBottomGrid{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;max-height:none!important;overflow:visible!important}
-    .pdfA4Page .setterMasterHeaderRow,.pdfA4Page .setterMasterBottomGrid,.pdfA4Page .singleReportWideGrid,.pdfA4Page .setterUnifiedBottomGrid{display:block!important}
-    .pdfA4Page .setterMasterHeaderRow>*,.pdfA4Page .setterMasterBottomGrid>*,.pdfA4Page .singleReportWideGrid>*,.pdfA4Page .setterUnifiedBottomGrid>*{width:100%!important;max-width:100%!important;min-width:0!important;margin:0 0 10px!important}
+    .pdfA4Page .singleReportWideGrid,.pdfA4Page .setterUnifiedBottomGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+    .pdfA4Page .setterMasterHeaderRow>*,.pdfA4Page .setterMasterBottomGrid>*,.pdfA4Page .singleReportWideGrid>*,.pdfA4Page .setterUnifiedBottomGrid>*{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important}
     .pdfA4Page canvas,.pdfA4Page svg{display:block!important;max-width:100%!important;height:auto!important;margin-left:auto!important;margin-right:auto!important}
     .pdfA4Page table{width:100%!important;max-width:100%!important;table-layout:fixed!important}
     .pdfA4Page th,.pdfA4Page td{white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word!important}
+    /* V149: A4横向き専用。画面レポートの横構成を保ちながら用紙幅へ収める */
+    .pdfA4Page .setterAnalysisUnit,.pdfA4Page .setterMasterCard,.pdfTeamPage .teamAnalysisCard{font-size:92%!important}
+    .pdfA4Page .setterMasterRadar canvas,.pdfA4Page .setterMasterRadar svg{max-height:250px!important}
+    .pdfA4Page .setterMasterMiddleColumn canvas,.pdfA4Page .setterMasterMiddleColumn svg{max-height:230px!important}
+    .pdfA4Page .setterMasterRotation{overflow:visible!important}
+    .pdfA4Page .setterMasterRotation table{font-size:10px!important}
+    .pdfTeamPage .playOverviewCard{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;align-items:start!important}
+    .pdfTeamPage .playOverviewRotation{grid-column:1/-1!important}
     @media print{
       html,body{background:#fff!important;width:auto!important;min-height:0!important}
       body *{visibility:visible!important}
@@ -2991,9 +2999,9 @@ function printMatchPdfReport(){
       .pdfPreviewTopbar{display:none!important}
       .pdfPreviewSheet{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border-radius:0;box-shadow:none;overflow:visible!important}
       #report,#report #reportDashboard,#reportDashboard.pdfA4Document{display:block!important;position:static!important;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;transform:none!important}
-      #report #reportDashboard{font-size:82%;position:static!important;transform:none!important}.pdfA4Page{padding:0!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}
-      #report #reportDashboard .reportGrid,#report #reportDashboard .setterMasterGrid,#report #reportDashboard .singleReportWideGrid{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}
-      #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>* ,#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0 0 8mm!important}
+      #report #reportDashboard{font-size:88%;position:static!important;transform:none!important}.pdfA4Page{padding:0!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}
+      #report #reportDashboard .reportGrid,#report #reportDashboard .setterMasterGrid{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}#report #reportDashboard .singleReportWideGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7mm!important;width:100%!important;height:auto!important;overflow:visible!important}
+      #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>*{width:100%!important;max-width:100%!important;margin:0 0 6mm!important}#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0!important}
       #report #reportDashboard .reportPanel,#report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .singleReportWideGrid{display:block!important;height:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
       #report #reportDashboard .playOverviewPlay,#report #reportDashboard .playOverviewMetrics,#report #reportDashboard .playOverviewResult,#report #reportDashboard .playOverviewResultPoint,#report #reportDashboard .playOverviewRotation,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .pdfRankCard,#report #reportDashboard tr{break-inside:avoid!important;page-break-inside:avoid!important}
       #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterAnalysisUnitBody,#report #reportDashboard .setterMasterCard{break-inside:auto!important;page-break-inside:auto!important}
@@ -3003,8 +3011,8 @@ function printMatchPdfReport(){
       #report #reportDashboard .teamAnalysisCard{break-inside:auto!important;page-break-inside:auto!important}
       #report #reportDashboard .singleReportWideGrid{break-inside:auto!important;page-break-inside:auto!important}
       #report #reportDashboard *{max-width:100%!important;min-width:0!important}
-      #report #reportDashboard .setterMasterHeaderRow,#report #reportDashboard .setterMasterBottomGrid,#report #reportDashboard .singleReportWideGrid,#report #reportDashboard .setterUnifiedBottomGrid{display:block!important;width:100%!important}
-      #report #reportDashboard .setterMasterHeaderRow>*,#report #reportDashboard .setterMasterBottomGrid>*,#report #reportDashboard .singleReportWideGrid>*,#report #reportDashboard .setterUnifiedBottomGrid>*{display:block!important;width:100%!important;max-width:100%!important;margin:0 0 6mm!important}
+      #report #reportDashboard .setterMasterHeaderRow{display:grid!important;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)!important;gap:4mm!important;width:100%!important}#report #reportDashboard .setterMasterBottomGrid{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.05fr) minmax(0,1.05fr)!important;gap:4mm!important;width:100%!important}#report #reportDashboard .singleReportWideGrid,#report #reportDashboard .setterUnifiedBottomGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4mm!important;width:100%!important}
+      #report #reportDashboard .setterMasterHeaderRow>*,#report #reportDashboard .setterMasterBottomGrid>*,#report #reportDashboard .singleReportWideGrid>*,#report #reportDashboard .setterUnifiedBottomGrid>*{display:block!important;width:100%!important;max-width:100%!important;margin:0!important}
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
