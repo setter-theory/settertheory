@@ -2484,9 +2484,11 @@ function report(){
     <div class="reportPanel playOverviewCard">
       <div class="playOverviewColumn playOverviewPlay"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
       <div class="playOverviewColumn playOverviewMetrics"><h3>試合指標</h3>${summary}</div>
-      <div class="playOverviewColumn playOverviewResult"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+      <div class="playOverviewColumn playOverviewResult">
+        <div class="playOverviewResultSection"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+        <div class="playOverviewPointSection"><h3>得点・失点</h3>${pointDivergingBars}</div>
+      </div>
     </div>
-    <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
       <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
