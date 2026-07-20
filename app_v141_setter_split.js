@@ -2937,9 +2937,9 @@ function printMatchPdfReport(){
     *{box-sizing:border-box}
     html,body{margin:0!important;background:#eef2f7!important;color:#0f172a;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
-    .pdfPreviewTopbar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0f172a;color:#fff;box-shadow:0 3px 12px rgba(15,23,42,.25)}
+    .pdfPreviewTopbar{position:sticky;top:0;z-index:2147483646;pointer-events:auto!important;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0f172a;color:#fff;box-shadow:0 3px 12px rgba(15,23,42,.25)}
     .pdfPreviewTopbar b{font-size:14px}.pdfPreviewTopbar div{display:flex;gap:8px}
-    .pdfPreviewTopbar button{border:0;border-radius:9px;padding:9px 13px;font-weight:900;cursor:pointer;background:#f4b63f;color:#111827}
+    .pdfPreviewTopbar button{pointer-events:auto!important;position:relative!important;z-index:2147483647!important;border:0;border-radius:9px;padding:9px 13px;font-weight:900;cursor:pointer;background:#f4b63f;color:#111827}
     .pdfPreviewTopbar button.secondary{background:#334155;color:#fff}
     .pdfPreviewSheet{width:min(1120px,calc(100% - 24px));margin:16px auto;background:#fff;padding:16px;border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.15)}
     #report #reportDashboard{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important}
@@ -3016,7 +3016,7 @@ function printMatchPdfReport(){
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
-    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="printFullPdfDocument()">PDF／印刷</button></div></div>
+    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
   <script>
   function printFullPdfDocument(){
@@ -3036,23 +3036,58 @@ function printMatchPdfReport(){
       }catch(e){}
     }
     var styles=Array.prototype.map.call(document.querySelectorAll('style,link[rel="stylesheet"]'),function(el){return el.outerHTML;}).join('\n');
-    var pw=window.open('','_blank');
-    if(!pw){ alert('印刷画面を開けませんでした。ポップアップを許可してください。'); return; }
+    var oldFrame=document.getElementById('setterTheoryPrintFrame');
+    if(oldFrame) oldFrame.remove();
+    var frame=document.createElement('iframe');
+    frame.id='setterTheoryPrintFrame';
+    frame.setAttribute('aria-hidden','true');
+    frame.style.position='fixed';
+    frame.style.right='0';
+    frame.style.bottom='0';
+    frame.style.width='1px';
+    frame.style.height='1px';
+    frame.style.border='0';
+    frame.style.opacity='0';
+    frame.style.pointerEvents='none';
+    document.body.appendChild(frame);
     var printDoc='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=1123,initial-scale=1">'+styles+
-      '<style>@page{size:A4 landscape;margin:7mm}html,body{margin:0!important;padding:0!important;width:100%!important;min-width:0!important;background:#fff!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.printOnlyRoot{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important}.pdfA4Page{width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;padding:0!important}.pdfPreviewTopbar{display:none!important}@media screen{body{width:283mm!important;margin:0 auto!important}}@media print{body{width:auto!important}.pdfA4Page{break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}}</style></head><body><main id="report" class="active printOnlyRoot">'+clone.outerHTML+'</main></body></html>';
-    pw.document.open();
-    pw.document.write(printDoc);
-    pw.document.close();
-    setTimeout(function(){
+      '<style>@page{size:A4 landscape;margin:7mm}html,body{margin:0!important;padding:0!important;width:100%!important;min-width:0!important;background:#fff!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.printOnlyRoot{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important}.pdfA4Page{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;padding:0!important}.pdfA4Page{break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}</style></head><body><main id="report" class="active printOnlyRoot">'+clone.outerHTML+'</main></body></html>';
+    var doc=frame.contentDocument||frame.contentWindow.document;
+    doc.open();
+    doc.write(printDoc);
+    doc.close();
+    var runPrint=function(){
       try{
-        pw.focus();
-        pw.print();
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        setTimeout(function(){ if(frame&&frame.parentNode) frame.parentNode.removeChild(frame); },1500);
       }catch(e){
         alert('印刷画面を開始できませんでした。もう一度お試しください。');
+        if(frame&&frame.parentNode) frame.parentNode.removeChild(frame);
       }
-    },900);
+    };
+    if(doc.fonts&&doc.fonts.ready){
+      doc.fonts.ready.then(function(){setTimeout(runPrint,250);});
+    }else{
+      setTimeout(runPrint,700);
+    }
   }
-  window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');});
+  function bindPdfPrintButton(){
+    var button=document.getElementById('pdfPrintButton');
+    if(!button||button.dataset.bound==='1') return;
+    button.dataset.bound='1';
+    button.addEventListener('click',function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      printFullPdfDocument();
+    },false);
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bindPdfPrintButton,{once:true});
+  }else{
+    bindPdfPrintButton();
+  }
+  window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');bindPdfPrintButton();});
   <\/script></body></html>`;
 
   // 元画面の開閉状態は変えずに戻す。
