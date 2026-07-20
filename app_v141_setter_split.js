@@ -2045,10 +2045,20 @@ function buildAllPersonalRankings(){
     </div>`).join(''):`<div class="compactRankEmpty">記録なし</div>`;
     return `<section class="compactRankCard"><h4>${escapeHtml(cfg.title)}</h4>${body}</section>`;
   }).join('');
-  return `<div class="allRankingsHeader"><h3>各ランキング <small>（TOP3）</small></h3></div><div class="allRankingsGrid">${cards}</div>`;
+  return `<div class="allRankingsGrid">${cards}</div>`;
 }
 
+let reportRankingsOpen=false;
+let reportRecentLogsOpen=false;
 let reportRecentLogsExpanded=false;
+function toggleReportRankings(){
+  reportRankingsOpen=!reportRankingsOpen;
+  report();
+}
+function toggleReportRecentSection(){
+  reportRecentLogsOpen=!reportRecentLogsOpen;
+  report();
+}
 function toggleReportRecentLogs(){
   reportRecentLogsExpanded=!reportRecentLogsExpanded;
   report();
@@ -2578,10 +2588,20 @@ function report(){
       </div>
     </section>
     <div class="wideGrid singleReportWideGrid">
-      <div class="reportPanel" id="personalRankingHost">${buildAllPersonalRankings()}</div>
+      <section class="reportPanel reportAccordion ${reportRankingsOpen?"isOpen":""}" id="personalRankingHost">
+        <button class="reportAccordionToggle" type="button" onclick="toggleReportRankings()" aria-expanded="${reportRankingsOpen}">
+          <span>各ランキング <small>（TOP3）</small></span><b>${reportRankingsOpen?"−":"＋"}</b>
+        </button>
+        ${reportRankingsOpen?`<div class="reportAccordionBody">${buildAllPersonalRankings()}</div>`:""}
+      </section>
     </div>
     <div class="bottomGrid setterUnifiedBottomGrid">
-      <div class="reportPanel"><h3>直近ログ <small>（${reportRecentLogsExpanded?"最新20プレー":"最新5プレー"}）</small></h3>${buildRecentReportLogs()}</div>
+      <section class="reportPanel reportAccordion ${reportRecentLogsOpen?"isOpen":""}">
+        <button class="reportAccordionToggle" type="button" onclick="toggleReportRecentSection()" aria-expanded="${reportRecentLogsOpen}">
+          <span>直近ログ</span><b>${reportRecentLogsOpen?"−":"＋"}</b>
+        </button>
+        ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">${reportRecentLogsExpanded?"最新20プレー":"最新5プレー"}</div>${buildRecentReportLogs()}</div>`:""}
+      </section>
     </div>
   </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
