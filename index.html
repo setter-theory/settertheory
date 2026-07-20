@@ -9197,12 +9197,18 @@ body.menuOpen .sideOverlay{
 }
 #reportDashboard .setterTheoryEvaluationRank{
   margin-top:1px;
-  color:#fbbf24;
+  color:#94a3b8;
   font-size:42px;
   line-height:1;
   font-weight:1000;
-  text-shadow:0 0 14px rgba(251,191,36,.25);
+  text-shadow:0 0 12px rgba(148,163,184,.20);
 }
+#reportDashboard .setterTheoryEvaluation.rank-sp .setterTheoryEvaluationRank{color:#facc15;text-shadow:0 0 15px rgba(250,204,21,.48)}
+#reportDashboard .setterTheoryEvaluation.rank-s .setterTheoryEvaluationRank{color:#c084fc;text-shadow:0 0 15px rgba(192,132,252,.45)}
+#reportDashboard .setterTheoryEvaluation.rank-a .setterTheoryEvaluationRank{color:#60a5fa;text-shadow:0 0 15px rgba(96,165,250,.45)}
+#reportDashboard .setterTheoryEvaluation.rank-b .setterTheoryEvaluationRank{color:#4ade80;text-shadow:0 0 15px rgba(74,222,128,.42)}
+#reportDashboard .setterTheoryEvaluation.rank-c .setterTheoryEvaluationRank{color:#fb923c;text-shadow:0 0 15px rgba(251,146,60,.42)}
+#reportDashboard .setterTheoryEvaluation.rank-d .setterTheoryEvaluationRank{color:#94a3b8;text-shadow:0 0 12px rgba(148,163,184,.25)}
 #reportDashboard .setterTheoryPyramid{
   width:128px;
   height:63px;
@@ -9226,15 +9232,14 @@ body.menuOpen .sideOverlay{
 #reportDashboard .setterTheoryPyramid .level-4{width:78px}
 #reportDashboard .setterTheoryPyramid .level-5{width:98px}
 #reportDashboard .setterTheoryPyramid .level-6{width:120px}
-#reportDashboard .setterTheoryPyramid i.isReached{
-  background:linear-gradient(90deg,#1d4ed8,#60a5fa);
-  border-color:rgba(147,197,253,.8);
-}
-#reportDashboard .setterTheoryPyramid i.isCurrent{
-  background:linear-gradient(90deg,#d97706,#fbbf24);
-  border-color:#fde68a;
-  box-shadow:0 0 8px rgba(251,191,36,.48);
-}
+#reportDashboard .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#475569,#94a3b8);border-color:rgba(203,213,225,.65)}
+#reportDashboard .setterTheoryEvaluation.rank-sp .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#a16207,#facc15);border-color:#fde68a}
+#reportDashboard .setterTheoryEvaluation.rank-s .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#7e22ce,#c084fc);border-color:#d8b4fe}
+#reportDashboard .setterTheoryEvaluation.rank-a .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#1d4ed8,#60a5fa);border-color:#93c5fd}
+#reportDashboard .setterTheoryEvaluation.rank-b .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#15803d,#4ade80);border-color:#86efac}
+#reportDashboard .setterTheoryEvaluation.rank-c .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#c2410c,#fb923c);border-color:#fdba74}
+#reportDashboard .setterTheoryEvaluation.rank-d .setterTheoryPyramid i.isReached{background:linear-gradient(90deg,#475569,#94a3b8);border-color:#cbd5e1}
+#reportDashboard .setterTheoryPyramid i.isCurrent{box-shadow:0 0 9px currentColor,0 0 3px rgba(255,255,255,.45);filter:brightness(1.12)}
 #reportDashboard .setterTheoryEvaluationIq{
   color:#cbd5e1;
   font-size:12px;
@@ -9278,4 +9283,4 @@ body.menuOpen .sideOverlay{
   #reportDashboard .setterTheoryEvaluation{border-right:0;border-bottom:1px solid rgba(148,163,184,.25)}
 }
 </style>
-<script>/* cache marker: 146-setter-theory-evaluation-1 */</script>
+<script>/* cache marker: 146-setter-rank-colors-1 */</script>
