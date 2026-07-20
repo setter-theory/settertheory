@@ -2420,17 +2420,15 @@ function report(){
     ${playItems.map(item=>{
       const type=item.label;
       const logs=s.logs.filter(x=>effectivePlayType(x)===type);
-      const ok=type==="トス"
-        ? logs.filter(x=>!isTossMissLog(x)).length
-        : type==="二段トス"
-          ? logs.filter(x=>!isTossMissLog(x)).length
-          : logs.filter(isSuccessResult).length;
-      const miss=(type==="トス" || type==="二段トス")
-        ? logs.filter(isTossMissLog).length
-        : logs.filter(isMissResult).length;
+      const isTossMetric=(type==="トス" || type==="二段トス");
+      // トス系は結果欄が「レフト・センター・ライト・バック・ツー」になるため、
+      // 通常プレー用の成功判定ではなく、総トス数とトスミスフラグから専用集計する。
+      const tossMiss=x=>!!(x && (x.tossMist===true || x.tossMist==="1" || x.tossMist==="true" || x.quality==="ミス"));
+      const miss=isTossMetric ? logs.filter(tossMiss).length : logs.filter(isMissResult).length;
+      const ok=isTossMetric ? Math.max(0,logs.length-miss) : logs.filter(isSuccessResult).length;
       const successRate=safePct(ok,logs.length);
       const missRate=safePct(miss,logs.length);
-      const effect=effectRate(logs);
+      const effect=isTossMetric ? Math.round((successRate-missRate)*10)/10 : effectRate(logs);
       const effectClass=effect>0?"positive":effect<0?"negative":"even";
       const effectText=effect>0?`+${effect}%`:`${effect}%`;
       const remainderRate=Math.max(0,100-successRate-missRate);
