@@ -3016,9 +3016,36 @@ function printMatchPdfReport(){
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
-    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="document.body.classList.add('pdfPrinting');requestAnimationFrame(function(){requestAnimationFrame(function(){window.focus();window.print();});});">PDF／印刷</button></div></div>
+    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="printFullPdfDocument()">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
-  <script>window.addEventListener('beforeprint',function(){document.body.classList.add('pdfPrinting');});window.addEventListener('afterprint',function(){document.body.classList.remove('pdfPrinting');});window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');});<\/script></body></html>`;
+  <script>
+  function printFullPdfDocument(){
+    var source=document.querySelector('.pdfA4Document');
+    if(!source){ alert('印刷対象を作成できませんでした。'); return; }
+    var clone=source.cloneNode(true);
+    var sourceCanvases=source.querySelectorAll('canvas');
+    var cloneCanvases=clone.querySelectorAll('canvas');
+    for(var i=0;i<sourceCanvases.length;i++){
+      try{
+        var img=document.createElement('img');
+        img.src=sourceCanvases[i].toDataURL('image/png');
+        img.style.width=(sourceCanvases[i].getBoundingClientRect().width||sourceCanvases[i].width)+'px';
+        img.style.maxWidth='100%';
+        img.style.height='auto';
+        cloneCanvases[i].replaceWith(img);
+      }catch(e){}
+    }
+    var styles=Array.prototype.map.call(document.querySelectorAll('style,link[rel="stylesheet"]'),function(el){return el.outerHTML;}).join('\n');
+    var pw=window.open('','_blank');
+    if(!pw){ alert('印刷画面を開けませんでした。ポップアップを許可してください。'); return; }
+    var printDoc='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=1123,initial-scale=1">'+styles+
+      '<style>@page{size:A4 landscape;margin:7mm}html,body{margin:0!important;padding:0!important;width:100%!important;min-width:0!important;background:#fff!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.printOnlyRoot{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important}.pdfA4Page{width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;padding:0!important}.pdfPreviewTopbar{display:none!important}@media screen{body{width:283mm!important;margin:0 auto!important}}@media print{body{width:auto!important}.pdfA4Page{break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}}</style></head><body><main id="report" class="active printOnlyRoot">'+clone.outerHTML+'</main><script>window.addEventListener("load",function(){setTimeout(function(){window.focus();window.print();},700);});window.addEventListener("afterprint",function(){setTimeout(function(){window.close();},200);});<\/script></body></html>';
+    pw.document.open();
+    pw.document.write(printDoc);
+    pw.document.close();
+  }
+  window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');});
+  <\/script></body></html>`;
 
   // 元画面の開閉状態は変えずに戻す。
   reportRankingsOpen=previousRankingsOpen;
