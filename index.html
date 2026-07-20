@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-team-analysis-height-compact-1"></script>
+<script src="app_v141_setter_split.js?v=146-team-analysis-graph-uniform-1"></script>
 
 
 
@@ -8545,3 +8545,27 @@ body.menuOpen .sideOverlay{
 }
 </style>
 <script>/* cache marker: 146-team-analysis-height-compact-1 */</script>
+<style id="v146-team-analysis-graph-uniform">
+/* V146: 試合指標を基準に、結果割合・得点失点の棒グラフ寸法を統一 */
+@media (min-width:821px){
+  #reportDashboard .teamAnalysisCard>.playOverviewCard{
+    grid-template-columns:minmax(165px,.72fr) minmax(285px,1.16fr) minmax(285px,1.16fr) minmax(270px,1.05fr)!important;
+  }
+}
+#reportDashboard .teamAnalysisCard .playOverviewMetrics,
+#reportDashboard .teamAnalysisCard .playOverviewResult{min-width:0!important}
+#reportDashboard .teamAnalysisCard .playOverviewResultSection>h3,
+#reportDashboard .teamAnalysisCard .playOverviewPointSection>h3{margin:0 0 9px!important}
+#reportDashboard .teamAnalysisCard .v136ResultBarTrack{height:11px!important}
+#reportDashboard .teamAnalysisCard .v136ResultBarRow{padding:4px 0 6px!important}
+#reportDashboard .teamAnalysisCard .v136ResultBarHead{margin-bottom:4px!important}
+#reportDashboard .teamAnalysisCard .v136ResultBarSub{margin-top:4px!important}
+#reportDashboard .teamAnalysisCard .playOverviewPointSection{margin-top:7px!important;padding-top:7px!important}
+#reportDashboard .teamAnalysisCard .v138PointDiverging{gap:4px!important}
+#reportDashboard .teamAnalysisCard .v138PointChart{height:17px!important}
+#reportDashboard .teamAnalysisCard .v138PointAxis{height:21px!important}
+#reportDashboard .teamAnalysisCard .v138PointSide{height:11px!important}
+#reportDashboard .teamAnalysisCard .v138PointSide em{font-size:9px!important}
+</style>
+<script>/* cache marker: 146-team-analysis-graph-uniform-1 */</script>
+
