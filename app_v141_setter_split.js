@@ -1929,7 +1929,7 @@ function buildSetterDetailReports(){
       <div class="setterMasterHeaderRow">
         <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
         <div class="setterMasterIqAdviceCard">
-          <div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div>
+          <div class="setterDetailIq"><img class="setterIqAquilaLogo" src="icons/aquila-192.png" alt="Aquila"><div class="setterIqScore"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
           <div class="setterMasterAdvice"><b>Aquila Advice</b><div class="setterAquilaAdviceList"><div class="continue"><strong>継続すること</strong><p>${escapeHtml(advice.continueText)}</p></div><div class="correction"><strong>修正すること</strong><p>${escapeHtml(advice.correctionText)}</p></div><div class="next"><strong>次の試合で意識すること</strong><p>${escapeHtml(advice.nextText)}</p></div><div class="key"><strong>Aquila Coach's Key Point</strong><p>${escapeHtml(advice.keyPoint)}</p></div></div></div>
         </div>
       </div>
