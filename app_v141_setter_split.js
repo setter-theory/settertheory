@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.7: ボタン登録は固定したまま、押下後だけPDFファイルを生成する。
+  // V150.8: ボタン登録は固定したまま、iPad向けの軽量PDF生成へ変更。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
@@ -3114,12 +3114,15 @@ function printMatchPdfReport(){
               margin:[4,4,4,4],
               filename,
               image:{type:'jpeg',quality:0.96},
-              html2canvas:{scale:1.5,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:0,windowWidth:holder.scrollWidth,windowHeight:holder.scrollHeight},
+              html2canvas:{scale:0.8,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
               jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
               pagebreak:{mode:['css','legacy'],before:'.pdfPageStart',avoid:['tr','.pdfRankCard','.setterIqAdvicePerson']}
             };
 
-            const blob=await w.html2pdf().set(options).from(clone).outputPdf('blob');
+            await new Promise(resolve=>setTimeout(resolve,250));
+            const worker=w.html2pdf().set(options).from(clone).toPdf();
+            const pdf=await worker.get('pdf');
+            const blob=pdf.output('blob');
             holder.remove();
             const blobUrl=URL.createObjectURL(blob);
             pdfWindow.location.replace(blobUrl);
