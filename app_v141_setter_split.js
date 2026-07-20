@@ -2420,8 +2420,14 @@ function report(){
     ${playItems.map(item=>{
       const type=item.label;
       const logs=s.logs.filter(x=>effectivePlayType(x)===type);
-      const ok=logs.filter(isSuccessResult).length;
-      const miss=logs.filter(isMissResult).length;
+      const ok=type==="トス"
+        ? logs.filter(x=>!isTossMissLog(x)).length
+        : type==="二段トス"
+          ? logs.filter(x=>!isTossMissLog(x)).length
+          : logs.filter(isSuccessResult).length;
+      const miss=(type==="トス" || type==="二段トス")
+        ? logs.filter(isTossMissLog).length
+        : logs.filter(isMissResult).length;
       const successRate=safePct(ok,logs.length);
       const missRate=safePct(miss,logs.length);
       const effect=effectRate(logs);
