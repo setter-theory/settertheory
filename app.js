@@ -2295,7 +2295,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
   // PDF専用：グラフ本体を小さくし、項目名・点数を外側へ離して重なりを防ぐ。
-  const cx=170, cy=142, radius=72;
+  const cx=170, cy=132, radius=66;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
