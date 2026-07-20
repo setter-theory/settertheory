@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-team-analysis-rotation-clean-1"></script>
+<script src="app_v141_setter_split.js?v=146-setter-analysis-stacked-bars-1"></script>
 
 
 
@@ -4584,7 +4584,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146 DONUT POSITION ALIGN</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V146 SETTER ANALYSIS BARS</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8187,4 +8187,39 @@ body.menuOpen .sideOverlay{
 #reportDashboard .teamRotationPoints>strong.even{color:#cbd5e1}
 @media(max-width:1250px){#reportDashboard .teamAnalysisCard>.playOverviewCard{grid-template-columns:1fr 1.35fr 1fr}#reportDashboard .playOverviewRotation{grid-column:1/-1;border-left:0!important;border-top:1px solid #e5e7eb;padding-left:0!important;padding-top:14px}#reportDashboard .teamRotationList{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:820px){#reportDashboard .teamAnalysisHeader{align-items:flex-start;flex-direction:column}#reportDashboard .teamAnalysisHeader small{text-align:left}#reportDashboard .teamAnalysisCard>.playOverviewCard{grid-template-columns:1fr}#reportDashboard .teamAnalysisCard .playOverviewColumn:not(:first-child){border-left:0;padding-left:0;border-top:1px solid #e5e7eb;padding-top:14px}#reportDashboard .playOverviewRotation{grid-column:auto}#reportDashboard .teamRotationList{grid-template-columns:1fr}}
+</style>
+<style id="v146-setter-analysis-stacked-bars">
+/* V146: セッター分析を大項目化し、ローテーション別トス配分を100%積み上げバーへ統一 */
+#reportDashboard .setterAnalysisCard{padding:0!important;overflow:hidden}
+#reportDashboard .setterAnalysisHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:16px 18px 13px;border-bottom:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,#0f172a,#172554);color:#fff}
+#reportDashboard .setterAnalysisHeader h2{margin:2px 0 0;font-size:24px;line-height:1.1;color:#fff}
+#reportDashboard .setterAnalysisHeader small{font-size:11px;color:#cbd5e1;text-align:right}
+#reportDashboard .setterAnalysisEyebrow{font-size:9px;font-weight:1000;letter-spacing:.16em;color:#93c5fd}
+#reportDashboard .setterAnalysisBody{padding:16px 18px 18px}
+#reportDashboard .setterAnalysisBody>.setterMasterGrid{margin:0}
+#reportDashboard .setterAnalysisBody .setterMasterCard{box-shadow:none;margin:0;border:1px solid #dbe3ee}
+#reportDashboard .setterAnalysisBody .setterMasterGrid.two .setterMasterCard{min-width:0}
+#reportDashboard .setterMasterRotation{margin-top:16px;padding-top:14px;border-top:1px solid #e5e7eb}
+#reportDashboard .setterMasterRotation>h4{margin:0 0 10px;color:#0f172a;font-size:16px}
+#reportDashboard .setterRotBarWrap{display:grid;gap:8px}
+#reportDashboard .setterRotBarSummary{display:flex;justify-content:flex-end;align-items:baseline;gap:7px;color:#64748b;font-size:11px}
+#reportDashboard .setterRotBarSummary strong{font-size:15px;color:#0f172a}
+#reportDashboard .setterRotBarRow{display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid #edf1f6}
+#reportDashboard .setterRotBarRow:last-child{border-bottom:0}
+#reportDashboard .setterRotBarLabel{display:flex;flex-direction:column;align-items:center;line-height:1}
+#reportDashboard .setterRotBarLabel strong{font-size:15px;color:#0f172a}
+#reportDashboard .setterRotBarLabel small{margin-top:4px;font-size:9px;color:#64748b}
+#reportDashboard .setterRotBarMain{min-width:0}
+#reportDashboard .setterRotBarTrack{height:18px;border-radius:999px;background:#eef2f7;overflow:hidden;display:flex;align-items:center}
+#reportDashboard .setterRotBarSegment{display:block;height:100%;min-width:2px}
+#reportDashboard .setterRotBarEmpty{width:100%;text-align:center;color:#94a3b8;font-size:9px;font-weight:800}
+#reportDashboard .setterRotBarValues{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:5px}
+#reportDashboard .setterRotValue{display:grid;grid-template-columns:6px auto 1fr;grid-template-areas:'dot label pct' '. count count';align-items:center;gap:1px 4px;min-width:0;font-size:9px;color:#475569}
+#reportDashboard .setterRotValue i{grid-area:dot;width:6px;height:6px;border-radius:50%}
+#reportDashboard .setterRotValue b{grid-area:label;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;color:#475569}
+#reportDashboard .setterRotValue em{grid-area:pct;justify-self:end;font-style:normal;font-weight:900;color:#0f172a}
+#reportDashboard .setterRotValue small{grid-area:count;justify-self:end;font-size:8px;color:#94a3b8}
+#reportDashboard .setterRotValue.zero{opacity:.38}
+#reportDashboard .setterRotBarRow.empty{opacity:.72}
+@media(max-width:820px){#reportDashboard .setterAnalysisHeader{align-items:flex-start;flex-direction:column}#reportDashboard .setterAnalysisHeader small{text-align:left}#reportDashboard .setterAnalysisBody{padding:12px}#reportDashboard .setterRotBarValues{grid-template-columns:repeat(5,minmax(42px,1fr));overflow-x:auto}}
 </style>

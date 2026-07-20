@@ -2033,40 +2033,38 @@ function buildRotationPointAnalysis(){
 function buildRotationTossDistribution(setterNum=null){
   const labels=["レフト","センター","ライト","バック","ツー"];
   const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#111827"};
-  const currentRot=Number(String(s.rot||"").replace(/\D/g,""));
   const source=setterNum
     ? (s.logs||[]).filter(x=>x && x.type==="トス" && logBelongsToPlayer(x,String(setterNum)))
     : normalSetterTossLogs();
   const allToss=source.filter(x=>labels.includes(x.result));
+  const setterRotationForLog=(log)=>{
+    const saved=String(log&&log.setterRot||'').trim();
+    if(/^S[1-6]$/.test(saved)) return saved;
+    const pos=Number(log&&log.pos);
+    if(pos>=1 && pos<=6) return 'S'+pos;
+    const rot=String(log&&log.rot||'').trim();
+    return /^S[1-6]$/.test(rot)?rot:'';
+  };
 
-  const cards=[1,2,3,4,5,6].map(r=>{
-    const logs=allToss.filter(x=>Number(String(x.rot||"").replace(/\D/g,""))===r);
+  const rows=[1,2,3,4,5,6].map(r=>{
+    const rot='S'+r;
+    const logs=allToss.filter(x=>setterRotationForLog(x)===rot);
     const total=logs.length;
     const stats=labels.map(label=>{
       const count=logs.filter(x=>x.result===label).length;
       return {label,count,pct:total?Math.round(count/total*100):0};
     });
-    const dominant=stats.slice().sort((a,b)=>b.count-a.count)[0];
-    const dominantText=total && dominant.count ? `最多：${dominant.label} ${dominant.pct}%` : "記録なし";
     const segments=stats.filter(x=>x.count>0).map(x=>
-      `<span class="v141CompareSegment" style="width:${x.pct}%;background:${colors[x.label]}" title="${x.label} ${x.count}本 (${x.pct}%)"></span>`
-    ).join("");
-    const items=stats.map(x=>`<div class="v141CompareItem ${x.count===0?'zero':''}">
-      <span class="v141CompareDot" style="background:${colors[x.label]}"></span>
-      <span class="v141CompareLabel">${x.label}</span>
-      <strong>${x.pct}%</strong><small>${x.count}本</small>
-    </div>`).join("");
-    return `<article class="v141CompareCard ${currentRot===r?'current':''} ${total===0?'empty':''}">
-      <header><div><strong>S${r}</strong><span>${total}本</span></div><em>${dominantText}</em></header>
-      <div class="v141CompareTrack">${segments || '<span class="v141CompareNoData">記録なし</span>'}</div>
-      <div class="v141CompareGrid">${items}</div>
-    </article>`;
-  }).join("");
+      `<span class="setterRotBarSegment" style="width:${x.pct}%;background:${colors[x.label]}" title="${x.label} ${x.count}本 (${x.pct}%)"></span>`
+    ).join('');
+    const values=stats.map(x=>`<span class="setterRotValue ${x.count===0?'zero':''}"><i style="background:${colors[x.label]}"></i><b>${x.label}</b><em>${x.pct}%</em><small>${x.count}本</small></span>`).join('');
+    return `<div class="setterRotBarRow ${total===0?'empty':''}">
+      <div class="setterRotBarLabel"><strong>S${r}</strong><small>${total}本</small></div>
+      <div class="setterRotBarMain"><div class="setterRotBarTrack">${segments||'<span class="setterRotBarEmpty">記録なし</span>'}</div><div class="setterRotBarValues">${values}</div></div>
+    </div>`;
+  }).join('');
 
-  return `<div class="v141CompareWrap">
-    <div class="v141CompareSummary"><span>全ローテーション合計</span><strong>${allToss.length}本</strong></div>
-    <div class="v141CompareCards">${cards}</div>
-  </div>`;
+  return `<div class="setterRotBarWrap"><div class="setterRotBarSummary"><span>全ローテーション合計</span><strong>${allToss.length}本</strong></div>${rows}</div>`;
 }
 
 function buildSetterTossAnalysisPanel(setterNum){
@@ -2486,7 +2484,6 @@ function report(){
       <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
       <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
     </div>
-    <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
       <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
       <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
