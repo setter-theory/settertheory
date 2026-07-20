@@ -8393,3 +8393,52 @@ body.menuOpen .sideOverlay{
 @media(max-width:760px){#reportDashboard .setterAnalysisUnitBody{padding:10px 12px 12px}}
 </style>
 <script>/* cache marker: 146-setter-analysis-section-split-1 */</script>
+<style id="v146-setter-rotation-right-compact">
+/* V146: ローテーション別トス配分を円グラフ右へ常時配置し、カード縦幅を圧縮 */
+#reportDashboard .setterAnalysisUnit .setterMasterBottomGrid{
+  grid-template-columns:minmax(210px,.72fr) minmax(250px,.88fr) minmax(300px,1.05fr)!important;
+  gap:14px!important;
+  align-items:start!important;
+}
+#reportDashboard .setterAnalysisUnit .setterMasterMiddleColumn{gap:8px!important}
+#reportDashboard .setterAnalysisUnit .setterMasterRotation{
+  margin:0!important;
+  padding:0 0 0 12px!important;
+  border-top:0!important;
+  border-left:1px solid rgba(226,232,240,.35)!important;
+  min-width:0!important;
+}
+#reportDashboard .setterAnalysisUnit .setterMasterRotation>h4{margin:0 0 6px!important;font-size:14px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarWrap{gap:3px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarSummary{font-size:9px!important;gap:5px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarSummary strong{font-size:12px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarRow{
+  grid-template-columns:32px minmax(0,1fr)!important;
+  gap:6px!important;
+  padding:3px 0!important;
+}
+#reportDashboard .setterAnalysisUnit .setterRotBarLabel strong{font-size:12px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarLabel small{font-size:8px!important;margin-top:2px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarTrack{height:12px!important}
+#reportDashboard .setterAnalysisUnit .setterRotBarValues{gap:2px!important;margin-top:2px!important}
+#reportDashboard .setterAnalysisUnit .setterRotValue{font-size:8px!important;gap:2px!important}
+#reportDashboard .setterAnalysisUnit .setterRotValue i{width:5px!important;height:5px!important}
+#reportDashboard .setterAnalysisUnit .setterRotValue b,
+#reportDashboard .setterAnalysisUnit .setterRotValue em,
+#reportDashboard .setterAnalysisUnit .setterRotValue small{font-size:8px!important}
+#reportDashboard .setterAnalysisUnit .setterMasterDonut .tossPanel{gap:10px!important}
+#reportDashboard .setterAnalysisUnit .setterMasterDonut .donut{width:126px!important;height:126px!important;min-width:126px!important}
+#reportDashboard .setterAnalysisUnit .setterMasterRadar .setterIqRadar{max-width:250px!important}
+#reportDashboard .setterAnalysisUnit .setterMasterRadar .setterIqRadar svg{max-width:250px!important}
+@media(max-width:900px){
+  #reportDashboard .setterAnalysisUnit .setterMasterBottomGrid{
+    grid-template-columns:minmax(190px,.72fr) minmax(220px,.82fr) minmax(270px,1fr)!important;
+    gap:10px!important;
+  }
+}
+@media(max-width:760px){
+  #reportDashboard .setterAnalysisUnit .setterMasterBottomGrid{grid-template-columns:1fr!important}
+  #reportDashboard .setterAnalysisUnit .setterMasterRotation{border-left:0!important;border-top:1px solid rgba(226,232,240,.35)!important;padding:10px 0 0!important}
+}
+</style>
+<script>/* cache marker: 146-setter-rotation-right-compact-1 */</script>
