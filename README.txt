@@ -1,3 +1,3 @@
-Setter Theory V150.10 PDF FIXED PAGES
+Setter Theory V150.9 PDF MARGIN FIX
 
-A4横6ページ固定構成。セッター分析・チーム分析・ランキングの途中改ページを抑止し、各ページ右下をV150.10へ統一。保存・CSV・試合再開の処理は変更していません。
+PDF生成時の「Invalid margin array.」を修正。html2pdfのmargin指定を配列から数値へ変更。既存のボタンイベント処理は変更していません。
