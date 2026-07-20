@@ -2480,7 +2480,22 @@ function report(){
     const a=s.logs.filter(x=>x.rot==="S"+r);
     const ok=a.filter(isSuccessResult).length;
     const pct=safePct(ok,a.length);
-    return `<div class="rotationRow ${s.rot===r?"currentRotation":""}"><div class="rotationLabel">S${r}</div><div class="rotationPct">${pct}% (${ok}/${a.length})</div><div class="rotationTrack"><div class="rotationFill ${cssClassByPct(pct)}" style="width:${pct}%"></div></div></div>`;
+    const my=a.filter(x=>x.point==="自").length;
+    const op=a.filter(x=>x.point==="相").length;
+    const diff=my-op;
+    const diffClass=diff>0?"positive":diff<0?"negative":"even";
+    const diffText=diff>0?`+${diff}`:`${diff}`;
+    return `<div class="teamRotationRow ${s.rot===r?"currentRotation":""}">
+      <div class="teamRotationLabel">S${r}</div>
+      <div class="teamRotationSuccess">
+        <div class="teamRotationSuccessHead"><span>成功率</span><b>${pct}%</b><small>${ok}/${a.length}</small></div>
+        <div class="teamRotationTrack"><i class="${cssClassByPct(pct)}" style="width:${pct}%"></i></div>
+      </div>
+      <div class="teamRotationPoints">
+        <div class="teamRotationPointCounts"><span class="gain">得点 <b>${my}</b></span><span class="loss">失点 <b>${op}</b></span></div>
+        <strong class="${diffClass}">得失点差 ${diffText}</strong>
+      </div>
+    </div>`;
   }).join("");
 
   const tossLogs=normalSetterTossLogs();
@@ -2502,21 +2517,21 @@ function report(){
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
     ${buildSetterDetailReports()}
-    <div class="reportPanel playOverviewCard">
-      <div class="playOverviewColumn playOverviewPlay"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
-      <div class="playOverviewColumn playOverviewMetrics"><h3>試合指標</h3>${summary}</div>
-      <div class="playOverviewColumn playOverviewResult">
-        <div class="playOverviewResultSection"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
-        <div class="playOverviewPointSection"><h3>得点・失点</h3>${pointDivergingBars}</div>
+    <section class="reportPanel teamAnalysisCard">
+      <div class="teamAnalysisHeader"><div><span class="teamAnalysisEyebrow">TEAM REPORT</span><h2>チーム分析</h2></div><small>試合全体・プレー傾向・ローテーションをまとめて確認</small></div>
+      <div class="playOverviewCard">
+        <div class="playOverviewColumn playOverviewPlay"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
+        <div class="playOverviewColumn playOverviewMetrics"><h3>試合指標</h3>${summary}</div>
+        <div class="playOverviewColumn playOverviewResult">
+          <div class="playOverviewResultSection"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+          <div class="playOverviewPointSection"><h3>得点・失点</h3>${pointDivergingBars}</div>
+        </div>
+        <div class="playOverviewColumn playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
       </div>
-    </div>
+    </section>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
-    <div class="wideGrid">
-      <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
-      <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
-    </div>
     <div class="wideGrid singleReportWideGrid">
-      <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
+      <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
     </div>
     <div class="bottomGrid setterUnifiedBottomGrid">
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>

@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-play-metrics-toss-data-fix-1"></script>
+<script src="app_v141_setter_split.js?v=146-team-analysis-unified-1"></script>
 
 
 
@@ -8152,4 +8152,39 @@ body.menuOpen .sideOverlay{
 #reportDashboard .playOverviewPointSection .v138PointDiverging{margin-top:0}
 @media(max-width:1050px){#reportDashboard .playOverviewCard{grid-template-columns:1fr 1.35fr}#reportDashboard .playOverviewResult{grid-column:1/-1;border-left:0!important;border-top:1px solid #e5e7eb;padding-left:0!important;padding-top:16px}}
 @media(max-width:760px){#reportDashboard .playOverviewCard{grid-template-columns:1fr}#reportDashboard .playOverviewColumn:not(:first-child){border-left:0;padding-left:0;border-top:1px solid #e5e7eb;padding-top:16px}#reportDashboard .playOverviewResult{grid-column:auto}#reportDashboard .playOverviewCard .reportSixMetrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+</style>
+<style id="v146-team-analysis-unified">
+#reportDashboard .teamAnalysisCard{padding:0!important;overflow:hidden}
+#reportDashboard .teamAnalysisHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding:16px 18px 13px;border-bottom:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,#0f172a,#172554);color:#fff}
+#reportDashboard .teamAnalysisHeader h2{margin:2px 0 0;font-size:24px;line-height:1.1;color:#fff}
+#reportDashboard .teamAnalysisHeader small{font-size:11px;color:#cbd5e1;text-align:right}
+#reportDashboard .teamAnalysisEyebrow{font-size:9px;font-weight:1000;letter-spacing:.16em;color:#93c5fd}
+#reportDashboard .teamAnalysisCard>.playOverviewCard{display:grid;grid-template-columns:minmax(190px,.78fr) minmax(330px,1.25fr) minmax(230px,.9fr) minmax(300px,1.08fr);gap:16px;align-items:stretch;padding:16px 18px 18px}
+#reportDashboard .teamAnalysisCard .playOverviewColumn{min-width:0}
+#reportDashboard .teamAnalysisCard .playOverviewColumn:not(:first-child){border-left:1px solid #e5e7eb;padding-left:16px}
+#reportDashboard .teamAnalysisCard .playOverviewColumn>h3{margin:0 0 12px}
+#reportDashboard .teamRotationList{display:grid;gap:8px}
+#reportDashboard .teamRotationRow{display:grid;grid-template-columns:30px minmax(120px,1fr) minmax(104px,.85fr);gap:9px;align-items:center;padding:7px 8px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc}
+#reportDashboard .teamRotationRow.currentRotation{outline:2px solid #60a5fa;padding:7px 8px;margin:0}
+#reportDashboard .teamRotationLabel{font-size:13px;font-weight:1000;color:#0f172a}
+#reportDashboard .teamRotationSuccess{min-width:0}
+#reportDashboard .teamRotationSuccessHead{display:flex;align-items:baseline;gap:5px;line-height:1}
+#reportDashboard .teamRotationSuccessHead span{font-size:9px;color:#64748b;font-weight:800}
+#reportDashboard .teamRotationSuccessHead b{font-size:13px;color:#0f172a}
+#reportDashboard .teamRotationSuccessHead small{font-size:8px;color:#94a3b8}
+#reportDashboard .teamRotationTrack{height:7px;margin-top:5px;border-radius:999px;background:#e2e8f0;overflow:hidden}
+#reportDashboard .teamRotationTrack i{display:block;height:100%;border-radius:999px;background:#16a34a}
+#reportDashboard .teamRotationTrack i.mid{background:#f59e0b}
+#reportDashboard .teamRotationTrack i.bad{background:#dc2626}
+#reportDashboard .teamRotationPoints{display:flex;flex-direction:column;align-items:flex-end;gap:3px;line-height:1}
+#reportDashboard .teamRotationPointCounts{display:flex;gap:7px;font-size:8px;color:#64748b}
+#reportDashboard .teamRotationPointCounts b{font-size:10px}
+#reportDashboard .teamRotationPointCounts .gain b{color:#16a34a}
+#reportDashboard .teamRotationPointCounts .loss b{color:#dc2626}
+#reportDashboard .teamRotationPoints>strong{font-size:10px}
+#reportDashboard .teamRotationPoints>strong.positive{color:#16a34a}
+#reportDashboard .teamRotationPoints>strong.negative{color:#dc2626}
+#reportDashboard .teamRotationPoints>strong.even{color:#64748b}
+@media(max-width:1250px){#reportDashboard .teamAnalysisCard>.playOverviewCard{grid-template-columns:1fr 1.35fr 1fr}#reportDashboard .playOverviewRotation{grid-column:1/-1;border-left:0!important;border-top:1px solid #e5e7eb;padding-left:0!important;padding-top:14px}#reportDashboard .teamRotationList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){#reportDashboard .teamAnalysisHeader{align-items:flex-start;flex-direction:column}#reportDashboard .teamAnalysisHeader small{text-align:left}#reportDashboard .teamAnalysisCard>.playOverviewCard{grid-template-columns:1fr}#reportDashboard .teamAnalysisCard .playOverviewColumn:not(:first-child){border-left:0;padding-left:0;border-top:1px solid #e5e7eb;padding-top:14px}#reportDashboard .playOverviewRotation{grid-column:auto}#reportDashboard .teamRotationList{grid-template-columns:1fr}}
 </style>
