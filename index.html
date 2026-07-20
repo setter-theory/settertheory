@@ -8442,3 +8442,27 @@ body.menuOpen .sideOverlay{
 }
 </style>
 <script>/* cache marker: 146-setter-rotation-right-compact-1 */</script>
+<style id="v146-setter-rotation-inline-force">
+/* V146 fix: desktop/tablet report widthでもローテーション別トス配分を下段へ落とさない */
+@media (min-width:761px){
+  #reportDashboard .setterAnalysisUnit .setterMasterBottomGrid{
+    display:grid!important;
+    grid-template-columns:minmax(190px,.72fr) minmax(225px,.86fr) minmax(280px,1fr)!important;
+    gap:12px!important;
+    align-items:start!important;
+  }
+  #reportDashboard .setterAnalysisUnit .setterMasterBottomGrid>.setterMasterRotation{
+    grid-column:auto!important;
+    margin:0!important;
+    padding:0 0 0 10px!important;
+    border-top:0!important;
+    border-left:1px solid rgba(226,232,240,.35)!important;
+  }
+}
+@media (max-width:760px){
+  #reportDashboard .setterAnalysisUnit .setterMasterBottomGrid>.setterMasterRotation{
+    grid-column:auto!important;
+  }
+}
+</style>
+<script>/* cache marker: 146-setter-rotation-inline-force-1 */</script>
