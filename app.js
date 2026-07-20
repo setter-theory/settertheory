@@ -1849,19 +1849,23 @@ function buildSetterDetailReports(){
   const setters=reportSetterNumbers();
   if(!setters.length) return '';
   const labels=['レフト','センター','ライト','バック','ツー'];
-  return `<div class="setterDetailGrid">${setters.map((n,idx)=>{
+  const colors={'レフト':'#ef4444','センター':'#2563eb','ライト':'#22c55e','バック':'#f59e0b','ツー':'#0f172a'};
+  return `<div class="setterMasterGrid ${setters.length>1?'two':''}">${setters.map((n,idx)=>{
     const a=currentSetterAnalysisFor(n);
     const rank=setterIqRank(a.setterIq||0);
     const b=iqBreakdown20(a);
     const advice=getAquilaAdviceForSetter(n);
-    const dist=labels.map(label=>{const it=a.items.find(x=>x.label===label)||{count:0,pct:0};return `<span><b>${label}</b><em>${it.count}本 / ${it.pct}%</em></span>`}).join('');
-    const rots=a.rotationRows.filter(x=>x.total>0).map(x=>`<span><b>${x.rot}</b><em>${x.total}本</em><em>成功${x.rate}%</em></span>`).join('')||'<span class="setterDetailEmpty">ローテ別記録なし</span>';
-    return `<section class="reportPanel setterDetailCard setterIqCompactCard">
-      <div class="setterDetailHead"><div><small>セッター${idx+1}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
-      <div class="setterDetailMetrics"><span>総トス <b>${a.quality.total}</b></span><span>トスミス <b>${a.quality.miss}</b></span><span>成功率 <b>${a.quality.successRate}%</b></span></div>
-      <div class="setterCompactRadar">${buildSetterIqRadarChart(b,true)}</div>
-      <div class="setterDetailAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
-      <details class="setterDetailMore"><summary>詳しい配球・ローテデータ</summary><div class="setterDetailSection"><b>配球</b><div>${dist}</div></div><div class="setterDetailSection"><b>ローテ別トス</b><div>${rots}</div></div></details>
+    const toss=(s.logs||[]).filter(x=>x&&x.type==='トス'&&logBelongsToPlayer(x,String(n)));
+    const items=labels.map(label=>({label,count:toss.filter(x=>x.result===label).length,color:colors[label]})).filter(x=>x.count>0);
+    const donut=items.length
+      ? `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${legendHtml(items,toss.length)}</div></div>`
+      : `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="v141SetterNoData">トス記録がありません</div></div>`;
+    return `<section class="reportPanel setterMasterCard">
+      <div class="setterMasterHead"><div><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(n)}番 ${escapeHtml(a.name||'')}</h3></div><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div></div>
+      <div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <div class="setterMasterCharts"><div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>${donut}</div>
+      <div class="setterMasterMetrics"><div><span>総トス</span><b>${a.quality.total}</b><small>本</small></div><div class="miss"><span>トスミス</span><b>${a.quality.miss}</b><small>本</small></div><div class="success"><span>トス成功率</span><b>${a.quality.successRate}</b><small>%</small></div></div>
+      <div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div>
     </section>`;
   }).join('')}</div>`;
 }
@@ -2474,7 +2478,6 @@ function report(){
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
-    ${buildTwoSetterSummary()}
     ${buildSetterDetailReports()}
     ${buildSecondBallAnalysis()}
     ${summary}
@@ -2493,7 +2496,6 @@ function report(){
       <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
     <div class="bottomGrid">
-      <div class="reportPanel v141SetterAnalysisPanel"><h3>セッター別 トス分析 <small>（配球・ローテーション別）</small></h3>${buildSetterTossAnalysis()}</div>
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
     </div>
   </div>`;

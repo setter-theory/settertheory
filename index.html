@@ -3534,6 +3534,41 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v135ActionBarRow.bad .v135ActionBarTrack span{background:linear-gradient(90deg,#dc2626,#f97316);}
 .v135ActionBarSub{margin-top:7px;font-size:11px;color:var(--muted);text-align:right;}
 </style>
+
+<style>
+/* V146.15: セッター情報を1名1枚の白カードへ完全統合 */
+#report .setterMasterGrid{display:grid;grid-template-columns:1fr;gap:16px;margin:0 0 14px}
+#report .setterMasterGrid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+#report .setterMasterCard{background:#fff!important;color:#0f172a!important;border:1px solid #dbeafe!important;border-radius:18px!important;padding:18px!important;min-width:0}
+#report .setterMasterHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid #e2e8f0}
+#report .setterMasterHead small{color:#2563eb;font-weight:900}
+#report .setterMasterHead h3{margin:3px 0 0!important;color:#0f172a!important;font-size:22px!important}
+#report .setterMasterCard .setterDetailIq{background:#0f172a}
+#report .setterMasterAdvice{margin-top:12px;padding:11px 13px;background:#eff6ff;border:1px solid #dbeafe;border-radius:12px}
+#report .setterMasterAdvice>b{display:block;color:#1d4ed8;margin-bottom:5px}
+#report .setterMasterAdvice ul{margin:0;padding-left:19px;color:#334155;font-size:12px;line-height:1.55}
+#report .setterMasterAdvice li+li{margin-top:3px}
+#report .setterMasterCharts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center;margin-top:14px}
+#report .setterMasterRadar,#report .setterMasterDonut{min-width:0}
+#report .setterMasterRadar .setterIqRadar{margin:0 auto}
+#report .setterMasterChartTitle{text-align:center;font-weight:900;color:#0f172a;margin-bottom:8px}
+#report .setterMasterDonut .tossPanel{display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap}
+#report .setterMasterDonut .donut{width:142px;height:142px;flex:0 0 142px}
+#report .setterMasterDonut .legend{min-width:130px}
+#report .setterMasterMetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+#report .setterMasterMetrics>div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:11px;padding:10px;text-align:center}
+#report .setterMasterMetrics span{display:block;color:#64748b;font-size:12px;font-weight:800}
+#report .setterMasterMetrics b{font-size:24px;color:#0f172a;margin:0 3px}
+#report .setterMasterMetrics small{color:#64748b}
+#report .setterMasterMetrics .miss b{color:#dc2626}
+#report .setterMasterMetrics .success b{color:#16a34a}
+#report .setterMasterRotation{margin-top:15px;padding-top:14px;border-top:1px solid #e2e8f0}
+#report .setterMasterRotation>h4{margin:0 0 10px;color:#0f172a;font-size:17px}
+#report .setterMasterRotation .v141CompareSummary{margin-bottom:8px}
+@media(max-width:980px){#report .setterMasterGrid.two{grid-template-columns:1fr}}
+@media(max-width:700px){#report .setterMasterCard{padding:13px!important}#report .setterMasterCharts{grid-template-columns:1fr;gap:8px}#report .setterMasterMetrics{gap:5px}#report .setterMasterMetrics>div{padding:8px 4px}#report .setterMasterMetrics b{font-size:21px}}
+</style>
+
 </head>
 <body>
 
