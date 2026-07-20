@@ -2874,192 +2874,97 @@ function v46BuildSubstitutionRows(){
   return v46PrintableRows(rows);
 }
 function printMatchPdfReport(){
-  // V48: PDF専用レイアウト。
-  // 画面表示をそのまま印刷せず、A4縦で安定するHTMLを別生成する。
-  const esc = escapeHtml;
-  const today = new Date().toLocaleDateString();
-  const actionLogs = s.logs.filter(x=>rateActionTypes.includes(x.type));
-  const total = actionLogs.length;
-  const okTotal = actionLogs.filter(isSuccessResult).length;
-  const effTotal = effectRate(actionLogs);
-  const myPts = s.logs.filter(x=>x.point==='自').length;
-  const opPts = s.logs.filter(x=>x.point==='相').length;
-  const opponentPointCount = s.logs.filter(x=>x.point==='相' && x.result==='相手得点').length;
-  const ownErrorLossCount = Math.max(0, opPts-opponentPointCount);
-  const setterAnalysis = currentMatchSetterAnalysis();
-  const setterIq = setterAnalysis.total ? setterAnalysis.setterIq : 0;
-  const iqRank = setterIqRank(setterIq);
-  const iqBreakdown = iqBreakdown20(setterAnalysis);
-  const aquilaAdvice = getCurrentAquilaAdviceItems();
-  const aquilaIcon = `${location.origin}/icons/aquila-192.png`;
-  const reportSetters=reportSetterNumbers();
-  const perSetterPdfCards=reportSetters.map((n,i)=>{
-    const a=currentSetterAnalysisFor(n), rank=setterIqRank(a.setterIq||0), b=iqBreakdown20(a), advice=getAquilaAdviceForSetter(n);
-    const dist=['レフト','センター','ライト','バック','ツー'].map(k=>`${k} ${a.counts[k]||0}本`).join(' / ');
-    const rot=a.rotationRows.filter(x=>x.total>0).map(x=>`${x.rot} ${x.total}本 成功${x.rate}%`).join(' / ') || '記録なし';
-    return `<section class="section setterPdfCard"><h2>セッター${i+1}：${esc(n)}番 ${esc(a.name)}</h2><div class="setterPdfTop"><b>IQ ${a.total?a.setterIq:'--'}/100 ${a.total?rank.label:''}</b><span>総トス ${a.quality.total} / ミス ${a.quality.miss} / 成功率 ${a.quality.successRate}%</span></div><div class="setterPdfBreak"><span>配球 ${b.balance}/20</span><span>多様性 ${b.diversity}/20</span><span>ミドル ${b.quick}/20</span><span>勝負所 ${b.clutch}/20</span><span>安定性 ${b.stability}/20</span></div><p class="note"><b>配球：</b>${esc(dist)}</p><p class="note"><b>ローテ別：</b>${esc(rot)}</p><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`;
-  }).join('');
-  const pdfSetterLeadCards=(reportSetters.length>1 ? reportSetters : [null]).map((n,i)=>{
-    const a=n===null ? setterAnalysis : currentSetterAnalysisFor(n);
-    const score=a.total?a.setterIq:0, rank=setterIqRank(score), breakdown=iqBreakdown20(a);
-    const title=n===null?'Setter IQ・能力バランス':`セッター${i+1}：${esc(n)}番 ${esc(a.name||'')}`;
-    const advice=n===null ? aquilaAdvice : getAquilaAdviceForSetter(n);
-    const adviceTitle=n===null?'Aquila Advice':`Aquila Advice　セッター${i+1} ${esc(n)}番 ${esc(a.name||'')}`;
-    return `<div class="pdfSetterLeadPerson"><div class="pdfIqCard"><div class="title">${title}</div><div class="pdfIqScoreRow"><div><div class="score">${score||'--'}<small>/100</small></div><div class="rank">${score?rank.label:'NO DATA'}</div></div>${buildSetterIqRadarChartPdf(breakdown)}</div></div><div class="pdfAdviceCard"><div class="title pdfAdviceTitle"><img src="${aquilaIcon}" alt="Aquila"><span>${adviceTitle}</span></div><ul>${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`;
-  }).join('');
-  const pdfHeaderIq=reportSetters.length>1 ? `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${reportSetters.length}</b><span>SETTERS</span></div><div class="rank">INDIVIDUAL IQ</div>` : `<div class="small">AQUILA REPORT</div><div class="iqLine"><b>${setterIq||'--'}</b><span>/100</span></div><div class="rank">${setterIq?iqRank.label:'NO DATA'}</div>`;
+  // V147: 試合レポート画面を基準にした統一PDFプレビュー。
+  // 画面とPDFを別々に組み立てず、完成済みのレポートDOMを複製して印刷用に最適化する。
+  const previousRankingsOpen=reportRankingsOpen;
+  const previousRecentLogsOpen=reportRecentLogsOpen;
+  const previousRecentLogsExpanded=reportRecentLogsExpanded;
 
-  function table(headers, rows, emptyText){
-    const body = rows && rows.length ? rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${headers.length}" class="empty">${esc(emptyText||'記録がありません。')}</td></tr>`;
-    return `<table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`;
+  // PDFでは詳細項目を最初から展開する。
+  reportRankingsOpen=true;
+  reportRecentLogsOpen=true;
+  reportRecentLogsExpanded=true;
+  report();
+
+  const source=document.getElementById('reportDashboard');
+  if(!source){
+    reportRankingsOpen=previousRankingsOpen;
+    reportRecentLogsOpen=previousRecentLogsOpen;
+    reportRecentLogsExpanded=previousRecentLogsExpanded;
+    report();
+    alert('試合レポートを作成できませんでした。');
+    return;
   }
-  function pct(part, all){ return all ? Math.round(part/all*100) : 0; }
 
-  const actionRows = rateActionTypes.map(t=>{
-    const a=s.logs.filter(x=>x.type===t);
-    const ok=a.filter(isSuccessResult).length;
-    const miss=a.filter(isMissResult).length;
-    const blocked=a.filter(x=>x.result==='被ブロック').length;
-    return [t, `${a.length}`, `${ok}`, `${miss}`, `${blocked}`, `${pct(ok,a.length)}%`, `${effectRate(a)}%`];
+  const clone=source.cloneNode(true);
+  clone.id='pdfReportDashboard';
+  clone.classList.add('pdfPreviewReport');
+
+  // PDFでは操作ボタン・開閉UI・選択UIを表示しない。
+  clone.querySelectorAll('.unifiedReportAction,.reportAccordionToggle,.recentLogToggle,button').forEach(el=>el.remove());
+  clone.querySelectorAll('select').forEach(select=>{
+    const span=document.createElement('span');
+    span.className='pdfSelectedValue';
+    span.textContent=select.options[select.selectedIndex]?.textContent||'';
+    select.replaceWith(span);
+  });
+  clone.querySelectorAll('[onclick],[onchange],[oninput]').forEach(el=>{
+    el.removeAttribute('onclick');
+    el.removeAttribute('onchange');
+    el.removeAttribute('oninput');
   });
 
-  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=='-'))].sort((a,b)=>Number(a)-Number(b));
-  const playerRows=nums.map(n=>{
-    const a=s.logs.filter(x=>String(x.num)===String(n) && rateActionTypes.includes(x.type));
-    const ok=a.filter(isSuccessResult).length;
-    const miss=a.filter(isMissResult).length;
-    const blocked=a.filter(x=>x.result==='被ブロック').length;
-    return [`${n}番`, getPlayerName(n)||'-', `${a.length}`, `${ok}`, `${miss}`, `${blocked}`, `${pct(ok,a.length)}%`, `${effectRate(a)}%`];
-  }).filter(r=>Number(r[2])>0);
+  // 3部構成：セッター分析 → チーム分析 → 詳細データ。
+  const teamCard=clone.querySelector('.teamAnalysisCard');
+  if(teamCard) teamCard.classList.add('pdfPageStart');
+  const details=clone.querySelector('.singleReportWideGrid');
+  if(details) details.classList.add('pdfPageStart');
 
-  const rotRows=[1,2,3,4,5,6].map(r=>{
-    const a=s.logs.filter(x=>x.rot===`S${r}`);
-    const ok=a.filter(isSuccessResult).length;
-    const my=a.filter(x=>x.point==='自').length;
-    const op=a.filter(x=>x.point==='相').length;
-    return [`S${r}`, `${a.length}`, `${ok}`, `${pct(ok,a.length)}%`, `${my}`, `${op}`, `${my-op}`];
-  });
-
-  const tossLabels=['レフト','センター','ライト','バック','ツー'];
-  const tossColors={'レフト':'#ef4444','センター':'#2563eb','ライト':'#22c55e','バック':'#f59e0b','ツー':'#475569'};
-  const perSetterPdfTossSections=reportSetters.map((n,i)=>{
-    const tossLogs=(s.logs||[]).filter(x=>x&&x.type==='トス'&&logBelongsToPlayer(x,n));
-    const q=tossQualityStats(tossLogs);
-    const distRows=tossLabels.map(label=>{
-      const count=tossLogs.filter(x=>x.result===label).length;
-      const rate=pct(count,tossLogs.length);
-      return `<div class="pdfTossBarRow"><span>${esc(label)}</span><div class="pdfTossTrack"><i style="width:${rate}%;background:${tossColors[label]}"></i></div><b>${rate}%</b><small>${count}本</small></div>`;
-    }).join('');
-    const rotCards=[1,2,3,4,5,6].map(r=>{
-      const logs=tossLogs.filter(x=>Number(String(x.rot||'').replace(/\D/g,''))===r);
-      const total=logs.length;
-      const stats=tossLabels.map(label=>{
-        const count=logs.filter(x=>x.result===label).length;
-        return {label,count,rate:pct(count,total)};
-      });
-      const segments=stats.filter(x=>x.count>0).map(x=>`<i style="width:${x.rate}%;background:${tossColors[x.label]}"></i>`).join('');
-      const values=stats.map(x=>`<span><em style="background:${tossColors[x.label]}"></em><small>${esc(x.label)}</small><b>${x.rate}%</b><u>${x.count}本</u></span>`).join('');
-      return `<div class="pdfRotCard ${total?'':'empty'}"><header><b>S${r}</b><strong>${total}本</strong></header><div class="pdfRotTrack">${segments||'<small>記録なし</small>'}</div><div class="pdfRotValues">${values}</div></div>`;
-    }).join('');
-    return `<section class="section setterPdfToss"><h2>セッター${i+1}：${esc(n)}番 ${esc(getPlayerName(n)||'')}　トス分析</h2><div class="pdfTossSummary"><span>総トス <b>${q.total}</b>本</span><span>トスミス <b>${q.miss}</b>本</span><span>成功率 <b>${q.successRate}%</b></span></div><div class="pdfTossBars">${distRows}</div><h3>ローテーション別トス配分</h3><div class="pdfRotGrid">${rotCards}</div><div class="note">※配球割合を横バーと数値で表示。ツーセッター時はセッターごとに別集計です。</div></section>`;
-  }).join('');
-  const secondBall=secondBallAnalysis();
-  const secondBallRows=secondBall.players.map(p=>[`${p.num}番`,p.name||'-',`${p.total}`,`${p.counts['レフト']}`,`${p.counts['センター']}`,`${p.counts['ライト']}`,`${p.counts['バック']}`,`${p.counts['ツー']}`]);
-
-  function topThreeRanking(type){
-    const configs={
-      'スパイク':{label:'攻撃',all:x=>x.type==='スパイク',ok:x=>x.type==='スパイク'&&x.result==='成功'},
-      'サーブ':{label:'サーブ',all:x=>x.type==='サーブ',ok:x=>x.type==='サーブ'&&(x.result==='成功'||x.result==='エース')},
-      'レセプ':{label:'レセプション',all:x=>x.type==='レセプ',ok:x=>x.type==='レセプ'&&(x.result==='Aパス'||x.result==='Bパス'||x.result==='Cパス')},
-      'ブロック':{label:'ブロック',all:x=>x.type==='ブロック',ok:x=>x.type==='ブロック'&&(x.result==='シャット'||x.result==='ワンタッチ')},
-      'ディグ':{label:'ディグ',all:x=>x.type==='ディグ',ok:x=>x.type==='ディグ'&&x.result==='成功'},
-      'トス':{label:'通常トス',all:x=>x.type==='トス',ok:x=>x.type==='トス'&&!isTossMissLog(x)},
-      '二段トス':{label:'二段トス',all:x=>x.type==='二段トス',ok:x=>x.type==='二段トス'}
-    };
-    const cfg=configs[type];
-    const rows=nums.map(n=>{
-      const logs=s.logs.filter(x=>String(x.num)===String(n)&&cfg.all(x));
-      const ok=logs.filter(cfg.ok).length;
-      const rate=logs.length?Math.round(ok/logs.length*100):0;
-      return {n,name:getPlayerName(n)||'-',total:logs.length,ok,rate};
-    }).filter(x=>x.total>0);
-    rows.sort((a,b)=>b.rate-a.rate||b.ok-a.ok||b.total-a.total||Number(a.n)-Number(b.n));
-    return {label:cfg.label,rows:rows.slice(0,3)};
-  }
-  const pdfRankings=['スパイク','サーブ','レセプ','ブロック','ディグ','トス','二段トス'].map(topThreeRanking);
-  const pdfRankingHtml=pdfRankings.map(group=>{
-    const rows=group.rows.map((r,i)=>[`${i+1}位`,`${r.n}番`,r.name,`${r.ok}/${r.total}`,`${r.rate}%`]);
-    return `<div class="pdfRankCard"><h3>${esc(group.label)}</h3>${table(['順位','背番号','選手','成功/総数','率'],rows,'記録なし')}</div>`;
-  }).join('');
-
-  const subCounts=s.substitutionCounts || {};
-  const subRows=Object.values(subCounts).sort((a,b)=>(b.count||0)-(a.count||0)).map(x=>[
-    `${x.a}番 ⇄ ${x.b}番`, `${x.count||0}回`, x.lastScore || '-', x.lastRot || '-', x.lastTime || '-'
-  ]);
-
-  const recentRows=s.logs.slice(-30).reverse().map(x=>[
-    `${x.no}`, x.set || '-', x.rot || '-', x.type || '-', x.num && x.num!=='-' ? `${x.num}番` : '-', logResultText(x) || '-', x.point || '-', x.score || '-', x.time || '-'
-  ]);
-
-  const playRows=actionTypes.map(t=>{
-    const count=s.logs.filter(x=>x.type===t).length;
-    return [t, `${count}`, `${pct(count,s.logs.filter(x=>actionTypes.includes(x.type)).length)}%`];
-  }).filter(r=>Number(r[1])>0);
-
-  const html=`<!doctype html><html lang="ja"><head><meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Setter Theory Report</title>
+  const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
+    .map(el=>el.outerHTML).join('\n');
+  const title=`Setter Theory PDFプレビュー`;
+  const html=`<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${styleHtml}<title>${title}</title>
   <style>
-    @page{size:A4 portrait;margin:10mm;}
-    *{box-sizing:border-box;}
-    html,body{margin:0;background:#eef2f7;color:#111827;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
-    .topbar{position:sticky;top:0;z-index:10;background:#0f172a;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
-    .topbar b{font-size:14px}.topbar div{display:flex;gap:8px;flex-wrap:wrap}.topbar button{border:0;border-radius:10px;padding:9px 12px;font-weight:800;background:#fbbf24;color:#111827}.topbar .secondary{background:#334155;color:#fff;}
-    .sheet{width:190mm;max-width:calc(100vw - 20px);margin:12px auto;background:#fff;padding:12mm;box-shadow:0 10px 28px rgba(15,23,42,.16);}
-    .brand{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #f4b63f;padding-bottom:10px;margin-bottom:12px;}
-    .brand h1{margin:0;font-size:25px;letter-spacing:.02em;color:#0f172a}.brand p{margin:4px 0 0;color:#64748b;font-size:12px}.badge{font-weight:900;background:#0f172a;color:#fbbf24;border-radius:999px;padding:7px 10px;font-size:11px;white-space:nowrap;}
-    .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
-    .aquilaPdfBadge img{width:48px;height:48px;object-fit:contain;border-radius:50%;background:#fff;padding:3px}.aquilaPdfBadge .small{font-size:9px;color:#fbbf24;font-weight:900;letter-spacing:.08em}.aquilaPdfBadge .iqLine{display:flex;align-items:baseline;gap:3px}.aquilaPdfBadge .iqLine b{font-size:27px;line-height:1}.aquilaPdfBadge .iqLine span{font-size:10px;font-weight:900}.aquilaPdfBadge .rank{font-size:9px;font-weight:950;letter-spacing:.08em;color:#bfdbfe}
-    .pdfLead{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0 12px;align-items:stretch}.pdfSetterLeadPerson{display:grid;grid-template-columns:1fr;gap:8px;break-inside:avoid;page-break-inside:avoid}.pdfIqCard,.pdfAdviceCard{border:1px solid #cbd5e1;border-radius:14px;padding:11px;background:linear-gradient(180deg,#f8fafc,#fff);break-inside:avoid}.pdfIqCard .title,.pdfAdviceCard .title{font-size:12px;font-weight:950;color:#1e3a8a;margin-bottom:6px}.pdfIqCard .score{font-size:36px;font-weight:1000;color:#2563eb;line-height:1}.pdfIqCard .score small{font-size:13px;color:#64748b}.pdfIqCard .rank{display:inline-block;margin-top:5px;border-radius:999px;padding:4px 9px;background:#0f172a;color:#fbbf24;font-size:9px;font-weight:950}.pdfIqScoreRow{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center}.pdfIqBreakdown{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;font-size:8px;color:#475569}.pdfIqBreakdown span{background:#e2e8f0;border-radius:6px;padding:4px}.pdfAdviceCard ul{margin:0;padding-left:17px;font-size:10px;line-height:1.55}.pdfAdviceCard li+li{margin-top:4px}
-    .pdfIqCard .setterIqRadar{background:#f8fafc;border:1px solid #dbeafe;border-radius:10px;padding:3px;min-width:0}.pdfIqCard .setterIqRadarTitle{display:none}.pdfIqCard .setterIqRadar svg{display:block;width:100%;height:190px;overflow:hidden}.pdfIqCard .radarGrid polygon,.pdfIqCard .radarGrid line{fill:none;stroke:#94a3b8;stroke-width:1}.pdfIqCard .radarGrid polygon:first-child{stroke:#64748b;stroke-width:1.4}.pdfIqCard .radarData{fill:rgba(37,99,235,.24);stroke:#2563eb;stroke-width:3;stroke-linejoin:round}.pdfIqCard .radarDots circle{fill:#1d4ed8;stroke:#fff;stroke-width:2}.pdfIqCard .radarLabels text{font-size:12px;font-weight:1000;fill:#334155}.pdfIqCard .radarLabels tspan+tspan{font-size:11px;font-weight:1000;fill:#1d4ed8}
-    .pdfAdviceTitle{display:flex;align-items:center;gap:7px}.pdfAdviceTitle img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff;border:1px solid #f4b63f;padding:2px}.pdfAdviceTitle span{font-size:12px;font-weight:950;color:#1e3a8a}
-    .setterPdfCard{border:1px solid #93c5fd;border-radius:12px;padding:9px;background:#f8fbff}.setterPdfTop{display:flex;justify-content:space-between;gap:8px;font-size:11px}.setterPdfTop b{color:#1d4ed8}.setterPdfBreak{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0}.setterPdfBreak span{background:#dbeafe;border-radius:6px;padding:4px;text-align:center;font-size:9px}.setterPdfCard ul{margin:5px 0 0;padding-left:17px;font-size:9px;line-height:1.45}
-    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
-    .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
-    .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
-    .setterPdfToss{border:1px solid #bfdbfe;border-radius:12px;padding:9px;background:#fbfdff}.setterPdfToss h3{font-size:11px;color:#1e3a8a;margin:9px 0 5px}.pdfTossSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}.pdfTossSummary span{background:#eff6ff;border-radius:7px;padding:6px;text-align:center;font-size:9px;color:#475569}.pdfTossSummary b{font-size:14px;color:#0f172a}.pdfTossBars{display:grid;gap:5px;margin-bottom:8px}.pdfTossBarRow{display:grid;grid-template-columns:45px 1fr 34px 30px;gap:5px;align-items:center;font-size:9px}.pdfTossTrack{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}.pdfTossTrack i{display:block;height:100%;border-radius:999px}.pdfTossBarRow b{text-align:right;color:#0f172a}.pdfTossBarRow small{text-align:right;color:#64748b}
-    .pdfRotGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.pdfRotCard{border:1px solid #dbe3ee;border-radius:9px;padding:6px;background:#fff;break-inside:avoid}.pdfRotCard.empty{opacity:.62}.pdfRotCard header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.pdfRotCard header b{font-size:11px;color:#0f172a}.pdfRotCard header strong{font-size:9px;color:#64748b}.pdfRotTrack{height:9px;border-radius:999px;background:#eef2f7;overflow:hidden;display:flex;align-items:center}.pdfRotTrack i{display:block;height:100%}.pdfRotTrack small{width:100%;text-align:center;font-size:7px;color:#94a3b8}.pdfRotValues{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-top:5px}.pdfRotValues span{min-width:0;text-align:center;background:#f8fafc;border-radius:5px;padding:3px 1px;text-decoration:none}.pdfRotValues em{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:2px}.pdfRotValues small{font-size:6px;color:#64748b}.pdfRotValues b{display:block;font-size:8px;color:#0f172a;line-height:1.15}.pdfRotValues u{display:block;font-size:6px;color:#94a3b8;text-decoration:none}
-    .pdfRankGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}.pdfRankCard{border:1px solid #cbd5e1;border-radius:10px;padding:7px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid}.pdfRankCard h3{margin:0 0 5px;font-size:12px;color:#1e3a8a}.pdfRankCard table{font-size:9px}.pdfRankCard th,.pdfRankCard td{padding:4px}
-    table{width:100%;border-collapse:collapse;margin:0;font-size:10px;table-layout:auto;}th,td{border:1px solid #cbd5e1;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e2e8f0;color:#0f172a;font-weight:900;}td{background:#fff}.empty{text-align:center;color:#64748b;padding:12px!important;}
-    .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}.note{font-size:10px;color:#64748b;line-height:1.55;margin-top:5px}.footer{border-top:1px solid #cbd5e1;margin-top:12px;padding-top:8px;color:#64748b;font-size:10px;display:flex;justify-content:space-between;gap:8px;}
-    @media print{html,body{background:#fff!important}.topbar{display:none!important}.sheet{width:auto;max-width:none;margin:0;padding:0;box-shadow:none}.section{break-inside:avoid;page-break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}.twoCol{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(4,1fr)} }
-    @media (max-width:760px){.sheet{padding:14px}.summary{grid-template-columns:repeat(2,1fr)}.twoCol{grid-template-columns:1fr}.brand{display:block}.badge{display:inline-block;margin-top:8px}}
+    @page{size:A4 portrait;margin:9mm}
+    *{box-sizing:border-box}
+    html,body{margin:0!important;background:#eef2f7!important;color:#0f172a;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
+    .pdfPreviewTopbar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0f172a;color:#fff;box-shadow:0 3px 12px rgba(15,23,42,.25)}
+    .pdfPreviewTopbar b{font-size:14px}.pdfPreviewTopbar div{display:flex;gap:8px}
+    .pdfPreviewTopbar button{border:0;border-radius:9px;padding:9px 13px;font-weight:900;cursor:pointer;background:#f4b63f;color:#111827}
+    .pdfPreviewTopbar button.secondary{background:#334155;color:#fff}
+    .pdfPreviewSheet{width:min(1120px,calc(100% - 24px));margin:16px auto;background:#fff;padding:16px;border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.15)}
+    #pdfReportDashboard{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important}
+    #pdfReportDashboard .unifiedReportBrand{margin-top:0!important}
+    #pdfReportDashboard .unifiedReportRight{min-width:0!important}
+    #pdfReportDashboard .reportAccordionBody{display:block!important}
+    #pdfReportDashboard .reportAccordion{overflow:visible!important}
+    #pdfReportDashboard .pdfSelectedValue{display:inline-block;border:1px solid #cbd5e1;border-radius:7px;background:#f8fafc;padding:5px 8px;font-size:11px;font-weight:800;color:#334155}
+    #pdfReportDashboard .pdfPageStart{break-before:page;page-break-before:always;margin-top:0!important}
+    #pdfReportDashboard .setterAnalysisUnit,#pdfReportDashboard .setterIqAdvicePerson,#pdfReportDashboard .reportPanel,#pdfReportDashboard .pdfRankCard{break-inside:avoid;page-break-inside:avoid}
+    #pdfReportDashboard canvas,#pdfReportDashboard svg{max-width:100%!important}
+    @media print{
+      html,body{background:#fff!important}
+      .pdfPreviewTopbar{display:none!important}
+      .pdfPreviewSheet{width:auto;margin:0;padding:0;border-radius:0;box-shadow:none}
+      #pdfReportDashboard{font-size:92%}
+      #pdfReportDashboard .reportGrid{gap:8px!important}
+      #pdfReportDashboard .reportPanel{box-shadow:none!important}
+      #pdfReportDashboard .teamAnalysisCard{break-inside:auto;page-break-inside:auto}
+      #pdfReportDashboard .singleReportWideGrid{break-inside:auto;page-break-inside:auto}
+    }
+    @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
-    <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
-    <main class="sheet">
-      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div>${pdfHeaderIq}</div></div></header>
-      <div class="pdfLead">${pdfSetterLeadCards}</div>
-      <div class="summary">
-        <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
-        <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>
-        <div class="metric"><div class="label">効果率</div><div class="value">${effTotal}%</div><div class="sub">成功−ミス系 ÷ 対象</div></div>
-        <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
-      </div>
-      <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
-      <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], reportSetters.map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&logBelongsToPlayer(x,n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
-      <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
-      <div class="twoCol">
-        <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
-        <section class="section"><h2>プレー割合</h2>${table(['項目','本数','割合'], playRows, '記録がありません。')}</section>
-      </div>
-      ${perSetterPdfTossSections}
-      <section class="section"><h2>二段トス分析</h2>${table(['選手','名前','合計','レフト','センター','ライト','バック','ツー'], secondBallRows, '二段トスの記録がありません。')}<div class="note">※二段トスは通常トス・Setter IQとは別集計です。セッター本人の二段トスもここに含まれます。</div></section>
-      <section class="section"><h2>各項目ランキング TOP3</h2><div class="pdfRankGrid">${pdfRankingHtml}</div><div class="note">※通常トスはトスミスを除いた成功本数、二段トスは記録本数で表示します。</div></section>
-      <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
-      <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
-      <footer class="footer"><span>Setter Theory</span><span>Generated by Aquila</span></footer>
-    </main>
+    <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">PDF／印刷</button></div></div>
+    <main class="pdfPreviewSheet">${clone.outerHTML}</main>
   </body></html>`;
+
+  // 元画面の開閉状態は変えずに戻す。
+  reportRankingsOpen=previousRankingsOpen;
+  reportRecentLogsOpen=previousRecentLogsOpen;
+  reportRecentLogsExpanded=previousRecentLogsExpanded;
+  report();
+
   const w=window.open('', '_blank');
   if(!w){ alert('ポップアップがブロックされました。ブラウザの設定で許可してください。'); return; }
   w.document.open();
@@ -3067,7 +2972,6 @@ function printMatchPdfReport(){
   w.document.close();
   setTimeout(()=>{ try{ w.focus(); }catch(e){} },200);
 }
-
 
 
 // v20: β版に向けたCSV完全解析（配球 / セット / ローテ / 得点差 / 終盤 / A・Bパス）
