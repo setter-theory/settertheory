@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.5: プレビューの2ボタンは固定イベントとして一度だけ登録する。
+  // V150.6: プレビューと印刷専用画面の戻る／印刷ボタンを固定イベントとして登録する。
   // 印刷処理は独立した印刷ウィンドウで実行し、元画面・プレビューにはiframeや一時要素を残さない。
   const bindPreviewButtons=()=>{
     try{
@@ -3065,9 +3065,10 @@ function printMatchPdfReport(){
               return;
             }
 
+            const printToolbar=`<div id="printWindowToolbar" style="position:sticky;top:0;z-index:99999;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#111827;color:#fff;border-bottom:1px solid #374151;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"><b>Setter Theory 印刷画面</b><div style="display:flex;gap:8px;align-items:center"><button id="printWindowBackButton" type="button" style="border:1px solid #6b7280;background:#374151;color:#fff;border-radius:8px;padding:9px 12px;font-weight:800;cursor:pointer;touch-action:manipulation">← PDFプレビューへ戻る</button><button id="printWindowPrintButton" type="button" style="border:0;background:#facc15;color:#111827;border-radius:8px;padding:9px 14px;font-weight:900;cursor:pointer;touch-action:manipulation">印刷する</button></div></div>`;
             const printHtml=html
-              .replace(/<div class="pdfPreviewTopbar">[\s\S]*?<\/div><\/div>/,'')
-              .replace('V150.5 ISOLATED PRINT WINDOW','V150.5 ISOLATED PRINT WINDOW');
+              .replace(/<div class="pdfPreviewTopbar">[\s\S]*?<\/div><\/div>/,printToolbar)
+              .replace('</style>','@media print{#printWindowToolbar{display:none!important}}\n</style>');
 
             pw.document.open();
             pw.document.write(printHtml);
@@ -3089,6 +3090,25 @@ function printMatchPdfReport(){
                   sheet.style.width='297mm';
                   sheet.style.maxWidth='none';
                   sheet.style.overflow='visible';
+                }
+                const back=d.getElementById('printWindowBackButton');
+                const printAgain=d.getElementById('printWindowPrintButton');
+                if(back && back.dataset.bound!=='1'){
+                  back.dataset.bound='1';
+                  back.addEventListener('click',(event)=>{
+                    event.preventDefault();
+                    event.stopPropagation();
+                    try{ w.focus(); }catch(e){}
+                    try{ pw.close(); }catch(e){}
+                  },{passive:false});
+                }
+                if(printAgain && printAgain.dataset.bound!=='1'){
+                  printAgain.dataset.bound='1';
+                  printAgain.addEventListener('click',(event)=>{
+                    event.preventDefault();
+                    event.stopPropagation();
+                    try{ pw.focus(); pw.print(); }catch(e){}
+                  },{passive:false});
                 }
                 pw.focus();
                 pw.print();
