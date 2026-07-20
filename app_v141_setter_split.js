@@ -2915,7 +2915,7 @@ function printMatchPdfReport(){
     el.removeAttribute('oninput');
   });
 
-  // V150.17: PDF専用の固定ページ構成。画面側のレポートDOMは変更しない。
+  // V150.18: PDF専用の固定ページ構成。画面側のレポートDOMは変更しない。
   const a4Root=document.createElement('div');
   a4Root.id='reportDashboard';
   a4Root.className='pdfA4Document';
@@ -2933,7 +2933,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.17</div>
+    <div class="pdfCoverVersion">V150.18</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -2955,8 +2955,8 @@ function printMatchPdfReport(){
   finalGrid.className='pdfFinalGrid';
   const rankings=clone.querySelector('.singleReportWideGrid');
   const recentLogs=clone.querySelector('.setterUnifiedBottomGrid');
-  if(rankings) finalGrid.appendChild(rankings.cloneNode(true));
-  if(recentLogs) finalGrid.appendChild(recentLogs.cloneNode(true));
+  if(rankings){ const rankClone=rankings.cloneNode(true); rankClone.classList.add('pdfRankingsBlock'); finalGrid.appendChild(rankClone); }
+  if(recentLogs){ const logClone=recentLogs.cloneNode(true); logClone.classList.add('pdfRecentLogsBlock'); finalGrid.appendChild(logClone); }
   if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
@@ -3057,6 +3057,85 @@ function printMatchPdfReport(){
       #report #reportDashboard .setterMasterHeaderRow{display:grid!important;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)!important;gap:4mm!important;width:100%!important}#report #reportDashboard .setterMasterBottomGrid{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.05fr) minmax(0,1.05fr)!important;gap:4mm!important;width:100%!important}#report #reportDashboard .singleReportWideGrid,#report #reportDashboard .setterUnifiedBottomGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4mm!important;width:100%!important}
       #report #reportDashboard .setterMasterHeaderRow>*,#report #reportDashboard .setterMasterBottomGrid>*,#report #reportDashboard .singleReportWideGrid>*,#report #reportDashboard .setterUnifiedBottomGrid>*{display:block!important;width:100%!important;max-width:100%!important;margin:0!important}
     }
+    /* V150.18 PDF layout corrections */
+    .pdfPreviewSheet{width:297mm!important;max-width:calc(100% - 16px)!important;margin:12px auto!important}
+    #reportDashboard.pdfA4Document{width:297mm!important;max-width:297mm!important;margin:0!important;padding:0!important;background:#fff!important}
+    .pdfA4Page{box-sizing:border-box!important;width:289mm!important;max-width:289mm!important;height:196mm!important;min-height:196mm!important;max-height:196mm!important;margin:0 auto!important;padding:4mm!important;overflow:hidden!important;break-before:auto!important;page-break-before:auto!important;break-after:page!important;page-break-after:always!important;background:#fff!important}
+    .pdfA4Page:last-child{break-after:auto!important;page-break-after:auto!important}
+    .pdfCoverPage{display:flex!important;align-items:center!important;justify-content:center!important;height:196mm!important;min-height:196mm!important;max-height:196mm!important;padding:9mm 14mm!important}
+    .pdfCoverInner{width:100%!important;height:100%!important;min-height:0!important;justify-content:center!important;padding:8mm 12mm!important}
+    .pdfCoverSummary{width:88%!important;max-width:245mm!important;margin:8mm auto 0!important}
+
+    /* White-on-white text correction */
+    .pdfSetterPage .setterMasterCard,.pdfTeamPage .teamAnalysisCard,.pdfFinalPage{color:#172033!important}
+    .pdfSetterPage .setterMasterCard *,.pdfTeamPage .teamAnalysisCard *,.pdfFinalPage *{text-shadow:none!important}
+    .pdfSetterPage .setterMasterName,.pdfSetterPage .setterMasterName *,
+    .pdfSetterPage .setterMasterRadar,.pdfSetterPage .setterMasterRadar *,
+    .pdfSetterPage .setterMasterMiddleColumn,.pdfSetterPage .setterMasterMiddleColumn *,
+    .pdfSetterPage .setterMasterRotation,.pdfSetterPage .setterMasterRotation *,
+    .pdfTeamPage .playOverviewPlay,.pdfTeamPage .playOverviewPlay *,
+    .pdfTeamPage .playOverviewMetrics,.pdfTeamPage .playOverviewMetrics *,
+    .pdfTeamPage .playOverviewRotation,.pdfTeamPage .playOverviewRotation *,
+    .pdfFinalPage .reportPanel,.pdfFinalPage .reportPanel *{color:#172033!important}
+    .pdfSetterPage .setterAnalysisHeader,.pdfSetterPage .setterAnalysisHeader *,
+    .pdfTeamPage .teamAnalysisHeader,.pdfTeamPage .teamAnalysisHeader *,
+    .pdfSetterPage .setterMasterIqAdviceCard,.pdfSetterPage .setterMasterIqAdviceCard *,
+    .pdfTeamPage .teamAquilaAdvice,.pdfTeamPage .teamAquilaAdvice *{color:#fff!important}
+    .pdfSetterPage .setterTheoryEvaluationRank,.pdfSetterPage .setterTheoryEvaluationIq b{color:inherit!important}
+    .pdfA4Page canvas,.pdfA4Page svg,.pdfA4Page img{opacity:1!important;visibility:visible!important}
+    .pdfSetterPage .setterMasterRadar canvas,.pdfSetterPage .setterMasterRadar img,
+    .pdfTeamPage canvas,.pdfTeamPage canvas+img,.pdfTeamPage .donut{filter:contrast(1.18) brightness(.86)!important}
+
+    /* Setter pages: keep all information inside one sheet */
+    .pdfSetterPage{font-size:72%!important}
+    .pdfSetterPage .setterAnalysisHeader{padding:8px 12px!important;min-height:0!important}
+    .pdfSetterPage .setterAnalysisHeader h2{font-size:22px!important}
+    .pdfSetterPage .setterMasterCard{padding:8px!important;height:166mm!important;max-height:166mm!important;overflow:hidden!important}
+    .pdfSetterPage .setterMasterHeaderRow{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:6px!important}
+    .pdfSetterPage .setterMasterIqAdviceCard{gap:6px!important;padding:7px!important}
+    .pdfSetterPage .setterMasterBottomGrid{grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.2fr)!important;gap:6px!important;margin-top:5px!important}
+    .pdfSetterPage .setterMasterRadar canvas,.pdfSetterPage .setterMasterRadar svg,.pdfSetterPage .setterMasterRadar img{max-height:190px!important}
+    .pdfSetterPage .setterMasterMiddleColumn canvas,.pdfSetterPage .setterMasterMiddleColumn svg,.pdfSetterPage .setterMasterMiddleColumn img{max-height:165px!important}
+    .pdfSetterPage .setterMasterRotation{font-size:88%!important}
+    .pdfSetterPage h3,.pdfSetterPage h4,.pdfSetterPage p{line-height:1.08!important;margin-top:1px!important;margin-bottom:1px!important}
+
+    /* Team analysis: 3-column top + six compact rotation cards */
+    .pdfTeamPage{font-size:68%!important}
+    .pdfTeamPage .teamAnalysisHeader{padding:7px 12px!important}
+    .pdfTeamPage .teamAnalysisHeader h2{font-size:22px!important}
+    .pdfTeamPage .teamAnalysisCard{height:188mm!important;max-height:188mm!important;overflow:hidden!important;padding:0!important}
+    .pdfTeamPage .playOverviewCard{display:grid!important;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr) minmax(0,1fr)!important;grid-template-rows:auto auto!important;gap:6px!important;padding:7px!important;height:164mm!important;overflow:hidden!important}
+    .pdfTeamPage .playOverviewColumn{padding:6px!important;margin:0!important;min-height:0!important;overflow:hidden!important}
+    .pdfTeamPage .playOverviewRotation{grid-column:1/-1!important;padding:5px!important;margin:0!important;overflow:hidden!important}
+    .pdfTeamPage .teamRotationList{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:4px!important}
+    .pdfTeamPage .teamRotationRow{display:block!important;padding:4px!important;min-height:0!important}
+    .pdfTeamPage .teamRotationLabel{font-size:12px!important;margin-bottom:2px!important}
+    .pdfTeamPage .teamRotationSuccessHead,.pdfTeamPage .teamRotationPointCounts{font-size:9px!important;gap:2px!important;flex-wrap:wrap!important}
+    .pdfTeamPage .teamRotationPoints strong{display:block!important;font-size:9px!important;margin-top:2px!important}
+    .pdfTeamPage .donut{width:105px!important;height:105px!important;min-width:105px!important}
+    .pdfTeamPage h3{font-size:13px!important;margin:0 0 4px!important}
+    .pdfTeamPage p{line-height:1.08!important;margin:1px 0!important}
+    .pdfTeamPage .teamAquilaAdvice{padding:6px!important;margin-top:5px!important;font-size:90%!important}
+
+    /* Rankings + latest 20 plays */
+    .pdfFinalPage{font-size:68%!important;padding:5mm!important}
+    .pdfFinalGrid{display:grid!important;grid-template-columns:minmax(0,1.65fr) minmax(0,.85fr)!important;gap:6px!important;height:186mm!important;max-height:186mm!important;overflow:hidden!important}
+    .pdfFinalGrid .pdfRankingsBlock,.pdfFinalGrid .pdfRecentLogsBlock{display:block!important;width:100%!important;height:100%!important;max-height:100%!important;overflow:hidden!important;margin:0!important}
+    .pdfFinalGrid .reportPanel{padding:7px!important;height:100%!important;overflow:hidden!important;background:#fff!important}
+    .pdfFinalGrid .reportAccordionBody{display:block!important;height:auto!important;overflow:visible!important}
+    .pdfFinalGrid .allRankingsGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
+    .pdfFinalGrid .compactRankCard{padding:6px!important;margin:0!important;min-height:0!important;overflow:hidden!important;background:#e5e7eb!important;border-radius:9px!important}
+    .pdfFinalGrid .compactRankCard h4{font-size:12px!important;margin:0 0 4px!important;color:#172033!important}
+    .pdfFinalGrid .compactRankRow{display:grid!important;grid-template-columns:16px minmax(0,1.4fr) minmax(44px,.8fr) 34px 28px!important;gap:3px!important;align-items:center!important;min-width:0!important;padding:2px 0!important;font-size:9px!important;color:#172033!important}
+    .pdfFinalGrid .compactRankName{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#172033!important}
+    .pdfFinalGrid .compactRankTrack{min-width:0!important;width:100%!important}
+    .pdfFinalGrid .timeline{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important;margin-top:4px!important}
+    .pdfFinalGrid .timelineItem{display:grid!important;grid-template-columns:22px 22px minmax(0,1fr)!important;gap:3px!important;align-items:center!important;padding:3px 4px!important;min-width:0!important;background:#f8fafc!important;border:1px solid #e2e8f0!important;border-radius:6px!important;color:#172033!important}
+    .pdfFinalGrid .timelineNo,.pdfFinalGrid .timelineText{font-size:9px!important;color:#172033!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+    .pdfFinalGrid .timelineIcon{width:18px!important;height:18px!important;line-height:18px!important;font-size:10px!important}
+    .pdfFinalGrid .logLegend{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important;margin-top:5px!important;font-size:9px!important;color:#172033!important}
+    .pdfFinalGrid .reportAccordionSubhead{font-size:11px!important;font-weight:900!important;color:#172033!important;margin-bottom:3px!important}
+
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
@@ -3075,7 +3154,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.17: PDF生成処理は維持し、PDF専用の固定ページ構成へ変更。
+  // V150.18: PDF生成処理は維持し、PDF専用の固定ページ構成へ変更。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
@@ -3159,7 +3238,7 @@ function printMatchPdfReport(){
               image:{type:'jpeg',quality:0.96},
               html2canvas:{scale:0.8,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
               jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
-              pagebreak:{mode:['css','legacy'],before:'.pdfPageStart',avoid:['tr','.pdfRankCard','.setterIqAdvicePerson']}
+              pagebreak:{mode:['css','legacy'],after:'.pdfA4Page:not(:last-child)',avoid:['tr','.compactRankCard','.setterIqAdvicePerson']}
             };
 
             await new Promise(resolve=>setTimeout(resolve,250));
