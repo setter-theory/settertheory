@@ -2999,7 +2999,7 @@ function printMatchPdfReport(){
       .pdfPreviewTopbar{display:none!important}
       .pdfPreviewSheet{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border-radius:0;box-shadow:none;overflow:visible!important}
       #report,#report #reportDashboard,#reportDashboard.pdfA4Document{display:block!important;position:static!important;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;transform:none!important}
-      #report #reportDashboard{font-size:88%;position:static!important;transform:none!important}.pdfA4Page{padding:0!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}
+      #report #reportDashboard{font-size:82%;position:static!important;transform:none!important;box-sizing:border-box!important}.pdfA4Page{box-sizing:border-box!important;padding:0 3mm!important;width:calc(100% - 6mm)!important;max-width:calc(100% - 6mm)!important;margin-left:auto!important;margin-right:auto!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}
       #report #reportDashboard .reportGrid,#report #reportDashboard .setterMasterGrid{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}#report #reportDashboard .singleReportWideGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7mm!important;width:100%!important;height:auto!important;overflow:visible!important}
       #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>*{width:100%!important;max-width:100%!important;margin:0 0 6mm!important}#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0!important}
       #report #reportDashboard .reportPanel,#report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .singleReportWideGrid{display:block!important;height:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.14: V150.11の正常なPDF生成処理を維持。V150.13の余白変更を撤回。
+  // V150.15: V150.11の正常なPDF生成処理を維持。V150.13の余白変更を撤回。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
