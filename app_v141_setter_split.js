@@ -2532,6 +2532,34 @@ function report(){
     <div class="v146ResultOneBarTotal">全${total}プレー</div>
   </div>`;
 
+  const teamMissCount=actionLogs.filter(isMissResult).length;
+  const teamMissPct=safePct(teamMissCount,total);
+  const pointDiffForAdvice=myPts-opPts;
+  const rotationAdviceData=[1,2,3,4,5,6].map(r=>{
+    const logs=s.logs.filter(x=>x.rot==="S"+r);
+    const gain=logs.filter(x=>x.point==="自").length;
+    const lost=logs.filter(x=>x.point==="相").length;
+    return {rot:r,total:logs.length,diff:gain-lost};
+  }).filter(x=>x.total>0);
+  const weakestRotation=rotationAdviceData.length
+    ? rotationAdviceData.slice().sort((a,b)=>a.diff-b.diff || b.total-a.total)[0]
+    : null;
+  const teamAdviceItems=[];
+  if(total===0){
+    teamAdviceItems.push('プレーデータを記録すると、チーム全体の傾向を分析します。');
+  }else{
+    if(pointDiffForAdvice>=3) teamAdviceItems.push(`得失点差は+${pointDiffForAdvice}。現在の得点ペースを維持できています。`);
+    else if(pointDiffForAdvice<=-3) teamAdviceItems.push(`得失点差は${pointDiffForAdvice}。失点につながるプレーの整理が必要です。`);
+    else teamAdviceItems.push('得失点は拮抗しています。終盤の1本を確実に取る準備が重要です。');
+
+    if(teamMissPct>=25) teamAdviceItems.push(`ミス率が${teamMissPct}%と高めです。まず自失点を減らすことを優先しましょう。`);
+    else if(successPct>=55) teamAdviceItems.push(`成功系プレーが${successPct}%。良い流れを継続できています。`);
+    else teamAdviceItems.push('成功と継続の質を上げ、攻撃につながるプレーを増やしましょう。');
+
+    if(weakestRotation && weakestRotation.diff<0) teamAdviceItems.push(`S${weakestRotation.rot}が得失点差${weakestRotation.diff}。このローテーションの立て直しが改善ポイントです。`);
+  }
+  const teamAquilaAdvice=`<div class="teamAquilaAdvice"><div class="teamAquilaAdviceTitle"><img src="icons/aquila-152.png" alt="Aquila"><b>Team Aquila Advice</b></div><p>${escapeHtml(teamAdviceItems.slice(0,2).join(' '))}</p></div>`;
+
   const pointMax=Math.max(1,myPts,opPts);
   const pointDiff=myPts-opPts;
   const pointDiffClass=pointDiff>0?"positive":pointDiff<0?"negative":"even";
@@ -2595,7 +2623,7 @@ function report(){
       <div class="playOverviewCard">
         <div class="playOverviewColumn playOverviewPlay"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
         <div class="playOverviewColumn playOverviewMetrics"><h3>試合指標</h3>${summary}</div>
-        <div class="playOverviewColumn playOverviewResult"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
+        <div class="playOverviewColumn playOverviewResult"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}${teamAquilaAdvice}</div>
         <div class="playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
       </div>
     </section>
