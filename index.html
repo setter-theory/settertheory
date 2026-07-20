@@ -4010,7 +4010,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-report-radar-overlap-fix-1"></script>
+<script src="app_v141_setter_split.js?v=146-setter-unified-analysis-1"></script>
 
 
 
@@ -8022,5 +8022,62 @@ body.menuOpen .sideOverlay{
     margin:0 0 8px!important;
     align-self:end!important;
   }
+}
+</style>
+
+<style id="v146-setter-unified-analysis-block">
+/* V146: コート入力→試合レポートのセッター関連4領域を1ブロックへ統合 */
+#report .setterUnifiedAnalysis{
+  display:block!important;
+  padding:18px!important;
+  overflow:hidden;
+}
+#report .setterUnifiedHead{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  padding-bottom:12px;
+  margin-bottom:14px;
+  border-bottom:2px solid #dbeafe;
+}
+#report .setterUnifiedHead h3{margin:0!important;color:#0f172a!important;font-size:21px!important}
+#report .setterUnifiedHead small{color:#64748b;font-weight:800;text-align:right}
+#report .setterUnifiedBody{display:grid;gap:14px}
+/* 外側カードを唯一のブロックにし、内側の旧カード枠をフラット化 */
+#report .setterUnifiedAnalysis .setterRolePanel,
+#report .setterUnifiedAnalysis .setterDetailCard{
+  margin:0!important;
+  box-shadow:none!important;
+}
+#report .setterUnifiedAnalysis .setterRolePanel{
+  border:0!important;
+  border-radius:0!important;
+  padding:0 0 14px!important;
+  background:transparent!important;
+  border-bottom:1px solid #e2e8f0!important;
+}
+#report .setterUnifiedAnalysis .setterRolePanel>h3{margin:0 0 9px!important;font-size:16px!important}
+#report .setterUnifiedAnalysis .setterDetailGrid{margin:0!important}
+#report .setterUnifiedAnalysis .setterDetailCard{
+  border:1px solid #dbeafe!important;
+  background:#f8fafc!important;
+}
+#report .setterUnifiedToss{
+  padding-top:14px;
+  border-top:1px solid #e2e8f0;
+}
+#report .setterUnifiedToss>h3{margin:0 0 10px!important;font-size:17px!important;color:#0f172a!important}
+#report .setterUnifiedAnalysis .v141SetterTossList{margin:0!important}
+#report .setterUnifiedAnalysis .v141SetterTossBlock{
+  border:1px solid #dbeafe!important;
+  box-shadow:none!important;
+}
+#report .setterUnifiedAnalysis .v141RotationSection{margin-top:16px!important;padding-top:14px!important}
+#report .setterUnifiedBottomGrid{grid-template-columns:1fr!important}
+@media(max-width:760px){
+  #report .setterUnifiedAnalysis{padding:13px!important}
+  #report .setterUnifiedHead{display:block}
+  #report .setterUnifiedHead small{display:block;margin-top:5px;text-align:left;line-height:1.45}
 }
 </style>
