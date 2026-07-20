@@ -2485,7 +2485,7 @@ function report(){
     const diff=my-op;
     const diffClass=diff>0?"positive":diff<0?"negative":"even";
     const diffText=diff>0?`+${diff}`:`${diff}`;
-    return `<div class="teamRotationRow ${s.rot===r?"currentRotation":""}">
+    return `<div class="teamRotationRow">
       <div class="teamRotationLabel">S${r}</div>
       <div class="teamRotationSuccess">
         <div class="teamRotationSuccessHead"><span>成功率</span><b>${pct}%</b><small>${ok}/${a.length}</small></div>
