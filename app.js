@@ -2427,14 +2427,21 @@ function report(){
     {label:"ミス",count:actionLogs.filter(x=>x.result==="ミス"||x.result==="レセプミス"||x.result==="ブロックミス").length,color:"#ef4444"},
     {label:"被ブロック",count:actionLogs.filter(x=>x.result==="被ブロック").length,color:"#f59e0b"},
   ].filter(x=>x.count>0);
-  const resultBars=`<div class="v136ResultBars">${resultGroups
+  const classifiedResultCount=resultGroups.reduce((sum,item)=>sum+item.count,0);
+  const resultStackItems=[...resultGroups];
+  const otherResultCount=Math.max(0,total-classifiedResultCount);
+  if(otherResultCount>0) resultStackItems.push({label:"その他",count:otherResultCount,color:"#64748b"});
+  const resultStackData=resultStackItems
     .map(item=>({...item,pct:safePct(item.count,total)}))
-    .sort((a,b)=>b.pct-a.pct || b.count-a.count)
-    .map(item=>`<div class="v136ResultBarRow" style="--result-color:${item.color}">
-      <div class="v136ResultBarHead"><span class="v136ResultBarLabel">${escapeHtml(item.label)}</span><strong class="v136ResultBarValue">${item.pct}%</strong></div>
-      <div class="v136ResultBarTrack"><span style="width:${Math.max(0,Math.min(100,item.pct))}%;background:${item.color}"></span></div>
-      <div class="v136ResultBarSub"><strong>${item.count}件</strong><span> / 全${total}プレー</span></div>
-    </div>`).join('')}</div>`;
+    .sort((a,b)=>b.pct-a.pct || b.count-a.count);
+  const resultBars=`<div class="v146ResultOneBar">
+    <div class="v146ResultOneBarTrack">${total>0
+      ?resultStackData.map(item=>`<span title="${escapeHtml(item.label)} ${item.pct}%（${item.count}件）" style="width:${Math.max(0,item.pct)}%;background:${item.color}"></span>`).join('')
+      :`<em>データなし</em>`}
+    </div>
+    <div class="v146ResultOneBarLegend">${resultStackData.map(item=>`<div><i style="background:${item.color}"></i><span>${escapeHtml(item.label)}</span><strong>${item.pct}%</strong><small>${item.count}件</small></div>`).join('')}</div>
+    <div class="v146ResultOneBarTotal">全${total}プレー</div>
+  </div>`;
 
   const pointMax=Math.max(1,myPts,opPts);
   const pointDiff=myPts-opPts;
