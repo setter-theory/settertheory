@@ -3004,7 +3004,7 @@ function printMatchPdfReport(){
       #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>*{width:100%!important;max-width:100%!important;margin:0 0 6mm!important}#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0!important}
       #report #reportDashboard .reportPanel,#report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .singleReportWideGrid{display:block!important;height:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
       #report #reportDashboard .playOverviewPlay,#report #reportDashboard .playOverviewMetrics,#report #reportDashboard .playOverviewResult,#report #reportDashboard .playOverviewResultPoint,#report #reportDashboard .playOverviewRotation,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .pdfRankCard,#report #reportDashboard tr{break-inside:avoid!important;page-break-inside:avoid!important}
-      #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterAnalysisUnitBody,#report #reportDashboard .setterMasterCard{break-inside:auto!important;page-break-inside:auto!important}
+      #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterAnalysisUnitBody,#report #reportDashboard .setterMasterCard{break-inside:avoid!important;page-break-inside:avoid!important}
       #report #reportDashboard .pdfPageStart{break-before:page!important;page-break-before:always!important}
       #report #reportDashboard [style*="overflow"]{overflow:visible!important}
       #report #reportDashboard canvas,#report #reportDashboard svg,#report #reportDashboard img{max-width:100%!important;break-inside:avoid!important;page-break-inside:avoid!important}
@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.11: V150.9の正常なPDF生成処理へ復旧。固定ページ化は未適用。
+  // V150.12: V150.11の正常なPDF生成処理を維持し、セッター分析ブロックのみ途中改ページを抑止。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
