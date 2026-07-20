@@ -2748,12 +2748,12 @@ function printMatchPdfReport(){
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Setter Theory Report</title>
   <style>
-    @page{size:A4 portrait;margin:10mm;}
+    @page{size:A4 landscape;margin:6mm;}
     *{box-sizing:border-box;}
     html,body{margin:0;background:#eef2f7;color:#111827;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     .topbar{position:sticky;top:0;z-index:10;background:#0f172a;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
     .topbar b{font-size:14px}.topbar div{display:flex;gap:8px;flex-wrap:wrap}.topbar button{border:0;border-radius:10px;padding:9px 12px;font-weight:800;background:#fbbf24;color:#111827}.topbar .secondary{background:#334155;color:#fff;}
-    .sheet{width:190mm;max-width:calc(100vw - 20px);margin:12px auto;background:#fff;padding:12mm;box-shadow:0 10px 28px rgba(15,23,42,.16);}
+    .sheet{width:285mm;max-width:calc(100vw - 20px);margin:12px auto;background:#eef2f7;padding:0;box-shadow:none}.pdfPage{position:relative;width:285mm;min-height:198mm;margin:0 auto 12px;background:#fff;padding:6mm 7mm 10mm;box-shadow:0 10px 28px rgba(15,23,42,.16);overflow:hidden;break-after:page;page-break-after:always}.pdfPage:last-child{break-after:auto;page-break-after:auto}.pageTitle{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #f4b63f;margin:0 0 8px;padding:0 0 6px}.pageTitle h2{margin:0;font-size:18px;color:#0f172a}.pageTitle span{font-size:10px;font-weight:900;color:#64748b}.pageFooter{position:absolute;left:7mm;right:7mm;bottom:3mm;border-top:1px solid #cbd5e1;padding-top:3px;color:#64748b;font-size:9px;display:flex;justify-content:space-between}
     .brand{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #f4b63f;padding-bottom:10px;margin-bottom:12px;}
     .brand h1{margin:0;font-size:25px;letter-spacing:.02em;color:#0f172a}.brand p{margin:4px 0 0;color:#64748b;font-size:12px}.badge{font-weight:900;background:#0f172a;color:#fbbf24;border-radius:999px;padding:7px 10px;font-size:11px;white-space:nowrap;}
     .aquilaPdfBadge{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:16px;padding:8px 11px;min-width:160px;box-shadow:0 5px 14px rgba(15,23,42,.18)}
@@ -2764,39 +2764,67 @@ function printMatchPdfReport(){
     .setterPdfCard{border:1px solid #93c5fd;border-radius:12px;padding:9px;background:#f8fbff}.setterPdfTop{display:flex;justify-content:space-between;gap:8px;font-size:11px}.setterPdfTop b{color:#1d4ed8}.setterPdfBreak{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0}.setterPdfBreak span{background:#dbeafe;border-radius:6px;padding:4px;text-align:center;font-size:9px}.setterPdfCard ul{margin:5px 0 0;padding-left:17px;font-size:9px;line-height:1.45}
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px;}
     .metric{border:1px solid #cbd5e1;border-radius:12px;padding:9px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid;}.metric .label{font-size:10px;color:#64748b;font-weight:800}.metric .value{font-size:24px;font-weight:950;color:#0f172a;margin-top:2px}.metric .sub{font-size:10px;color:#64748b;margin-top:2px}
-    .section{margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
+    .section{margin:0 0 8px;break-inside:avoid!important;page-break-inside:avoid!important;overflow:visible;}.section h2{font-size:15px;margin:0 0 6px;color:#0f172a;border-left:5px solid #f4b63f;padding-left:8px;}
     .pdfRankGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}.pdfRankCard{border:1px solid #cbd5e1;border-radius:10px;padding:7px;background:#f8fafc;break-inside:avoid;page-break-inside:avoid}.pdfRankCard h3{margin:0 0 5px;font-size:12px;color:#1e3a8a}.pdfRankCard table{font-size:9px}.pdfRankCard th,.pdfRankCard td{padding:4px}
     table{width:100%;border-collapse:collapse;margin:0;font-size:10px;table-layout:auto;}th,td{border:1px solid #cbd5e1;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e2e8f0;color:#0f172a;font-weight:900;}td{background:#fff}.empty{text-align:center;color:#64748b;padding:12px!important;}
-    .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}.note{font-size:10px;color:#64748b;line-height:1.55;margin-top:5px}.footer{border-top:1px solid #cbd5e1;margin-top:12px;padding-top:8px;color:#64748b;font-size:10px;display:flex;justify-content:space-between;gap:8px;}
-    @media print{html,body{background:#fff!important}.topbar{display:none!important}.sheet{width:auto;max-width:none;margin:0;padding:0;box-shadow:none}.section{break-inside:avoid;page-break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}.twoCol{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(4,1fr)} }
+    .twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}.note{font-size:10px;color:#64748b;line-height:1.55;margin-top:5px}.footer{border-top:1px solid #cbd5e1;margin-top:8px;padding-top:5px;color:#64748b;font-size:9px;display:flex;justify-content:space-between;gap:8px;}
+    @media print{html,body{width:297mm;background:#fff!important}.topbar{display:none!important}.sheet{width:285mm;max-width:none;margin:0;padding:0;background:#fff}.pdfPage{width:285mm;height:198mm;min-height:198mm;margin:0;padding:5mm 6mm 9mm;box-shadow:none;overflow:hidden;break-after:page!important;page-break-after:always!important}.pdfPage:last-child{break-after:auto!important;page-break-after:auto!important}.section,.pdfSetterLeadPerson,.pdfIqCard,.pdfAdviceCard,.setterPdfCard,.pdfRankCard,table,thead,tbody,tr{break-inside:avoid!important;page-break-inside:avoid!important}.twoCol{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(4,1fr)}.pageFooter{left:6mm;right:6mm;bottom:2.5mm}}
     @media (max-width:760px){.sheet{padding:14px}.summary{grid-template-columns:repeat(2,1fr)}.twoCol{grid-template-columns:1fr}.brand{display:block}.badge{display:inline-block;margin-top:8px}}
   </style></head><body>
     <div class="topbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">📄 PDF/印刷</button></div></div>
     <main class="sheet">
-      <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div>${pdfHeaderIq}</div></div></header>
-      <div class="pdfLead">${pdfSetterLeadCards}</div>
-      <div class="summary">
-        <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
-        <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>
-        <div class="metric"><div class="label">効果率</div><div class="value">${effTotal}%</div><div class="sub">成功−ミス系 ÷ 対象</div></div>
-        <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
-      </div>
-      <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は下の「トス技術」で別評価します。</div></section>
-      <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], reportSetters.map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&logBelongsToPlayer(x,n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
-      <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
-      <div class="twoCol">
-        <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
-        <section class="section"><h2>プレー割合</h2>${table(['項目','本数','割合'], playRows, '記録がありません。')}</section>
-      </div>
-      <div class="twoCol">
-        <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}</section>
-        <section class="section"><h2>トス技術</h2>${table(['総トス','成功','トスミス','成功率','ミス率'], [[`${tossQuality.total}`,`${tossQuality.success}`,`${tossQuality.miss}`,`${tossQuality.successRate}%`,`${tossQuality.missRate}%`]], 'トス記録がありません。')}<div class="note">※トスミスは得点・失点とは別に、トスの技術的な質として記録します。</div></section>
-      </div>
-      <section class="section"><h2>二段トス分析</h2>${table(['選手','名前','合計','レフト','センター','ライト','バック','ツー'], secondBallRows, '二段トスの記録がありません。')}<div class="note">※二段トスは通常トス・Setter IQとは別集計です。セッター本人の二段トスもここに含まれます。</div></section>
-      <section class="section"><h2>各項目ランキング TOP3</h2><div class="pdfRankGrid">${pdfRankingHtml}</div><div class="note">※通常トスはトスミスを除いた成功本数、二段トスは記録本数で表示します。</div></section>
-      <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
-      <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
-      <footer class="footer"><span>Setter Theory</span><span>Generated by Aquila</span></footer>
+      <section class="pdfPage pdfPageOverview">
+        <header class="brand"><div><h1>Setter Theory Match Report</h1><p>${esc(today)}　${esc(s.myTeam || '自チーム')} vs ${esc(s.oppTeam || '相手')}　/　Set ${esc(s.setNo || '1')}　/　Setter ${reportSetters.map(n=>esc(n+'番 '+getPlayerName(n))).join('・')}</p></div><div class="aquilaPdfBadge"><img src="${aquilaIcon}" alt="Aquila"><div>${pdfHeaderIq}</div></div></header>
+        <div class="pdfLead">${pdfSetterLeadCards}</div>
+        <div class="summary">
+          <div class="metric"><div class="label">総入力</div><div class="value">${total}</div><div class="sub">対象プレー</div></div>
+          <div class="metric"><div class="label">成功率</div><div class="value">${pct(okTotal,total)}%</div><div class="sub">成功 ${okTotal}/${total}</div></div>
+          <div class="metric"><div class="label">効果率</div><div class="value">${effTotal}%</div><div class="sub">成功−ミス系 ÷ 対象</div></div>
+          <div class="metric"><div class="label">得点 / 失点</div><div class="value">${myPts}-${opPts}</div><div class="sub">自ミス等 ${ownErrorLossCount} / 相手得点 ${opponentPointCount}</div></div>
+        </div>
+        <div class="pageFooter"><span>Setter Theory</span><span>1 / 6　V150.9</span></div>
+      </section>
+
+      <section class="pdfPage pdfPageSetter">
+        <div class="pageTitle"><h2>セッター分析</h2><span>SETTER ANALYSIS</span></div>
+        ${perSetterPdfCards}
+        <section class="section"><h2>登録セッター</h2>${table(['区分','背番号','名前','トス数','トス成功率'], reportSetters.map((n,i)=>{const t=s.logs.filter(x=>x.type==='トス'&&logBelongsToPlayer(x,n));const m=t.filter(isTossMissLog).length;return ['セッター'+(i+1),n,getPlayerName(n),String(t.length),`${t.length?Math.round((t.length-m)/t.length*100):0}%`]}), '登録なし')}</section>
+        <div class="pageFooter"><span>Setter Theory</span><span>2 / 6　V150.9</span></div>
+      </section>
+
+      <section class="pdfPage pdfPageTeam">
+        <div class="pageTitle"><h2>チーム分析</h2><span>TEAM ANALYSIS</span></div>
+        <section class="section"><h2>プレー別 成功率・効果率</h2>${table(['項目','本数','成功','ミス','被ブロック','成功率','効果率'], actionRows, '記録がありません。')}<div class="note">※トス技術は「トス分析」で別評価します。</div></section>
+        <section class="section"><h2>選手別 成功率・効果率</h2>${table(['選手','名前','本数','成功','ミス','被ブロック','成功率','効果率'], playerRows, '選手別の対象記録がありません。')}</section>
+        <div class="twoCol">
+          <section class="section"><h2>ローテーション別</h2>${table(['ローテ','本数','成功','成功率','得点','失点','差'], rotRows, '記録がありません。')}</section>
+          <section class="section"><h2>プレー割合</h2>${table(['項目','本数','割合'], playRows, '記録がありません。')}</section>
+        </div>
+        <div class="pageFooter"><span>Setter Theory</span><span>3 / 6　V150.9</span></div>
+      </section>
+
+      <section class="pdfPage pdfPageToss">
+        <div class="pageTitle"><h2>トス分析</h2><span>TOSS ANALYSIS</span></div>
+        <div class="twoCol">
+          <section class="section"><h2>トス配分</h2>${table(['トス先','本数','割合'], tossRows, 'トス記録がありません。')}</section>
+          <section class="section"><h2>トス技術</h2>${table(['総トス','成功','トスミス','成功率','ミス率'], [[`${tossQuality.total}`,`${tossQuality.success}`,`${tossQuality.miss}`,`${tossQuality.successRate}%`,`${tossQuality.missRate}%`]], 'トス記録がありません。')}<div class="note">※トスミスは得点・失点とは別に、トスの技術的な質として記録します。</div></section>
+        </div>
+        <section class="section"><h2>二段トス分析</h2>${table(['選手','名前','合計','レフト','センター','ライト','バック','ツー'], secondBallRows, '二段トスの記録がありません。')}<div class="note">※二段トスは通常トス・Setter IQとは別集計です。セッター本人の二段トスもここに含まれます。</div></section>
+        <div class="pageFooter"><span>Setter Theory</span><span>4 / 6　V150.9</span></div>
+      </section>
+
+      <section class="pdfPage pdfPageRanking">
+        <div class="pageTitle"><h2>各項目ランキング TOP3</h2><span>PLAYER RANKING</span></div>
+        <section class="section"><div class="pdfRankGrid">${pdfRankingHtml}</div><div class="note">※通常トスはトスミスを除いた成功本数、二段トスは記録本数で表示します。</div></section>
+        <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
+        <div class="pageFooter"><span>Setter Theory</span><span>5 / 6　V150.9</span></div>
+      </section>
+
+      <section class="pdfPage pdfPageLog">
+        <div class="pageTitle"><h2>直近ログ</h2><span>MATCH LOG</span></div>
+        <section class="section">${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
+        <div class="pageFooter"><span>Setter Theory</span><span>6 / 6　V150.9</span></div>
+      </section>
     </main>
   </body></html>`;
   const w=window.open('', '_blank');
