@@ -8244,5 +8244,38 @@ body.menuOpen .sideOverlay{
 }
 </style>
 <script>
-/* cache marker: 146-two-setter-vertical-iq-advice-toss-rotation-1 */
+/* cache marker: 146-setter-layout-refine-name-iq-advice-bar-2 */
 </script>
+<style id="v146-setter-layout-refine-2">
+/* V146: 名前のみ表示。左列にIQ＋Advice、右側に能力バランス＋トス分析 */
+#reportDashboard .setterMasterHead h3{color:#f8fafc!important}
+#reportDashboard .setterMasterLayout{display:grid;grid-template-columns:minmax(240px,.78fr) minmax(0,2.22fr);gap:18px;align-items:start;margin-top:14px}
+#reportDashboard .setterMasterLeftColumn{display:grid;grid-template-rows:auto 1fr;gap:12px;min-width:0}
+#reportDashboard .setterMasterLeftColumn .setterDetailIq{margin:0;min-height:100px;display:flex;justify-content:center;align-items:center;align-content:center;flex-wrap:wrap}
+#reportDashboard .setterMasterLeftColumn .setterMasterAdvice{margin:0;min-width:0;height:100%;box-sizing:border-box}
+#reportDashboard .setterMasterVisuals{display:grid;grid-template-columns:minmax(230px,.9fr) minmax(340px,1.35fr);gap:20px;align-items:start;min-width:0}
+#reportDashboard .setterMasterVisuals .setterMasterRadar{min-width:0;align-self:center}
+#reportDashboard .setterMasterTossColumn{display:flex;flex-direction:column;gap:12px;min-width:0}
+#reportDashboard .setterMasterTossColumn .setterMasterDonut{min-width:0}
+#reportDashboard .setterMasterTossColumn .setterMasterRotation{margin:0!important;padding:12px 0 0!important;border-left:0!important;border-top:1px solid rgba(226,232,240,.35)!important}
+#reportDashboard .setterMasterTossColumn .setterMasterRotation>h4{margin:0 0 10px!important;color:#f8fafc!important}
+#reportDashboard .setterQualityOneBar{display:flex;flex-direction:column;gap:7px}
+#reportDashboard .setterQualityOneBarStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:11px;color:#e2e8f0;text-align:center;font-weight:800}
+#reportDashboard .setterQualityOneBarStats span{white-space:nowrap}
+#reportDashboard .setterQualityOneBarStats b{font-size:15px;color:#f8fafc;margin:0 2px}
+#reportDashboard .setterQualityOneBarTrack{height:13px;border-radius:999px;overflow:hidden;background:#334155;display:flex;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+#reportDashboard .setterQualityOneBarTrack i{display:block;height:100%}
+#reportDashboard .setterQualityOneBarTrack .ok{background:#22c55e}
+#reportDashboard .setterQualityOneBarTrack .ng{background:#ef4444}
+#reportDashboard .setterQualityOneBarTrack em{width:100%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:9px;color:#cbd5e1}
+@media(max-width:1050px){
+  #reportDashboard .setterMasterLayout{grid-template-columns:1fr}
+  #reportDashboard .setterMasterLeftColumn{grid-template-columns:190px minmax(0,1fr);grid-template-rows:auto}
+}
+@media(max-width:760px){
+  #reportDashboard .setterMasterLeftColumn{grid-template-columns:1fr}
+  #reportDashboard .setterMasterVisuals{grid-template-columns:1fr}
+  #reportDashboard .setterQualityOneBarStats{grid-template-columns:1fr 1fr 1fr;font-size:10px}
+}
+</style>
+<script>/* cache marker: 146-setter-layout-refine-name-iq-advice-bar-2 */</script>
