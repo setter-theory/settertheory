@@ -2915,11 +2915,18 @@ function printMatchPdfReport(){
     el.removeAttribute('oninput');
   });
 
-  // 3部構成：セッター分析 → チーム分析 → 詳細データ。
-  const teamCard=clone.querySelector('.teamAnalysisCard');
-  if(teamCard) teamCard.classList.add('pdfPageStart');
-  const details=clone.querySelector('.singleReportWideGrid');
-  if(details) details.classList.add('pdfPageStart');
+  // A4専用：各主要ブロックを独立した印刷セクションへ再構成する。
+  const a4Root=document.createElement('div');
+  a4Root.id='reportDashboard';
+  a4Root.className='pdfA4Document';
+  const appendPage=(node,extra)=>{ if(!node)return; const page=document.createElement('section'); page.className='pdfA4Page '+(extra||''); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
+  const brand=clone.querySelector('.unifiedReportBrand');
+  const setterCards=[...clone.querySelectorAll('.setterAnalysisUnit')];
+  if(setterCards.length){ const first=document.createElement('section'); first.className='pdfA4Page pdfFirstPage'; if(brand)first.appendChild(brand.cloneNode(true)); first.appendChild(setterCards[0].cloneNode(true)); a4Root.appendChild(first); setterCards.slice(1).forEach(x=>appendPage(x,'pdfSetterPage')); }
+  else appendPage(brand,'pdfFirstPage');
+  appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
+  appendPage(clone.querySelector('.singleReportWideGrid'),'pdfDetailsPage');
+  appendPage(clone.querySelector('.setterUnifiedBottomGrid'),'pdfLogsPage');
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
     .map(el=>el.outerHTML).join('\n');
@@ -2957,14 +2964,26 @@ function printMatchPdfReport(){
     #report #reportDashboard table{width:100%!important;max-width:100%!important;table-layout:fixed!important}
     #report #reportDashboard th,#report #reportDashboard td{overflow-wrap:anywhere!important;word-break:break-word!important}
     #report #reportDashboard img{max-width:100%!important;height:auto}
+    .pdfPreviewSheet{width:210mm!important;max-width:calc(100% - 16px)!important;padding:0!important;overflow:visible!important}
+    #reportDashboard.pdfA4Document{display:block!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important}
+    .pdfA4Page{display:block!important;position:relative!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:8mm!important;background:#fff!important;break-before:page;page-break-before:always}
+    .pdfA4Page:first-child{break-before:auto;page-break-before:auto}
+    .pdfA4Page>*{width:100%!important;max-width:100%!important;margin:0!important;transform:none!important}
+    .pdfA4Page .setterMasterHeaderRow{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+    .pdfA4Page .setterMasterIqAdviceCard{display:grid!important;grid-template-columns:minmax(145px,.7fr) minmax(0,1.3fr)!important;gap:10px!important}
+    .pdfA4Page .setterMasterBottomGrid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+    .pdfA4Page .setterMasterRadar,.pdfA4Page .setterMasterMiddleColumn,.pdfA4Page .setterMasterRotation{width:100%!important;max-width:100%!important;overflow:visible!important}
+    .pdfTeamPage .playOverviewCard{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}
+    .pdfTeamPage .playOverviewColumn,.pdfTeamPage .playOverviewRotation{display:block!important;position:static!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;margin:0 0 10px!important;padding:10px!important}
+    .pdfTeamPage .teamRotationList{display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
     @media print{
       html,body{background:#fff!important;width:auto!important;min-height:0!important}
       body *{visibility:visible!important}
       #csvAnalysisBox{display:none!important}
       .pdfPreviewTopbar{display:none!important}
-      .pdfPreviewSheet{width:auto;margin:0;padding:0;border-radius:0;box-shadow:none}
-      #report,#report #reportDashboard{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important}
-      #report #reportDashboard{font-size:88%;position:static!important;transform:none!important}
+      .pdfPreviewSheet{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border-radius:0;box-shadow:none;overflow:visible!important}
+      #report,#report #reportDashboard,#reportDashboard.pdfA4Document{display:block!important;position:static!important;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;transform:none!important}
+      #report #reportDashboard{font-size:88%;position:static!important;transform:none!important}.pdfA4Page{padding:0!important;break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}
       #report #reportDashboard .reportGrid,#report #reportDashboard .setterMasterGrid,#report #reportDashboard .singleReportWideGrid{display:block!important;width:100%!important;height:auto!important;overflow:visible!important}
       #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>* ,#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0 0 8mm!important}
       #report #reportDashboard .reportPanel,#report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .singleReportWideGrid{display:block!important;height:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
@@ -2978,7 +2997,7 @@ function printMatchPdfReport(){
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="document.body.classList.add('pdfPrinting');requestAnimationFrame(function(){requestAnimationFrame(function(){window.focus();window.print();});});">PDF／印刷</button></div></div>
-    <main class="pdfPreviewSheet"><section id="report" class="active">${clone.outerHTML}</section></main>
+    <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
   <script>window.addEventListener('beforeprint',function(){document.body.classList.add('pdfPrinting');});window.addEventListener('afterprint',function(){document.body.classList.remove('pdfPrinting');});window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');});<\/script></body></html>`;
 
   // 元画面の開閉状態は変えずに戻す。
