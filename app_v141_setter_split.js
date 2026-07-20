@@ -2440,6 +2440,13 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
   const title=options.title||'Setter Theory Match Report';
   const dateText=options.dateText||new Date().toLocaleDateString();
   const actions=options.actionsHtml||'';
+  const iqItems=Array.isArray(options.iqItems)&&options.iqItems.length?options.iqItems:null;
+  const iqBadgeHtml=iqItems
+    ? `<div class="unifiedIqBadgeGroup ${iqItems.length>1?'isTwoSetter':''}">${iqItems.map((item,index)=>{
+        const itemRank=setterIqRank(item.iq||0);
+        return `<div class="unifiedAquilaBadge unifiedSetterBadge"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="small">${escapeHtml(item.label||`SETTER ${index+1}`)}</div><div class="iqLine"><b>${item.iq||'--'}</b><span>/100</span></div><div class="rank">${item.iq?itemRank.label:'NO DATA'}</div></div></div>`;
+      }).join('')}</div>`
+    : `<div class="unifiedAquilaBadge"><img src="icons/aquila-192.png" alt="Aquila"><div><div class="small">SETTER IQ</div><div class="iqLine"><b>${analysis.setterIq||'--'}</b><span>/100</span></div><div class="rank">${analysis.setterIq?rank.label:'NO DATA'}</div></div></div>`;
   return `<div class="unifiedReportBrand">
     <div class="unifiedReportIdentity">
       <div class="unifiedReportEyebrow">AQUILA REPORT</div>
@@ -2447,10 +2454,7 @@ function buildUnifiedReportBrandHeader(state, analysis, options={}){
       <div class="unifiedReportMeta">${escapeHtml(state.myTeam||state.team||'自チーム')} vs ${escapeHtml(state.oppTeam||'相手')} / Set ${escapeHtml(state.setNo||'1')} / ${escapeHtml(dateText)}</div>
     </div>
     <div class="unifiedReportRight">
-      <div class="unifiedAquilaBadge">
-        <img src="icons/aquila-192.png" alt="Aquila">
-        <div><div class="small">SETTER IQ</div><div class="iqLine"><b>${analysis.setterIq||'--'}</b><span>/100</span></div><div class="rank">${analysis.setterIq?rank.label:'NO DATA'}</div></div>
-      </div>
+      ${iqBadgeHtml}
       ${actions}
     </div>
   </div>`;
@@ -2579,7 +2583,11 @@ function report(){
 
 
   const currentAnalysis=currentMatchSetterAnalysis();
-  const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="backLink unifiedReportAction unifiedReportBack" onclick="returnToMatchFromReport()">← 試合入力に戻る</button><button class="pdfBtn unifiedReportAction unifiedReportExport" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction unifiedReportExport" onclick="downloadCSV()">CSV出力</button>`});
+  const headerSetters=reportSetterNumbers();
+  const headerIqItems=headerSetters.length>1
+    ? headerSetters.slice(0,2).map((num,index)=>{const a=currentSetterAnalysisFor(num);return {label:`セッター${index+1} ${num}番`,iq:a.setterIq||0};})
+    : null;
+  const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{iqItems:headerIqItems,actionsHtml:`<button class="backLink unifiedReportAction unifiedReportBack" onclick="returnToMatchFromReport()">← 試合入力に戻る</button><button class="pdfBtn unifiedReportAction unifiedReportExport" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction unifiedReportExport" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
     ${buildSetterDetailReports()}
     <section class="reportPanel teamAnalysisCard">

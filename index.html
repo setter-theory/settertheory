@@ -4170,7 +4170,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-team-rotation-grid-true-final-2"></script>
+<script src="app_v141_setter_split.js?v=146-fixed-header-two-setter-iq-1"></script>
 
 
 
@@ -8938,3 +8938,31 @@ body.menuOpen .sideOverlay{
 }
 </style>
 <script>/* cache marker: 146-fixed-match-report-toolbar-1 */</script>
+
+<style id="v146-fixed-header-two-setter-iq">
+/* V146: Match Reportカードを画面固定 + ツーセッター時は2人分IQ表示 */
+#reportDashboard{padding-top:118px!important}
+#reportDashboard>.unifiedReportBrand{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  width:min(calc(100% - 24px),1180px)!important;
+  z-index:9999!important;
+  margin:0!important;
+}
+#reportDashboard .unifiedIqBadgeGroup{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+#reportDashboard .unifiedIqBadgeGroup.isTwoSetter .unifiedAquilaBadge{min-width:132px;padding:6px 8px;gap:7px}
+#reportDashboard .unifiedIqBadgeGroup.isTwoSetter .unifiedAquilaBadge img{width:36px;height:36px;flex-basis:36px}
+#reportDashboard .unifiedIqBadgeGroup.isTwoSetter .unifiedAquilaBadge .small{font-size:7px;white-space:nowrap}
+#reportDashboard .unifiedIqBadgeGroup.isTwoSetter .unifiedAquilaBadge .iqLine b{font-size:23px}
+#reportDashboard .unifiedIqBadgeGroup.isTwoSetter .unifiedAquilaBadge .rank{font-size:7px}
+@media(max-width:820px){
+  #reportDashboard{padding-top:146px!important}
+  #reportDashboard>.unifiedReportBrand{width:100%!important;left:0!important;transform:none!important;border-radius:0!important}
+  #reportDashboard .unifiedIqBadgeGroup{grid-column:1/-1;width:100%;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #reportDashboard .unifiedIqBadgeGroup .unifiedAquilaBadge{display:flex!important;min-width:0!important;width:100%!important}
+  #reportDashboard .unifiedReportRight{grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,.8fr))!important}
+}
+</style>
+<script>/* cache marker: 146-fixed-header-two-setter-iq-1 */</script>
