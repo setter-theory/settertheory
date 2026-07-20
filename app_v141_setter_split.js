@@ -2411,11 +2411,15 @@ function report(){
   const spikeKill=spikeLogs.filter(x=>x.result==="成功").length;
 
   const successPct=safePct(success,total), lossPct=safePct(loss,total), servePct=safePct(serveOk,serveLogs.length), spikePct=safePct(spikeKill,spikeLogs.length);
-  const playMetricLabels=["スパイク","サーブ","レセプ","ディグ","ブロック"];
+
+  const playColors={"サーブ":"#ef4444","レセプ":"#2563eb","スパイク":"#22c55e","トス":"#f59e0b","二段トス":"#06b6d4","ディグ":"#7c3aed","ブロック":"#334155"};
+  const playItems=actionTypes.map(t=>({label:t,count:s.logs.filter(x=>effectivePlayType(x)===t).length,color:playColors[t]})).filter(x=>x.count>0);
+  const playDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(playItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(playItems,total)}</div>`;
+
   const summary=`<div class="playMetricAnalysis">
-    <div class="playMetricHeader"><span>プレー</span><span>成功率</span><span>失敗率</span><span>効果率</span></div>
-    ${playMetricLabels.map(type=>{
-      const logs=s.logs.filter(x=>x.type===type);
+    ${playItems.map(item=>{
+      const type=item.label;
+      const logs=s.logs.filter(x=>effectivePlayType(x)===type);
       const ok=logs.filter(isSuccessResult).length;
       const miss=logs.filter(isMissResult).length;
       const successRate=safePct(ok,logs.length);
@@ -2423,18 +2427,17 @@ function report(){
       const effect=effectRate(logs);
       const effectClass=effect>0?"positive":effect<0?"negative":"even";
       const effectText=effect>0?`+${effect}%`:`${effect}%`;
+      const effectWidth=Math.max(0,Math.min(100,Math.abs(effect)));
       return `<div class="playMetricRow">
-        <div class="playMetricName"><b>${type}</b><small>${logs.length}本</small></div>
-        <strong class="success">${successRate}%</strong>
-        <strong class="failure">${missRate}%</strong>
-        <strong class="effect ${effectClass}">${effectText}</strong>
+        <div class="playMetricName"><span class="playMetricDot" style="background:${item.color}"></span><b>${type}</b><small>${logs.length}本</small></div>
+        <div class="playMetricBars">
+          <div class="playMetricBarLine success"><span>成功率</span><div class="playMetricTrack"><i style="width:${successRate}%"></i></div><strong>${successRate}%</strong></div>
+          <div class="playMetricBarLine failure"><span>失敗率</span><div class="playMetricTrack"><i style="width:${missRate}%"></i></div><strong>${missRate}%</strong></div>
+          <div class="playMetricBarLine effect ${effectClass}"><span>効果率</span><div class="playMetricTrack"><i style="width:${effectWidth}%"></i></div><strong>${effectText}</strong></div>
+        </div>
       </div>`;
     }).join("")}
   </div>`;
-
-  const playColors={"サーブ":"#ef4444","レセプ":"#2563eb","スパイク":"#22c55e","トス":"#f59e0b","二段トス":"#06b6d4","ディグ":"#7c3aed","ブロック":"#334155"};
-  const playItems=actionTypes.map(t=>({label:t,count:s.logs.filter(x=>effectivePlayType(x)===t).length,color:playColors[t]})).filter(x=>x.count>0);
-  const playDonut=`<div class="donutWrap"><div class="donut" style="background:${donutStyle(playItems)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${total}</div></div></div>${legendHtml(playItems,total)}</div>`;
 
   const resultGroups=[
     {label:"成功系",count:actionLogs.filter(isSuccessResult).length,color:"#22c55e"},
