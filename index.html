@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-two-setter-vertical-layout-1"></script>
+<script src="app_v141_setter_split.js?v=146-iq-advice-unified-radar-small-1"></script>
 
 
 
@@ -8305,3 +8305,25 @@ body.menuOpen .sideOverlay{
 }
 </style>
 <script>/* cache marker: 146-setter-exact-three-column-layout-1 */</script>
+
+<style>
+/* V146 IQ + Aquila unified card / border cleanup / radar resize */
+#reportDashboard .setterMasterHeaderRow{grid-template-columns:minmax(220px,.75fr) minmax(0,2.25fr)!important}
+#reportDashboard .setterMasterIqAdviceCard{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:stretch;background:rgba(15,23,42,.55);border:1px solid rgba(96,165,250,.35);border-radius:14px;padding:10px;min-width:0}
+#reportDashboard .setterMasterIqAdviceCard .setterDetailIq{min-height:0!important;border:0!important;background:transparent!important;box-shadow:none!important;padding:6px 8px!important}
+#reportDashboard .setterMasterIqAdviceCard .setterMasterAdvice{border:0!important;background:transparent!important;border-radius:0!important;padding:4px 6px!important;box-shadow:none!important}
+#reportDashboard .setterMasterRadar .setterIqRadar{border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;padding:0!important;width:100%;max-width:290px!important}
+#reportDashboard .setterMasterRadar .setterIqRadar svg{width:100%!important;max-width:290px!important;height:auto!important}
+#reportDashboard .setterMasterBottomGrid{grid-template-columns:minmax(250px,.9fr) minmax(300px,1fr) minmax(390px,1.45fr)!important}
+@media(max-width:1100px){
+  #reportDashboard .setterMasterHeaderRow{grid-template-columns:minmax(190px,.7fr) minmax(0,1.8fr)!important}
+  #reportDashboard .setterMasterIqAdviceCard{grid-template-columns:140px minmax(0,1fr)}
+  #reportDashboard .setterMasterBottomGrid{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:760px){
+  #reportDashboard .setterMasterHeaderRow{grid-template-columns:1fr!important}
+  #reportDashboard .setterMasterIqAdviceCard{grid-template-columns:1fr}
+  #reportDashboard .setterMasterBottomGrid{grid-template-columns:1fr!important}
+}
+</style>
+<script>/* cache marker: 146-iq-advice-unified-radar-small-1 */</script>

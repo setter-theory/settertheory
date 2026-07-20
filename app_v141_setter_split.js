@@ -1867,8 +1867,10 @@ function buildSetterDetailReports(){
     return `<section class="reportPanel setterMasterCard">
       <div class="setterMasterHeaderRow">
         <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
-        <div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div>
-        <div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+        <div class="setterMasterIqAdviceCard">
+          <div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div>
+          <div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+        </div>
       </div>
       <div class="setterMasterBottomGrid">
         <div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>
