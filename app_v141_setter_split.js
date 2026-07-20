@@ -2897,7 +2897,8 @@ function printMatchPdfReport(){
   }
 
   const clone=source.cloneNode(true);
-  clone.id='pdfReportDashboard';
+  // 元画面と同じID・親構造を維持し、既存の完成済みCSSをPDFでも有効にする。
+  clone.id='reportDashboard';
   clone.classList.add('pdfPreviewReport');
 
   // PDFでは操作ボタン・開閉UI・選択UIを表示しない。
@@ -2934,29 +2935,39 @@ function printMatchPdfReport(){
     .pdfPreviewTopbar button{border:0;border-radius:9px;padding:9px 13px;font-weight:900;cursor:pointer;background:#f4b63f;color:#111827}
     .pdfPreviewTopbar button.secondary{background:#334155;color:#fff}
     .pdfPreviewSheet{width:min(1120px,calc(100% - 24px));margin:16px auto;background:#fff;padding:16px;border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.15)}
-    #pdfReportDashboard{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important}
-    #pdfReportDashboard .unifiedReportBrand{margin-top:0!important}
-    #pdfReportDashboard .unifiedReportRight{min-width:0!important}
-    #pdfReportDashboard .reportAccordionBody{display:block!important}
-    #pdfReportDashboard .reportAccordion{overflow:visible!important}
-    #pdfReportDashboard .pdfSelectedValue{display:inline-block;border:1px solid #cbd5e1;border-radius:7px;background:#f8fafc;padding:5px 8px;font-size:11px;font-weight:800;color:#334155}
-    #pdfReportDashboard .pdfPageStart{break-before:page;page-break-before:always;margin-top:0!important}
-    #pdfReportDashboard .setterAnalysisUnit,#pdfReportDashboard .setterIqAdvicePerson,#pdfReportDashboard .reportPanel,#pdfReportDashboard .pdfRankCard{break-inside:avoid;page-break-inside:avoid}
-    #pdfReportDashboard canvas,#pdfReportDashboard svg{max-width:100%!important}
+    #report #reportDashboard{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important}
+    #report #reportDashboard .unifiedReportBrand{margin-top:0!important}
+    #report #reportDashboard .unifiedReportRight{min-width:0!important}
+    #report #reportDashboard .reportAccordionBody{display:block!important}
+    #report #reportDashboard .reportAccordion{overflow:visible!important}
+    #report #reportDashboard .pdfSelectedValue{display:inline-block;border:1px solid #cbd5e1;border-radius:7px;background:#f8fafc;padding:5px 8px;font-size:11px;font-weight:800;color:#334155}
+    #report #reportDashboard .pdfPageStart{break-before:page;page-break-before:always;margin-top:0!important}
+    #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .reportPanel,#report #reportDashboard .pdfRankCard{break-inside:avoid;page-break-inside:avoid}
+    #report #reportDashboard canvas,#report #reportDashboard svg{max-width:100%!important}
+    #report{display:block!important;width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#0f172a!important;overflow:visible!important}
+    #report #reportDashboard,#report #reportDashboard *{min-width:0}
+    #report #reportDashboard .setterMasterGrid.two{grid-template-columns:1fr!important}
+    #report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .reportPanel,#report #reportDashboard .singleReportWideGrid{width:100%!important;max-width:100%!important;overflow:hidden!important}
+    #report #reportDashboard .playOverviewCard{grid-template-columns:1fr 1fr!important;gap:10px!important}
+    #report #reportDashboard .playOverviewPlay,#report #reportDashboard .playOverviewRotation{grid-column:1/-1!important}
+    #report #reportDashboard .teamRotationList{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    #report #reportDashboard table{width:100%!important;max-width:100%!important;table-layout:fixed!important}
+    #report #reportDashboard th,#report #reportDashboard td{overflow-wrap:anywhere!important;word-break:break-word!important}
+    #report #reportDashboard img{max-width:100%!important;height:auto}
     @media print{
       html,body{background:#fff!important}
       .pdfPreviewTopbar{display:none!important}
       .pdfPreviewSheet{width:auto;margin:0;padding:0;border-radius:0;box-shadow:none}
-      #pdfReportDashboard{font-size:92%}
-      #pdfReportDashboard .reportGrid{gap:8px!important}
-      #pdfReportDashboard .reportPanel{box-shadow:none!important}
-      #pdfReportDashboard .teamAnalysisCard{break-inside:auto;page-break-inside:auto}
-      #pdfReportDashboard .singleReportWideGrid{break-inside:auto;page-break-inside:auto}
+      #report #reportDashboard{font-size:92%}
+      #report #reportDashboard .reportGrid{gap:8px!important}
+      #report #reportDashboard .reportPanel{box-shadow:none!important}
+      #report #reportDashboard .teamAnalysisCard{break-inside:auto;page-break-inside:auto}
+      #report #reportDashboard .singleReportWideGrid{break-inside:auto;page-break-inside:auto}
     }
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
   </style></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button onclick="window.print()">PDF／印刷</button></div></div>
-    <main class="pdfPreviewSheet">${clone.outerHTML}</main>
+    <main class="pdfPreviewSheet"><section id="report" class="active">${clone.outerHTML}</section></main>
   </body></html>`;
 
   // 元画面の開閉状態は変えずに戻す。
