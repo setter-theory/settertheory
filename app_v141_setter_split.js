@@ -1850,7 +1850,7 @@ function buildSetterDetailReports(){
   if(!setters.length) return '';
   const labels=['レフト','センター','ライト','バック','ツー'];
   const colors={'レフト':'#ef4444','センター':'#2563eb','ライト':'#22c55e','バック':'#f59e0b','ツー':'#0f172a'};
-  return `<div class="setterMasterGrid ${setters.length>1?'two':''}">${setters.map((n,idx)=>{
+  return `<div class="setterAnalysisSections">${setters.map((n,idx)=>{
     const a=currentSetterAnalysisFor(n);
     const rank=setterIqRank(a.setterIq||0);
     const b=iqBreakdown20(a);
@@ -1864,7 +1864,9 @@ function buildSetterDetailReports(){
     const successPct=a.quality.total?Math.round(successCount/a.quality.total*100):0;
     const missPct=a.quality.total?Math.round(a.quality.miss/a.quality.total*100):0;
     const qualityBar=`<div class="setterQualityOneBar"><div class="setterQualityOneBarStats"><span>総トス <b>${a.quality.total}</b>本</span><span>トスミス <b>${a.quality.miss}</b>本</span><span>成功率 <b>${a.quality.successRate}</b>%</span></div><div class="setterQualityOneBarTrack">${a.quality.total?`<i class="ok" style="width:${successPct}%"></i><i class="ng" style="width:${missPct}%"></i>`:`<em>記録なし</em>`}</div></div>`;
-    return `<section class="reportPanel setterMasterCard">
+    return `<section class="reportPanel setterAnalysisUnit">
+      <div class="setterAnalysisHeader"><div><span class="setterAnalysisEyebrow">SETTER REPORT</span><h2>セッター分析${idx===0?'①':'②'}</h2></div><small>${escapeHtml(a.name||'')}の配球・能力バランス・ローテーション別傾向</small></div>
+      <div class="setterAnalysisUnitBody"><div class="setterMasterCard">
       <div class="setterMasterHeaderRow">
         <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
         <div class="setterMasterIqAdviceCard">
@@ -1877,6 +1879,7 @@ function buildSetterDetailReports(){
         <div class="setterMasterMiddleColumn">${qualityBar}${donut}</div>
         <div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div>
       </div>
+      </div></div>
     </section>`;
   }).join('')}</div>`;
 }
@@ -2525,10 +2528,7 @@ function report(){
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
-    <section class="reportPanel setterAnalysisCard">
-      <div class="setterAnalysisHeader"><div><span class="setterAnalysisEyebrow">SETTER REPORT</span><h2>セッター分析</h2></div><small>配球・能力バランス・ローテーション別傾向を確認</small></div>
-      <div class="setterAnalysisBody">${buildSetterDetailReports()}</div>
-    </section>
+    ${buildSetterDetailReports()}
     <section class="reportPanel teamAnalysisCard">
       <div class="teamAnalysisHeader"><div><span class="teamAnalysisEyebrow">TEAM REPORT</span><h2>チーム分析</h2></div><small>試合全体・プレー傾向・ローテーションをまとめて確認</small></div>
       <div class="playOverviewCard">
