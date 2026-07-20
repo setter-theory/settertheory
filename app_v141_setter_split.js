@@ -2411,14 +2411,25 @@ function report(){
   const spikeKill=spikeLogs.filter(x=>x.result==="成功").length;
 
   const successPct=safePct(success,total), lossPct=safePct(loss,total), servePct=safePct(serveOk,serveLogs.length), spikePct=safePct(spikeKill,spikeLogs.length);
-  const secondBallSummaryData=secondBallAnalysis();
-  const summary=`<div class="summaryCards reportSixMetrics">
-    ${metricCard("成功率",successPct+"%",`成功 ${success} / 総数 ${total}`,"blue","🎯",successPct)}
-    ${metricCard("失点率",lossPct+"%",`失点 ${loss} / 総数 ${total}`,"red","🛡",lossPct)}
-    ${metricCard("サーブ成功率",servePct+"%",`成功 ${serveOk} / 総数 ${serveLogs.length}`,"green","🏐",servePct)}
-    ${metricCard("スパイク決定率",spikePct+"%",`決定 ${spikeKill} / 打数 ${spikeLogs.length}`,"orange","🏃",spikePct)}
-    ${metricCard("総プレー数",total,`総数 ${total}プレー`,"purple","〽",100)}
-    ${metricCard("二段トス",secondBallSummaryData.total,`記録選手 ${secondBallSummaryData.players.length}人`,"cyan","👐",total?safePct(secondBallSummaryData.total,total):0)}
+  const playMetricLabels=["スパイク","サーブ","レセプ","ディグ","ブロック"];
+  const summary=`<div class="playMetricAnalysis">
+    <div class="playMetricHeader"><span>プレー</span><span>成功率</span><span>失敗率</span><span>効果率</span></div>
+    ${playMetricLabels.map(type=>{
+      const logs=s.logs.filter(x=>x.type===type);
+      const ok=logs.filter(isSuccessResult).length;
+      const miss=logs.filter(isMissResult).length;
+      const successRate=safePct(ok,logs.length);
+      const missRate=safePct(miss,logs.length);
+      const effect=effectRate(logs);
+      const effectClass=effect>0?"positive":effect<0?"negative":"even";
+      const effectText=effect>0?`+${effect}%`:`${effect}%`;
+      return `<div class="playMetricRow">
+        <div class="playMetricName"><b>${type}</b><small>${logs.length}本</small></div>
+        <strong class="success">${successRate}%</strong>
+        <strong class="failure">${missRate}%</strong>
+        <strong class="effect ${effectClass}">${effectText}</strong>
+      </div>`;
+    }).join("")}
   </div>`;
 
   const playColors={"サーブ":"#ef4444","レセプ":"#2563eb","スパイク":"#22c55e","トス":"#f59e0b","二段トス":"#06b6d4","ディグ":"#7c3aed","ブロック":"#334155"};
@@ -2494,9 +2505,8 @@ function report(){
       <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
       <div class="reportPanel"><h3>ローテーション別 成功率</h3>${rotationRows}</div>
     </div>
-    <div class="wideGrid">
+    <div class="wideGrid singleReportWideGrid">
       <div class="reportPanel"><h3>ローテーション別 得失点</h3>${buildRotationPointAnalysis()}</div>
-      <div class="reportPanel"><h3>プレー別 成功率</h3>${buildActionSuccessAnalysis()}</div>
     </div>
     <div class="bottomGrid setterUnifiedBottomGrid">
       <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>

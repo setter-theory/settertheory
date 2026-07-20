@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-score-under-result-1"></script>
+<script src="app_v141_setter_split.js?v=146-play-metrics-1"></script>
 
 
 
@@ -8122,6 +8122,22 @@ body.menuOpen .sideOverlay{
 #reportDashboard .playOverviewColumn:not(:first-child){border-left:1px solid #e5e7eb;padding-left:18px}
 #reportDashboard .playOverviewColumn>h3{margin:0 0 14px}
 #reportDashboard .playOverviewCard .reportSixMetrics{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin:0!important}
+#reportDashboard .playMetricAnalysis{display:flex;flex-direction:column;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff}
+#reportDashboard .playMetricHeader,#reportDashboard .playMetricRow{display:grid;grid-template-columns:minmax(92px,1.25fr) repeat(3,minmax(58px,.75fr));align-items:center;gap:8px;padding:9px 10px}
+#reportDashboard .playMetricHeader{background:#f8fafc;color:#64748b;font-size:11px;font-weight:800;text-align:center;border-bottom:1px solid #e5e7eb}
+#reportDashboard .playMetricHeader span:first-child{text-align:left}
+#reportDashboard .playMetricRow{border-bottom:1px solid #eef2f7;text-align:center}
+#reportDashboard .playMetricRow:last-child{border-bottom:0}
+#reportDashboard .playMetricName{text-align:left;display:flex;flex-direction:column;line-height:1.15}
+#reportDashboard .playMetricName b{font-size:13px;color:#0f172a}
+#reportDashboard .playMetricName small{font-size:10px;color:#94a3b8;margin-top:3px}
+#reportDashboard .playMetricRow strong{font-size:13px}
+#reportDashboard .playMetricRow .success{color:#16a34a}
+#reportDashboard .playMetricRow .failure{color:#dc2626}
+#reportDashboard .playMetricRow .effect.positive{color:#2563eb}
+#reportDashboard .playMetricRow .effect.negative{color:#dc2626}
+#reportDashboard .playMetricRow .effect.even{color:#64748b}
+#reportDashboard .singleReportWideGrid{grid-template-columns:1fr!important}
 #reportDashboard .playOverviewCard .summaryCards .statCard{min-width:0;padding:12px 9px!important}
 #reportDashboard .playOverviewCard .summaryCards .statValue{font-size:30px!important}
 #reportDashboard .summaryCards .statValue.cyan{color:#0891b2!important}
