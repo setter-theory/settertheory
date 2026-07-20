@@ -3050,9 +3050,55 @@ function printMatchPdfReport(){
           ev.preventDefault();
           ev.stopPropagation();
           try{
-            w.focus();
-            // プレビュー文書全体をそのまま印刷対象にする。
-            setTimeout(()=>w.print(),80);
+            // V150.4: iPad Safariが表示中タブの可視領域だけを印刷する挙動を避ける。
+            // 元画面にA4横幅の印刷専用iframeを作り、文書全体の高さまで実体化してから印刷する。
+            const oldFrame=document.getElementById('setterTheoryFullPrintFrame');
+            if(oldFrame) oldFrame.remove();
+            const frame=document.createElement('iframe');
+            frame.id='setterTheoryFullPrintFrame';
+            frame.setAttribute('title','Setter Theory 印刷用');
+            frame.style.position='fixed';
+            frame.style.left='-12000px';
+            frame.style.top='0';
+            frame.style.width='1123px';
+            frame.style.height='794px';
+            frame.style.border='0';
+            frame.style.opacity='0.01';
+            frame.style.pointerEvents='none';
+            frame.style.zIndex='-1';
+            document.body.appendChild(frame);
+
+            const printHtml=html.replace(/<div class="pdfPreviewTopbar">[\s\S]*?<\/div><\/div>/,'');
+            const doc=frame.contentDocument||frame.contentWindow.document;
+            doc.open();
+            doc.write(printHtml);
+            doc.close();
+
+            const startPrint=()=>{
+              try{
+                const body=doc.body;
+                const root=doc.documentElement;
+                const fullHeight=Math.max(
+                  body?body.scrollHeight:0,
+                  body?body.offsetHeight:0,
+                  root?root.scrollHeight:0,
+                  root?root.offsetHeight:0,
+                  794
+                );
+                frame.style.height=(fullHeight+40)+'px';
+                const cw=frame.contentWindow;
+                cw.focus();
+                cw.print();
+                setTimeout(()=>{ try{ frame.remove(); }catch(e){} },1500);
+              }catch(err){
+                try{ frame.remove(); }catch(e){}
+                alert('印刷画面を開始できませんでした。');
+              }
+            };
+            frame.onload=()=>setTimeout(startPrint,350);
+            setTimeout(()=>{
+              if(document.getElementById('setterTheoryFullPrintFrame')) startPrint();
+            },900);
           }catch(err){
             alert('印刷画面を開始できませんでした。');
           }
