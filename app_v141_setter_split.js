@@ -3004,7 +3004,7 @@ function printMatchPdfReport(){
       #report #reportDashboard .reportGrid>* ,#report #reportDashboard .setterMasterGrid>*{width:100%!important;max-width:100%!important;margin:0 0 6mm!important}#report #reportDashboard .singleReportWideGrid>*{width:100%!important;max-width:100%!important;margin:0!important}
       #report #reportDashboard .reportPanel,#report #reportDashboard .setterMasterCard,#report #reportDashboard .teamAnalysisCard,#report #reportDashboard .singleReportWideGrid{display:block!important;height:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
       #report #reportDashboard .playOverviewPlay,#report #reportDashboard .playOverviewMetrics,#report #reportDashboard .playOverviewResult,#report #reportDashboard .playOverviewResultPoint,#report #reportDashboard .playOverviewRotation,#report #reportDashboard .setterIqAdvicePerson,#report #reportDashboard .pdfRankCard,#report #reportDashboard tr{break-inside:avoid!important;page-break-inside:avoid!important}
-      #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterAnalysisUnitBody,#report #reportDashboard .setterMasterCard{break-inside:avoid!important;page-break-inside:avoid!important}
+      #report #reportDashboard .setterAnalysisUnit,#report #reportDashboard .setterAnalysisUnitBody,#report #reportDashboard .setterMasterCard{break-inside:auto!important;page-break-inside:auto!important}
       #report #reportDashboard .pdfPageStart{break-before:page!important;page-break-before:always!important}
       #report #reportDashboard [style*="overflow"]{overflow:visible!important}
       #report #reportDashboard canvas,#report #reportDashboard svg,#report #reportDashboard img{max-width:100%!important;break-inside:avoid!important;page-break-inside:avoid!important}
@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.12: V150.11の正常なPDF生成処理を維持し、セッター分析ブロックのみ途中改ページを抑止。
+  // V150.13: A4横の印刷可能幅285mmへ統一し、全ページの左右見切れを防止。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
@@ -3093,8 +3093,8 @@ function printMatchPdfReport(){
               }catch(e){}
             });
 
-            clone.style.width='297mm';
-            clone.style.maxWidth='297mm';
+            clone.style.width='285mm';
+            clone.style.maxWidth='285mm';
             clone.style.height='auto';
             clone.style.overflow='visible';
             clone.style.background='#fff';
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
             holder.style.position='fixed';
             holder.style.left='-20000px';
             holder.style.top='0';
-            holder.style.width='297mm';
+            holder.style.width='285mm';
             holder.style.background='#fff';
             holder.style.zIndex='-1';
             holder.appendChild(clone);
@@ -3111,10 +3111,10 @@ function printMatchPdfReport(){
 
             const filename='setter-theory-report.pdf';
             const options={
-              margin:4,
+              margin:[4,6,4,6],
               filename,
               image:{type:'jpeg',quality:0.96},
-              html2canvas:{scale:0.8,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
+              html2canvas:{scale:0.9,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
               jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
               pagebreak:{mode:['css','legacy'],before:'.pdfPageStart',avoid:['tr','.pdfRankCard','.setterIqAdvicePerson']}
             };
