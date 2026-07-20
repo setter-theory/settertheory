@@ -4170,7 +4170,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-result-point-stack-rotation-order-1"></script>
+<script src="app_v141_setter_split.js?v=146-team-card-three-column-rotation-3x2-1"></script>
 
 
 
@@ -4868,6 +4868,56 @@ function closePositionManager(){const m=document.getElementById('positionManager
 @media(max-width:760px){#reportDashboard .allRankingsGrid{grid-template-columns:1fr}#reportDashboard .compactRankRow{grid-template-columns:22px minmax(90px,1fr) minmax(55px,.8fr) 44px 34px}}
 </style>
 <script>/* cache marker: 146-rankings-recent-compact-1 */</script>
+
+<style id="v146-team-card-three-column-rotation-3x2">
+/* V146: チーム分析カード内を上段3列＋下段ローテーション3列×2段に固定 */
+@media (min-width:821px){
+  #reportDashboard .teamAnalysisCard>.playOverviewCard{
+    display:grid!important;
+    grid-template-columns:minmax(220px,.82fr) minmax(390px,1.5fr) minmax(300px,1.05fr)!important;
+    grid-template-rows:auto auto!important;
+    gap:12px 14px!important;
+    align-items:start!important;
+    padding:14px 16px 15px!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewPlay{grid-column:1!important;grid-row:1!important}
+  #reportDashboard .teamAnalysisCard .playOverviewMetrics{grid-column:2!important;grid-row:1!important}
+  #reportDashboard .teamAnalysisCard .playOverviewResult{grid-column:3!important;grid-row:1!important}
+  #reportDashboard .teamAnalysisCard .playOverviewRotation{
+    grid-column:1/-1!important;grid-row:2!important;
+    margin:0!important;padding:12px 0 0!important;
+    border-left:0!important;border-top:1px solid rgba(148,163,184,.28)!important;
+    min-width:0!important;
+  }
+  #reportDashboard .teamAnalysisCard .teamRotationList{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+    gap:7px 10px!important;
+  }
+  #reportDashboard .teamAnalysisCard .teamRotationRow{
+    min-width:0!important;min-height:44px!important;padding:5px 7px!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewResultSection,
+  #reportDashboard .teamAnalysisCard .playOverviewPointSection{display:none!important}
+  #reportDashboard .teamAnalysisCard .playOverviewPlay,
+  #reportDashboard .teamAnalysisCard .playOverviewMetrics,
+  #reportDashboard .teamAnalysisCard .playOverviewResult{
+    min-width:0!important;width:100%!important;box-sizing:border-box!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewResult .v146ResultOneBarTrack{height:16px!important}
+}
+@media(max-width:1100px) and (min-width:821px){
+  #reportDashboard .teamAnalysisCard>.playOverviewCard{
+    grid-template-columns:minmax(190px,.78fr) minmax(330px,1.42fr) minmax(260px,1fr)!important;
+    gap:10px!important;
+  }
+}
+@media(max-width:820px){
+  #reportDashboard .teamAnalysisCard .teamRotationList{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
+}
+</style>
+<script>/* cache marker: 146-team-card-three-column-rotation-3x2-1 */</script>
 </body>
 </html>
 
