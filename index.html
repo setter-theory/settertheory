@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-play-metrics-bars-2"></script>
+<script src="app_v141_setter_split.js?v=146-play-metrics-onebar-1"></script>
 
 
 
@@ -8129,20 +8129,19 @@ body.menuOpen .sideOverlay{
 #reportDashboard .playMetricDot{width:9px;height:9px;border-radius:50%;grid-row:1/3}
 #reportDashboard .playMetricName b{font-size:13px;color:#f8fafc}
 #reportDashboard .playMetricName small{font-size:10px;color:#cbd5e1;margin-top:3px}
-#reportDashboard .playMetricBars{display:flex;flex-direction:column;gap:6px}
-#reportDashboard .playMetricBarLine{display:grid;grid-template-columns:42px minmax(80px,1fr) 45px;align-items:center;gap:7px;min-width:0}
-#reportDashboard .playMetricBarLine>span{font-size:10px;font-weight:800;color:#f1f5f9}
-#reportDashboard .playMetricTrack{height:8px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden}
-#reportDashboard .playMetricTrack i{display:block;height:100%;border-radius:999px;min-width:0}
-#reportDashboard .playMetricBarLine strong{font-size:11px;text-align:right;color:#ffffff}
-#reportDashboard .playMetricBarLine.success .playMetricTrack i{background:#22c55e}
-#reportDashboard .playMetricBarLine.failure .playMetricTrack i{background:#ef4444}
-#reportDashboard .playMetricBarLine.effect.positive .playMetricTrack i{background:#2563eb}
-#reportDashboard .playMetricBarLine.effect.negative .playMetricTrack i{background:#dc2626}
-#reportDashboard .playMetricBarLine.effect.even .playMetricTrack i{background:#94a3b8}
-#reportDashboard .playMetricBarLine.effect.positive strong{color:#ffffff}
-#reportDashboard .playMetricBarLine.effect.negative strong{color:#ffffff}
-#reportDashboard .playMetricBarLine.effect.even strong{color:#ffffff}
+#reportDashboard .playMetricSingle{display:flex;flex-direction:column;gap:5px;min-width:0}
+#reportDashboard .playMetricStack{display:flex;width:100%;height:11px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.18)}
+#reportDashboard .playMetricStack i{display:block;height:100%;min-width:0}
+#reportDashboard .playMetricStack i.success{background:#22c55e}
+#reportDashboard .playMetricStack i.failure{background:#ef4444}
+#reportDashboard .playMetricStack i.remainder{background:rgba(255,255,255,.20)}
+#reportDashboard .playMetricLegend{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:10px;font-size:10px;font-weight:800;color:#f8fafc}
+#reportDashboard .playMetricLegend span.success{color:#86efac}
+#reportDashboard .playMetricLegend span.failure{color:#fca5a5}
+#reportDashboard .playMetricLegend strong{text-align:right;color:#ffffff;font-size:11px}
+#reportDashboard .playMetricLegend strong.positive{color:#93c5fd}
+#reportDashboard .playMetricLegend strong.negative{color:#fca5a5}
+#reportDashboard .playMetricLegend strong.even{color:#cbd5e1}
 #reportDashboard .singleReportWideGrid{grid-template-columns:1fr!important}
 #reportDashboard .playOverviewCard .summaryCards .statCard{min-width:0;padding:12px 9px!important}
 #reportDashboard .playOverviewCard .summaryCards .statValue{font-size:30px!important}

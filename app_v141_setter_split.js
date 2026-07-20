@@ -2427,13 +2427,16 @@ function report(){
       const effect=effectRate(logs);
       const effectClass=effect>0?"positive":effect<0?"negative":"even";
       const effectText=effect>0?`+${effect}%`:`${effect}%`;
-      const effectWidth=Math.max(0,Math.min(100,Math.abs(effect)));
+      const remainderRate=Math.max(0,100-successRate-missRate);
       return `<div class="playMetricRow">
         <div class="playMetricName"><span class="playMetricDot" style="background:${item.color}"></span><b>${type}</b><small>${logs.length}本</small></div>
-        <div class="playMetricBars">
-          <div class="playMetricBarLine success"><span>成功率</span><div class="playMetricTrack"><i style="width:${successRate}%"></i></div><strong>${successRate}%</strong></div>
-          <div class="playMetricBarLine failure"><span>失敗率</span><div class="playMetricTrack"><i style="width:${missRate}%"></i></div><strong>${missRate}%</strong></div>
-          <div class="playMetricBarLine effect ${effectClass}"><span>効果率</span><div class="playMetricTrack"><i style="width:${effectWidth}%"></i></div><strong>${effectText}</strong></div>
+        <div class="playMetricSingle">
+          <div class="playMetricStack" aria-label="${type} 成功率${successRate}% 失敗率${missRate}%">
+            <i class="success" style="width:${successRate}%"></i>
+            <i class="failure" style="width:${missRate}%"></i>
+            <i class="remainder" style="width:${remainderRate}%"></i>
+          </div>
+          <div class="playMetricLegend"><span class="success">成功 ${successRate}%</span><span class="failure">失敗 ${missRate}%</span><strong class="${effectClass}">効果 ${effectText}</strong></div>
         </div>
       </div>`;
     }).join("")}
