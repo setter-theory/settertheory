@@ -2411,12 +2411,14 @@ function report(){
   const spikeKill=spikeLogs.filter(x=>x.result==="成功").length;
 
   const successPct=safePct(success,total), lossPct=safePct(loss,total), servePct=safePct(serveOk,serveLogs.length), spikePct=safePct(spikeKill,spikeLogs.length);
-  const summary=`<div class="summaryCards">
+  const secondBallSummaryData=secondBallAnalysis();
+  const summary=`<div class="summaryCards reportSixMetrics">
     ${metricCard("成功率",successPct+"%",`成功 ${success} / 総数 ${total}`,"blue","🎯",successPct)}
     ${metricCard("失点率",lossPct+"%",`失点 ${loss} / 総数 ${total}`,"red","🛡",lossPct)}
     ${metricCard("サーブ成功率",servePct+"%",`成功 ${serveOk} / 総数 ${serveLogs.length}`,"green","🏐",servePct)}
     ${metricCard("スパイク決定率",spikePct+"%",`決定 ${spikeKill} / 打数 ${spikeLogs.length}`,"orange","🏃",spikePct)}
     ${metricCard("総プレー数",total,`総数 ${total}プレー`,"purple","〽",100)}
+    ${metricCard("二段トス",secondBallSummaryData.total,`記録選手 ${secondBallSummaryData.players.length}人`,"cyan","👐",total?safePct(secondBallSummaryData.total,total):0)}
   </div>`;
 
   const playColors={"サーブ":"#ef4444","レセプ":"#2563eb","スパイク":"#22c55e","トス":"#f59e0b","二段トス":"#06b6d4","ディグ":"#7c3aed","ブロック":"#334155"};
@@ -2479,13 +2481,12 @@ function report(){
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
   const dashboard=`${reportBrand}<div class="reportGrid">
     ${buildSetterDetailReports()}
-    ${buildSecondBallAnalysis()}
-    ${summary}
-    <div class="panelGrid">
-      <div class="reportPanel"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
-      <div class="reportPanel"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
-      <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
+    <div class="reportPanel playOverviewCard">
+      <div class="playOverviewColumn playOverviewPlay"><h3>プレー割合 <small>（何をどれだけやったか）</small></h3>${playDonut}</div>
+      <div class="playOverviewColumn playOverviewMetrics"><h3>試合指標</h3>${summary}</div>
+      <div class="playOverviewColumn playOverviewResult"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
     </div>
+    <div class="reportPanel"><h3>得点・失点</h3>${pointDivergingBars}</div>
     <div class="reportPanel v37InsightPanel">${buildSetterInsight()}</div>
     <div class="wideGrid">
       <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>

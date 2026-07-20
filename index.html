@@ -4045,7 +4045,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-setter-master-card-2"></script>
+<script src="app_v141_setter_split.js?v=146-play-overview-1"></script>
 
 
 
@@ -8115,4 +8115,16 @@ body.menuOpen .sideOverlay{
   #report .setterUnifiedHead{display:block}
   #report .setterUnifiedHead small{display:block;margin-top:5px;text-align:left;line-height:1.45}
 }
+</style>
+<style id="v146-play-overview-unified">
+#reportDashboard .playOverviewCard{display:grid;grid-template-columns:minmax(220px,.9fr) minmax(360px,1.35fr) minmax(250px,1fr);gap:18px;align-items:stretch;padding:18px}
+#reportDashboard .playOverviewColumn{min-width:0}
+#reportDashboard .playOverviewColumn:not(:first-child){border-left:1px solid #e5e7eb;padding-left:18px}
+#reportDashboard .playOverviewColumn>h3{margin:0 0 14px}
+#reportDashboard .playOverviewCard .reportSixMetrics{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin:0!important}
+#reportDashboard .playOverviewCard .summaryCards .statCard{min-width:0;padding:12px 9px!important}
+#reportDashboard .playOverviewCard .summaryCards .statValue{font-size:30px!important}
+#reportDashboard .summaryCards .statValue.cyan{color:#0891b2!important}
+@media(max-width:1050px){#reportDashboard .playOverviewCard{grid-template-columns:1fr 1.35fr}#reportDashboard .playOverviewResult{grid-column:1/-1;border-left:0!important;border-top:1px solid #e5e7eb;padding-left:0!important;padding-top:16px}}
+@media(max-width:760px){#reportDashboard .playOverviewCard{grid-template-columns:1fr}#reportDashboard .playOverviewColumn:not(:first-child){border-left:0;padding-left:0;border-top:1px solid #e5e7eb;padding-top:16px}#reportDashboard .playOverviewResult{grid-column:auto}#reportDashboard .playOverviewCard .reportSixMetrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 </style>

@@ -1,5 +1,5 @@
-const CACHE_NAME = 'setter-theory-v146-setter-master-card-2';
-const ASSETS=['./','./index.html','./app_v141_setter_split.js?v=146-report-radar-overlap-fix-1','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME = 'setter-theory-v146-play-overview-1';
+const ASSETS=['./','./index.html','./app_v141_setter_split.js?v=146-play-overview-1','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
