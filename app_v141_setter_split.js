@@ -3032,7 +3032,7 @@ function printMatchPdfReport(){
   w.document.write(html);
   w.document.close();
 
-  // V150.8: ボタン登録は固定したまま、iPad向けの軽量PDF生成へ変更。
+  // V150.9: ボタン登録は固定したまま、html2pdfのmargin指定を数値形式へ修正。
   // HTMLの直接印刷は使わず、html2pdf.jsでA4横向きPDFを作成して別タブへ表示する。
   const bindPreviewButtons=()=>{
     try{
@@ -3111,7 +3111,7 @@ function printMatchPdfReport(){
 
             const filename='setter-theory-report.pdf';
             const options={
-              margin:[4,4,4,4],
+              margin:4,
               filename,
               image:{type:'jpeg',quality:0.96},
               html2canvas:{scale:0.8,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
