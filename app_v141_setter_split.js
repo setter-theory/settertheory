@@ -2022,6 +2022,44 @@ function buildPersonalRanking(){
 }
 
 
+
+function buildAllPersonalRankings(){
+  const types=["スパイク","サーブ","レセプ","ディグ","ブロック"];
+  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
+  const cards=types.map(type=>{
+    const cfg=rankConfig(type);
+    const rows=nums.map(n=>{
+      const all=s.logs.filter(x=>String(x.num)===String(n) && cfg.all(x));
+      const ok=all.filter(cfg.ok).length;
+      const pct=safePct(ok,all.length);
+      return {n,name:getPlayerName(n)||`${n}番`,ok,total:all.length,pct};
+    }).filter(r=>r.total>0)
+      .sort((a,b)=>b.pct-a.pct || b.ok-a.ok || b.total-a.total || Number(a.n)-Number(b.n))
+      .slice(0,3);
+    const body=rows.length?rows.map((r,i)=>`<div class="compactRankRow">
+      <span class="compactRankNo">${i+1}</span>
+      <span class="compactRankName">#${escapeHtml(r.n)} ${escapeHtml(r.name)}</span>
+      <span class="compactRankTrack"><i style="width:${r.pct}%"></i></span>
+      <strong>${r.pct}%</strong>
+      <small>${r.ok}/${r.total}</small>
+    </div>`).join(''):`<div class="compactRankEmpty">記録なし</div>`;
+    return `<section class="compactRankCard"><h4>${escapeHtml(cfg.title)}</h4>${body}</section>`;
+  }).join('');
+  return `<div class="allRankingsHeader"><h3>各ランキング <small>（TOP3）</small></h3></div><div class="allRankingsGrid">${cards}</div>`;
+}
+
+let reportRecentLogsExpanded=false;
+function toggleReportRecentLogs(){
+  reportRecentLogsExpanded=!reportRecentLogsExpanded;
+  report();
+}
+function buildRecentReportLogs(){
+  const source=reportRecentLogsExpanded?s.logs.slice(-20):s.logs.slice(-5);
+  const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
+  const items=source.map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${effectivePlayType(x)}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join('');
+  const canExpand=s.logs.length>5;
+  return `<div class="timeline">${items}</div>${canExpand?`<button class="recentLogToggle" onclick="toggleReportRecentLogs()">${reportRecentLogsExpanded?'5件表示に戻す':'すべて表示'}</button>`:''}<div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div>`;
+}
 function buildRotationPointAnalysis(){
   const rows=[1,2,3,4,5,6].map(r=>{
     const key="S"+r;
@@ -2522,8 +2560,6 @@ function report(){
     <div class="tossQualityMetric success"><span>トス成功率</span><b>${tossQuality.successRate}</b><small>%</small></div>
   </div>`;
 
-  const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
-  const recent=s.logs.slice(-20).map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${effectivePlayType(x)}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join("");
 
   const currentAnalysis=currentMatchSetterAnalysis();
   const reportBrand=buildUnifiedReportBrandHeader(s,currentAnalysis,{actionsHtml:`<button class="pdfBtn unifiedReportAction" onclick="printMatchPdfReport()">PDF出力</button><button class="csvBtn unifiedReportAction" onclick="downloadCSV()">CSV出力</button>`});
@@ -2542,10 +2578,10 @@ function report(){
       </div>
     </section>
     <div class="wideGrid singleReportWideGrid">
-      <div class="reportPanel" id="personalRankingHost">${buildPersonalRanking()}</div>
+      <div class="reportPanel" id="personalRankingHost">${buildAllPersonalRankings()}</div>
     </div>
     <div class="bottomGrid setterUnifiedBottomGrid">
-      <div class="reportPanel"><h3>直近ログ <small>（最新20プレー）</small></h3><div class="timeline">${recent}</div><div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div></div>
+      <div class="reportPanel"><h3>直近ログ <small>（${reportRecentLogsExpanded?"最新20プレー":"最新5プレー"}）</small></h3>${buildRecentReportLogs()}</div>
     </div>
   </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
