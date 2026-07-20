@@ -1865,13 +1865,15 @@ function buildSetterDetailReports(){
     const missPct=a.quality.total?Math.round(a.quality.miss/a.quality.total*100):0;
     const qualityBar=`<div class="setterQualityOneBar"><div class="setterQualityOneBarStats"><span>総トス <b>${a.quality.total}</b>本</span><span>トスミス <b>${a.quality.miss}</b>本</span><span>成功率 <b>${a.quality.successRate}</b>%</span></div><div class="setterQualityOneBarTrack">${a.quality.total?`<i class="ok" style="width:${successPct}%"></i><i class="ng" style="width:${missPct}%"></i>`:`<em>記録なし</em>`}</div></div>`;
     return `<section class="reportPanel setterMasterCard">
-      <div class="setterMasterHead"><div><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div></div>
-      <div class="setterMasterLayout">
-        <div class="setterMasterLeftColumn"><div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div><div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div></div>
-        <div class="setterMasterVisuals">
-          <div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>
-          <div class="setterMasterTossColumn">${qualityBar}${donut}<div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div></div>
-        </div>
+      <div class="setterMasterHeaderRow">
+        <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
+        <div class="setterDetailIq"><b>${a.total?a.setterIq:'--'}</b><span>/100</span><small>${a.total?rank.label:'NO DATA'}</small></div>
+        <div class="setterMasterAdvice"><b>Aquila Advice</b><ul>${advice.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      </div>
+      <div class="setterMasterBottomGrid">
+        <div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>
+        <div class="setterMasterMiddleColumn">${qualityBar}${donut}</div>
+        <div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div>
       </div>
     </section>`;
   }).join('')}</div>`;
