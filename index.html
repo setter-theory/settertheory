@@ -3569,6 +3569,46 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 @media(max-width:700px){#report .setterMasterCard{padding:13px!important}#report .setterMasterCharts{grid-template-columns:1fr;gap:8px}#report .setterMasterMetrics{gap:5px}#report .setterMasterMetrics>div{padding:8px 4px}#report .setterMasterMetrics b{font-size:21px}}
 </style>
 
+
+<style id="v146-team-analysis-equal-panels-rotation-below-point">
+/* V146: 試合指標・結果割合・得点失点を同寸法にし、ローテーション分析を得点失点の下へ移動 */
+@media (min-width:821px){
+  #reportDashboard .teamAnalysisCard>.playOverviewCard{
+    grid-template-columns:minmax(165px,.70fr) repeat(3,minmax(285px,1fr))!important;
+    align-items:stretch!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewMetrics,
+  #reportDashboard .teamAnalysisCard .playOverviewResult,
+  #reportDashboard .teamAnalysisCard .playOverviewPoint{
+    width:auto!important;min-width:0!important;display:flex!important;flex-direction:column!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewMetrics>*,
+  #reportDashboard .teamAnalysisCard .playOverviewResultSection,
+  #reportDashboard .teamAnalysisCard .playOverviewPointSection{width:100%!important}
+  #reportDashboard .teamAnalysisCard .playOverviewResultSection,
+  #reportDashboard .teamAnalysisCard .playOverviewPointSection{
+    min-height:176px!important;box-sizing:border-box!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewPointSection{margin:0!important;padding:0!important}
+  #reportDashboard .teamAnalysisCard .playOverviewRotation{
+    margin-top:12px!important;padding-top:12px!important;border-top:1px solid #e5e7eb!important;
+    border-left:0!important;padding-left:0!important;grid-column:auto!important;
+  }
+  #reportDashboard .teamAnalysisCard .playOverviewRotation>h3{margin:0 0 8px!important}
+  #reportDashboard .teamAnalysisCard .teamRotationList{grid-template-columns:1fr!important;gap:4px!important}
+}
+#reportDashboard .teamAnalysisCard .v146ResultOneBarTrack,
+#reportDashboard .teamAnalysisCard .v138PointChart{width:100%!important;box-sizing:border-box!important}
+#reportDashboard .teamAnalysisCard .v146ResultOneBarTrack{height:18px!important}
+#reportDashboard .teamAnalysisCard .v138PointChart{height:18px!important}
+#reportDashboard .teamAnalysisCard .v138PointAxis{height:22px!important}
+#reportDashboard .teamAnalysisCard .v138PointSide{height:12px!important}
+@media(max-width:820px){
+  #reportDashboard .teamAnalysisCard .playOverviewPointSection{margin:0!important;padding:0!important}
+  #reportDashboard .teamAnalysisCard .playOverviewRotation{margin-top:14px!important;padding-top:14px!important;border-top:1px solid #e5e7eb!important}
+}
+</style>
+<script>/* cache marker: 146-equal-panels-rotation-below-point-1 */</script>
 </head>
 <body>
 
@@ -4045,7 +4085,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 .v138PointLegend .gain{color:#16a34a!important;}
 .v138PointMeta span:nth-child(3){color:#f97316!important;}
 </style>
-<script src="app_v141_setter_split.js?v=146-result-ratio-one-stacked-bar-2"></script>
+<script src="app_v141_setter_split.js?v=146-equal-panels-rotation-below-point-1"></script>
 
 
 

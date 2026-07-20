@@ -2589,9 +2589,11 @@ function report(){
         <div class="playOverviewColumn playOverviewMetrics"><h3>試合指標</h3>${summary}</div>
         <div class="playOverviewColumn playOverviewResult">
           <div class="playOverviewResultSection"><h3>結果割合 <small>（プレーの結果）</small></h3>${resultBars}</div>
-          <div class="playOverviewPointSection"><h3>得点・失点</h3>${pointDivergingBars}</div>
         </div>
-        <div class="playOverviewColumn playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
+        <div class="playOverviewColumn playOverviewPoint">
+          <div class="playOverviewPointSection"><h3>得点・失点</h3>${pointDivergingBars}</div>
+          <div class="playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
+        </div>
       </div>
     </section>
     <div class="wideGrid singleReportWideGrid">
