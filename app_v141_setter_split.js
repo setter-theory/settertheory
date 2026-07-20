@@ -3018,77 +3018,7 @@ function printMatchPdfReport(){
   </style></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
-  <script>
-  function printFullPdfDocument(){
-    var source=document.querySelector('.pdfA4Document');
-    if(!source){ alert('印刷対象を作成できませんでした。'); return; }
-    var clone=source.cloneNode(true);
-    var sourceCanvases=source.querySelectorAll('canvas');
-    var cloneCanvases=clone.querySelectorAll('canvas');
-    for(var i=0;i<sourceCanvases.length;i++){
-      try{
-        var img=document.createElement('img');
-        img.src=sourceCanvases[i].toDataURL('image/png');
-        img.style.width=(sourceCanvases[i].getBoundingClientRect().width||sourceCanvases[i].width)+'px';
-        img.style.maxWidth='100%';
-        img.style.height='auto';
-        cloneCanvases[i].replaceWith(img);
-      }catch(e){}
-    }
-    var styles=Array.prototype.map.call(document.querySelectorAll('style,link[rel="stylesheet"]'),function(el){return el.outerHTML;}).join('\n');
-    var oldFrame=document.getElementById('setterTheoryPrintFrame');
-    if(oldFrame) oldFrame.remove();
-    var frame=document.createElement('iframe');
-    frame.id='setterTheoryPrintFrame';
-    frame.setAttribute('aria-hidden','true');
-    frame.style.position='fixed';
-    frame.style.right='0';
-    frame.style.bottom='0';
-    frame.style.width='1px';
-    frame.style.height='1px';
-    frame.style.border='0';
-    frame.style.opacity='0';
-    frame.style.pointerEvents='none';
-    document.body.appendChild(frame);
-    var printDoc='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=1123,initial-scale=1">'+styles+
-      '<style>@page{size:A4 landscape;margin:7mm}html,body{margin:0!important;padding:0!important;width:100%!important;min-width:0!important;background:#fff!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.printOnlyRoot{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important}.pdfA4Page{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;padding:0!important}.pdfA4Page{break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}</style></head><body><main id="report" class="active printOnlyRoot">'+clone.outerHTML+'</main></body></html>';
-    var doc=frame.contentDocument||frame.contentWindow.document;
-    doc.open();
-    doc.write(printDoc);
-    doc.close();
-    var runPrint=function(){
-      try{
-        frame.contentWindow.focus();
-        frame.contentWindow.print();
-        setTimeout(function(){ if(frame&&frame.parentNode) frame.parentNode.removeChild(frame); },1500);
-      }catch(e){
-        alert('印刷画面を開始できませんでした。もう一度お試しください。');
-        if(frame&&frame.parentNode) frame.parentNode.removeChild(frame);
-      }
-    };
-    if(doc.fonts&&doc.fonts.ready){
-      doc.fonts.ready.then(function(){setTimeout(runPrint,250);});
-    }else{
-      setTimeout(runPrint,700);
-    }
-  }
-  function bindPdfPrintButton(){
-    var button=document.getElementById('pdfPrintButton');
-    if(!button||button.dataset.bound==='1') return;
-    button.dataset.bound='1';
-    button.addEventListener('click',function(ev){
-      ev.preventDefault();
-      ev.stopPropagation();
-      printFullPdfDocument();
-    },false);
-  }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',bindPdfPrintButton,{once:true});
-  }else{
-    bindPdfPrintButton();
-  }
-  window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');bindPdfPrintButton();});
-  <\/script></body></html>`;
+</body></html>`;
 
   // 元画面の開閉状態は変えずに戻す。
   reportRankingsOpen=previousRankingsOpen;
@@ -3101,7 +3031,38 @@ function printMatchPdfReport(){
   w.document.open();
   w.document.write(html);
   w.document.close();
-  setTimeout(()=>{ try{ w.focus(); }catch(e){} },200);
+
+  // V150.3: iPadではプレビュー内の埋め込みscriptが実行されない場合があるため、
+  // 元画面側からプレビューのボタンへ直接イベントを登録する。
+  const bindPreviewButtons=()=>{
+    try{
+      const printButton=w.document.getElementById('pdfPrintButton');
+      const backButton=w.document.querySelector('.pdfPreviewTopbar .secondary');
+      if(backButton){
+        backButton.removeAttribute('onclick');
+        backButton.onclick=(ev)=>{ ev.preventDefault(); w.close(); };
+      }
+      if(printButton){
+        printButton.disabled=false;
+        printButton.style.pointerEvents='auto';
+        printButton.style.touchAction='manipulation';
+        printButton.onclick=(ev)=>{
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{
+            w.focus();
+            // プレビュー文書全体をそのまま印刷対象にする。
+            setTimeout(()=>w.print(),80);
+          }catch(err){
+            alert('印刷画面を開始できませんでした。');
+          }
+        };
+      }
+      w.focus();
+    }catch(e){}
+  };
+  setTimeout(bindPreviewButtons,50);
+  setTimeout(bindPreviewButtons,300);
 }
 
 
