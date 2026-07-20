@@ -3039,10 +3039,18 @@ function printMatchPdfReport(){
     var pw=window.open('','_blank');
     if(!pw){ alert('印刷画面を開けませんでした。ポップアップを許可してください。'); return; }
     var printDoc='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=1123,initial-scale=1">'+styles+
-      '<style>@page{size:A4 landscape;margin:7mm}html,body{margin:0!important;padding:0!important;width:100%!important;min-width:0!important;background:#fff!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.printOnlyRoot{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important}.pdfA4Page{width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;padding:0!important}.pdfPreviewTopbar{display:none!important}@media screen{body{width:283mm!important;margin:0 auto!important}}@media print{body{width:auto!important}.pdfA4Page{break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}}</style></head><body><main id="report" class="active printOnlyRoot">'+clone.outerHTML+'</main><script>window.addEventListener("load",function(){setTimeout(function(){window.focus();window.print();},700);});window.addEventListener("afterprint",function(){setTimeout(function(){window.close();},200);});<\/script></body></html>';
+      '<style>@page{size:A4 landscape;margin:7mm}html,body{margin:0!important;padding:0!important;width:100%!important;min-width:0!important;background:#fff!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.printOnlyRoot{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important}.pdfA4Page{width:100%!important;max-width:100%!important;height:auto!important;overflow:visible!important;padding:0!important}.pdfPreviewTopbar{display:none!important}@media screen{body{width:283mm!important;margin:0 auto!important}}@media print{body{width:auto!important}.pdfA4Page{break-before:page!important;page-break-before:always!important}.pdfA4Page:first-child{break-before:auto!important;page-break-before:auto!important}}</style></head><body><main id="report" class="active printOnlyRoot">'+clone.outerHTML+'</main></body></html>';
     pw.document.open();
     pw.document.write(printDoc);
     pw.document.close();
+    setTimeout(function(){
+      try{
+        pw.focus();
+        pw.print();
+      }catch(e){
+        alert('印刷画面を開始できませんでした。もう一度お試しください。');
+      }
+    },900);
   }
   window.addEventListener('load',function(){document.body.classList.add('pdfPreviewReady');});
   <\/script></body></html>`;
