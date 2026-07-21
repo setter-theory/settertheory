@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.36</div>
+    <div class="pdfCoverVersion">V150.37</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3793,6 +3793,37 @@ function printMatchPdfReport(){
     }
 
 
+    /* V150.37: keep ranking and recent-log navy backgrounds inside their existing outer cards only. */
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage{
+      background:#ffffff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalGrid{
+      box-sizing:border-box!important;
+      width:100%!important;
+      max-width:100%!important;
+      margin-left:0!important;
+      margin-right:0!important;
+      padding:0!important;
+      background:transparent!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock{
+      box-sizing:border-box!important;
+      width:100%!important;
+      max-width:100%!important;
+      margin-left:0!important;
+      margin-right:0!important;
+      overflow:hidden!important;
+      border-radius:16px!important;
+      background:#2f394b!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock > *,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock > *{
+      box-sizing:border-box!important;
+      max-width:100%!important;
+    }
+
     /* V150.36: keep the navy background inside the existing team-analysis card only. */
     #report #reportDashboard.pdfA4Document > .pdfTeamPage{
       background:#ffffff!important;
@@ -3821,7 +3852,7 @@ function printMatchPdfReport(){
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.36 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.37 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
