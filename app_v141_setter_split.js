@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.41</div>
+    <div class="pdfCoverVersion">V150.42</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3018,6 +3018,10 @@ function printMatchPdfReport(){
   if(rankings){
     const rankOuter=document.createElement('section');
     rankOuter.className='pdfFinalOuterCard pdfRankingsOuterCard';
+    const rankTitle=document.createElement('h2');
+    rankTitle.className='pdfFinalSectionTitle';
+    rankTitle.textContent='ランキング';
+    rankOuter.appendChild(rankTitle);
     const rankClone=rankings.cloneNode(true);
     rankClone.classList.add('pdfRankingsBlock');
     rankOuter.appendChild(rankClone);
@@ -3026,6 +3030,10 @@ function printMatchPdfReport(){
   if(recentLogs){
     const logOuter=document.createElement('section');
     logOuter.className='pdfFinalOuterCard pdfRecentLogsOuterCard';
+    const logTitle=document.createElement('h2');
+    logTitle.className='pdfFinalSectionTitle';
+    logTitle.textContent='直近ログ';
+    logOuter.appendChild(logTitle);
     const logClone=recentLogs.cloneNode(true);
     logClone.classList.add('pdfRecentLogsBlock');
     logOuter.appendChild(logClone);
@@ -4023,11 +4031,49 @@ function printMatchPdfReport(){
       fill:#e5e7eb!important;
     }
 
+
+
+    /* V150.42: targeted text contrast and final-page section headings. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .rotationPct,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .rotationPct *,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation [class*="Pct"]{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationLabel,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationLabel *{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalSectionTitle{
+      margin:0 0 8px!important;
+      padding:0 2px 7px!important;
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      font-size:20px!important;
+      line-height:1.1!important;
+      font-weight:1000!important;
+      letter-spacing:.04em!important;
+      border-bottom:1px solid rgba(255,255,255,.22)!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard .compactRankCard h4,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard .compactRankRow,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard .compactRankRow *,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard [class*="Rank"]{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .reportAccordionSubhead,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .reportAccordionSubhead *{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.41 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.42 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
