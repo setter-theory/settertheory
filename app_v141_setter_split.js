@@ -2461,6 +2461,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="15" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18" fill="#1d4ed8" font-size="14" font-weight="1000">${item.value}/20</tspan></text>`;
   }).join('');
   return `<div class="setterIqRadar pdfSetterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
+    <div class="setterIqRadarTitle">能力バランス</div>
     <svg viewBox="0 0 360 310" preserveAspectRatio="xMidYMid meet" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
       <g class="radarGrid"><polygon points="${polygon(1)}"/><polygon points="${polygon(.75)}"/><polygon points="${polygon(.5)}"/><polygon points="${polygon(.25)}"/>${axes}</g>
       <polygon class="radarData" points="${dataPoints}"/>
@@ -3036,7 +3037,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.44</div>
+    <div class="pdfCoverVersion">V150.47</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4260,11 +4261,120 @@ function printMatchPdfReport(){
       font-weight:900!important;
     }
 
+
+
+    /* V150.47: restore the PDF ability-balance title and fill each setter chart card. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterBottomGrid{
+      align-items:stretch!important;
+      gap:7px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterBottomGrid > *{
+      height:100%!important;
+      min-height:0!important;
+      box-sizing:border-box!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar{
+      display:flex!important;
+      align-items:stretch!important;
+      justify-content:center!important;
+      transform:none!important;
+      margin:0!important;
+      padding:3px!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfSetterIqRadar{
+      display:grid!important;
+      grid-template-rows:auto minmax(0,1fr)!important;
+      width:100%!important;
+      height:100%!important;
+      min-height:0!important;
+      padding:0!important;
+      background:transparent!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfSetterIqRadar .setterIqRadarTitle{
+      display:block!important;
+      margin:0 0 1px!important;
+      color:#0f172a!important;
+      -webkit-text-fill-color:#0f172a!important;
+      font-size:12px!important;
+      line-height:1.1!important;
+      font-weight:1000!important;
+      text-align:center!important;
+      opacity:1!important;
+      visibility:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfSetterIqRadar svg{
+      width:100%!important;
+      height:100%!important;
+      min-height:215px!important;
+      max-height:none!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterMiddleColumn{
+      display:flex!important;
+      flex-direction:column!important;
+      justify-content:space-between!important;
+      gap:4px!important;
+      padding:3px!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut{
+      display:flex!important;
+      flex:1 1 auto!important;
+      min-height:0!important;
+      flex-direction:column!important;
+      justify-content:flex-start!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .tossPanel{
+      display:flex!important;
+      flex:1 1 auto!important;
+      min-height:0!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:8px!important;
+      padding:0!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .pdfDonutSvg,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .pdfDonutSvg svg{
+      width:126px!important;
+      height:126px!important;
+      min-width:126px!important;
+      flex-basis:126px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation{
+      display:flex!important;
+      flex-direction:column!important;
+      margin:0!important;
+      padding:3px 2px 2px 7px!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation > h4{
+      flex:0 0 auto!important;
+      margin:0 0 3px!important;
+      font-size:12px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarWrap{
+      display:flex!important;
+      flex:1 1 auto!important;
+      min-height:0!important;
+      flex-direction:column!important;
+      justify-content:space-between!important;
+      gap:2px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarRow{
+      flex:1 1 0!important;
+      min-height:0!important;
+      margin:0!important;
+      padding:2px 3px!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.44 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.47 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
