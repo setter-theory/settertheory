@@ -4515,9 +4515,18 @@ function printMatchPdfReport(){
       min-height:206px!important;
       max-height:206px!important;
     }
+
+    /* V150.50: PDF preview only — force 能力バランス title to white. */
+    #report .setterIqRadarTitle,
+    #report #reportDashboard .setterIqRadarTitle,
+    #report #reportDashboard.pdfA4Document .setterIqRadarTitle{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      opacity:1!important;
+    }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.49 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.50 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
