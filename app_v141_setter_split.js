@@ -2897,7 +2897,7 @@ function printMatchPdfReport(){
   }
 
   const clone=source.cloneNode(true);
-  // V150.19: cloneNodeではcanvasの描画内容が複製されないため、
+  // V150.20: cloneNodeではcanvasの描画内容が複製されないため、
   // プレビュー作成時点で元canvasを高品質PNGへ置換する。
   const sourcePreviewCanvases=source.querySelectorAll('canvas');
   const clonePreviewCanvases=clone.querySelectorAll('canvas');
@@ -2914,6 +2914,38 @@ function printMatchPdfReport(){
       img.style.objectFit='contain';
       img.className=(canvas.className?String(canvas.className)+' ':'')+'pdfCanvasImage';
       if(clonePreviewCanvases[index]) clonePreviewCanvases[index].replaceWith(img);
+    }catch(e){}
+  });
+  // V150.20: conic-gradientの円グラフはiPadのPDF変換で消えることがあるため、
+  // 凡例の割合と色からPDF専用SVGドーナツへ変換する。
+  clone.querySelectorAll('.donut').forEach(donut=>{
+    try{
+      const panel=donut.closest('.donutWrap,.tossPanel')||donut.parentElement;
+      const rows=[...(panel?panel.querySelectorAll('.legendRow'):[])];
+      const segments=rows.map(row=>{
+        const dot=row.querySelector('.dot');
+        const spans=row.querySelectorAll('span');
+        const text=spans.length?spans[spans.length-1].textContent:'';
+        const match=String(text||'').match(/(\d+(?:\.\d+)?)%/);
+        const pct=match?Math.max(0,Number(match[1])):0;
+        const color=(dot&&dot.style&&(dot.style.background||dot.style.backgroundColor))||'#64748b';
+        return {pct,color};
+      }).filter(x=>x.pct>0);
+      if(!segments.length)return;
+      const total=segments.reduce((sum,x)=>sum+x.pct,0)||100;
+      let offset=0;
+      const circles=segments.map(seg=>{
+        const length=seg.pct/total*100;
+        const circle=`<circle cx="50" cy="50" r="36" fill="none" stroke="${seg.color}" stroke-width="22" stroke-dasharray="${length} ${100-length}" stroke-dashoffset="${-offset}" pathLength="100"/>`;
+        offset+=length;
+        return circle;
+      }).join('');
+      const label=donut.querySelector('.donutCenter .label')?.textContent||'総数';
+      const num=donut.querySelector('.donutCenter .num')?.textContent||'';
+      const holder=document.createElement('div');
+      holder.className='pdfDonutSvg';
+      holder.innerHTML=`<svg viewBox="0 0 100 100" role="img" aria-label="円グラフ"><g transform="rotate(-90 50 50)">${circles}</g><circle cx="50" cy="50" r="24" fill="#ffffff"/><text x="50" y="46" text-anchor="middle" font-size="8" font-weight="800" fill="#475569">${label}</text><text x="50" y="59" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">${num}</text></svg>`;
+      donut.replaceWith(holder);
     }catch(e){}
   });
   // 元画面と同じID・親構造を維持し、既存の完成済みCSSをPDFでも有効にする。
@@ -2942,7 +2974,7 @@ function printMatchPdfReport(){
   const appendPage=(node,extra)=>{ if(!node)return; const page=makePage(extra); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
   const brand=clone.querySelector('.unifiedReportBrand');
   const setterCards=[...clone.querySelectorAll('.setterAnalysisUnit')];
-  // V150.19: PDFではラベルを外側に配置した専用レーダーへ差し替える。
+  // V150.20: PDFではラベルを外側に配置した専用レーダーへ差し替える。
   const pdfSetterNumbers=reportSetterNumbers();
   setterCards.forEach((card,index)=>{
     const num=pdfSetterNumbers[index];
@@ -2961,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.19</div>
+    <div class="pdfCoverVersion">V150.20</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3145,7 +3177,7 @@ function printMatchPdfReport(){
     .pdfTeamPage p{line-height:1.08!important;margin:1px 0!important}
     .pdfTeamPage .teamAquilaAdvice{padding:6px!important;margin-top:5px!important;font-size:90%!important}
 
-    /* V150.19 visibility and sharpness corrections */
+    /* V150.20 visibility and sharpness corrections */
     .pdfCoverSummary,.pdfCoverSummary *{opacity:1!important;visibility:visible!important;text-shadow:none!important}
     .pdfCoverSummary .unifiedReportBrand{background:#fff!important;border:1.5px solid #94a3b8!important}
     .pdfCoverSummary .unifiedReportEyebrow,.pdfCoverSummary .unifiedReportEyebrow *,
@@ -3175,6 +3207,26 @@ function printMatchPdfReport(){
     .pdfTeamPage .legend,.pdfTeamPage .legend *{font-size:8px!important;line-height:1.15!important;color:#172033!important}
     .pdfTeamPage .metricRow,.pdfTeamPage .metricRow *{font-size:9px!important}
     .pdfA4Page .pdfCanvasImage{display:block!important;opacity:1!important;visibility:visible!important;image-rendering:auto!important;filter:none!important}
+
+    /* V150.20: PDF配色とSVG円グラフを最終段で固定 */
+    .pdfA4Page .pdfDonutSvg{display:block!important;width:82px!important;height:82px!important;min-width:82px!important;flex:0 0 82px!important;overflow:visible!important}
+    .pdfA4Page .pdfDonutSvg svg{display:block!important;width:100%!important;height:100%!important;max-height:none!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
+    .pdfCoverPage .unifiedReportBrand,.pdfCoverPage .unifiedReportBrand *{color:#0f172a!important}
+    .pdfSetterPage .setterMasterName,.pdfSetterPage .setterMasterName *,
+    .pdfSetterPage .setterMasterRadar,.pdfSetterPage .setterMasterRadar *,
+    .pdfSetterPage .setterMasterMiddleColumn,.pdfSetterPage .setterMasterMiddleColumn *,
+    .pdfSetterPage .setterMasterRotation,.pdfSetterPage .setterMasterRotation *,
+    .pdfTeamPage .playOverviewColumn,.pdfTeamPage .playOverviewColumn *,
+    .pdfTeamPage .playOverviewRotation,.pdfTeamPage .playOverviewRotation *{color:#0f172a!important}
+    .pdfSetterPage .setterAnalysisHeader,.pdfSetterPage .setterAnalysisHeader *,
+    .pdfTeamPage .teamAnalysisHeader,.pdfTeamPage .teamAnalysisHeader *{color:#fff!important}
+    .pdfSetterPage .setterMasterIqAdviceCard,.pdfSetterPage .setterMasterIqAdviceCard *,
+    .pdfTeamPage .teamAquilaAdvice,.pdfTeamPage .teamAquilaAdvice *,
+    .pdfTeamPage .teamAquilaAdviceTitle,.pdfTeamPage .teamAquilaAdviceTitle *,
+    .pdfTeamPage .teamAquilaAdviceList,.pdfTeamPage .teamAquilaAdviceList *{color:#f8fafc!important}
+    .pdfSetterPage .setterMasterIqAdviceCard small,
+    .pdfTeamPage .teamAquilaAdvice small{color:#e2e8f0!important}
+    .pdfTeamPage .playOverviewMetrics h3{color:#0f172a!important;display:block!important;opacity:1!important;visibility:visible!important}
 
     /* Rankings + latest 20 plays */
     .pdfFinalPage{font-size:68%!important;padding:5mm!important}
