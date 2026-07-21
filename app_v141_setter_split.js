@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.37</div>
+    <div class="pdfCoverVersion">V150.38</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3015,8 +3015,22 @@ function printMatchPdfReport(){
   finalGrid.className='pdfFinalGrid';
   const rankings=clone.querySelector('.singleReportWideGrid');
   const recentLogs=clone.querySelector('.setterUnifiedBottomGrid');
-  if(rankings){ const rankClone=rankings.cloneNode(true); rankClone.classList.add('pdfRankingsBlock'); finalGrid.appendChild(rankClone); }
-  if(recentLogs){ const logClone=recentLogs.cloneNode(true); logClone.classList.add('pdfRecentLogsBlock'); finalGrid.appendChild(logClone); }
+  if(rankings){
+    const rankOuter=document.createElement('section');
+    rankOuter.className='pdfFinalOuterCard pdfRankingsOuterCard';
+    const rankClone=rankings.cloneNode(true);
+    rankClone.classList.add('pdfRankingsBlock');
+    rankOuter.appendChild(rankClone);
+    finalGrid.appendChild(rankOuter);
+  }
+  if(recentLogs){
+    const logOuter=document.createElement('section');
+    logOuter.className='pdfFinalOuterCard pdfRecentLogsOuterCard';
+    const logClone=recentLogs.cloneNode(true);
+    logClone.classList.add('pdfRecentLogsBlock');
+    logOuter.appendChild(logClone);
+    finalGrid.appendChild(logOuter);
+  }
   if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
@@ -3848,11 +3862,51 @@ function printMatchPdfReport(){
       border-radius:inherit!important;
     }
 
+
+    /* V150.38: add explicit outer cards for rankings and recent logs. */
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalGrid{
+      display:grid!important;
+      grid-template-columns:1fr!important;
+      gap:12px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalOuterCard{
+      box-sizing:border-box!important;
+      width:100%!important;
+      max-width:100%!important;
+      margin:0!important;
+      padding:12px!important;
+      overflow:hidden!important;
+      border:1px solid rgba(203,213,225,.28)!important;
+      border-radius:16px!important;
+      background:#2f394b!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalOuterCard > .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalOuterCard > .pdfRecentLogsBlock{
+      box-sizing:border-box!important;
+      width:100%!important;
+      max-width:100%!important;
+      margin:0!important;
+      padding:0!important;
+      overflow:visible!important;
+      border:0!important;
+      border-radius:0!important;
+      background:transparent!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalOuterCard .reportPanel{
+      box-sizing:border-box!important;
+      max-width:100%!important;
+      background:transparent!important;
+      border:0!important;
+      box-shadow:none!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.37 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.38 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
