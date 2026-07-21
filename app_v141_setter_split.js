@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.29</div>
+    <div class="pdfCoverVersion">V150.30</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3601,8 +3601,30 @@ function printMatchPdfReport(){
     #report #reportDashboard.pdfA4Document .pdfFinalPage .logLegend,
     #report #reportDashboard.pdfA4Document .pdfFinalPage .reportAccordionSubhead{color:#0f172a!important;}
     #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankRow small{color:#475569!important;}
+
+
+    /* V150.30: actual PDF-preview target. Keep every analysis page on the same setter-analysis surface. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage{background:#eef2f7!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalGrid,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock{
+      background:#eef2f7!important;border-color:#dbeafe!important;box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .compactRankCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineItem{
+      background:transparent!important;border:0!important;border-bottom:1px solid rgba(100,116,139,.22)!important;border-radius:0!important;box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .compactRankCard:last-child,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineItem:last-child{border-bottom:0!important;}
+    .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
+    @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
+    <div class="pdfPreviewBuildMarker">V150.30 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
