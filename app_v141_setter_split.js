@@ -2447,7 +2447,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
   // PDF専用：グラフ本体を小さくし、項目名・点数を外側へ離して重なりを防ぐ。
-  const cx=170, cy=142, radius=72;
+  const cx=180, cy=146, radius=68;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2456,12 +2456,12 @@ function buildSetterIqRadarChartPdf(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.62);
+    const [x,y]=point(i,1.48);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}"><tspan x="${x.toFixed(1)}">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="17">${item.value}/20</tspan></text>`;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="15" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18" fill="#1d4ed8" font-size="14" font-weight="1000">${item.value}/20</tspan></text>`;
   }).join('');
   return `<div class="setterIqRadar pdfSetterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
-    <svg viewBox="0 0 340 300" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
+    <svg viewBox="0 0 360 310" preserveAspectRatio="xMidYMid meet" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
       <g class="radarGrid"><polygon points="${polygon(1)}"/><polygon points="${polygon(.75)}"/><polygon points="${polygon(.5)}"/><polygon points="${polygon(.25)}"/>${axes}</g>
       <polygon class="radarData" points="${dataPoints}"/>
       <g class="radarDots">${items.map((item,i)=>{const [x,y]=point(i,Math.max(0,Math.min(20,item.value))/20);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join('')}</g>
@@ -2897,7 +2897,7 @@ function printMatchPdfReport(){
   }
 
   const clone=source.cloneNode(true);
-  // V150.20: cloneNodeではcanvasの描画内容が複製されないため、
+  // V150.21: cloneNodeではcanvasの描画内容が複製されないため、
   // プレビュー作成時点で元canvasを高品質PNGへ置換する。
   const sourcePreviewCanvases=source.querySelectorAll('canvas');
   const clonePreviewCanvases=clone.querySelectorAll('canvas');
@@ -2916,7 +2916,7 @@ function printMatchPdfReport(){
       if(clonePreviewCanvases[index]) clonePreviewCanvases[index].replaceWith(img);
     }catch(e){}
   });
-  // V150.20: conic-gradientの円グラフはiPadのPDF変換で消えることがあるため、
+  // V150.21: conic-gradientの円グラフはiPadのPDF変換で消えることがあるため、
   // 凡例の割合と色からPDF専用SVGドーナツへ変換する。
   clone.querySelectorAll('.donut').forEach(donut=>{
     try{
@@ -2936,7 +2936,7 @@ function printMatchPdfReport(){
       let offset=0;
       const circles=segments.map(seg=>{
         const length=seg.pct/total*100;
-        const circle=`<circle cx="50" cy="50" r="36" fill="none" stroke="${seg.color}" stroke-width="22" stroke-dasharray="${length} ${100-length}" stroke-dashoffset="${-offset}" pathLength="100"/>`;
+        const circle=`<circle cx="55" cy="55" r="32" fill="none" stroke="${seg.color}" stroke-width="18" stroke-dasharray="${length} ${100-length}" stroke-dashoffset="${-offset}" pathLength="100"/>`;
         offset+=length;
         return circle;
       }).join('');
@@ -2944,7 +2944,7 @@ function printMatchPdfReport(){
       const num=donut.querySelector('.donutCenter .num')?.textContent||'';
       const holder=document.createElement('div');
       holder.className='pdfDonutSvg';
-      holder.innerHTML=`<svg viewBox="0 0 100 100" role="img" aria-label="円グラフ"><g transform="rotate(-90 50 50)">${circles}</g><circle cx="50" cy="50" r="24" fill="#ffffff"/><text x="50" y="46" text-anchor="middle" font-size="8" font-weight="800" fill="#475569">${label}</text><text x="50" y="59" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">${num}</text></svg>`;
+      holder.innerHTML=`<svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${circles}</g><circle cx="55" cy="55" r="22" fill="#ffffff"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#475569">${label}</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">${num}</text></svg>`;
       donut.replaceWith(holder);
     }catch(e){}
   });
@@ -2974,7 +2974,7 @@ function printMatchPdfReport(){
   const appendPage=(node,extra)=>{ if(!node)return; const page=makePage(extra); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
   const brand=clone.querySelector('.unifiedReportBrand');
   const setterCards=[...clone.querySelectorAll('.setterAnalysisUnit')];
-  // V150.20: PDFではラベルを外側に配置した専用レーダーへ差し替える。
+  // V150.21: PDFではラベルを外側に配置した専用レーダーへ差し替える。
   const pdfSetterNumbers=reportSetterNumbers();
   setterCards.forEach((card,index)=>{
     const num=pdfSetterNumbers[index];
@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.20</div>
+    <div class="pdfCoverVersion">V150.21</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3177,7 +3177,7 @@ function printMatchPdfReport(){
     .pdfTeamPage p{line-height:1.08!important;margin:1px 0!important}
     .pdfTeamPage .teamAquilaAdvice{padding:6px!important;margin-top:5px!important;font-size:90%!important}
 
-    /* V150.20 visibility and sharpness corrections */
+    /* V150.21 visibility and sharpness corrections */
     .pdfCoverSummary,.pdfCoverSummary *{opacity:1!important;visibility:visible!important;text-shadow:none!important}
     .pdfCoverSummary .unifiedReportBrand{background:#fff!important;border:1.5px solid #94a3b8!important}
     .pdfCoverSummary .unifiedReportEyebrow,.pdfCoverSummary .unifiedReportEyebrow *,
@@ -3208,7 +3208,7 @@ function printMatchPdfReport(){
     .pdfTeamPage .metricRow,.pdfTeamPage .metricRow *{font-size:9px!important}
     .pdfA4Page .pdfCanvasImage{display:block!important;opacity:1!important;visibility:visible!important;image-rendering:auto!important;filter:none!important}
 
-    /* V150.20: PDF配色とSVG円グラフを最終段で固定 */
+    /* V150.21: PDF配色とSVG円グラフを最終段で固定 */
     .pdfA4Page .pdfDonutSvg{display:block!important;width:82px!important;height:82px!important;min-width:82px!important;flex:0 0 82px!important;overflow:visible!important}
     .pdfA4Page .pdfDonutSvg svg{display:block!important;width:100%!important;height:100%!important;max-height:none!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
     .pdfCoverPage .unifiedReportBrand,.pdfCoverPage .unifiedReportBrand *{color:#0f172a!important}
@@ -3227,6 +3227,65 @@ function printMatchPdfReport(){
     .pdfSetterPage .setterMasterIqAdviceCard small,
     .pdfTeamPage .teamAquilaAdvice small{color:#e2e8f0!important}
     .pdfTeamPage .playOverviewMetrics h3{color:#0f172a!important;display:block!important;opacity:1!important;visibility:visible!important}
+
+    /* V150.21: visible radar labels, numeric values, and unclipped donut charts */
+    .pdfSetterPage .pdfSetterIqRadar{display:block!important;width:100%!important;min-height:238px!important;overflow:visible!important;background:#fff!important}
+    .pdfSetterPage .pdfSetterIqRadar svg{display:block!important;width:100%!important;height:238px!important;max-height:238px!important;overflow:visible!important}
+    .pdfSetterPage .pdfSetterIqRadar .radarGrid polygon{fill:none!important;stroke:#94a3b8!important;stroke-width:1.4!important}
+    .pdfSetterPage .pdfSetterIqRadar .radarGrid line{stroke:#cbd5e1!important;stroke-width:1.2!important}
+    .pdfSetterPage .pdfSetterIqRadar .radarData{fill:rgba(37,99,235,.22)!important;stroke:#2563eb!important;stroke-width:3!important}
+    .pdfSetterPage .pdfSetterIqRadar .radarDots circle{fill:#1d4ed8!important;stroke:#fff!important;stroke-width:2!important}
+    .pdfSetterPage .pdfSetterIqRadar .radarLabels text,
+    .pdfSetterPage .pdfSetterIqRadar .radarLabels tspan{opacity:1!important;visibility:visible!important;text-shadow:none!important}
+
+    .pdfA4Page .pdfDonutSvg{box-sizing:content-box!important;width:78px!important;height:78px!important;min-width:78px!important;flex:0 0 78px!important;padding:4px!important;overflow:visible!important}
+    .pdfA4Page .pdfDonutSvg svg{width:78px!important;height:78px!important;max-width:none!important;max-height:none!important;overflow:visible!important}
+    .pdfTeamPage .donutWrap,.pdfTeamPage .tossPanel{padding:4px!important;overflow:visible!important;align-items:center!important}
+
+    /* White/light surfaces: make every label and value readable */
+    .pdfA4Page .summaryCard *,
+    .pdfA4Page .metricCard *,
+    .pdfA4Page .playOverviewMetrics *,
+    .pdfA4Page .playOverviewPlay *,
+    .pdfA4Page .playOverviewResultPoint *,
+    .pdfA4Page .playOverviewRotation *,
+    .pdfA4Page .setterMasterRadar *,
+    .pdfA4Page .setterMasterMiddleColumn *,
+    .pdfA4Page .setterMasterRotation *,
+    .pdfA4Page .setterTheoryEvaluation *,
+    .pdfA4Page .compactRankCard *,
+    .pdfA4Page .timelineItem *,
+    .pdfA4Page table *{opacity:1!important;visibility:visible!important}
+    .pdfA4Page .summaryCard,
+    .pdfA4Page .metricCard,
+    .pdfA4Page .playOverviewMetrics,
+    .pdfA4Page .playOverviewPlay,
+    .pdfA4Page .playOverviewResultPoint,
+    .pdfA4Page .playOverviewRotation,
+    .pdfA4Page .setterMasterRadar,
+    .pdfA4Page .setterMasterMiddleColumn,
+    .pdfA4Page .setterMasterRotation,
+    .pdfA4Page .compactRankCard,
+    .pdfA4Page .timelineItem,
+    .pdfA4Page table{color:#0f172a!important}
+    .pdfA4Page .summaryCard b,.pdfA4Page .summaryCard strong,.pdfA4Page .summaryCard .num,
+    .pdfA4Page .metricCard b,.pdfA4Page .metricCard strong,.pdfA4Page .metricCard .num,
+    .pdfA4Page .playOverviewMetrics b,.pdfA4Page .playOverviewMetrics strong,.pdfA4Page .playOverviewMetrics .num,
+    .pdfA4Page .playOverviewPlay b,.pdfA4Page .playOverviewPlay strong,.pdfA4Page .playOverviewPlay .num,
+    .pdfA4Page .playOverviewResultPoint b,.pdfA4Page .playOverviewResultPoint strong,.pdfA4Page .playOverviewResultPoint .num,
+    .pdfA4Page .playOverviewRotation b,.pdfA4Page .playOverviewRotation strong,.pdfA4Page .playOverviewRotation .num,
+    .pdfA4Page .setterMasterMiddleColumn b,.pdfA4Page .setterMasterMiddleColumn strong,.pdfA4Page .setterMasterMiddleColumn .num,
+    .pdfA4Page .setterMasterRotation b,.pdfA4Page .setterMasterRotation strong,.pdfA4Page .setterMasterRotation .num{color:#0f172a!important;text-shadow:none!important}
+    .pdfA4Page .summaryCard small,.pdfA4Page .metricCard small,
+    .pdfA4Page .playOverviewMetrics small,.pdfA4Page .playOverviewPlay small,
+    .pdfA4Page .playOverviewResultPoint small,.pdfA4Page .playOverviewRotation small,
+    .pdfA4Page .setterMasterMiddleColumn small,.pdfA4Page .setterMasterRotation small{color:#475569!important}
+    /* Keep genuine dark panels white */
+    .pdfA4Page .setterAnalysisHeader *,
+    .pdfA4Page .teamAnalysisHeader *,
+    .pdfA4Page .setterMasterAdvice *,
+    .pdfA4Page .teamAquilaAdvice *,
+    .pdfA4Page .teamAquilaAdviceList *{color:#f8fafc!important}
 
     /* Rankings + latest 20 plays */
     .pdfFinalPage{font-size:68%!important;padding:5mm!important}
