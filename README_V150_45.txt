@@ -1,12 +1,13 @@
-V150.45 PDF team match-metric breakdown
+Setter Theory V150.45
 
-PDF preview only:
-- Confirmed the current input result categories.
-- Replaced the team analysis match-metric bars with 100% stacked bars based on those existing categories.
-- Spike: success / continue / blocked / miss.
-- Serve: ace / success / miss.
-- Reception: A / B / C / miss.
-- Dig: success / miss.
-- Block: shut / one-touch / miss.
-- Added percentages, counts, and legends.
-- Normal report, CSV, save/resume, and aggregation logic were not changed.
+変更範囲：コート入力から開く通常レポート画面のみ
+- 試合指標を現在の入力項目に合わせた100%積み上げ表示へ変更
+- スパイク：成功／継続／被ブロック／ミス
+- サーブ：エース／成功／ミス
+- レセプ：A／B／C／ミス
+- ディグ：成功／ミス
+- ブロック：シャット／ワンタッチ／ミス
+- トス・二段トス：成功／ミス
+- 各割合は合計が必ず100%になるよう表示補正
+
+PDFプレビュー、CSV、保存・再開、入力ボタン、保存データ形式には変更なし。

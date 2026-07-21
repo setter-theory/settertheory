@@ -2247,57 +2247,6 @@ function buildActionSuccessAnalysis(){
   </div>`).join("")}</div>`;
 }
 
-
-function buildPdfTeamActionBreakdown(){
-  const configs=[
-    {label:"スパイク", type:"スパイク", parts:[
-      ["成功","success",x=>x.result==="成功"],
-      ["継続","continue",x=>x.result==="継続"],
-      ["被ブロック","blocked",x=>x.result==="被ブロック"],
-      ["ミス","miss",x=>x.result==="ミス"]
-    ]},
-    {label:"サーブ", type:"サーブ", parts:[
-      ["エース","success",x=>x.result==="エース"],
-      ["成功","good",x=>x.result==="成功"],
-      ["ミス","miss",x=>x.result==="ミス"]
-    ]},
-    {label:"レセプ", type:"レセプ", parts:[
-      ["A","success",x=>x.result==="Aパス"],
-      ["B","good",x=>x.result==="Bパス"],
-      ["C","continue",x=>x.result==="Cパス"],
-      ["ミス","miss",x=>x.result==="ミス"||x.result==="レセプミス"]
-    ]},
-    {label:"ディグ", type:"ディグ", parts:[
-      ["成功","success",x=>x.result==="成功"],
-      ["ミス","miss",x=>x.result==="ミス"]
-    ]},
-    {label:"ブロック", type:"ブロック", parts:[
-      ["シャット","success",x=>x.result==="シャット"],
-      ["ワンタッチ","good",x=>x.result==="ワンタッチ"],
-      ["ミス","miss",x=>x.result==="ミス"||x.result==="ブロックミス"]
-    ]}
-  ];
-  return `<div class="pdfTeamActionBreakdown">${configs.map(c=>{
-    const logs=(s.logs||[]).filter(x=>x.type===c.type);
-    const total=logs.length;
-    const cells=c.parts.map(([name,cls,fn])=>{
-      const count=logs.filter(fn).length;
-      const pct=total?Math.round(count/total*100):0;
-      return {name,cls,count,pct};
-    });
-    const sum=cells.reduce((n,x)=>n+x.pct,0);
-    if(total && sum!==100){
-      const target=cells.find(x=>x.count===Math.max(...cells.map(y=>y.count)));
-      if(target) target.pct+=100-sum;
-    }
-    return `<div class="pdfTeamMetricRow">
-      <div class="pdfTeamMetricHead"><b>${c.label}</b><span>${total}本</span></div>
-      <div class="pdfTeamMetricTrack">${cells.map(x=>x.count?`<i class="${x.cls}" style="width:${x.pct}%" title="${x.name} ${x.pct}%"></i>`:'').join('')}${!total?'<em>記録なし</em>':''}</div>
-      <div class="pdfTeamMetricLegend">${cells.map(x=>`<span class="${x.cls}"><i></i>${x.name} <b>${x.pct}%</b><small>${x.count}本</small></span>`).join('')}</div>
-    </div>`;
-  }).join('')}</div>`;
-}
-
 function buildSetterInsight(){
   const toss=s.logs.filter(x=>x.type==="トス");
   const labels=["レフト","センター","ライト","バック","ツー"];
@@ -2615,27 +2564,70 @@ function report(){
     ${playItems.map(item=>{
       const type=item.label;
       const logs=s.logs.filter(x=>effectivePlayType(x)===type);
-      const isTossMetric=(type==="トス" || type==="二段トス");
-      // トス系は結果欄が「レフト・センター・ライト・バック・ツー」になるため、
-      // 通常プレー用の成功判定ではなく、総トス数とトスミスフラグから専用集計する。
       const tossMiss=x=>!!(x && (x.tossMist===true || x.tossMist==="1" || x.tossMist==="true" || x.quality==="ミス"));
-      const miss=isTossMetric ? logs.filter(tossMiss).length : logs.filter(isMissResult).length;
-      const ok=isTossMetric ? Math.max(0,logs.length-miss) : logs.filter(isSuccessResult).length;
-      const successRate=safePct(ok,logs.length);
-      const missRate=safePct(miss,logs.length);
-      const effect=isTossMetric ? Math.round((successRate-missRate)*10)/10 : effectRate(logs);
+      const metricPartsByType={
+        "スパイク":[
+          {label:"成功",color:"#22c55e",match:x=>x.result==="成功"},
+          {label:"継続",color:"#3b82f6",match:x=>x.result==="継続"},
+          {label:"被ブロック",color:"#f59e0b",match:x=>x.result==="被ブロック"},
+          {label:"ミス",color:"#ef4444",match:x=>x.result==="ミス"}
+        ],
+        "サーブ":[
+          {label:"エース",color:"#22c55e",match:x=>x.result==="エース"},
+          {label:"成功",color:"#3b82f6",match:x=>x.result==="成功"},
+          {label:"ミス",color:"#ef4444",match:x=>x.result==="ミス"}
+        ],
+        "レセプ":[
+          {label:"A",color:"#22c55e",match:x=>x.result==="Aパス"},
+          {label:"B",color:"#3b82f6",match:x=>x.result==="Bパス"},
+          {label:"C",color:"#f59e0b",match:x=>x.result==="Cパス"},
+          {label:"ミス",color:"#ef4444",match:x=>x.result==="ミス"||x.result==="レセプミス"}
+        ],
+        "ディグ":[
+          {label:"成功",color:"#22c55e",match:x=>x.result==="成功"},
+          {label:"ミス",color:"#ef4444",match:x=>x.result==="ミス"}
+        ],
+        "ブロック":[
+          {label:"シャット",color:"#22c55e",match:x=>x.result==="シャット"},
+          {label:"ワンタッチ",color:"#3b82f6",match:x=>x.result==="ワンタッチ"},
+          {label:"ミス",color:"#ef4444",match:x=>x.result==="ミス"||x.result==="ブロックミス"}
+        ],
+        "トス":[
+          {label:"成功",color:"#22c55e",match:x=>!tossMiss(x)},
+          {label:"ミス",color:"#ef4444",match:tossMiss}
+        ],
+        "二段トス":[
+          {label:"成功",color:"#22c55e",match:x=>!tossMiss(x)},
+          {label:"ミス",color:"#ef4444",match:tossMiss}
+        ]
+      };
+      const defs=metricPartsByType[type]||[
+        {label:"成功",color:"#22c55e",match:isSuccessResult},
+        {label:"ミス",color:"#ef4444",match:isMissResult}
+      ];
+      const parts=defs.map(def=>({...def,count:logs.filter(def.match).length}));
+      const classified=parts.reduce((sum,part)=>sum+part.count,0);
+      if(classified<logs.length) parts.push({label:"その他",color:"#64748b",count:logs.length-classified});
+      const raw=parts.map(part=>logs.length ? part.count/logs.length*100 : 0);
+      const displayPct=raw.map(v=>Math.floor(v));
+      let remain=logs.length ? 100-displayPct.reduce((a,b)=>a+b,0) : 0;
+      raw.map((v,i)=>({i,frac:v-Math.floor(v)})).sort((a,b)=>b.frac-a.frac).forEach(({i})=>{if(remain>0){displayPct[i]++;remain--;}});
+      const missCount=parts.filter(part=>part.label==="ミス"||part.label==="被ブロック").reduce((sum,part)=>sum+part.count,0);
+      const successCount=type==="スパイク" ? parts.find(part=>part.label==="成功")?.count||0
+        : type==="サーブ" ? parts.filter(part=>part.label==="エース"||part.label==="成功").reduce((sum,part)=>sum+part.count,0)
+        : type==="レセプ" ? parts.filter(part=>part.label==="A"||part.label==="B"||part.label==="C").reduce((sum,part)=>sum+part.count,0)
+        : type==="ブロック" ? parts.filter(part=>part.label==="シャット"||part.label==="ワンタッチ").reduce((sum,part)=>sum+part.count,0)
+        : parts.filter(part=>part.label==="成功").reduce((sum,part)=>sum+part.count,0);
+      const effect=logs.length ? Math.round(((successCount-missCount)/logs.length*100)*10)/10 : 0;
       const effectClass=effect>0?"positive":effect<0?"negative":"even";
       const effectText=effect>0?`+${effect}%`:`${effect}%`;
-      const remainderRate=Math.max(0,100-successRate-missRate);
-      return `<div class="playMetricRow">
+      return `<div class="playMetricRow playMetricDetailed">
         <div class="playMetricName"><span class="playMetricDot" style="background:${item.color}"></span><b>${type}</b><small>${logs.length}本</small></div>
         <div class="playMetricSingle">
-          <div class="playMetricStack" aria-label="${type} 成功率${successRate}% 失敗率${missRate}%">
-            <i class="success" style="width:${successRate}%"></i>
-            <i class="failure" style="width:${missRate}%"></i>
-            <i class="remainder" style="width:${remainderRate}%"></i>
+          <div class="playMetricStack" aria-label="${type} ${parts.map((part,i)=>`${part.label}${displayPct[i]}%`).join(' ')}">
+            ${parts.map((part,i)=>`<i title="${escapeHtml(part.label)} ${displayPct[i]}%（${part.count}本）" style="width:${displayPct[i]}%;background:${part.color}"></i>`).join('')}
           </div>
-          <div class="playMetricLegend"><span class="success">成功 ${successRate}%</span><span class="failure">失敗 ${missRate}%</span><strong class="${effectClass}">効果 ${effectText}</strong></div>
+          <div class="playMetricDetailLegend">${parts.map((part,i)=>`<span><i style="background:${part.color}"></i>${escapeHtml(part.label)} <b>${displayPct[i]}%</b><small>${part.count}本</small></span>`).join('')}<strong class="${effectClass}">効果 ${effectText}</strong></div>
         </div>
       </div>`;
     }).join("")}
@@ -3044,7 +3036,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.45</div>
+    <div class="pdfCoverVersion">V150.44</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3058,14 +3050,8 @@ function printMatchPdfReport(){
   if(setterCards[0]) appendPage(setterCards[0],'pdfSetterPage pdfSetterPageOne');
   // 3ページ目：セッター分析②。ツーセッター時のみ追加。
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
-  // V150.45: PDFの試合指標を、現在入力できる結果区分ごとの100%積み上げ棒グラフへ変更。
-  const pdfTeamCard=clone.querySelector('.teamAnalysisCard');
-  if(pdfTeamCard){
-    const actionBars=pdfTeamCard.querySelector('.v135ActionBars');
-    if(actionBars) actionBars.outerHTML=buildPdfTeamActionBreakdown();
-  }
   // 4ページ目：チーム分析。
-  appendPage(pdfTeamCard,'pdfTeamPage');
+  appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
   // 5ページ目：ランキングと直近ログを1つの「分析」カードへ統合する。
   const finalPage=makePage('pdfFinalPage');
   const finalGrid=document.createElement('div');
@@ -4274,37 +4260,11 @@ function printMatchPdfReport(){
       font-weight:900!important;
     }
 
-
-    /* V150.45: current input-result breakdown for team match metrics. */
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamActionBreakdown{display:grid!important;gap:9px!important;margin-top:5px!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricRow{padding:8px 10px!important;border:1px solid rgba(203,213,225,.24)!important;border-radius:11px!important;background:rgba(15,23,42,.18)!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricHead{display:flex!important;justify-content:space-between!important;align-items:center!important;margin-bottom:5px!important;color:#fff!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricHead b{font-size:13px!important;color:#fff!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricHead span{font-size:10px!important;color:#cbd5e1!important;font-weight:850!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack{display:flex!important;height:15px!important;border-radius:999px!important;overflow:hidden!important;background:rgba(148,163,184,.22)!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i{display:block!important;height:100%!important;border-radius:0!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.success{background:#16a34a!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.good{background:#2563eb!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.continue{background:#f59e0b!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.blocked{background:#a855f7!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.miss{background:#dc2626!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack em{width:100%!important;text-align:center!important;font-size:9px!important;line-height:15px!important;color:#cbd5e1!important;font-style:normal!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend{display:flex!important;flex-wrap:wrap!important;gap:4px 10px!important;margin-top:6px!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span{display:inline-flex!important;align-items:center!important;gap:3px!important;font-size:8.5px!important;color:#e2e8f0!important;white-space:nowrap!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span>i{width:7px!important;height:7px!important;border-radius:2px!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.success>i{background:#16a34a!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.good>i{background:#2563eb!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.continue>i{background:#f59e0b!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.blocked>i{background:#a855f7!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.miss>i{background:#dc2626!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend b{color:#fff!important;font-size:9px!important;}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend small{color:#94a3b8!important;font-size:8px!important;}
-
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.45 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.44 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
