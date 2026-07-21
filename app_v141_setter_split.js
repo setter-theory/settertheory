@@ -2897,7 +2897,7 @@ function printMatchPdfReport(){
   }
 
   const clone=source.cloneNode(true);
-  // V150.21: cloneNodeではcanvasの描画内容が複製されないため、
+  // V150.22: cloneNodeではcanvasの描画内容が複製されないため、
   // プレビュー作成時点で元canvasを高品質PNGへ置換する。
   const sourcePreviewCanvases=source.querySelectorAll('canvas');
   const clonePreviewCanvases=clone.querySelectorAll('canvas');
@@ -2916,7 +2916,7 @@ function printMatchPdfReport(){
       if(clonePreviewCanvases[index]) clonePreviewCanvases[index].replaceWith(img);
     }catch(e){}
   });
-  // V150.21: conic-gradientの円グラフはiPadのPDF変換で消えることがあるため、
+  // V150.22: conic-gradientの円グラフはiPadのPDF変換で消えることがあるため、
   // 凡例の割合と色からPDF専用SVGドーナツへ変換する。
   clone.querySelectorAll('.donut').forEach(donut=>{
     try{
@@ -2974,7 +2974,7 @@ function printMatchPdfReport(){
   const appendPage=(node,extra)=>{ if(!node)return; const page=makePage(extra); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
   const brand=clone.querySelector('.unifiedReportBrand');
   const setterCards=[...clone.querySelectorAll('.setterAnalysisUnit')];
-  // V150.21: PDFではラベルを外側に配置した専用レーダーへ差し替える。
+  // V150.22: PDFではラベルを外側に配置した専用レーダーへ差し替える。
   const pdfSetterNumbers=reportSetterNumbers();
   setterCards.forEach((card,index)=>{
     const num=pdfSetterNumbers[index];
@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.21</div>
+    <div class="pdfCoverVersion">V150.22</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3177,7 +3177,7 @@ function printMatchPdfReport(){
     .pdfTeamPage p{line-height:1.08!important;margin:1px 0!important}
     .pdfTeamPage .teamAquilaAdvice{padding:6px!important;margin-top:5px!important;font-size:90%!important}
 
-    /* V150.21 visibility and sharpness corrections */
+    /* V150.22 visibility and sharpness corrections */
     .pdfCoverSummary,.pdfCoverSummary *{opacity:1!important;visibility:visible!important;text-shadow:none!important}
     .pdfCoverSummary .unifiedReportBrand{background:#fff!important;border:1.5px solid #94a3b8!important}
     .pdfCoverSummary .unifiedReportEyebrow,.pdfCoverSummary .unifiedReportEyebrow *,
@@ -3208,7 +3208,7 @@ function printMatchPdfReport(){
     .pdfTeamPage .metricRow,.pdfTeamPage .metricRow *{font-size:9px!important}
     .pdfA4Page .pdfCanvasImage{display:block!important;opacity:1!important;visibility:visible!important;image-rendering:auto!important;filter:none!important}
 
-    /* V150.21: PDF配色とSVG円グラフを最終段で固定 */
+    /* V150.22: PDF配色とSVG円グラフを最終段で固定 */
     .pdfA4Page .pdfDonutSvg{display:block!important;width:82px!important;height:82px!important;min-width:82px!important;flex:0 0 82px!important;overflow:visible!important}
     .pdfA4Page .pdfDonutSvg svg{display:block!important;width:100%!important;height:100%!important;max-height:none!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
     .pdfCoverPage .unifiedReportBrand,.pdfCoverPage .unifiedReportBrand *{color:#0f172a!important}
@@ -3228,7 +3228,7 @@ function printMatchPdfReport(){
     .pdfTeamPage .teamAquilaAdvice small{color:#e2e8f0!important}
     .pdfTeamPage .playOverviewMetrics h3{color:#0f172a!important;display:block!important;opacity:1!important;visibility:visible!important}
 
-    /* V150.21: visible radar labels, numeric values, and unclipped donut charts */
+    /* V150.22: visible radar labels, numeric values, and unclipped donut charts */
     .pdfSetterPage .pdfSetterIqRadar{display:block!important;width:100%!important;min-height:238px!important;overflow:visible!important;background:#fff!important}
     .pdfSetterPage .pdfSetterIqRadar svg{display:block!important;width:100%!important;height:238px!important;max-height:238px!important;overflow:visible!important}
     .pdfSetterPage .pdfSetterIqRadar .radarGrid polygon{fill:none!important;stroke:#94a3b8!important;stroke-width:1.4!important}
@@ -3307,6 +3307,16 @@ function printMatchPdfReport(){
     .pdfFinalGrid .reportAccordionSubhead{font-size:11px!important;font-weight:900!important;color:#172033!important;margin-bottom:3px!important}
 
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
+
+
+    /* V150.22: PDF preview horizontal alignment correction */
+    .pdfPreviewSheet{box-sizing:border-box!important;width:297mm!important;max-width:calc(100vw - 16px)!important;margin:12px auto!important;padding:0!important;overflow-x:hidden!important}
+    #reportDashboard.pdfA4Document{box-sizing:border-box!important;display:block!important;position:relative!important;left:0!important;width:297mm!important;max-width:100%!important;margin:0 auto!important;padding:0!important;transform:none!important;overflow:hidden!important}
+    #reportDashboard.pdfA4Document>.pdfA4Page{box-sizing:border-box!important;position:relative!important;left:0!important;width:100%!important;max-width:100%!important;margin:0!important;padding-left:4mm!important;padding-right:4mm!important;transform:none!important;overflow:hidden!important}
+    #reportDashboard.pdfA4Document>.pdfA4Page>*{box-sizing:border-box!important;position:relative!important;left:0!important;width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;transform:none!important}
+    .pdfA4Page .setterAnalysisUnit,.pdfA4Page .setterMasterCard,.pdfA4Page .teamAnalysisCard,.pdfA4Page .playOverviewCard,.pdfA4Page .singleReportWideGrid,.pdfA4Page .setterUnifiedBottomGrid,.pdfA4Page .pdfFinalGrid{box-sizing:border-box!important;position:relative!important;left:0!important;right:auto!important;width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;transform:none!important}
+    .pdfCoverInner{box-sizing:border-box!important;left:0!important;width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;padding-left:10mm!important;padding-right:10mm!important;text-align:center!important;transform:none!important}
+    .pdfCoverSummary{width:100%!important;max-width:250mm!important;margin-left:auto!important;margin-right:auto!important}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
