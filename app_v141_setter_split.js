@@ -2897,6 +2897,25 @@ function printMatchPdfReport(){
   }
 
   const clone=source.cloneNode(true);
+  // V150.19: cloneNodeではcanvasの描画内容が複製されないため、
+  // プレビュー作成時点で元canvasを高品質PNGへ置換する。
+  const sourcePreviewCanvases=source.querySelectorAll('canvas');
+  const clonePreviewCanvases=clone.querySelectorAll('canvas');
+  sourcePreviewCanvases.forEach((canvas,index)=>{
+    try{
+      const img=document.createElement('img');
+      img.src=canvas.toDataURL('image/png');
+      const rect=canvas.getBoundingClientRect();
+      img.width=Math.max(1,Math.round(rect.width||canvas.width));
+      img.height=Math.max(1,Math.round(rect.height||canvas.height));
+      img.style.width=(rect.width||canvas.width)+'px';
+      img.style.height=(rect.height||canvas.height)+'px';
+      img.style.maxWidth='100%';
+      img.style.objectFit='contain';
+      img.className=(canvas.className?String(canvas.className)+' ':'')+'pdfCanvasImage';
+      if(clonePreviewCanvases[index]) clonePreviewCanvases[index].replaceWith(img);
+    }catch(e){}
+  });
   // 元画面と同じID・親構造を維持し、既存の完成済みCSSをPDFでも有効にする。
   clone.id='reportDashboard';
   clone.classList.add('pdfPreviewReport');
@@ -2923,6 +2942,15 @@ function printMatchPdfReport(){
   const appendPage=(node,extra)=>{ if(!node)return; const page=makePage(extra); page.appendChild(node.cloneNode(true)); a4Root.appendChild(page); };
   const brand=clone.querySelector('.unifiedReportBrand');
   const setterCards=[...clone.querySelectorAll('.setterAnalysisUnit')];
+  // V150.19: PDFではラベルを外側に配置した専用レーダーへ差し替える。
+  const pdfSetterNumbers=reportSetterNumbers();
+  setterCards.forEach((card,index)=>{
+    const num=pdfSetterNumbers[index];
+    if(!num)return;
+    const analysis=currentSetterAnalysisFor(num);
+    const radar=card.querySelector('.setterMasterRadar');
+    if(radar) radar.innerHTML=buildSetterIqRadarChartPdf(iqBreakdown20(analysis));
+  });
 
   // 1ページ目：PDFにだけ表示する表紙。
   const cover=makePage('pdfCoverPage');
@@ -2933,7 +2961,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.18</div>
+    <div class="pdfCoverVersion">V150.19</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3117,6 +3145,37 @@ function printMatchPdfReport(){
     .pdfTeamPage p{line-height:1.08!important;margin:1px 0!important}
     .pdfTeamPage .teamAquilaAdvice{padding:6px!important;margin-top:5px!important;font-size:90%!important}
 
+    /* V150.19 visibility and sharpness corrections */
+    .pdfCoverSummary,.pdfCoverSummary *{opacity:1!important;visibility:visible!important;text-shadow:none!important}
+    .pdfCoverSummary .unifiedReportBrand{background:#fff!important;border:1.5px solid #94a3b8!important}
+    .pdfCoverSummary .unifiedReportEyebrow,.pdfCoverSummary .unifiedReportEyebrow *,
+    .pdfCoverSummary .unifiedReportTitle,.pdfCoverSummary .unifiedReportTitle *,
+    .pdfCoverSummary .unifiedReportMeta,.pdfCoverSummary .unifiedReportMeta *,
+    .pdfCoverSummary .unifiedReportRight,.pdfCoverSummary .unifiedReportRight *{color:#172033!important}
+    .pdfCoverSummary svg,.pdfCoverSummary img{opacity:1!important;filter:none!important}
+
+    .pdfSetterPage .setterMasterName,.pdfSetterPage .setterMasterName small,
+    .pdfSetterPage .setterMasterName h3{display:block!important;color:#0f172a!important;opacity:1!important;visibility:visible!important}
+    .pdfSetterPage .setterMasterName h3{font-size:22px!important;line-height:1.15!important;margin:2px 0!important}
+    .pdfSetterPage .setterMasterRadar{overflow:visible!important;padding:2px 8px 8px!important}
+    .pdfSetterPage .pdfSetterIqRadar{width:100%!important;max-width:100%!important;overflow:visible!important}
+    .pdfSetterPage .pdfSetterIqRadar svg{width:100%!important;height:210px!important;max-height:210px!important;overflow:visible!important}
+    .pdfSetterPage .radarLabels text,.pdfSetterPage .radarLabels tspan{fill:#0f172a!important;color:#0f172a!important;font-size:13px!important;font-weight:900!important;opacity:1!important}
+    .pdfSetterPage .radarGrid polygon,.pdfSetterPage .radarGrid line{stroke:#94a3b8!important;stroke-width:1.2!important;opacity:1!important}
+    .pdfSetterPage .radarData{fill:rgba(124,58,237,.30)!important;stroke:#7c3aed!important;stroke-width:2.5!important;opacity:1!important}
+    .pdfSetterPage .radarDots circle{fill:#7c3aed!important;stroke:#fff!important;stroke-width:1.5!important}
+
+    .pdfTeamPage .playOverviewPlay,.pdfTeamPage .playOverviewMetrics,.pdfTeamPage .playOverviewResult,
+    .pdfTeamPage .playOverviewResultPoint,.pdfTeamPage .playOverviewRotation{font-size:86%!important}
+    .pdfTeamPage .playOverviewMetrics h3{display:block!important;visibility:visible!important;opacity:1!important;color:#0f172a!important;font-size:12px!important;margin:0 0 4px!important}
+    .pdfTeamPage .donutWrap,.pdfTeamPage .tossPanel{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:7px!important;overflow:visible!important}
+    .pdfTeamPage .donut{display:block!important;width:82px!important;height:82px!important;min-width:82px!important;min-height:82px!important;max-width:82px!important;max-height:82px!important;opacity:1!important;visibility:visible!important;filter:none!important}
+    .pdfTeamPage .donutCenter{width:50%!important;height:50%!important}
+    .pdfTeamPage .donutCenter .label{font-size:8px!important}.pdfTeamPage .donutCenter .num{font-size:13px!important}
+    .pdfTeamPage .legend,.pdfTeamPage .legend *{font-size:8px!important;line-height:1.15!important;color:#172033!important}
+    .pdfTeamPage .metricRow,.pdfTeamPage .metricRow *{font-size:9px!important}
+    .pdfA4Page .pdfCanvasImage{display:block!important;opacity:1!important;visibility:visible!important;image-rendering:auto!important;filter:none!important}
+
     /* Rankings + latest 20 plays */
     .pdfFinalPage{font-size:68%!important;padding:5mm!important}
     .pdfFinalGrid{display:grid!important;grid-template-columns:minmax(0,1.65fr) minmax(0,.85fr)!important;gap:6px!important;height:186mm!important;max-height:186mm!important;overflow:hidden!important}
@@ -3235,13 +3294,14 @@ function printMatchPdfReport(){
             const options={
               margin:4,
               filename,
-              image:{type:'jpeg',quality:0.96},
-              html2canvas:{scale:0.8,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
+              image:{type:'png',quality:1},
+              html2canvas:{scale:1.5,useCORS:true,allowTaint:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,logging:false},
               jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
               pagebreak:{mode:['css','legacy'],after:'.pdfA4Page:not(:last-child)',avoid:['tr','.compactRankCard','.setterIqAdvicePerson']}
             };
 
-            await new Promise(resolve=>setTimeout(resolve,250));
+            if(w.document.fonts&&w.document.fonts.ready){ try{ await w.document.fonts.ready; }catch(e){} }
+            await new Promise(resolve=>setTimeout(resolve,500));
             const worker=w.html2pdf().set(options).from(clone).toPdf();
             const pdf=await worker.get('pdf');
             const blob=pdf.output('blob');
