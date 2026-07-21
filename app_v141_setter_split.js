@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.28</div>
+    <div class="pdfCoverVersion">V150.29</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3565,6 +3565,42 @@ function printMatchPdfReport(){
     #report #reportDashboard.pdfA4Document .pdfFinalPage .timelineText,
     #report #reportDashboard.pdfA4Document .pdfFinalPage .logLegend,
     #report #reportDashboard.pdfA4Document .pdfFinalPage .reportAccordionSubhead{color:#f8fafc!important;}
+
+    /* V150.29: unify every analysis section background with the setter-analysis surface */
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard>.playOverviewCard,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsBlock{
+      background:#eef2f7!important;
+      border:1px solid #dbeafe!important;
+      border-radius:18px!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewPlay,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewMetrics,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewResult,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewResultPoint,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewRotation{
+      background:transparent!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankCard,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .timelineItem{
+      background:transparent!important;
+      border-left:0!important;
+      border-right:0!important;
+      border-top:0!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankCard h4,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankRow,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankName,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankRow strong,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .timelineNo,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .timelineText,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .logLegend,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .reportAccordionSubhead{color:#0f172a!important;}
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .compactRankRow small{color:#475569!important;}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
