@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.25</div>
+    <div class="pdfCoverVersion">V150.26</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3464,6 +3464,34 @@ function printMatchPdfReport(){
     .pdfA4Page .setterAnalysisUnit,.pdfA4Page .setterMasterCard,.pdfA4Page .teamAnalysisCard,.pdfA4Page .playOverviewCard,.pdfA4Page .singleReportWideGrid,.pdfA4Page .setterUnifiedBottomGrid,.pdfA4Page .pdfFinalGrid{box-sizing:border-box!important;position:relative!important;left:0!important;right:auto!important;width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;transform:none!important}
     .pdfCoverInner{box-sizing:border-box!important;left:0!important;width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;padding-left:10mm!important;padding-right:10mm!important;text-align:center!important;transform:none!important}
     .pdfCoverSummary{width:100%!important;max-width:250mm!important;margin-left:auto!important;margin-right:auto!important}
+
+    /* V150.26: unify analysis backgrounds and remove outer white frames */
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard{
+      background:#eef2f7!important;
+      border:1px solid #d7e0eb!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard>.playOverviewCard{
+      background:#eef2f7!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewPlay,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewMetrics,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewResult,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewRotation{
+      background:#f8fafc!important;
+      border-color:#d8e1ec!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid .pdfRecentLogsBlock,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid .pdfRankingsBlock>.reportPanel,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid .pdfRecentLogsBlock>.reportPanel,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid .reportPanel{
+      background:transparent!important;
+      border:0!important;
+      box-shadow:none!important;
+      border-radius:0!important;
+    }
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
