@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.26</div>
+    <div class="pdfCoverVersion">V150.27</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3489,6 +3489,40 @@ function printMatchPdfReport(){
     #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid .reportPanel{
       background:transparent!important;
       border:0!important;
+      box-shadow:none!important;
+      border-radius:0!important;
+    }
+    /* V150.27: final visual override — match team-analysis surface to setter-analysis and remove ranking/log outer cards */
+    #report #reportDashboard.pdfA4Document .pdfTeamPage,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard>.playOverviewCard{
+      background:#eef2f7!important;
+      border-color:#dbeafe!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewColumn,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewPlay,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewMetrics,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewResult,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewRotation{
+      background:#eef2f7!important;
+      border-color:#dbeafe!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfFinalGrid{
+      background:transparent!important;
+      border:0!important;
+      box-shadow:none!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsBlock,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRankingsBlock.reportPanel,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsBlock.reportPanel,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRankingsBlock>.reportPanel,
+    #report #reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsBlock>.reportPanel{
+      background:transparent!important;
+      border:0!important;
+      outline:0!important;
       box-shadow:none!important;
       border-radius:0!important;
     }
