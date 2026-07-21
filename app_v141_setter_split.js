@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.24</div>
+    <div class="pdfCoverVersion">V150.25</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3305,6 +3305,80 @@ function printMatchPdfReport(){
     .pdfFinalGrid .timelineIcon{width:18px!important;height:18px!important;line-height:18px!important;font-size:10px!important}
     .pdfFinalGrid .logLegend{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important;margin-top:5px!important;font-size:9px!important;color:#172033!important}
     .pdfFinalGrid .reportAccordionSubhead{font-size:11px!important;font-weight:900!important;color:#172033!important;margin-bottom:3px!important}
+
+
+
+    /* V150.25: force the PDF team layout to match the normal report (3 columns + rotation row) */
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard>.playOverviewCard{
+      display:grid!important;
+      grid-template-columns:minmax(0,.82fr) minmax(0,1.05fr) minmax(0,1.05fr)!important;
+      grid-template-rows:minmax(0,1fr) auto!important;
+      gap:7px!important;
+      width:100%!important;
+      height:164mm!important;
+      max-height:164mm!important;
+      padding:7px!important;
+      overflow:hidden!important;
+      align-items:stretch!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewPlay{
+      grid-column:1!important;grid-row:1!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewMetrics{
+      grid-column:2!important;grid-row:1!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewResult{
+      grid-column:3!important;grid-row:1!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewRotation{
+      grid-column:1/-1!important;grid-row:2!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewPlay,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewMetrics,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewResult,
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playOverviewRotation{
+      display:block!important;
+      position:relative!important;
+      box-sizing:border-box!important;
+      width:100%!important;
+      min-width:0!important;
+      height:100%!important;
+      max-height:none!important;
+      margin:0!important;
+      padding:7px!important;
+      overflow:hidden!important;
+      border:1px solid #cbd5e1!important;
+      border-radius:10px!important;
+      background:#fff!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playMetricRow{
+      display:grid!important;
+      grid-template-columns:58px minmax(0,1fr)!important;
+      gap:5px!important;
+      align-items:center!important;
+      width:100%!important;
+      min-width:0!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playMetricSingle{
+      width:100%!important;
+      max-width:100%!important;
+      min-width:0!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .playMetricStack{
+      width:100%!important;
+      max-width:100%!important;
+      height:8px!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .teamRotationList{
+      display:grid!important;
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      gap:6px!important;
+      width:100%!important;
+    }
+    #report #reportDashboard.pdfA4Document .pdfTeamPage .teamAnalysisCard .teamRotationRow{
+      min-width:0!important;
+      padding:6px 8px!important;
+    }
 
     @media(max-width:760px){.pdfPreviewSheet{width:100%;margin:0;padding:8px;border-radius:0}.pdfPreviewTopbar{padding:8px}.pdfPreviewTopbar b{font-size:12px}.pdfPreviewTopbar button{padding:8px 10px;font-size:12px}}
 
