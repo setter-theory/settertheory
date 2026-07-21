@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.43</div>
+    <div class="pdfCoverVersion">V150.44</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4082,24 +4082,24 @@ function printMatchPdfReport(){
 
     /* V150.43: PDF-only chart sizing, team balance, and unified analysis card. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar{
-      transform:scale(1.10)!important;
+      transform:scale(1.24)!important;
       transform-origin:center center!important;
       margin:3px 0 5px!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar svg,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar canvas,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar img{
-      max-height:208px!important;
+      max-height:232px!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfDonutSvg{
-      width:88px!important;
-      height:88px!important;
-      min-width:88px!important;
-      flex-basis:88px!important;
+      width:108px!important;
+      height:108px!important;
+      min-width:108px!important;
+      flex-basis:108px!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfDonutSvg svg{
-      width:88px!important;
-      height:88px!important;
+      width:108px!important;
+      height:108px!important;
     }
 
     #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard>.playOverviewCard{
@@ -4197,11 +4197,31 @@ function printMatchPdfReport(){
       margin:0!important;
     }
 
+    /* V150.44: enlarge setter charts and force rotation percentage contrast. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar{
+      transform:scale(1.24)!important;
+      transform-origin:center center!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfDonutSvg,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfDonutSvg svg{
+      width:108px!important;
+      height:108px!important;
+      min-width:108px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterRotValue em,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotValue em,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .v141RotationSection .setterRotValue em{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      opacity:1!important;
+      font-weight:900!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.43 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.44 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
