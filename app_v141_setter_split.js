@@ -2247,6 +2247,57 @@ function buildActionSuccessAnalysis(){
   </div>`).join("")}</div>`;
 }
 
+
+function buildPdfTeamActionBreakdown(){
+  const configs=[
+    {label:"スパイク", type:"スパイク", parts:[
+      ["成功","success",x=>x.result==="成功"],
+      ["継続","continue",x=>x.result==="継続"],
+      ["被ブロック","blocked",x=>x.result==="被ブロック"],
+      ["ミス","miss",x=>x.result==="ミス"]
+    ]},
+    {label:"サーブ", type:"サーブ", parts:[
+      ["エース","success",x=>x.result==="エース"],
+      ["成功","good",x=>x.result==="成功"],
+      ["ミス","miss",x=>x.result==="ミス"]
+    ]},
+    {label:"レセプ", type:"レセプ", parts:[
+      ["A","success",x=>x.result==="Aパス"],
+      ["B","good",x=>x.result==="Bパス"],
+      ["C","continue",x=>x.result==="Cパス"],
+      ["ミス","miss",x=>x.result==="ミス"||x.result==="レセプミス"]
+    ]},
+    {label:"ディグ", type:"ディグ", parts:[
+      ["成功","success",x=>x.result==="成功"],
+      ["ミス","miss",x=>x.result==="ミス"]
+    ]},
+    {label:"ブロック", type:"ブロック", parts:[
+      ["シャット","success",x=>x.result==="シャット"],
+      ["ワンタッチ","good",x=>x.result==="ワンタッチ"],
+      ["ミス","miss",x=>x.result==="ミス"||x.result==="ブロックミス"]
+    ]}
+  ];
+  return `<div class="pdfTeamActionBreakdown">${configs.map(c=>{
+    const logs=(s.logs||[]).filter(x=>x.type===c.type);
+    const total=logs.length;
+    const cells=c.parts.map(([name,cls,fn])=>{
+      const count=logs.filter(fn).length;
+      const pct=total?Math.round(count/total*100):0;
+      return {name,cls,count,pct};
+    });
+    const sum=cells.reduce((n,x)=>n+x.pct,0);
+    if(total && sum!==100){
+      const target=cells.find(x=>x.count===Math.max(...cells.map(y=>y.count)));
+      if(target) target.pct+=100-sum;
+    }
+    return `<div class="pdfTeamMetricRow">
+      <div class="pdfTeamMetricHead"><b>${c.label}</b><span>${total}本</span></div>
+      <div class="pdfTeamMetricTrack">${cells.map(x=>x.count?`<i class="${x.cls}" style="width:${x.pct}%" title="${x.name} ${x.pct}%"></i>`:'').join('')}${!total?'<em>記録なし</em>':''}</div>
+      <div class="pdfTeamMetricLegend">${cells.map(x=>`<span class="${x.cls}"><i></i>${x.name} <b>${x.pct}%</b><small>${x.count}本</small></span>`).join('')}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
 function buildSetterInsight(){
   const toss=s.logs.filter(x=>x.type==="トス");
   const labels=["レフト","センター","ライト","バック","ツー"];
@@ -2993,7 +3044,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.44</div>
+    <div class="pdfCoverVersion">V150.45</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3007,8 +3058,14 @@ function printMatchPdfReport(){
   if(setterCards[0]) appendPage(setterCards[0],'pdfSetterPage pdfSetterPageOne');
   // 3ページ目：セッター分析②。ツーセッター時のみ追加。
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
+  // V150.45: PDFの試合指標を、現在入力できる結果区分ごとの100%積み上げ棒グラフへ変更。
+  const pdfTeamCard=clone.querySelector('.teamAnalysisCard');
+  if(pdfTeamCard){
+    const actionBars=pdfTeamCard.querySelector('.v135ActionBars');
+    if(actionBars) actionBars.outerHTML=buildPdfTeamActionBreakdown();
+  }
   // 4ページ目：チーム分析。
-  appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
+  appendPage(pdfTeamCard,'pdfTeamPage');
   // 5ページ目：ランキングと直近ログを1つの「分析」カードへ統合する。
   const finalPage=makePage('pdfFinalPage');
   const finalGrid=document.createElement('div');
@@ -4217,11 +4274,37 @@ function printMatchPdfReport(){
       font-weight:900!important;
     }
 
+
+    /* V150.45: current input-result breakdown for team match metrics. */
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamActionBreakdown{display:grid!important;gap:9px!important;margin-top:5px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricRow{padding:8px 10px!important;border:1px solid rgba(203,213,225,.24)!important;border-radius:11px!important;background:rgba(15,23,42,.18)!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricHead{display:flex!important;justify-content:space-between!important;align-items:center!important;margin-bottom:5px!important;color:#fff!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricHead b{font-size:13px!important;color:#fff!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricHead span{font-size:10px!important;color:#cbd5e1!important;font-weight:850!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack{display:flex!important;height:15px!important;border-radius:999px!important;overflow:hidden!important;background:rgba(148,163,184,.22)!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i{display:block!important;height:100%!important;border-radius:0!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.success{background:#16a34a!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.good{background:#2563eb!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.continue{background:#f59e0b!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.blocked{background:#a855f7!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack i.miss{background:#dc2626!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricTrack em{width:100%!important;text-align:center!important;font-size:9px!important;line-height:15px!important;color:#cbd5e1!important;font-style:normal!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend{display:flex!important;flex-wrap:wrap!important;gap:4px 10px!important;margin-top:6px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span{display:inline-flex!important;align-items:center!important;gap:3px!important;font-size:8.5px!important;color:#e2e8f0!important;white-space:nowrap!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span>i{width:7px!important;height:7px!important;border-radius:2px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.success>i{background:#16a34a!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.good>i{background:#2563eb!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.continue>i{background:#f59e0b!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.blocked>i{background:#a855f7!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend span.miss>i{background:#dc2626!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend b{color:#fff!important;font-size:9px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .pdfTeamMetricLegend small{color:#94a3b8!important;font-size:8px!important;}
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.44 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.45 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
