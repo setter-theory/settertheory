@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.40</div>
+    <div class="pdfCoverVersion">V150.41</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3983,11 +3983,51 @@ function printMatchPdfReport(){
       justify-content:center!important;
     }
 
+
+
+    /* V150.41: round the setter-card top corners and improve text contrast on every non-cover PDF card. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnit{
+      box-sizing:border-box!important;
+      overflow:hidden!important;
+      border-radius:16px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisHeader{
+      overflow:hidden!important;
+      border-top-left-radius:16px!important;
+      border-top-right-radius:16px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnitBody,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard{
+      border-bottom-left-radius:16px!important;
+      border-bottom-right-radius:16px!important;
+    }
+
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage{
+      color:#ffffff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage :is(h1,h2,h3,h4,h5,h6,b,strong,.num,.value,.score,.rate,.percent,.rank,.timelineText,.timelineNo,.compactRankName,.compactRankValue),
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage :is(h1,h2,h3,h4,h5,h6,b,strong,.num,.value,.score,.rate,.percent,.rank),
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage :is(h1,h2,h3,h4,h5,h6,b,strong,.num,.value,.score,.rate,.percent,.rank,.timelineText,.timelineNo,.compactRankName,.compactRankValue){
+      color:#ffffff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage :is(p,span,small,label,td,th,.small,.label,.sub,.meta,.caption,.legendRow,.setterAnalysisEyebrow),
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage :is(p,span,small,label,td,th,.small,.label,.sub,.meta,.caption,.legendRow),
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage :is(p,span,small,label,td,th,.small,.label,.sub,.meta,.caption,.legendRow,.logLegend){
+      color:#e5e7eb!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage svg text:not(.pdfDonutSvg text),
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage svg text:not(.pdfDonutSvg text),
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage svg text:not(.pdfDonutSvg text){
+      fill:#e5e7eb!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.40 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.41 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
