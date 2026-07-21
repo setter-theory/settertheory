@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.42</div>
+    <div class="pdfCoverVersion">V150.43</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3009,35 +3009,44 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // 5ページ目：ランキングと直近ログを同一ページへまとめる。
+  // 5ページ目：ランキングと直近ログを1つの「分析」カードへ統合する。
   const finalPage=makePage('pdfFinalPage');
   const finalGrid=document.createElement('div');
   finalGrid.className='pdfFinalGrid';
   const rankings=clone.querySelector('.singleReportWideGrid');
   const recentLogs=clone.querySelector('.setterUnifiedBottomGrid');
-  if(rankings){
-    const rankOuter=document.createElement('section');
-    rankOuter.className='pdfFinalOuterCard pdfRankingsOuterCard';
-    const rankTitle=document.createElement('h2');
-    rankTitle.className='pdfFinalSectionTitle';
-    rankTitle.textContent='ランキング';
-    rankOuter.appendChild(rankTitle);
-    const rankClone=rankings.cloneNode(true);
-    rankClone.classList.add('pdfRankingsBlock');
-    rankOuter.appendChild(rankClone);
-    finalGrid.appendChild(rankOuter);
-  }
-  if(recentLogs){
-    const logOuter=document.createElement('section');
-    logOuter.className='pdfFinalOuterCard pdfRecentLogsOuterCard';
-    const logTitle=document.createElement('h2');
-    logTitle.className='pdfFinalSectionTitle';
-    logTitle.textContent='直近ログ';
-    logOuter.appendChild(logTitle);
-    const logClone=recentLogs.cloneNode(true);
-    logClone.classList.add('pdfRecentLogsBlock');
-    logOuter.appendChild(logClone);
-    finalGrid.appendChild(logOuter);
+  if(rankings || recentLogs){
+    const analysisOuter=document.createElement('section');
+    analysisOuter.className='pdfFinalOuterCard pdfAnalysisOuterCard';
+    const analysisTitle=document.createElement('h2');
+    analysisTitle.className='pdfAnalysisTitle';
+    analysisTitle.textContent='分析';
+    analysisOuter.appendChild(analysisTitle);
+    if(rankings){
+      const rankSection=document.createElement('section');
+      rankSection.className='pdfAnalysisSection pdfRankingsSection';
+      const rankTitle=document.createElement('h3');
+      rankTitle.className='pdfFinalSectionTitle';
+      rankTitle.textContent='ランキング';
+      rankSection.appendChild(rankTitle);
+      const rankClone=rankings.cloneNode(true);
+      rankClone.classList.add('pdfRankingsBlock');
+      rankSection.appendChild(rankClone);
+      analysisOuter.appendChild(rankSection);
+    }
+    if(recentLogs){
+      const logSection=document.createElement('section');
+      logSection.className='pdfAnalysisSection pdfRecentLogsSection pdfRecentLogsOuterCard';
+      const logTitle=document.createElement('h3');
+      logTitle.className='pdfFinalSectionTitle';
+      logTitle.textContent='直近ログ';
+      logSection.appendChild(logTitle);
+      const logClone=recentLogs.cloneNode(true);
+      logClone.classList.add('pdfRecentLogsBlock');
+      logSection.appendChild(logClone);
+      analysisOuter.appendChild(logSection);
+    }
+    finalGrid.appendChild(analysisOuter);
   }
   if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
 
@@ -4069,11 +4078,130 @@ function printMatchPdfReport(){
       -webkit-text-fill-color:#ffffff!important;
     }
 
+
+
+    /* V150.43: PDF-only chart sizing, team balance, and unified analysis card. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar{
+      transform:scale(1.10)!important;
+      transform-origin:center center!important;
+      margin:3px 0 5px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar svg,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar canvas,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar img{
+      max-height:208px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfDonutSvg{
+      width:88px!important;
+      height:88px!important;
+      min-width:88px!important;
+      flex-basis:88px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .pdfDonutSvg svg{
+      width:88px!important;
+      height:88px!important;
+    }
+
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard>.playOverviewCard{
+      grid-template-rows:minmax(0,1fr) auto!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewResult{
+      padding:8px 10px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAquilaAdvice{
+      margin-top:7px!important;
+      padding:13px 14px!important;
+      min-height:78px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAquilaAdviceTitle{
+      font-size:12px!important;
+      margin-bottom:7px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAquilaAdvice p,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAquilaAdviceList p{
+      font-size:10.5px!important;
+      line-height:1.55!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewRotation{
+      padding:4px 6px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewRotation h3{
+      margin-bottom:3px!important;
+      font-size:10px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationList{
+      gap:4px 6px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationRow{
+      min-height:34px!important;
+      padding:3px 5px!important;
+      gap:5px!important;
+      grid-template-columns:24px minmax(0,1fr) minmax(82px,.65fr)!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationLabel{font-size:10px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationSuccessHead b{font-size:10px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationSuccessHead span,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationSuccessHead small,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationPointCounts{font-size:7px!important;}
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationTrack{height:6px!important;margin-top:3px!important;}
+
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalGrid{
+      display:block!important;
+      height:186mm!important;
+      max-height:186mm!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard{
+      display:grid!important;
+      grid-template-rows:auto minmax(0,1fr) auto!important;
+      gap:8px!important;
+      height:100%!important;
+      padding:12px!important;
+      border:1px solid rgba(203,213,225,.28)!important;
+      border-radius:16px!important;
+      background:#2f394b!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisTitle{
+      margin:0!important;
+      padding:0 2px 8px!important;
+      color:#ffffff!important;
+      font-size:22px!important;
+      line-height:1.05!important;
+      font-weight:1000!important;
+      letter-spacing:.05em!important;
+      border-bottom:1px solid rgba(255,255,255,.28)!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSection{
+      min-width:0!important;
+      overflow:hidden!important;
+      background:transparent!important;
+      border:0!important;
+      padding:0!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection{min-height:0!important;}
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection{padding-top:7px!important;border-top:1px solid rgba(255,255,255,.18)!important;}
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSection .pdfFinalSectionTitle{
+      margin:0 0 5px!important;
+      padding:0!important;
+      font-size:15px!important;
+      border-bottom:0!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .pdfRecentLogsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .reportPanel{
+      background:transparent!important;
+      border:0!important;
+      border-radius:0!important;
+      box-shadow:none!important;
+      padding:0!important;
+      margin:0!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.42 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.43 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
