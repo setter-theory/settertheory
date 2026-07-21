@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.35</div>
+    <div class="pdfCoverVersion">V150.36</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3793,107 +3793,35 @@ function printMatchPdfReport(){
     }
 
 
-
-    /* V150.35: confirmed PDF-only target styles. Normal report is untouched. */
+    /* V150.36: keep the navy background inside the existing team-analysis card only. */
     #report #reportDashboard.pdfA4Document > .pdfTeamPage{
-      background:#2f394b!important;
+      background:#ffffff!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard{
-      background:#2f394b!important;
-      border:1px solid rgba(203,213,225,.22)!important;
+      box-sizing:border-box!important;
+      width:100%!important;
+      max-width:100%!important;
+      margin-left:0!important;
+      margin-right:0!important;
+      overflow:hidden!important;
       border-radius:16px!important;
-      box-shadow:none!important;
-      padding:10px!important;
+      background:#2f394b!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard>.playOverviewCard{
-      display:grid!important;
-      grid-template-columns:minmax(0,.78fr) minmax(0,1.16fr) minmax(0,.92fr) minmax(0,1.08fr)!important;
-      grid-template-rows:1fr!important;
-      gap:8px!important;
-      height:164mm!important;
-      padding:8px!important;
-      background:#2f394b!important;
-      border:0!important;
-      box-shadow:none!important;
-      overflow:hidden!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewPlay{grid-column:1!important;grid-row:1!important}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics{grid-column:2!important;grid-row:1!important}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewResult{grid-column:3!important;grid-row:1!important}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewRotation{grid-column:4!important;grid-row:1!important}
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewPlay,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewResult,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewRotation{
+      box-sizing:border-box!important;
       width:100%!important;
-      min-width:0!important;
-      height:100%!important;
-      margin:0!important;
-      padding:7px!important;
-      background:#2f394b!important;
-      border:0!important;
-      border-radius:0!important;
-      outline:0!important;
-      box-shadow:none!important;
+      max-width:100%!important;
+      margin-left:0!important;
+      margin-right:0!important;
       overflow:hidden!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics .playMetricRow{
-      grid-template-columns:54px minmax(0,1fr)!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics .playMetricSingle,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics .playMetricStack,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics .v136ResultBarTrack,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics .metricBar,
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics .barTrack{
-      width:100%!important;
-      max-width:245px!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationList{
-      display:grid!important;
-      grid-template-columns:1fr!important;
-      gap:4px!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamRotationRow{
-      background:transparent!important;
-      border:0!important;
-      border-bottom:1px solid rgba(203,213,225,.18)!important;
-      border-radius:0!important;
-      box-shadow:none!important;
-      padding:5px 2px!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage{
-      background:#2f394b!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalGrid{
-      background:#2f394b!important;
-      border:0!important;
-      box-shadow:none!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock,
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .reportPanel{
-      background:#2f394b!important;
-      border:1px solid rgba(203,213,225,.22)!important;
-      border-radius:16px!important;
-      box-shadow:none!important;
-    }
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .compactRankCard,
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .compactRankRow,
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineItem,
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineRow,
-    #report #reportDashboard.pdfA4Document > .pdfFinalPage .recentLogItem{
-      background:transparent!important;
-      border:0!important;
-      border-radius:0!important;
-      outline:0!important;
-      box-shadow:none!important;
+      border-radius:inherit!important;
     }
 
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.35 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.36 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
