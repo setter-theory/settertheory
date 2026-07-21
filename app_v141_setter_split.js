@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.38</div>
+    <div class="pdfCoverVersion">V150.39</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3902,11 +3902,63 @@ function printMatchPdfReport(){
       box-shadow:none!important;
     }
 
+
+
+    /* V150.39: compact only the latest 20 plays so the whole block stays inside its outer card. */
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard{
+      padding:8px!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .pdfRecentLogsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .reportPanel{
+      height:100%!important;
+      max-height:100%!important;
+      min-height:0!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .reportPanel{
+      padding:4px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .reportAccordionSubhead{
+      margin:0 0 2px!important;
+      font-size:9px!important;
+      line-height:1.05!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .timeline{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      gap:2px!important;
+      margin-top:2px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .timelineItem{
+      grid-template-columns:18px 16px minmax(0,1fr)!important;
+      gap:2px!important;
+      min-height:0!important;
+      padding:1px 2px!important;
+      line-height:1!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .timelineNo,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .timelineText{
+      font-size:7.5px!important;
+      line-height:1!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .timelineIcon{
+      width:14px!important;
+      height:14px!important;
+      line-height:14px!important;
+      font-size:8px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsOuterCard .logLegend{
+      gap:2px!important;
+      margin-top:2px!important;
+      font-size:7px!important;
+      line-height:1!important;
+    }
+
     .pdfPreviewBuildMarker{position:fixed!important;right:8px!important;bottom:8px!important;z-index:2147483647!important;padding:4px 7px!important;border-radius:7px!important;background:rgba(15,23,42,.92)!important;color:#fff!important;font-size:10px!important;font-weight:900!important;pointer-events:none!important;}
     @media print{.pdfPreviewBuildMarker{display:none!important}}
   </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.38 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.39 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
