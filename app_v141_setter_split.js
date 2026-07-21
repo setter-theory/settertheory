@@ -2993,7 +2993,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.23</div>
+    <div class="pdfCoverVersion">V150.24</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3311,33 +3311,30 @@ function printMatchPdfReport(){
 
 
 
-    /* V150.23: rebuild the PDF preview team-analysis block only */
+    /* V150.24: match the PDF preview team-analysis layout to the normal report */
     .pdfTeamPage .teamAnalysisCard{height:188mm!important;max-height:188mm!important;overflow:hidden!important;background:#f8fafc!important}
     .pdfTeamPage .playOverviewCard{
       display:grid!important;
-      grid-template-columns:minmax(0,30%) minmax(0,70%)!important;
-      grid-template-areas:
-        "play metrics"
-        "result result"
-        "rotation rotation"!important;
-      grid-template-rows:auto auto 1fr!important;
+      grid-template-columns:minmax(0,.78fr) minmax(0,1.25fr) minmax(0,.9fr) minmax(0,1.08fr)!important;
+      grid-template-rows:1fr!important;
       gap:7px!important;
       height:164mm!important;
       max-height:164mm!important;
       padding:7px!important;
       overflow:hidden!important;
-      align-content:start!important;
+      align-items:stretch!important;
       background:#f8fafc!important;
     }
-    .pdfTeamPage .playOverviewPlay{grid-area:play!important}
-    .pdfTeamPage .playOverviewMetrics{grid-area:metrics!important}
-    .pdfTeamPage .playOverviewResult{grid-area:result!important}
-    .pdfTeamPage .playOverviewRotation{grid-area:rotation!important}
+    .pdfTeamPage .playOverviewPlay{grid-column:1!important;grid-row:1!important}
+    .pdfTeamPage .playOverviewMetrics{grid-column:2!important;grid-row:1!important}
+    .pdfTeamPage .playOverviewResult{grid-column:3!important;grid-row:1!important}
+    .pdfTeamPage .playOverviewRotation{grid-column:4!important;grid-row:1!important}
     .pdfTeamPage .playOverviewColumn,
     .pdfTeamPage .playOverviewRotation{
       box-sizing:border-box!important;
       min-width:0!important;
       width:100%!important;
+      height:100%!important;
       margin:0!important;
       padding:7px!important;
       overflow:hidden!important;
@@ -3346,134 +3343,44 @@ function printMatchPdfReport(){
       background:#fff!important;
       color:#0f172a!important;
     }
-    .pdfTeamPage .playOverviewColumn *,
-    .pdfTeamPage .playOverviewRotation *{box-sizing:border-box!important}
     .pdfTeamPage .playOverviewColumn h3,
-    .pdfTeamPage .playOverviewRotation h3{
-      display:block!important;
-      margin:0 0 5px!important;
-      color:#0f172a!important;
-      font-size:12px!important;
-      line-height:1.2!important;
-      white-space:normal!important;
-    }
+    .pdfTeamPage .playOverviewRotation h3{margin:0 0 5px!important;color:#0f172a!important;font-size:11px!important;line-height:1.18!important;white-space:normal!important}
     .pdfTeamPage .playOverviewColumn h3 small,
-    .pdfTeamPage .playOverviewRotation h3 small{color:#475569!important;font-size:9px!important}
+    .pdfTeamPage .playOverviewRotation h3 small{color:#475569!important;font-size:7.5px!important}
 
-    /* Left: one readable donut and a compact two-column legend */
-    .pdfTeamPage .playOverviewPlay .donutWrap{
-      display:grid!important;
-      grid-template-columns:92px minmax(0,1fr)!important;
-      gap:8px!important;
-      align-items:center!important;
-      padding:2px!important;
-      overflow:visible!important;
-    }
-    .pdfTeamPage .playOverviewPlay .pdfDonutSvg{
-      width:88px!important;height:88px!important;min-width:88px!important;flex:0 0 88px!important;padding:2px!important;
-    }
-    .pdfTeamPage .playOverviewPlay .pdfDonutSvg svg{width:88px!important;height:88px!important}
-    .pdfTeamPage .playOverviewPlay .legend{
-      display:grid!important;
-      grid-template-columns:minmax(0,1fr)!important;
-      gap:3px!important;
-      min-width:0!important;
-      margin:0!important;
-    }
-    .pdfTeamPage .playOverviewPlay .legend>div{
-      display:grid!important;
-      grid-template-columns:8px minmax(0,1fr) auto!important;
-      gap:4px!important;
-      align-items:center!important;
-      min-width:0!important;
-      font-size:8.5px!important;
-      line-height:1.1!important;
-      color:#0f172a!important;
-    }
-    .pdfTeamPage .playOverviewPlay .legend span,
-    .pdfTeamPage .playOverviewPlay .legend b,
-    .pdfTeamPage .playOverviewPlay .legend strong,
-    .pdfTeamPage .playOverviewPlay .legend small{color:#0f172a!important;white-space:nowrap!important}
+    .pdfTeamPage .playOverviewPlay .donutWrap{display:flex!important;flex-direction:column!important;align-items:center!important;gap:6px!important;padding:2px!important;overflow:visible!important}
+    .pdfTeamPage .playOverviewPlay .pdfDonutSvg{width:92px!important;height:92px!important;min-width:92px!important;padding:2px!important}
+    .pdfTeamPage .playOverviewPlay .pdfDonutSvg svg{width:92px!important;height:92px!important}
+    .pdfTeamPage .playOverviewPlay .legend{display:grid!important;grid-template-columns:1fr!important;gap:3px!important;width:100%!important;margin:0!important}
+    .pdfTeamPage .playOverviewPlay .legend>div{display:grid!important;grid-template-columns:7px minmax(0,1fr) auto!important;gap:3px!important;align-items:center!important;min-width:0!important;font-size:7.5px!important;line-height:1.08!important}
+    .pdfTeamPage .playOverviewPlay .legend span,.pdfTeamPage .playOverviewPlay .legend b,.pdfTeamPage .playOverviewPlay .legend strong,.pdfTeamPage .playOverviewPlay .legend small{color:#0f172a!important;white-space:nowrap!important}
 
-    /* Right: reserve a fixed value column so effect values never overlap bars */
     .pdfTeamPage .playMetricAnalysis{display:grid!important;gap:4px!important}
-    .pdfTeamPage .playMetricRow{
-      display:grid!important;
-      grid-template-columns:82px minmax(0,1fr)!important;
-      gap:7px!important;
-      align-items:center!important;
-      min-width:0!important;
-      margin:0!important;
-    }
-    .pdfTeamPage .playMetricName{
-      display:grid!important;
-      grid-template-columns:7px minmax(0,1fr) auto!important;
-      gap:4px!important;
-      align-items:center!important;
-      min-width:0!important;
-      color:#0f172a!important;
-    }
-    .pdfTeamPage .playMetricName b,.pdfTeamPage .playMetricName small{color:#0f172a!important;font-size:8.5px!important;white-space:nowrap!important}
-    .pdfTeamPage .playMetricSingle{display:grid!important;grid-template-columns:minmax(0,1fr) 124px!important;gap:7px!important;align-items:center!important;min-width:0!important}
-    .pdfTeamPage .playMetricStack{height:9px!important;min-width:0!important;border-radius:999px!important;overflow:hidden!important;background:#e2e8f0!important}
-    .pdfTeamPage .playMetricLegend{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-areas:"success failure" "effect effect"!important;gap:1px 5px!important;min-width:0!important;line-height:1.05!important}
-    .pdfTeamPage .playMetricLegend .success{grid-area:success!important}
-    .pdfTeamPage .playMetricLegend .failure{grid-area:failure!important}
-    .pdfTeamPage .playMetricLegend strong{grid-area:effect!important;text-align:right!important}
-    .pdfTeamPage .playMetricLegend span,.pdfTeamPage .playMetricLegend strong{font-size:8px!important;color:#0f172a!important;white-space:nowrap!important}
+    .pdfTeamPage .playMetricRow{display:grid!important;grid-template-columns:62px minmax(0,1fr)!important;gap:5px!important;align-items:center!important;min-width:0!important;margin:0!important}
+    .pdfTeamPage .playMetricName{display:grid!important;grid-template-columns:6px minmax(0,1fr)!important;gap:3px!important;align-items:center!important;min-width:0!important}
+    .pdfTeamPage .playMetricName b,.pdfTeamPage .playMetricName small{font-size:7.2px!important;color:#0f172a!important;white-space:nowrap!important}
+    .pdfTeamPage .playMetricSingle{display:flex!important;flex-direction:column!important;gap:2px!important;min-width:0!important}
+    .pdfTeamPage .playMetricStack{width:100%!important;max-width:100%!important;height:8px!important;border-radius:999px!important;overflow:hidden!important;background:#e2e8f0!important}
+    .pdfTeamPage .playMetricLegend{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-areas:"success failure" "effect effect"!important;gap:1px 3px!important;min-width:0!important;line-height:1.02!important}
+    .pdfTeamPage .playMetricLegend .success{grid-area:success!important}.pdfTeamPage .playMetricLegend .failure{grid-area:failure!important}.pdfTeamPage .playMetricLegend strong{grid-area:effect!important;text-align:right!important}
+    .pdfTeamPage .playMetricLegend span,.pdfTeamPage .playMetricLegend strong{font-size:6.7px!important;color:#0f172a!important;white-space:nowrap!important}
 
-    /* Result ratio and advice are separate columns inside one clean row */
-    .pdfTeamPage .playOverviewResult{
-      display:grid!important;
-      grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)!important;
-      grid-template-rows:auto 1fr!important;
-      gap:5px 8px!important;
-      align-items:stretch!important;
-    }
-    .pdfTeamPage .playOverviewResult>h3{grid-column:1/-1!important}
-    .pdfTeamPage .v146ResultOneBar{grid-column:1!important;min-width:0!important;margin:0!important;padding:0!important}
-    .pdfTeamPage .v146ResultOneBarTrack{height:12px!important;margin:0 0 5px!important;overflow:hidden!important;border-radius:999px!important;background:#e2e8f0!important}
-    .pdfTeamPage .v146ResultOneBarLegend{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px 8px!important;min-width:0!important}
-    .pdfTeamPage .v146ResultOneBarLegend>div{display:grid!important;grid-template-columns:7px minmax(0,1fr) auto auto!important;gap:4px!important;align-items:center!important;min-width:0!important}
-    .pdfTeamPage .v146ResultOneBarLegend span,.pdfTeamPage .v146ResultOneBarLegend strong,.pdfTeamPage .v146ResultOneBarLegend small{font-size:8px!important;color:#0f172a!important;white-space:nowrap!important}
-    .pdfTeamPage .v146ResultOneBarTotal{font-size:8px!important;color:#475569!important;text-align:right!important;margin-top:2px!important}
-    .pdfTeamPage .teamAquilaAdvice{
-      grid-column:2!important;
-      align-self:stretch!important;
-      margin:0!important;
-      padding:6px!important;
-      min-width:0!important;
-      overflow:hidden!important;
-      border-radius:9px!important;
-      background:#0f1b33!important;
-    }
-    .pdfTeamPage .teamAquilaAdviceTitle{margin:0 0 4px!important}
-    .pdfTeamPage .teamAquilaAdviceTitle img{width:20px!important;height:20px!important}
-    .pdfTeamPage .teamAquilaAdviceTitle b{font-size:10px!important;color:#fff!important}
+    .pdfTeamPage .playOverviewResult{display:block!important}
+    .pdfTeamPage .v146ResultOneBar{margin:0 0 7px!important;padding:0!important;min-width:0!important}
+    .pdfTeamPage .v146ResultOneBarTrack{height:10px!important;margin:0 0 5px!important;overflow:hidden!important;border-radius:999px!important;background:#e2e8f0!important}
+    .pdfTeamPage .v146ResultOneBarLegend{display:grid!important;grid-template-columns:1fr!important;gap:3px!important;min-width:0!important}
+    .pdfTeamPage .v146ResultOneBarLegend>div{display:grid!important;grid-template-columns:6px minmax(0,1fr) auto auto!important;gap:3px!important;align-items:center!important;min-width:0!important}
+    .pdfTeamPage .v146ResultOneBarLegend span,.pdfTeamPage .v146ResultOneBarLegend strong,.pdfTeamPage .v146ResultOneBarLegend small{font-size:7px!important;color:#0f172a!important;white-space:nowrap!important}
+    .pdfTeamPage .v146ResultOneBarTotal{font-size:7px!important;color:#475569!important;text-align:right!important;margin-top:2px!important}
+    .pdfTeamPage .teamAquilaAdvice{display:block!important;margin:7px 0 0!important;padding:6px!important;min-width:0!important;overflow:hidden!important;border-radius:9px!important;background:#0f1b33!important}
+    .pdfTeamPage .teamAquilaAdviceTitle{margin:0 0 4px!important}.pdfTeamPage .teamAquilaAdviceTitle img{width:18px!important;height:18px!important}.pdfTeamPage .teamAquilaAdviceTitle b{font-size:9px!important;color:#fff!important}
     .pdfTeamPage .teamAquilaAdviceList{display:grid!important;grid-template-columns:1fr!important;gap:3px!important}
-    .pdfTeamPage .teamAquilaAdviceList>div{display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;gap:5px!important;align-items:start!important;min-width:0!important}
-    .pdfTeamPage .teamAquilaAdviceList strong{font-size:7.5px!important;white-space:nowrap!important;color:#fff!important}
-    .pdfTeamPage .teamAquilaAdviceList p{font-size:7.5px!important;line-height:1.15!important;margin:0!important;color:#f8fafc!important;overflow-wrap:anywhere!important}
+    .pdfTeamPage .teamAquilaAdviceList>div{display:block!important;min-width:0!important}.pdfTeamPage .teamAquilaAdviceList strong{display:block!important;font-size:6.8px!important;color:#fff!important;margin-bottom:1px!important}.pdfTeamPage .teamAquilaAdviceList p{font-size:6.8px!important;line-height:1.12!important;margin:0!important;color:#f8fafc!important;overflow-wrap:anywhere!important}
 
-    /* Bottom: six independent rotation cards; no overlap with advice */
     .pdfTeamPage .playOverviewRotation{padding:6px!important;min-height:0!important}
-    .pdfTeamPage .teamRotationList{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:4px!important;min-width:0!important}
-    .pdfTeamPage .teamRotationRow{
-      display:block!important;
-      min-width:0!important;
-      padding:5px!important;
-      margin:0!important;
-      border:1px solid #e2e8f0!important;
-      border-radius:7px!important;
-      background:#f8fafc!important;
-      overflow:hidden!important;
-    }
-    .pdfTeamPage .teamRotationLabel{font-size:11px!important;color:#0f172a!important;margin:0 0 3px!important}
-    .pdfTeamPage .teamRotationSuccessHead{display:grid!important;grid-template-columns:auto auto 1fr!important;gap:3px!important;align-items:center!important;font-size:7.5px!important;color:#0f172a!important}
-    .pdfTeamPage .teamRotationSuccessHead small{text-align:right!important;color:#475569!important}
-    .pdfTeamPage .teamRotationTrack{height:7px!important;margin:3px 0!important;overflow:hidden!important}
-    .pdfTeamPage .teamRotationPointCounts{display:flex!important;justify-content:space-between!important;gap:3px!important;font-size:7.5px!important;color:#0f172a!important}
-    .pdfTeamPage .teamRotationPoints strong{display:block!important;margin-top:2px!important;font-size:7.5px!important;text-align:right!important;color:#0f172a!important;white-space:nowrap!important}
+    .pdfTeamPage .teamRotationList{display:grid!important;grid-template-columns:1fr!important;gap:4px!important;min-width:0!important}
+    .pdfTeamPage .teamRotationRow{display:block!important;min-width:0!important;padding:5px!important;margin:0!important;border:1px solid #e2e8f0!important;border-radius:7px!important;background:#f8fafc!important;overflow:hidden!important}
+    .pdfTeamPage .teamRotationLabel{font-size:10px!important;color:#0f172a!important;margin:0 0 2px!important}.pdfTeamPage .teamRotationSuccessHead{display:grid!important;grid-template-columns:auto auto 1fr!important;gap:3px!important;align-items:center!important;font-size:6.8px!important;color:#0f172a!important}.pdfTeamPage .teamRotationSuccessHead small{text-align:right!important;color:#475569!important}.pdfTeamPage .teamRotationTrack{height:6px!important;margin:2px 0!important;overflow:hidden!important}.pdfTeamPage .teamRotationPointCounts{display:flex!important;justify-content:space-between!important;gap:3px!important;font-size:6.8px!important;color:#0f172a!important}.pdfTeamPage .teamRotationPoints strong{display:block!important;margin-top:1px!important;font-size:6.8px!important;text-align:right!important;color:#0f172a!important;white-space:nowrap!important}
 
     /* V150.22: PDF preview horizontal alignment correction */
     .pdfPreviewSheet{box-sizing:border-box!important;width:297mm!important;max-width:calc(100vw - 16px)!important;margin:12px auto!important;padding:0!important;overflow-x:hidden!important}
