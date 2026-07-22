@@ -3046,7 +3046,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.62</div>
+    <div class="pdfCoverVersion">V150.63</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4681,7 +4681,7 @@ function printMatchPdfReport(){
       justify-content:flex-start!important;
     }
 
-    /* V150.62: PDF final-page ranking text contrast. */
+    /* V150.63: PDF final-page ranking text contrast. */
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard *,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
@@ -4692,9 +4692,18 @@ function printMatchPdfReport(){
       -webkit-text-fill-color:#ffffff!important;
     }
 
+
+    /* V150.63: printed/PDF output — keep the unused parent-card surface dark, matching the preview. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard{
+      background:#2f394b!important;
+      background-color:#2f394b!important;
+    }
+
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.62</div>
+    <div class="pdfPreviewBuildMarker">V150.63</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -4776,6 +4785,12 @@ function printMatchPdfReport(){
             clone.style.height='auto';
             clone.style.overflow='visible';
             clone.style.background='#fff';
+            // V150.63: html2canvas用の複製では、親カードの余白背景を明示的に濃紺へ固定。
+            // 小カード・枠線・レイアウトには触れない。
+            clone.querySelectorAll('.pdfSetterPage .setterMasterCard, .pdfTeamPage .teamAnalysisCard, .pdfFinalPage .pdfAnalysisOuterCard').forEach(card=>{
+              card.style.setProperty('background','#2f394b','important');
+              card.style.setProperty('background-color','#2f394b','important');
+            });
             const holder=w.document.createElement('div');
             holder.id='pdfGenerationHolder';
             holder.style.position='fixed';
@@ -4784,7 +4799,7 @@ function printMatchPdfReport(){
             holder.style.width='297mm';
             holder.style.background='#fff';
             holder.style.zIndex='-1';
-            // V150.62: PDF生成用の複製もプレビューと同じ #report 配下へ置く。
+            // V150.63: PDF生成用の複製もプレビューと同じ #report 配下へ置く。
             // PDF専用CSSの「#report #reportDashboard...」を有効にし、
             // セッター分析・チーム分析・分析カードの背景をプレビューと一致させる。
             const generationReport=w.document.createElement('section');
