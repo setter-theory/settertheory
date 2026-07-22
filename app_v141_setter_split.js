@@ -3058,7 +3058,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.71</div>
+    <div class="pdfCoverVersion">V150.72</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4948,7 +4948,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.71</div>
+    <div class="pdfPreviewBuildMarker">V150.72</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5041,7 +5041,7 @@ function printMatchPdfReport(){
             holder.appendChild(clone);
             w.document.body.appendChild(holder);
 
-            // V150.71: PDFプレビューのSVGは変更せず、実際の印刷PDFに渡す複製だけを
+            // V150.72: PDFプレビューのSVGは変更せず、実際の印刷PDFに渡す複製だけを
             // 高解像度PNGへ固定する。html2canvasによる扇形境界の再解釈を防ぎ、
             // データに応じて一部の扇形だけ太く見える現象を印刷画面側だけで抑える。
             const rasterizePrintDonuts=async()=>{
@@ -5070,9 +5070,21 @@ function printMatchPdfReport(){
                       png.className='pdfDonutRaster';
                       png.alt='円グラフ';
                       png.style.display='block';
-                      png.style.width='100%';
-                      png.style.height='100%';
+                      png.style.width='132px';
+                      png.style.height='132px';
+                      png.style.maxWidth='none';
+                      png.style.maxHeight='none';
                       png.style.objectFit='contain';
+                      const donutHolder=svg.closest('.pdfDonutSvg');
+                      if(donutHolder){
+                        donutHolder.style.width='132px';
+                        donutHolder.style.height='132px';
+                        donutHolder.style.minWidth='132px';
+                        donutHolder.style.minHeight='132px';
+                        donutHolder.style.maxWidth='132px';
+                        donutHolder.style.maxHeight='132px';
+                        donutHolder.style.flex='0 0 132px';
+                      }
                       svg.replaceWith(png);
                     }catch(e){}
                     URL.revokeObjectURL(url);
