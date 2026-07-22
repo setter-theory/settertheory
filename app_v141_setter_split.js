@@ -2455,8 +2455,8 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // PDF専用：グラフ本体を小さくし、項目名・点数を外側へ離して重なりを防ぐ。
-  const cx=180, cy=145, radius=60;
+  // V150.71 PDF専用：項目名・点数をカード内へ確実に収めるため、レーダー本体とラベル位置だけを内側へ調整。
+  const cx=180, cy=145, radius=56;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2465,7 +2465,7 @@ function buildSetterIqRadarChartPdf(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.42);
+    const [x,y]=point(i,1.26);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
     return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="15" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#ffffff">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18" fill="#ffffff" font-size="14" font-weight="1000">${item.value}/20</tspan></text>`;
   }).join('');
@@ -3046,7 +3046,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.70</div>
+    <div class="pdfCoverVersion">V150.71</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
   }
   if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
 
-  // V150.70: html2pdf.js creates its own detached rendering clone, so CSS selectors
+  // V150.71: html2pdf.js creates its own detached rendering clone, so CSS selectors
   // that depend on the #report ancestor may be lost. Apply the requested parent
   // surface colors directly to the PDF DOM before it is serialized.
   const parentSurfaceColor='#2f394b';
@@ -3118,7 +3118,7 @@ function printMatchPdfReport(){
     el.style.setProperty('background-color',parentSurfaceColor,'important');
   });
 
-  // V150.70: align every visible small card with the approved dark PDF-preview theme.
+  // V150.71: align every visible small card with the approved dark PDF-preview theme.
   // Also force the final analysis parent card to occupy the full printable width.
   const smallCardColor='#1e293b';
   a4Root.querySelectorAll(
@@ -4738,7 +4738,7 @@ function printMatchPdfReport(){
       justify-content:flex-start!important;
     }
 
-    /* V150.70: match the exposed parent-card surfaces to the navy PDF-preview design.
+    /* V150.71: match the exposed parent-card surfaces to the navy PDF-preview design.
        Small cards, charts, values, and layout are unchanged. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnitBody,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard{
@@ -4754,7 +4754,7 @@ function printMatchPdfReport(){
       background:#2f394b!important;
     }
 
-    /* V150.70: PDF final-page ranking text contrast. */
+    /* V150.71: PDF final-page ranking text contrast. */
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard *,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
@@ -4766,7 +4766,7 @@ function printMatchPdfReport(){
     }
 
 
-    /* V150.70 final PDF-preview overrides: dark small cards, full-width analysis parent, unclipped toss donut. */
+    /* V150.71 final PDF-preview overrides: dark small cards, full-width analysis parent, unclipped toss donut. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisSubcard,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterTop,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar,
@@ -4854,7 +4854,7 @@ function printMatchPdfReport(){
       overflow:visible!important;
     }
 
-    /* V150.70: setter-analysis card final layout and contrast adjustments. */
+    /* V150.71: setter-analysis card final layout and contrast adjustments. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisSubcard,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisSubcard *{
       color:#ffffff!important;
@@ -4935,7 +4935,7 @@ function printMatchPdfReport(){
     }
 
 
-    /* V150.70: NEXT後の印刷画面のみ。セッター分析のレーダーとトス配分を確実に整列。 */
+    /* V150.71: NEXT後の印刷画面のみ。セッター分析のレーダーとトス配分を確実に整列。 */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard{
       overflow:hidden!important;
@@ -5016,7 +5016,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.70</div>
+    <div class="pdfPreviewBuildMarker">V150.71</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
