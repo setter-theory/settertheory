@@ -3042,7 +3042,7 @@ function printMatchPdfReport(){
   // V150.22: PDFではラベルを外側に配置した専用レーダーへ差し替える。
   const pdfSetterNumbers=reportSetterNumbers();
   setterCards.forEach((card,index)=>{
-    // V150.81: 各カード自身に埋め込んだセッター番号を最優先する。
+    // V150.82: 各カード自身に埋め込んだセッター番号を最優先する。
     // 試合入力中でもセッター②を表示順・一時状態に依存させない。
     const embeddedNum=String(card.dataset.setterNumber||'').trim();
     const num=embeddedNum || pdfSetterNumbers[index] || setterNumbers()[index];
@@ -3051,10 +3051,12 @@ function printMatchPdfReport(){
     const radar=card.querySelector('.setterMasterRadar');
     if(radar) radar.innerHTML=buildSetterIqRadarChartPdf(iqBreakdown20(analysis));
 
-    // V150.81: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
+    // V150.82: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
     // セッター別集計データから直接再構築する。試合入力中と保存試合で同じ表示になる。
     const tossHost=card.querySelector('.setterAnalysisTossCard .setterMasterDonut');
-    if(tossHost){
+    // V150.82: 元レポートの円グラフをSVG変換できている場合は、その正常なSVGを維持する。
+    // セッター別データからの再構築は、SVGが存在しない場合だけの補助処理とする。
+    if(tossHost && !tossHost.querySelector('.pdfDonutSvg')){
       const colorMap={'レフト':'#ef4444','センター':'#2563eb','ライト':'#22c55e','バック':'#f59e0b','ツー':'#0f172a','未分類':'#64748b'};
       const items=(analysis.items||[]).filter(item=>Number(item.count)>0);
       const total=items.reduce((sum,item)=>sum+Number(item.count||0),0);
@@ -3097,7 +3099,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.81</div>
+    <div class="pdfCoverVersion">V150.82</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3136,6 +3138,24 @@ function printMatchPdfReport(){
       rankSection.appendChild(rankTitle);
       const rankClone=rankings.cloneNode(true);
       rankClone.classList.add('pdfRankingsBlock');
+      // V150.82: singleReportWideGrid自身が2列グリッドになり、唯一の子要素が左半分へ寄るのを防ぐ。
+      // 外側は全幅、内側のランキング5項目は試合レポート画面と同じ2列配置にする。
+      rankClone.style.setProperty('display','block','important');
+      rankClone.style.setProperty('width','100%','important');
+      rankClone.style.setProperty('max-width','100%','important');
+      const rankPanel=rankClone.querySelector('.reportPanel');
+      if(rankPanel){
+        rankPanel.style.setProperty('display','block','important');
+        rankPanel.style.setProperty('width','100%','important');
+        rankPanel.style.setProperty('max-width','100%','important');
+      }
+      const allRanks=rankClone.querySelector('.allRankingsGrid');
+      if(allRanks){
+        allRanks.style.setProperty('display','grid','important');
+        allRanks.style.setProperty('grid-template-columns','repeat(2,minmax(0,1fr))','important');
+        allRanks.style.setProperty('width','100%','important');
+        allRanks.style.setProperty('max-width','100%','important');
+      }
       rankSection.appendChild(rankClone);
       analysisOuter.appendChild(rankSection);
     }
@@ -3207,7 +3227,7 @@ function printMatchPdfReport(){
     analysisOuter.style.setProperty('min-height','100%','important');
     analysisOuter.style.setProperty('background',parentSurfaceColor,'important');
   }
-  // V150.81: ランキング・直近ログの小カード外枠は透明化しない。
+  // V150.82: ランキング・直近ログの小カード外枠は透明化しない。
   // 内側の複製ブロックだけを透明にして、親の小カード背景を残す。
   a4Root.querySelectorAll('.pdfFinalPage .pdfAnalysisSection').forEach(el=>{
     el.style.setProperty('display','block','important');
@@ -5003,7 +5023,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.81</div>
+    <div class="pdfPreviewBuildMarker">V150.82</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
