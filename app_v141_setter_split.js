@@ -1923,7 +1923,7 @@ function buildSetterDetailReports(){
     const successPct=a.quality.total?Math.round(successCount/a.quality.total*100):0;
     const missPct=a.quality.total?Math.round(a.quality.miss/a.quality.total*100):0;
     const qualityBar=`<div class="setterQualityOneBar"><div class="setterQualityOneBarStats"><span>総トス <b>${a.quality.total}</b>本</span><span>トスミス <b>${a.quality.miss}</b>本</span><span>成功率 <b>${a.quality.successRate}</b>%</span></div><div class="setterQualityOneBarTrack">${a.quality.total?`<i class="ok" style="width:${successPct}%"></i><i class="ng" style="width:${missPct}%"></i>`:`<em>記録なし</em>`}</div></div>`;
-    return `<section class="reportPanel setterAnalysisUnit">
+    return `<section class="reportPanel setterAnalysisUnit" data-setter-number="${escapeHtml(String(n))}">
       <div class="setterAnalysisHeader"><div><span class="setterAnalysisEyebrow">SETTER REPORT</span><h2>セッター分析${idx===0?'①':'②'}</h2></div><small>${escapeHtml(a.name||'')}の配球・能力バランス・ローテーション別傾向</small></div>
       <div class="setterAnalysisUnitBody"><div class="setterMasterCard">
       <div class="setterMasterHeaderRow">
@@ -3042,13 +3042,16 @@ function printMatchPdfReport(){
   // V150.22: PDFではラベルを外側に配置した専用レーダーへ差し替える。
   const pdfSetterNumbers=reportSetterNumbers();
   setterCards.forEach((card,index)=>{
-    const num=pdfSetterNumbers[index];
+    // V150.81: 各カード自身に埋め込んだセッター番号を最優先する。
+    // 試合入力中でもセッター②を表示順・一時状態に依存させない。
+    const embeddedNum=String(card.dataset.setterNumber||'').trim();
+    const num=embeddedNum || pdfSetterNumbers[index] || setterNumbers()[index];
     if(!num)return;
     const analysis=currentSetterAnalysisFor(num);
     const radar=card.querySelector('.setterMasterRadar');
     if(radar) radar.innerHTML=buildSetterIqRadarChartPdf(iqBreakdown20(analysis));
 
-    // V150.80: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
+    // V150.81: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
     // セッター別集計データから直接再構築する。試合入力中と保存試合で同じ表示になる。
     const tossHost=card.querySelector('.setterAnalysisTossCard .setterMasterDonut');
     if(tossHost){
@@ -3094,7 +3097,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.80</div>
+    <div class="pdfCoverVersion">V150.81</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3204,10 +3207,24 @@ function printMatchPdfReport(){
     analysisOuter.style.setProperty('min-height','100%','important');
     analysisOuter.style.setProperty('background',parentSurfaceColor,'important');
   }
-  a4Root.querySelectorAll('.pdfFinalPage .pdfAnalysisSection,.pdfFinalPage .pdfRankingsBlock,.pdfFinalPage .pdfRecentLogsBlock,.pdfFinalPage .singleReportWideGrid,.pdfFinalPage .setterUnifiedBottomGrid').forEach(el=>{
+  // V150.81: ランキング・直近ログの小カード外枠は透明化しない。
+  // 内側の複製ブロックだけを透明にして、親の小カード背景を残す。
+  a4Root.querySelectorAll('.pdfFinalPage .pdfAnalysisSection').forEach(el=>{
+    el.style.setProperty('display','block','important');
+    el.style.setProperty('width','100%','important');
+    el.style.setProperty('max-width','100%','important');
+    el.style.setProperty('background',smallCardColor,'important');
+    el.style.setProperty('background-color',smallCardColor,'important');
+    el.style.setProperty('border','1px solid rgba(96,165,250,.32)','important');
+    el.style.setProperty('border-radius','14px','important');
+    el.style.setProperty('padding','12px','important');
+    el.style.setProperty('overflow','hidden','important');
+  });
+  a4Root.querySelectorAll('.pdfFinalPage .pdfRankingsBlock,.pdfFinalPage .pdfRecentLogsBlock,.pdfFinalPage .singleReportWideGrid,.pdfFinalPage .setterUnifiedBottomGrid').forEach(el=>{
     el.style.setProperty('width','100%','important');
     el.style.setProperty('max-width','100%','important');
     el.style.setProperty('background','transparent','important');
+    el.style.setProperty('background-color','transparent','important');
   });
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
@@ -4986,7 +5003,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.80</div>
+    <div class="pdfPreviewBuildMarker">V150.81</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
