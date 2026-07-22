@@ -4565,9 +4565,29 @@ function printMatchPdfReport(){
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotValue small{
       top:0!important;
     }
+
+    /* V150.54: PDF preview only — lower the divider by giving the count labels more vertical room. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarRow{
+      flex-basis:35px!important;
+      height:35px!important;
+      min-height:35px!important;
+      padding:1px 3px 9px!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarMain{
+      min-height:29px!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarValues{
+      margin-top:4px!important;
+      padding-bottom:2px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotValue small{
+      top:2px!important;
+    }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.53 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.54 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
