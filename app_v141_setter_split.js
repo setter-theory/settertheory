@@ -1933,10 +1933,19 @@ function buildSetterDetailReports(){
           <div class="setterMasterAdvice"><b>Aquila Advice</b><div class="setterAquilaAdviceList"><div class="continue"><strong>継続すること</strong><p>${escapeHtml(advice.continueText)}</p></div><div class="correction"><strong>修正すること</strong><p>${escapeHtml(advice.correctionText)}</p></div><div class="next"><strong>次の試合で意識すること</strong><p>${escapeHtml(advice.nextText)}</p></div><div class="key"><strong>Aquila Coach's Key Point</strong><p>${escapeHtml(advice.keyPoint)}</p></div></div></div>
         </div>
       </div>
-      <div class="setterMasterBottomGrid">
-        <div class="setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>
-        <div class="setterMasterMiddleColumn">${qualityBar}${donut}</div>
-        <div class="setterMasterRotation"><h4>ローテーション別トス配分</h4>${buildRotationTossDistribution(n)}</div>
+      <div class="setterMasterBottomGrid setterAnalysisSubcardGrid">
+        <section class="setterAnalysisSubcard setterAnalysisRadarCard">
+          <h4 class="setterAnalysisSubcardTitle">能力バランス</h4>
+          <div class="setterAnalysisSubcardBody setterMasterRadar">${buildSetterIqRadarChart(b,true)}</div>
+        </section>
+        <section class="setterAnalysisSubcard setterAnalysisTossCard">
+          <h4 class="setterAnalysisSubcardTitle">トス配分</h4>
+          <div class="setterAnalysisSubcardBody setterMasterMiddleColumn">${qualityBar}${donut}</div>
+        </section>
+        <section class="setterAnalysisSubcard setterAnalysisRotationCard setterMasterRotation">
+          <h4 class="setterAnalysisSubcardTitle">ローテーション別トス配分</h4>
+          <div class="setterAnalysisSubcardBody">${buildRotationTossDistribution(n)}</div>
+        </section>
       </div>
       </div></div>
     </section>`;
@@ -4606,7 +4615,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.55 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.56 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
