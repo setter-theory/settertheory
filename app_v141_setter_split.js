@@ -2998,13 +2998,15 @@ function printMatchPdfReport(){
         const large=end-start>180?1:0;
         return `M ${os.x} ${os.y} A ${outerR} ${outerR} 0 ${large} 1 ${oe.x} ${oe.y} L ${ie.x} ${ie.y} A ${innerR} ${innerR} 0 ${large} 0 ${is.x} ${is.y} Z`;
       };
-      const circles=segments.map(seg=>{
-        const length=seg.pct/total*360;
-        const start=offset;
-        const end=offset+length;
-        offset=end;
-        return `<path d="${ringPath(start,end)}" fill="${seg.color}"/>`;
-      }).join('');
+      const circles=segments.length===1
+        ? `<circle cx="55" cy="55" r="32" fill="none" stroke="${segments[0].color}" stroke-width="18"/>`
+        : segments.map(seg=>{
+            const length=seg.pct/total*360;
+            const start=offset;
+            const end=offset+length;
+            offset=end;
+            return `<path d="${ringPath(start,end)}" fill="${seg.color}"/>`;
+          }).join('');
       const label=donut.querySelector('.donutCenter .label')?.textContent||'総数';
       const num=donut.querySelector('.donutCenter .num')?.textContent||'';
       const holder=document.createElement('div');
@@ -3073,12 +3075,14 @@ function printMatchPdfReport(){
           const large=end-start>180?1:0;
           return `M ${os.x} ${os.y} A ${outerR} ${outerR} 0 ${large} 1 ${oe.x} ${oe.y} L ${ie.x} ${ie.y} A ${innerR} ${innerR} 0 ${large} 0 ${is.x} ${is.y} Z`;
         };
-        const paths=items.map(item=>{
-          const length=Number(item.count||0)/total*360;
-          const start=offset,end=offset+length;
-          offset=end;
-          return `<path d="${ringPath(start,end)}" fill="${colorMap[item.label]||'#64748b'}"/>`;
-        }).join('');
+        const paths=items.length===1
+          ? `<circle cx="55" cy="55" r="32" fill="none" stroke="${colorMap[items[0].label]||'#64748b'}" stroke-width="18"/>`
+          : items.map(item=>{
+              const length=Number(item.count||0)/total*360;
+              const start=offset,end=offset+length;
+              offset=end;
+              return `<path d="${ringPath(start,end)}" fill="${colorMap[item.label]||'#64748b'}"/>`;
+            }).join('');
         const legend=items.map(item=>{
           const pct=Math.round(Number(item.count||0)/total*100);
           return `<div class="legendRow"><span><i class="dot" style="background:${colorMap[item.label]||'#64748b'}"></i>${escapeHtml(item.label)}</span><span>${item.count}本 ${pct}%</span></div>`;
@@ -3099,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.82</div>
+    <div class="pdfCoverVersion">V150.83</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5023,7 +5027,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.82</div>
+    <div class="pdfPreviewBuildMarker">V150.83</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
