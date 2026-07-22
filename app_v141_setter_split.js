@@ -2987,11 +2987,23 @@ function printMatchPdfReport(){
       if(!segments.length)return;
       const total=segments.reduce((sum,x)=>sum+x.pct,0)||100;
       let offset=0;
+      const polar=(angle,r)=>{
+        const rad=(angle-90)*Math.PI/180;
+        return {x:55+r*Math.cos(rad),y:55+r*Math.sin(rad)};
+      };
+      const ringPath=(start,end)=>{
+        const outerR=41,innerR=23;
+        const os=polar(start,outerR),oe=polar(end,outerR);
+        const ie=polar(end,innerR),is=polar(start,innerR);
+        const large=end-start>180?1:0;
+        return `M ${os.x} ${os.y} A ${outerR} ${outerR} 0 ${large} 1 ${oe.x} ${oe.y} L ${ie.x} ${ie.y} A ${innerR} ${innerR} 0 ${large} 0 ${is.x} ${is.y} Z`;
+      };
       const circles=segments.map(seg=>{
-        const length=seg.pct/total*100;
-        const circle=`<circle cx="55" cy="55" r="32" fill="none" stroke="${seg.color}" stroke-width="18" stroke-dasharray="${length} ${100-length}" stroke-dashoffset="${-offset}" pathLength="100"/>`;
-        offset+=length;
-        return circle;
+        const length=seg.pct/total*360;
+        const start=offset;
+        const end=offset+length;
+        offset=end;
+        return `<path d="${ringPath(start,end)}" fill="${seg.color}"/>`;
       }).join('');
       const label=donut.querySelector('.donutCenter .label')?.textContent||'総数';
       const num=donut.querySelector('.donutCenter .num')?.textContent||'';
@@ -3046,7 +3058,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.69</div>
+    <div class="pdfCoverVersion">V150.70</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4936,7 +4948,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.69</div>
+    <div class="pdfPreviewBuildMarker">V150.70</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
