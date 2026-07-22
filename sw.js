@@ -1,5 +1,5 @@
-const CACHE_NAME = 'settertheory-v15054-pdf-rotation-count-clear';
-const ASSETS=['./','./index.html','./app_v141_setter_split.js?v=15054','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME = 'settertheory-v15055-pdf-rotation-count-extra-clearance';
+const ASSETS=['./','./index.html','./app_v141_setter_split.js?v=15055','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{

@@ -4585,9 +4585,28 @@ function printMatchPdfReport(){
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotValue small{
       top:2px!important;
     }
+
+
+    /* V150.55: PDF preview only — add one more step of clearance below the count labels. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarRow{
+      flex-basis:39px!important;
+      height:39px!important;
+      min-height:39px!important;
+      padding:1px 3px 13px!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarMain{
+      min-height:33px!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarValues{
+      margin-top:4px!important;
+      padding-bottom:6px!important;
+    }
+
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.54 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.55 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
