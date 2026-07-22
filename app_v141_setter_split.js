@@ -3047,6 +3047,42 @@ function printMatchPdfReport(){
     const analysis=currentSetterAnalysisFor(num);
     const radar=card.querySelector('.setterMasterRadar');
     if(radar) radar.innerHTML=buildSetterIqRadarChartPdf(iqBreakdown20(analysis));
+
+    // V150.80: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
+    // セッター別集計データから直接再構築する。試合入力中と保存試合で同じ表示になる。
+    const tossHost=card.querySelector('.setterAnalysisTossCard .setterMasterDonut');
+    if(tossHost){
+      const colorMap={'レフト':'#ef4444','センター':'#2563eb','ライト':'#22c55e','バック':'#f59e0b','ツー':'#0f172a','未分類':'#64748b'};
+      const items=(analysis.items||[]).filter(item=>Number(item.count)>0);
+      const total=items.reduce((sum,item)=>sum+Number(item.count||0),0);
+      if(total>0){
+        let offset=0;
+        const polar=(angle,r)=>{
+          const rad=(angle-90)*Math.PI/180;
+          return {x:55+r*Math.cos(rad),y:55+r*Math.sin(rad)};
+        };
+        const ringPath=(start,end)=>{
+          const outerR=41,innerR=23;
+          const os=polar(start,outerR),oe=polar(end,outerR);
+          const ie=polar(end,innerR),is=polar(start,innerR);
+          const large=end-start>180?1:0;
+          return `M ${os.x} ${os.y} A ${outerR} ${outerR} 0 ${large} 1 ${oe.x} ${oe.y} L ${ie.x} ${ie.y} A ${innerR} ${innerR} 0 ${large} 0 ${is.x} ${is.y} Z`;
+        };
+        const paths=items.map(item=>{
+          const length=Number(item.count||0)/total*360;
+          const start=offset,end=offset+length;
+          offset=end;
+          return `<path d="${ringPath(start,end)}" fill="${colorMap[item.label]||'#64748b'}"/>`;
+        }).join('');
+        const legend=items.map(item=>{
+          const pct=Math.round(Number(item.count||0)/total*100);
+          return `<div class="legendRow"><span><i class="dot" style="background:${colorMap[item.label]||'#64748b'}"></i>${escapeHtml(item.label)}</span><span>${item.count}本 ${pct}%</span></div>`;
+        }).join('');
+        tossHost.innerHTML=`<div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="pdfDonutSvg"><svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${paths}</g><circle cx="55" cy="55" r="22" fill="#ffffff"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#475569">総数</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">${total}</text></svg></div><div class="legend">${legend}</div></div>`;
+      }else{
+        tossHost.innerHTML='<div class="setterMasterChartTitle">トス配分</div><div class="v141SetterNoData">トス記録がありません</div>';
+      }
+    }
   });
 
   // 1ページ目：PDFにだけ表示する表紙。
@@ -3058,7 +3094,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.72</div>
+    <div class="pdfCoverVersion">V150.80</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3089,7 +3125,8 @@ function printMatchPdfReport(){
     analysisOuter.appendChild(analysisTitle);
     if(rankings){
       const rankSection=document.createElement('section');
-      rankSection.className='pdfAnalysisSection pdfRankingsSection';
+      rankSection.className='pdfAnalysisSection pdfRankingsSection pdfAnalysisSmallCard';
+      rankSection.style.cssText='background:#1e293b;border:1px solid rgba(96,165,250,.32);border-radius:14px;padding:12px;box-shadow:0 7px 18px rgba(2,6,23,.14);';
       const rankTitle=document.createElement('h3');
       rankTitle.className='pdfFinalSectionTitle';
       rankTitle.textContent='ランキング';
@@ -3101,7 +3138,8 @@ function printMatchPdfReport(){
     }
     if(recentLogs){
       const logSection=document.createElement('section');
-      logSection.className='pdfAnalysisSection pdfRecentLogsSection pdfRecentLogsOuterCard';
+      logSection.className='pdfAnalysisSection pdfRecentLogsSection pdfRecentLogsOuterCard pdfAnalysisSmallCard';
+      logSection.style.cssText='background:#1e293b;border:1px solid rgba(96,165,250,.32);border-radius:14px;padding:12px;box-shadow:0 7px 18px rgba(2,6,23,.14);';
       const logTitle=document.createElement('h3');
       logTitle.className='pdfFinalSectionTitle';
       logTitle.textContent='直近ログ';
@@ -4948,7 +4986,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.72</div>
+    <div class="pdfPreviewBuildMarker">V150.80</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
