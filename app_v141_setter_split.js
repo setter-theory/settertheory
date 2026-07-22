@@ -4539,9 +4539,21 @@ function printMatchPdfReport(){
       top:2px!important;
       line-height:1!important;
     }
+
+    /* V150.52: PDF preview only — increase vertical spacing between S1–S6 rows. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarWrap{
+      gap:5px!important;
+      justify-content:space-between!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarRow{
+      margin:0!important;
+      padding:3px 3px!important;
+      min-height:27px!important;
+      box-sizing:border-box!important;
+    }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.51 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.52 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
