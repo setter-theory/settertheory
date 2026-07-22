@@ -3046,7 +3046,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.67</div>
+    <div class="pdfCoverVersion">V150.68</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
   }
   if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
 
-  // V150.67: html2pdf.js creates its own detached rendering clone, so CSS selectors
+  // V150.68: html2pdf.js creates its own detached rendering clone, so CSS selectors
   // that depend on the #report ancestor may be lost. Apply the requested parent
   // surface colors directly to the PDF DOM before it is serialized.
   const parentSurfaceColor='#2f394b';
@@ -3116,6 +3116,48 @@ function printMatchPdfReport(){
   ).forEach(el=>{
     el.style.setProperty('background',parentSurfaceColor,'important');
     el.style.setProperty('background-color',parentSurfaceColor,'important');
+  });
+
+  // V150.68: align every visible small card with the approved dark PDF-preview theme.
+  // Also force the final analysis parent card to occupy the full printable width.
+  const smallCardColor='#1e293b';
+  a4Root.querySelectorAll(
+    '.pdfSetterPage .setterAnalysisSubcard,'+
+    '.pdfSetterPage .setterMasterTop,'+
+    '.pdfSetterPage .setterMasterRadar,'+
+    '.pdfSetterPage .setterMasterMiddleColumn,'+
+    '.pdfSetterPage .setterMasterRotation,'+
+    '.pdfTeamPage .playOverviewPlay,'+
+    '.pdfTeamPage .playOverviewMetrics,'+
+    '.pdfTeamPage .playOverviewResult,'+
+    '.pdfTeamPage .playOverviewRotation,'+
+    '.pdfFinalPage .compactRankCard,'+
+    '.pdfFinalPage .reportPanel,'+
+    '.pdfFinalPage .recentLogItem,'+
+    '.pdfFinalPage .timelineItem,'+
+    '.pdfFinalPage .timelineRow'
+  ).forEach(el=>{
+    el.style.setProperty('background',smallCardColor,'important');
+    el.style.setProperty('background-color',smallCardColor,'important');
+    el.style.setProperty('border-color','rgba(96,165,250,.32)','important');
+  });
+  const analysisOuter=a4Root.querySelector('.pdfFinalPage .pdfAnalysisOuterCard');
+  const analysisGrid=a4Root.querySelector('.pdfFinalPage .pdfFinalGrid');
+  if(analysisGrid){
+    analysisGrid.style.setProperty('width','100%','important');
+    analysisGrid.style.setProperty('max-width','100%','important');
+  }
+  if(analysisOuter){
+    analysisOuter.style.setProperty('display','block','important');
+    analysisOuter.style.setProperty('width','100%','important');
+    analysisOuter.style.setProperty('max-width','100%','important');
+    analysisOuter.style.setProperty('min-height','100%','important');
+    analysisOuter.style.setProperty('background',parentSurfaceColor,'important');
+  }
+  a4Root.querySelectorAll('.pdfFinalPage .pdfAnalysisSection,.pdfFinalPage .pdfRankingsBlock,.pdfFinalPage .pdfRecentLogsBlock,.pdfFinalPage .singleReportWideGrid,.pdfFinalPage .setterUnifiedBottomGrid').forEach(el=>{
+    el.style.setProperty('width','100%','important');
+    el.style.setProperty('max-width','100%','important');
+    el.style.setProperty('background','transparent','important');
   });
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
@@ -4696,7 +4738,7 @@ function printMatchPdfReport(){
       justify-content:flex-start!important;
     }
 
-    /* V150.67: match the exposed parent-card surfaces to the navy PDF-preview design.
+    /* V150.68: match the exposed parent-card surfaces to the navy PDF-preview design.
        Small cards, charts, values, and layout are unchanged. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnitBody,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard{
@@ -4712,7 +4754,7 @@ function printMatchPdfReport(){
       background:#2f394b!important;
     }
 
-    /* V150.67: PDF final-page ranking text contrast. */
+    /* V150.68: PDF final-page ranking text contrast. */
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard *,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
@@ -4723,9 +4765,98 @@ function printMatchPdfReport(){
       -webkit-text-fill-color:#ffffff!important;
     }
 
+
+    /* V150.68 final PDF-preview overrides: dark small cards, full-width analysis parent, unclipped toss donut. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisSubcard,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterTop,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterMiddleColumn,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewPlay,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewMetrics,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewResult,
+    #report #reportDashboard.pdfA4Document > .pdfTeamPage .playOverviewRotation,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .compactRankCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .reportPanel,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .recentLogItem,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineItem,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineRow{
+      background:#1e293b!important;
+      background-color:#1e293b!important;
+      border-color:rgba(96,165,250,.32)!important;
+      color:#fff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfFinalGrid,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSection,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .singleReportWideGrid,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .setterUnifiedBottomGrid{
+      width:100%!important;
+      max-width:100%!important;
+      margin-left:0!important;
+      margin-right:0!important;
+      box-sizing:border-box!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard{
+      display:block!important;
+      min-height:186mm!important;
+      background:#2f394b!important;
+      padding:12px!important;
+      border-radius:16px!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSection{
+      background:transparent!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock{
+      display:grid!important;
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      gap:7px!important;
+      background:transparent!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .compactRankCard{
+      min-width:0!important;
+      border:1px solid rgba(96,165,250,.32)!important;
+      border-radius:10px!important;
+      padding:7px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock{
+      background:transparent!important;
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .setterAnalysisSubcardBody,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterMiddleColumn,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .tossPanel{
+      overflow:visible!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .setterAnalysisSubcardBody{
+      padding-top:10px!important;
+      padding-bottom:12px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .tossPanel{
+      min-height:150px!important;
+      padding:8px 4px 10px!important;
+      align-items:center!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .pdfDonutSvg,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterDonut .pdfDonutSvg svg{
+      width:116px!important;
+      height:116px!important;
+      min-width:116px!important;
+      min-height:116px!important;
+      max-width:116px!important;
+      max-height:116px!important;
+      overflow:visible!important;
+    }
+
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.67</div>
+    <div class="pdfPreviewBuildMarker">V150.68</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
