@@ -3046,7 +3046,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.66</div>
+    <div class="pdfCoverVersion">V150.67</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3102,6 +3102,21 @@ function printMatchPdfReport(){
     finalGrid.appendChild(analysisOuter);
   }
   if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
+
+  // V150.67: html2pdf.js creates its own detached rendering clone, so CSS selectors
+  // that depend on the #report ancestor may be lost. Apply the requested parent
+  // surface colors directly to the PDF DOM before it is serialized.
+  const parentSurfaceColor='#2f394b';
+  a4Root.querySelectorAll(
+    '.pdfSetterPage .setterAnalysisUnitBody,'+
+    '.pdfSetterPage .setterMasterCard,'+
+    '.pdfTeamPage .teamAnalysisCard,'+
+    '.pdfTeamPage .teamAnalysisCard > .playOverviewCard,'+
+    '.pdfFinalPage .pdfAnalysisOuterCard'
+  ).forEach(el=>{
+    el.style.setProperty('background',parentSurfaceColor,'important');
+    el.style.setProperty('background-color',parentSurfaceColor,'important');
+  });
 
   const styleHtml=[...document.querySelectorAll('style,link[rel="stylesheet"]')]
     .map(el=>el.outerHTML).join('\n');
@@ -4681,7 +4696,7 @@ function printMatchPdfReport(){
       justify-content:flex-start!important;
     }
 
-    /* V150.66: match the exposed parent-card surfaces to the navy PDF-preview design.
+    /* V150.67: match the exposed parent-card surfaces to the navy PDF-preview design.
        Small cards, charts, values, and layout are unchanged. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnitBody,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard{
@@ -4697,7 +4712,7 @@ function printMatchPdfReport(){
       background:#2f394b!important;
     }
 
-    /* V150.66: PDF final-page ranking text contrast. */
+    /* V150.67: PDF final-page ranking text contrast. */
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard *,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
@@ -4710,7 +4725,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.66</div>
+    <div class="pdfPreviewBuildMarker">V150.67</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
