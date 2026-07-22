@@ -3058,7 +3058,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.70</div>
+    <div class="pdfCoverVersion">V150.71</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4948,7 +4948,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.70</div>
+    <div class="pdfPreviewBuildMarker">V150.71</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5040,6 +5040,50 @@ function printMatchPdfReport(){
             holder.style.zIndex='-1';
             holder.appendChild(clone);
             w.document.body.appendChild(holder);
+
+            // V150.71: PDFプレビューのSVGは変更せず、実際の印刷PDFに渡す複製だけを
+            // 高解像度PNGへ固定する。html2canvasによる扇形境界の再解釈を防ぎ、
+            // データに応じて一部の扇形だけ太く見える現象を印刷画面側だけで抑える。
+            const rasterizePrintDonuts=async()=>{
+              const svgs=[...clone.querySelectorAll('.pdfDonutSvg svg')];
+              await Promise.all(svgs.map(svg=>new Promise(resolve=>{
+                try{
+                  const serializer=new XMLSerializer();
+                  let svgText=serializer.serializeToString(svg);
+                  if(!/xmlns=/.test(svgText)){
+                    svgText=svgText.replace('<svg','<svg xmlns=\"http://www.w3.org/2000/svg\"');
+                  }
+                  const blob=new Blob([svgText],{type:'image/svg+xml;charset=utf-8'});
+                  const url=URL.createObjectURL(blob);
+                  const image=new Image();
+                  image.onload=()=>{
+                    try{
+                      const size=440;
+                      const canvas=w.document.createElement('canvas');
+                      canvas.width=size;
+                      canvas.height=size;
+                      const ctx=canvas.getContext('2d');
+                      ctx.clearRect(0,0,size,size);
+                      ctx.drawImage(image,0,0,size,size);
+                      const png=w.document.createElement('img');
+                      png.src=canvas.toDataURL('image/png');
+                      png.className='pdfDonutRaster';
+                      png.alt='円グラフ';
+                      png.style.display='block';
+                      png.style.width='100%';
+                      png.style.height='100%';
+                      png.style.objectFit='contain';
+                      svg.replaceWith(png);
+                    }catch(e){}
+                    URL.revokeObjectURL(url);
+                    resolve();
+                  };
+                  image.onerror=()=>{ URL.revokeObjectURL(url); resolve(); };
+                  image.src=url;
+                }catch(e){ resolve(); }
+              })));
+            };
+            await rasterizePrintDonuts();
 
             const filename='setter-theory-report.pdf';
             const options={
