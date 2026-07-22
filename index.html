@@ -5084,17 +5084,20 @@ function closePositionManager(){const m=document.getElementById('positionManager
 </style>
 <script>/* cache marker: 146-iq-rank-pyramid-1 */</script>
 
-<style id="v150-56-setter-analysis-three-subcards">
-/* V150.56: setter analysis parent card retained; three unified horizontal subcards. */
+<style id="v150-57-setter-analysis-full-width-subcards">
+/* V150.57: expand the three setter analysis subcards to fill the parent card. */
 #reportDashboard .setterAnalysisUnit .setterAnalysisSubcardGrid{
   display:grid!important;
-  grid-template-columns:minmax(220px,.82fr) minmax(260px,.95fr) minmax(310px,1.18fr)!important;
-  gap:14px!important;
+  grid-template-columns:minmax(0,.82fr) minmax(0,.95fr) minmax(0,1.18fr)!important;
+  width:100%!important;
+  gap:8px!important;
   align-items:stretch!important;
-  margin-top:10px!important;
+  margin:8px 0 0!important;
 }
 #reportDashboard .setterAnalysisUnit .setterAnalysisSubcard{
   min-width:0!important;
+  width:100%!important;
+  height:100%!important;
   margin:0!important;
   padding:0!important;
   overflow:hidden!important;
@@ -5115,7 +5118,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
   line-height:1.2!important;
   letter-spacing:.01em!important;
 }
-#reportDashboard .setterAnalysisUnit .setterAnalysisSubcardBody{padding:10px 12px 12px!important;box-sizing:border-box!important}
+#reportDashboard .setterAnalysisUnit .setterAnalysisSubcardBody{padding:9px 10px 10px!important;box-sizing:border-box!important;height:calc(100% - 38px)!important}
 #reportDashboard .setterAnalysisUnit .setterAnalysisRadarCard .setterAnalysisSubcardBody{display:flex;align-items:center;justify-content:center}
 #reportDashboard .setterAnalysisUnit .setterAnalysisRadarCard .setterIqRadarTitle,
 #reportDashboard .setterAnalysisUnit .setterAnalysisTossCard .setterMasterChartTitle{display:none!important}
@@ -5123,14 +5126,17 @@ function closePositionManager(){const m=document.getElementById('positionManager
 #reportDashboard .setterAnalysisUnit .setterAnalysisTossCard .setterMasterDonut{margin:0!important;padding:0!important;border:0!important;background:transparent!important}
 #reportDashboard .setterAnalysisUnit .setterAnalysisRotationCard{border-left:1px solid rgba(96,165,250,.30)!important}
 #reportDashboard .setterAnalysisUnit .setterAnalysisRotationCard>.setterAnalysisSubcardBody{padding-top:7px!important}
+#reportDashboard .setterAnalysisUnit .setterAnalysisUnitBody{padding:10px 10px 10px!important}
+#reportDashboard .setterAnalysisUnit .setterAnalysisSubcardGrid>*{align-self:stretch!important}
+
 @media(max-width:900px){
-  #reportDashboard .setterAnalysisUnit .setterAnalysisSubcardGrid{grid-template-columns:minmax(190px,.78fr) minmax(225px,.88fr) minmax(280px,1.08fr)!important;gap:10px!important}
+  #reportDashboard .setterAnalysisUnit .setterAnalysisSubcardGrid{grid-template-columns:minmax(0,.78fr) minmax(0,.88fr) minmax(0,1.08fr)!important;gap:7px!important}
 }
 @media(max-width:760px){
   #reportDashboard .setterAnalysisUnit .setterAnalysisSubcardGrid{grid-template-columns:1fr!important}
 }
 </style>
-<script>/* cache marker: 150-56-setter-analysis-three-subcards */</script>
+<script>/* cache marker: 150-57-setter-analysis-full-width-subcards */</script>
 </body>
 </html>
 
