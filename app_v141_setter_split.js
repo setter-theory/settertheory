@@ -2456,7 +2456,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
   // PDF専用：グラフ本体を小さくし、項目名・点数を外側へ離して重なりを防ぐ。
-  const cx=180, cy=146, radius=68;
+  const cx=180, cy=148, radius=64;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2465,9 +2465,9 @@ function buildSetterIqRadarChartPdf(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.48);
+    const [x,y]=point(i,1.30);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="15" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18" fill="#1d4ed8" font-size="14" font-weight="1000">${item.value}/20</tspan></text>`;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="12" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="15" fill="#1d4ed8" font-size="11" font-weight="1000">${item.value}/20</tspan></text>`;
   }).join('');
   return `<div class="setterIqRadar pdfSetterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
     <div class="setterIqRadarTitle">能力バランス</div>
@@ -4887,11 +4887,11 @@ function printMatchPdfReport(){
       padding:1px 0 0!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .pdfSetterIqRadar svg{
-      width:94%!important;
+      width:100%!important;
       height:205px!important;
       min-height:205px!important;
       max-height:205px!important;
-      overflow:hidden!important;
+      overflow:visible!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .radarLabels text,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .radarLabels tspan{
