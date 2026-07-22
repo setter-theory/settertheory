@@ -1,7 +1,13 @@
 Setter Theory V150.60
 
-- Active runtime script app_v141_setter_split.js updated directly.
-- Both saved-match PDF and live-report PDF use printMatchPdfReport, so both paths receive the same change.
-- PDF setter analysis subcard grid forced to three equal full-width columns.
-- PDF preview build marker and cover version updated.
-- No save, CSV, calculation, or PDF data logic changed.
+変更対象：PDFプレビュー画面のみ
+- 保存した試合 → PDF
+- コート入力 → レポート → PDF出力
+
+変更内容：
+- セッター分析①・②の親カードを維持
+- 能力バランス／トス配分／ローテーション別トス配分の3サブカードを親カード内の利用可能領域いっぱいに拡大
+- PDF専用CSSの最終段に上書きを追加し、過去の固定幅・固定高さ指定より優先
+- 実際に読み込む app_v141_setter_split.js のクエリを v=15060 に更新
+- Service WorkerキャッシュをV150.60へ更新
+- 保存・CSV・PDF集計ロジックは変更なし

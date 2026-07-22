@@ -3046,7 +3046,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.60</div>
+    <div class="pdfCoverVersion">V150.47</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3237,12 +3237,7 @@ function printMatchPdfReport(){
     .pdfSetterPage .setterMasterCard{padding:8px!important;height:166mm!important;max-height:166mm!important;overflow:hidden!important}
     .pdfSetterPage .setterMasterHeaderRow{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:6px!important}
     .pdfSetterPage .setterMasterIqAdviceCard{gap:6px!important;padding:7px!important}
-    .pdfSetterPage .setterMasterBottomGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:5px 0 0!important;width:100%!important}
-    .pdfSetterPage .setterAnalysisSubcardGrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;width:100%!important;max-width:none!important;margin:5px 0 0!important;padding:0!important;align-items:stretch!important}
-    .pdfSetterPage .setterAnalysisSubcard{display:flex!important;flex-direction:column!important;width:100%!important;max-width:none!important;min-width:0!important;height:100%!important;margin:0!important;border-radius:12px!important;overflow:hidden!important}
-    .pdfSetterPage .setterAnalysisSubcardTitle{flex:0 0 auto!important;margin:0!important;padding:7px 8px!important;text-align:center!important}
-    .pdfSetterPage .setterAnalysisSubcardBody{flex:1 1 auto!important;width:100%!important;max-width:none!important;min-width:0!important;padding:6px 8px 8px!important}
-    .pdfSetterPage .setterAnalysisUnitBody,.pdfSetterPage .setterMasterCard{padding-left:6px!important;padding-right:6px!important}
+    .pdfSetterPage .setterMasterBottomGrid{grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.2fr)!important;gap:6px!important;margin-top:5px!important}
     .pdfSetterPage .setterMasterRadar canvas,.pdfSetterPage .setterMasterRadar svg,.pdfSetterPage .setterMasterRadar img{max-height:190px!important}
     .pdfSetterPage .setterMasterMiddleColumn canvas,.pdfSetterPage .setterMasterMiddleColumn svg,.pdfSetterPage .setterMasterMiddleColumn img{max-height:165px!important}
     .pdfSetterPage .setterMasterRotation{font-size:88%!important}
@@ -4618,9 +4613,77 @@ function printMatchPdfReport(){
       padding-bottom:6px!important;
     }
 
+
+    /* V150.60: PDF preview only — make the three setter-analysis subcards fill the parent card. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard{
+      display:grid!important;
+      grid-template-rows:auto minmax(0,1fr)!important;
+      gap:5px!important;
+      padding:5px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterBottomGrid.setterAnalysisSubcardGrid{
+      display:grid!important;
+      grid-template-columns:minmax(0,.9fr) minmax(0,1fr) minmax(0,1.18fr)!important;
+      grid-template-rows:minmax(0,1fr)!important;
+      gap:6px!important;
+      width:100%!important;
+      height:100%!important;
+      min-height:0!important;
+      max-height:none!important;
+      margin:0!important;
+      padding:0!important;
+      align-items:stretch!important;
+      justify-items:stretch!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterBottomGrid.setterAnalysisSubcardGrid > .setterAnalysisSubcard{
+      display:flex!important;
+      flex-direction:column!important;
+      width:100%!important;
+      height:100%!important;
+      min-width:0!important;
+      min-height:0!important;
+      max-width:none!important;
+      max-height:none!important;
+      margin:0!important;
+      padding:0!important;
+      align-self:stretch!important;
+      border-radius:12px!important;
+      overflow:hidden!important;
+      box-sizing:border-box!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisSubcardTitle{
+      flex:0 0 auto!important;
+      margin:0!important;
+      padding:7px 8px!important;
+      text-align:center!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisSubcardBody{
+      display:flex!important;
+      flex:1 1 auto!important;
+      flex-direction:column!important;
+      width:100%!important;
+      height:auto!important;
+      min-width:0!important;
+      min-height:0!important;
+      max-width:none!important;
+      max-height:none!important;
+      margin:0!important;
+      padding:5px 7px 7px!important;
+      box-sizing:border-box!important;
+      overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .setterAnalysisSubcardBody{
+      align-items:stretch!important;
+      justify-content:center!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .setterAnalysisSubcardBody,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRotationCard .setterAnalysisSubcardBody{
+      justify-content:flex-start!important;
+    }
+
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.60 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.56 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
