@@ -4524,9 +4524,24 @@ function printMatchPdfReport(){
       -webkit-text-fill-color:#ffffff!important;
       opacity:1!important;
     }
+
+    /* V150.51: PDF preview only — keep the “○本” labels clear of the rotation chart line. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotBarValues{
+      margin-top:5px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotValue{
+      grid-template-rows:auto auto!important;
+      row-gap:2px!important;
+      line-height:1.05!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRotation .setterRotValue small{
+      position:relative!important;
+      top:2px!important;
+      line-height:1!important;
+    }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.50 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.51 PDF PREVIEW</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
