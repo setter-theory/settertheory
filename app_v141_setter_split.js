@@ -3046,7 +3046,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.47</div>
+    <div class="pdfCoverVersion">V150.61</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4681,9 +4681,20 @@ function printMatchPdfReport(){
       justify-content:flex-start!important;
     }
 
+    /* V150.61: PDF final-page ranking text contrast. */
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsOuterCard *,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsBlock *,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .singleReportWideGrid,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .singleReportWideGrid *{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+    }
+
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.56 PDF PREVIEW</div>
+    <div class="pdfPreviewBuildMarker">V150.61</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
