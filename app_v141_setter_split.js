@@ -2455,7 +2455,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.86 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  // V150.87 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
   const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.86</div>
+    <div class="pdfCoverVersion">V150.87</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4958,7 +4958,7 @@ function printMatchPdfReport(){
       justify-items:center!important;
       width:100%!important;
       height:100%!important;
-      overflow:visible!important;
+      overflow:hidden!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .pdfSetterIqRadar .setterIqRadarTitle{
       position:static!important;
@@ -4969,12 +4969,12 @@ function printMatchPdfReport(){
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .pdfSetterIqRadar svg{
       display:block!important;
-      width:76%!important;
-      height:166px!important;
-      min-height:166px!important;
-      max-height:166px!important;
+      width:94%!important;
+      height:205px!important;
+      min-height:205px!important;
+      max-height:205px!important;
       margin:auto!important;
-      overflow:visible!important;
+      overflow:hidden!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .radarLabels text,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .radarLabels tspan{
@@ -5031,7 +5031,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.86</div>
+    <div class="pdfPreviewBuildMarker">V150.87</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5095,6 +5095,46 @@ function printMatchPdfReport(){
 
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
+
+            // V150.87: PDFプレビューのレーダーは元サイズを維持し、
+            // PDF/印刷に渡す複製側だけを小さくして5項目を中央に収める。
+            clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
+              card.style.overflow='hidden';
+              const body=card.querySelector('.setterAnalysisSubcardBody');
+              if(body){
+                body.style.overflow='hidden';
+                body.style.display='flex';
+                body.style.alignItems='center';
+                body.style.justifyContent='center';
+              }
+              const radar=card.querySelector('.pdfSetterIqRadar');
+              if(radar){
+                radar.style.width='100%';
+                radar.style.height='100%';
+                radar.style.overflow='visible';
+                radar.style.display='grid';
+                radar.style.placeItems='center';
+              }
+              const svg=card.querySelector('.pdfSetterIqRadar svg');
+              if(svg){
+                svg.style.display='block';
+                svg.style.width='92%';
+                svg.style.height='184px';
+                svg.style.minHeight='184px';
+                svg.style.maxHeight='184px';
+                svg.style.margin='auto';
+                svg.style.overflow='visible';
+                svg.style.transform='scale(.76)';
+                svg.style.transformOrigin='50% 50%';
+              }
+              card.querySelectorAll('.radarLabels text,.radarLabels tspan').forEach(label=>{
+                label.style.fill='#ffffff';
+                label.style.webkitTextFillColor='#ffffff';
+                label.style.fontSize='12px';
+                label.style.fontWeight='900';
+              });
+            });
+
             const sourceCanvases=source.querySelectorAll('canvas');
             const cloneCanvases=clone.querySelectorAll('canvas');
             sourceCanvases.forEach((canvas,index)=>{
