@@ -1253,5 +1253,31 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 </div>
 
 <script src="app.js"></script>
+
+<style id="v150-124-recent-log-status-color-restore">
+/* V150.124: 直近ログの縦3段・横20件レイアウトは維持し、既存の結果色だけを復元。 */
+#reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tSuccess,
+.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tSuccess{
+  color:#22c55e!important;
+  -webkit-text-fill-color:#22c55e!important;
+}
+#reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tMiss,
+.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tMiss{
+  color:#ef4444!important;
+  -webkit-text-fill-color:#ef4444!important;
+}
+#reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tCont,
+.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tCont{
+  color:#2563eb!important;
+  -webkit-text-fill-color:#2563eb!important;
+}
+#reportDashboard.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tBlock,
+.pdfA4Document .pdfFinalPage .pdfRecentLogsSection .timelineIcon.tBlock{
+  color:#f97316!important;
+  -webkit-text-fill-color:#f97316!important;
+}
+</style>
+<script>/* cache marker: 150-124-recent-log-status-color-restore */</script>
+
 </body>
 </html>
