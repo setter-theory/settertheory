@@ -2455,8 +2455,8 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // PDF専用：グラフ本体を小さくし、項目名・点数を外側へ離して重なりを防ぐ。
-  const cx=180, cy=155, radius=61;
+  // V150.86 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2465,9 +2465,9 @@ function buildSetterIqRadarChartPdf(breakdown){
   const dataPoints=items.map((item,i)=>point(i,Math.max(0,Math.min(20,item.value))/20).map(v=>v.toFixed(1)).join(',')).join(' ');
   const axes=items.map((_,i)=>{const [x,y]=point(i);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" />`;}).join('');
   const labels=items.map((item,i)=>{
-    const [x,y]=point(i,1.50);
+    const [x,y]=point(i,1.52);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="15" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18" fill="#1d4ed8" font-size="14" font-weight="1000">${item.value}/20</tspan></text>`;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="13" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="16" fill="#1d4ed8" font-size="12" font-weight="1000">${item.value}/20</tspan></text>`;
   }).join('');
   return `<div class="setterIqRadar pdfSetterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
     <div class="setterIqRadarTitle">能力バランス</div>
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.85</div>
+    <div class="pdfCoverVersion">V150.86</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -4956,7 +4956,9 @@ function printMatchPdfReport(){
       grid-template-rows:auto minmax(0,1fr)!important;
       align-items:center!important;
       justify-items:center!important;
-      overflow:hidden!important;
+      width:100%!important;
+      height:100%!important;
+      overflow:visible!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .pdfSetterIqRadar .setterIqRadarTitle{
       position:static!important;
@@ -4966,11 +4968,13 @@ function printMatchPdfReport(){
       padding:1px 0 0!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .pdfSetterIqRadar svg{
-      width:94%!important;
-      height:205px!important;
-      min-height:205px!important;
-      max-height:205px!important;
-      overflow:hidden!important;
+      display:block!important;
+      width:76%!important;
+      height:166px!important;
+      min-height:166px!important;
+      max-height:166px!important;
+      margin:auto!important;
+      overflow:visible!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .radarLabels text,
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisRadarCard .radarLabels tspan{
@@ -5027,7 +5031,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.85</div>
+    <div class="pdfPreviewBuildMarker">V150.86</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
