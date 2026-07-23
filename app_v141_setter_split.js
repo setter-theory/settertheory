@@ -2455,8 +2455,8 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.92 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
-  const cx=180, cy=154, radius=58;
+  // V150.93 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.91</div>
+    <div class="pdfCoverVersion">V150.93</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5031,7 +5031,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.91</div>
+    <div class="pdfPreviewBuildMarker">V150.93</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5096,7 +5096,7 @@ function printMatchPdfReport(){
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
 
-            // V150.91: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
+            // V150.93: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
             // PDFプレビュー側と他カードには影響させない。
             clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
               card.style.overflow='hidden';
@@ -5124,7 +5124,7 @@ function printMatchPdfReport(){
                 svg.style.maxHeight='184px';
                 svg.style.margin='auto';
                 svg.style.overflow='visible';
-                svg.style.transform='scale(.76)';
+                svg.style.transform='scale(.88)';
                 svg.style.transformOrigin='50% 50%';
                 svg.style.position='relative';
                 svg.style.left='-40px';
