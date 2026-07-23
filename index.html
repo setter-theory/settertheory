@@ -4215,7 +4215,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   background-color:transparent!important;
 }
 </style>
-<script src="app_v141_setter_split.js?v=150106"></script>
+<script src="app_v141_setter_split.js?v=150107"></script>
 
 
 
@@ -9611,3 +9611,84 @@ body.menuOpen .sideOverlay{
 #reportDashboard.pdfA4Document>.pdfFinalPage .pdfRankingsBlock .compactRankCard:nth-child(5){grid-column:span 3!important}
 </style>
 <script>/* cache marker: 150-105-analysis-card-ranking-layout */</script>
+
+<style id="v150-107-analysis-final-layout-fix">
+/* V150.107: 分析親カードを全幅化。ランキングはiPadでも必ず上3・下2、直近ログを初期表示。 */
+#reportDashboard .reportGrid{
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+#reportDashboard .analysisMasterCard{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  background:#0f172a!important;
+  border:1px solid rgba(96,165,250,.34)!important;
+  border-radius:16px!important;
+  overflow:hidden!important;
+}
+#reportDashboard .analysisMasterBody{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#reportDashboard .analysisMasterBody .singleReportWideGrid,
+#reportDashboard .analysisMasterBody .setterUnifiedBottomGrid,
+#reportDashboard .analysisMasterBody #personalRankingHost,
+#reportDashboard .analysisMasterBody .setterUnifiedBottomGrid>.reportAccordion{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#reportDashboard .analysisMasterBody #personalRankingHost .reportAccordionBody{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#reportDashboard .analysisMasterBody #personalRankingHost .allRankingsGrid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:10px!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+#reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard,
+#reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard:nth-child(4),
+#reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard:nth-child(5){
+  min-width:0!important;
+  width:auto!important;
+  box-sizing:border-box!important;
+}
+#reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard{grid-column:span 2!important}
+#reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard:nth-child(4),
+#reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard:nth-child(5){grid-column:span 3!important}
+@media(max-width:760px){
+  #reportDashboard .analysisMasterBody #personalRankingHost .allRankingsGrid{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  #reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard{
+    grid-column:span 2!important;
+    padding:7px!important;
+  }
+  #reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard:nth-child(4),
+  #reportDashboard .analysisMasterBody #personalRankingHost .compactRankCard:nth-child(5){grid-column:span 3!important}
+}
+#reportDashboard.pdfA4Document>.pdfFinalPage .pdfRankingsBlock .allRankingsGrid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+#reportDashboard.pdfA4Document>.pdfFinalPage .pdfRankingsBlock .compactRankCard{grid-column:span 2!important}
+#reportDashboard.pdfA4Document>.pdfFinalPage .pdfRankingsBlock .compactRankCard:nth-child(4),
+#reportDashboard.pdfA4Document>.pdfFinalPage .pdfRankingsBlock .compactRankCard:nth-child(5){grid-column:span 3!important}
+</style>
+<script>/* cache marker: 150-107-analysis-final-layout-fix */</script>

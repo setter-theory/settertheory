@@ -2123,7 +2123,7 @@ function buildAllPersonalRankings(){
 }
 
 let reportRankingsOpen=false;
-let reportRecentLogsOpen=false;
+let reportRecentLogsOpen=true;
 let reportRecentLogsExpanded=false;
 function toggleReportRankings(){
   reportRankingsOpen=!reportRankingsOpen;
