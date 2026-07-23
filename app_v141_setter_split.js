@@ -2193,14 +2193,14 @@ function buildRotationTossDistribution(setterNum=null){
     const segments=stats.filter(x=>x.count>0).map(x=>
       `<span class="setterRotBarSegment" style="width:${x.pct}%;background:${colors[x.label]}" title="${x.label} ${x.count}本 (${x.pct}%)"></span>`
     ).join('');
-    const values=stats.map(x=>`<span class="setterRotValue ${x.count===0?'zero':''}"><i style="background:${colors[x.label]}"></i><b>${x.label}</b><em>${x.pct}%</em><small>${x.count}本</small></span>`).join('');
+    const values=stats.map(x=>`<span class="setterRotValue ${x.count===0?'zero':''}" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><i style="background:${colors[x.label]}"></i><b style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${x.label}</b><em style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${x.pct}%</em><small style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${x.count}本</small></span>`).join('');
     return `<div class="setterRotBarRow ${total===0?'empty':''}">
-      <div class="setterRotBarLabel"><strong>S${r}</strong><small>${total}本</small></div>
-      <div class="setterRotBarMain"><div class="setterRotBarTrack">${segments||'<span class="setterRotBarEmpty">記録なし</span>'}</div><div class="setterRotBarValues">${values}</div></div>
+      <div class="setterRotBarLabel" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><strong style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">S${r}</strong><small style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${total}本</small></div>
+      <div class="setterRotBarMain"><div class="setterRotBarTrack">${segments||'<span class="setterRotBarEmpty" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">記録なし</span>'}</div><div class="setterRotBarValues">${values}</div></div>
     </div>`;
   }).join('');
 
-  return `<div class="setterRotBarWrap"><div class="setterRotBarSummary"><span>全ローテーション合計</span><strong>${allToss.length}本</strong></div>${rows}</div>`;
+  return `<div class="setterRotBarWrap" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><div class="setterRotBarSummary" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><span style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">全ローテーション合計</span><strong style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${allToss.length}本</strong></div>${rows}</div>`;
 }
 
 function buildSetterTossAnalysisPanel(setterNum){
@@ -2461,7 +2461,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.99 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  // V150.100 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
   const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
@@ -3062,7 +3062,7 @@ function printMatchPdfReport(){
     // V150.82: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
     // セッター別集計データから直接再構築する。試合入力中と保存試合で同じ表示になる。
     const tossHost=card.querySelector('.setterAnalysisTossCard .setterMasterDonut');
-    // V150.99: 元DOMの凡例を引き継がず、セッター①・②とも集計データから必ず再構築する。
+    // V150.100: 元DOMの凡例を引き継がず、セッター①・②とも集計データから必ず再構築する。
     // 項目名・本数・％は各要素へ直接インライン指定し、PDFプレビュー／印刷変換時の
     // 全体CSSやiPadの色補正に上書きされないようにする。
     if(tossHost){
@@ -3111,7 +3111,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.99</div>
+    <div class="pdfCoverVersion">V150.100</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5048,7 +5048,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.99</div>
+    <div class="pdfPreviewBuildMarker">V150.100</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5113,7 +5113,7 @@ function printMatchPdfReport(){
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
 
-            // V150.99: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
+            // V150.100: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
             // PDFプレビュー側と他カードには影響させない。
             clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
               card.style.overflow='hidden';
@@ -5155,7 +5155,7 @@ function printMatchPdfReport(){
               });
             });
 
-            // V150.99: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
+            // V150.100: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
             // 円グラフ中央の文字と数字をアプリ共通のゴシック系フォントへ統一する。
             // SVGをPNG化する前にインライン指定し、iPad印刷でも色とフォントを保持する。
             clone.querySelectorAll('.setterAnalysisTossCard').forEach(card=>{
