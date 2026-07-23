@@ -2455,7 +2455,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.96 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  // V150.97 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
   const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
@@ -3011,7 +3011,7 @@ function printMatchPdfReport(){
       const num=donut.querySelector('.donutCenter .num')?.textContent||'';
       const holder=document.createElement('div');
       holder.className='pdfDonutSvg';
-      holder.innerHTML=`<svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${circles}</g><circle cx="55" cy="55" r="22" fill="#ffffff"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#475569">${label}</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">${num}</text></svg>`;
+      holder.innerHTML=`<svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${circles}</g><circle cx="55" cy="55" r="22" fill="#1e293b"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#ffffff" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif">${label}</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif">${num}</text></svg>`;
       donut.replaceWith(holder);
     }catch(e){}
   });
@@ -3085,7 +3085,7 @@ function printMatchPdfReport(){
             }).join('');
         const legend=items.map(item=>{
           const pct=Math.round(Number(item.count||0)/total*100);
-          return `<div class="legendRow"><span><i class="dot" style="background:${colorMap[item.label]||'#64748b'}"></i>${escapeHtml(item.label)}</span><span>${item.count}本 ${pct}%</span></div>`;
+          return `<div class="legendRow" style="color:#fff;-webkit-text-fill-color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif"><span style="color:#fff;-webkit-text-fill-color:#fff"><i class="dot" style="background:${colorMap[item.label]||'#64748b'}"></i>${escapeHtml(item.label)}</span><span style="color:#fff;-webkit-text-fill-color:#fff">${item.count}本 ${pct}%</span></div>`;
         }).join('');
         tossHost.innerHTML=`<div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="pdfDonutSvg"><svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${paths}</g><circle cx="55" cy="55" r="22" fill="#1e293b"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#ffffff" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif">総数</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif">${total}</text></svg></div><div class="legend">${legend}</div></div>`;
       }else{
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.96</div>
+    <div class="pdfCoverVersion">V150.97</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5028,10 +5028,19 @@ function printMatchPdfReport(){
       fill:#ffffff!important;
       -webkit-text-fill-color:#ffffff!important;
     }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .legend,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .legendRow,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .legendRow span,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .legendRow b,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisTossCard .legendRow small{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif!important;
+    }
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.96</div>
+    <div class="pdfPreviewBuildMarker">V150.97</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5096,7 +5105,7 @@ function printMatchPdfReport(){
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
 
-            // V150.96: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
+            // V150.97: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
             // PDFプレビュー側と他カードには影響させない。
             clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
               card.style.overflow='hidden';
@@ -5138,7 +5147,7 @@ function printMatchPdfReport(){
               });
             });
 
-            // V150.96: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
+            // V150.97: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
             // 円グラフ中央の文字と数字をアプリ共通のゴシック系フォントへ統一する。
             // SVGをPNG化する前にインライン指定し、iPad印刷でも色とフォントを保持する。
             clone.querySelectorAll('.setterAnalysisTossCard').forEach(card=>{
