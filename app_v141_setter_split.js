@@ -1933,7 +1933,7 @@ function buildSetterDetailReports(){
       <div class="setterAnalysisHeader"><div><span class="setterAnalysisEyebrow">SETTER REPORT</span><h2>セッター分析${idx===0?'①':'②'}</h2></div><small>${escapeHtml(a.name||'')}の配球・能力バランス・ローテーション別傾向</small></div>
       <div class="setterAnalysisUnitBody"><div class="setterMasterCard">
       <div class="setterMasterHeaderRow">
-        <div class="setterMasterName"><small>${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
+        <div class="setterMasterName"><small style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${escapeHtml(setterRoleLabelForNumber(n)||`セッター${idx+1}`)}</small><h3>${escapeHtml(a.name||'')}</h3></div>
         <div class="setterMasterIqAdviceCard">
           ${buildSetterTheoryEvaluation(a.total?a.setterIq:null)}
           <div class="setterMasterAdvice"><b>Aquila Advice</b><div class="setterAquilaAdviceList"><div class="continue"><strong>継続すること</strong><p>${escapeHtml(advice.continueText)}</p></div><div class="correction"><strong>修正すること</strong><p>${escapeHtml(advice.correctionText)}</p></div><div class="next"><strong>次の試合で意識すること</strong><p>${escapeHtml(advice.nextText)}</p></div><div class="key"><strong>Aquila Coach's Key Point</strong><p>${escapeHtml(advice.keyPoint)}</p></div></div></div>
@@ -2461,7 +2461,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.100 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  // V150.101 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
   const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
@@ -3062,7 +3062,7 @@ function printMatchPdfReport(){
     // V150.82: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
     // セッター別集計データから直接再構築する。試合入力中と保存試合で同じ表示になる。
     const tossHost=card.querySelector('.setterAnalysisTossCard .setterMasterDonut');
-    // V150.100: 元DOMの凡例を引き継がず、セッター①・②とも集計データから必ず再構築する。
+    // V150.101: 元DOMの凡例を引き継がず、セッター①・②とも集計データから必ず再構築する。
     // 項目名・本数・％は各要素へ直接インライン指定し、PDFプレビュー／印刷変換時の
     // 全体CSSやiPadの色補正に上書きされないようにする。
     if(tossHost){
@@ -3111,7 +3111,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.100</div>
+    <div class="pdfCoverVersion">V150.101</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5048,7 +5048,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.100</div>
+    <div class="pdfPreviewBuildMarker">V150.101</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5113,7 +5113,7 @@ function printMatchPdfReport(){
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
 
-            // V150.100: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
+            // V150.101: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
             // PDFプレビュー側と他カードには影響させない。
             clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
               card.style.overflow='hidden';
@@ -5155,7 +5155,7 @@ function printMatchPdfReport(){
               });
             });
 
-            // V150.100: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
+            // V150.101: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
             // 円グラフ中央の文字と数字をアプリ共通のゴシック系フォントへ統一する。
             // SVGをPNG化する前にインライン指定し、iPad印刷でも色とフォントを保持する。
             clone.querySelectorAll('.setterAnalysisTossCard').forEach(card=>{
