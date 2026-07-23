@@ -2455,8 +2455,8 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.91 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
-  const cx=180, cy=154, radius=54;
+  // V150.92 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  const cx=180, cy=154, radius=58;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
