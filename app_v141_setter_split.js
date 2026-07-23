@@ -5127,7 +5127,7 @@ function printMatchPdfReport(){
                 svg.style.transform='scale(.88)';
                 svg.style.transformOrigin='50% 50%';
                 svg.style.position='relative';
-                svg.style.left='-32px';
+                svg.style.left='-20px';
                 svg.style.top='-7px';
               }
               card.querySelectorAll('.radarLabels text,.radarLabels tspan').forEach(label=>{
