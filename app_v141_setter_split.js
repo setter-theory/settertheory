@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.105</div>
+    <div class="pdfCoverVersion">V150.108</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3169,9 +3169,16 @@ function printMatchPdfReport(){
       const allRanks=rankClone.querySelector('.allRankingsGrid');
       if(allRanks){
         allRanks.style.setProperty('display','grid','important');
-        allRanks.style.setProperty('grid-template-columns','repeat(2,minmax(0,1fr))','important');
+        allRanks.style.setProperty('grid-template-columns','repeat(6,minmax(0,1fr))','important');
+        allRanks.style.setProperty('gap','6px','important');
         allRanks.style.setProperty('width','100%','important');
         allRanks.style.setProperty('max-width','100%','important');
+        Array.from(allRanks.children).forEach((card,index)=>{
+          card.style.setProperty('grid-column',index<3?'span 2':'span 3','important');
+          card.style.setProperty('width','auto','important');
+          card.style.setProperty('min-width','0','important');
+          card.style.setProperty('box-sizing','border-box','important');
+        });
       }
       rankSection.appendChild(rankClone);
       analysisOuter.appendChild(rankSection);
@@ -5053,7 +5060,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.105</div>
+    <div class="pdfPreviewBuildMarker">V150.108</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
