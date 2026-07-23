@@ -2791,22 +2791,27 @@ function report(){
         <div class="playOverviewRotation"><h3>ローテーション別分析 <small>（成功率・得失点）</small></h3><div class="teamRotationList">${rotationRows}</div></div>
       </div>
     </section>
-    <div class="wideGrid singleReportWideGrid">
-      <section class="reportPanel reportAccordion ${reportRankingsOpen?"isOpen":""}" id="personalRankingHost">
-        <button class="reportAccordionToggle" type="button" onclick="toggleReportRankings()" aria-expanded="${reportRankingsOpen}">
-          <span>各ランキング <small>（TOP3）</small></span><b>${reportRankingsOpen?"−":"＋"}</b>
-        </button>
-        ${reportRankingsOpen?`<div class="reportAccordionBody">${buildAllPersonalRankings()}</div>`:""}
-      </section>
-    </div>
-    <div class="bottomGrid setterUnifiedBottomGrid">
-      <section class="reportPanel reportAccordion ${reportRecentLogsOpen?"isOpen":""}">
-        <button class="reportAccordionToggle" type="button" onclick="toggleReportRecentSection()" aria-expanded="${reportRecentLogsOpen}">
-          <span>直近ログ</span><b>${reportRecentLogsOpen?"−":"＋"}</b>
-        </button>
-        ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">${reportRecentLogsExpanded?"最新20プレー":"最新5プレー"}</div>${buildRecentReportLogs()}</div>`:""}
-      </section>
-    </div>
+    <section class="reportPanel analysisMasterCard">
+      <div class="analysisMasterHeader"><h2>分析</h2></div>
+      <div class="analysisMasterBody">
+        <div class="wideGrid singleReportWideGrid">
+          <section class="reportPanel reportAccordion ${reportRankingsOpen?"isOpen":""}" id="personalRankingHost">
+            <button class="reportAccordionToggle" type="button" onclick="toggleReportRankings()" aria-expanded="${reportRankingsOpen}">
+              <span>各ランキング <small>（TOP3）</small></span><b>${reportRankingsOpen?"−":"＋"}</b>
+            </button>
+            ${reportRankingsOpen?`<div class="reportAccordionBody">${buildAllPersonalRankings()}</div>`:""}
+          </section>
+        </div>
+        <div class="bottomGrid setterUnifiedBottomGrid">
+          <section class="reportPanel reportAccordion ${reportRecentLogsOpen?"isOpen":""}">
+            <button class="reportAccordionToggle" type="button" onclick="toggleReportRecentSection()" aria-expanded="${reportRecentLogsOpen}">
+              <span>直近ログ</span><b>${reportRecentLogsOpen?"−":"＋"}</b>
+            </button>
+            ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">${reportRecentLogsExpanded?"最新20プレー":"最新5プレー"}</div>${buildRecentReportLogs()}</div>`:""}
+          </section>
+        </div>
+      </div>
+    </section>
   </div>`;
   const dash=document.getElementById("reportDashboard"); if(dash) dash.innerHTML=dashboard;
   const sub=document.getElementById("reportSub"); if(sub) sub.textContent=`${new Date().toLocaleDateString()}　vs ${s.oppTeam || "相手"}`;
