@@ -3141,6 +3141,7 @@ function printMatchPdfReport(){
   if(rankings || recentLogs){
     const analysisOuter=document.createElement('section');
     analysisOuter.className='pdfFinalOuterCard pdfAnalysisOuterCard';
+    analysisOuter.style.cssText='display:block;width:100%;max-width:100%;box-sizing:border-box;padding:10px;background:#2f394b;border:1px solid rgba(203,213,225,.28);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
     const analysisTitle=document.createElement('h2');
     analysisTitle.className='pdfAnalysisTitle';
     analysisTitle.textContent='分析';
