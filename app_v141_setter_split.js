@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.114</div>
+    <div class="pdfCoverVersion">V150.115</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3141,7 +3141,7 @@ function printMatchPdfReport(){
   if(rankings || recentLogs){
     const analysisOuter=document.createElement('section');
     analysisOuter.className='pdfFinalOuterCard pdfAnalysisOuterCard';
-    analysisOuter.style.cssText='display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:6px;width:100%;max-width:100%;height:100%;max-height:100%;min-height:0;box-sizing:border-box;padding:9px;background:#2f394b;border:1px solid rgba(203,213,225,.28);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
+    analysisOuter.style.cssText='display:grid;grid-template-rows:auto 54mm minmax(0,1fr);gap:6px;width:100%;max-width:100%;height:100%;max-height:100%;min-height:0;box-sizing:border-box;padding:0;background:#0f172a;border:1px solid rgba(96,165,250,.34);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
     const analysisTitle=document.createElement('h2');
     analysisTitle.className='pdfAnalysisTitle';
     analysisTitle.innerHTML='<span class="pdfAnalysisEyebrow">ANALYSIS</span><span class="pdfAnalysisJapanese">分析</span>';
@@ -3149,7 +3149,7 @@ function printMatchPdfReport(){
     if(rankings){
       const rankSection=document.createElement('section');
       rankSection.className='pdfAnalysisSection pdfRankingsSection pdfAnalysisSmallCard';
-      rankSection.style.cssText='background:#1e293b;border:1px solid rgba(96,165,250,.32);border-radius:14px;padding:12px;box-shadow:0 7px 18px rgba(2,6,23,.14);';
+      rankSection.style.cssText='background:#1e293b;border:1px solid rgba(96,165,250,.32);border-radius:14px;padding:7px;box-shadow:none;box-sizing:border-box;overflow:hidden;';
       const rankTitle=document.createElement('h3');
       rankTitle.className='pdfFinalSectionTitle';
       rankTitle.textContent='ランキング';
@@ -3242,7 +3242,7 @@ function printMatchPdfReport(){
   const analysisOuter=a4Root.querySelector('.pdfFinalPage .pdfAnalysisOuterCard');
   const analysisGrid=a4Root.querySelector('.pdfFinalPage .pdfFinalGrid');
   if(analysisGrid){
-    // V150.114: PDF/print detached clone can lose ancestor-dependent CSS.
+    // V150.115: PDF/print detached clone can lose ancestor-dependent CSS.
     // The old two-column .pdfFinalGrid made the single analysis card occupy only the left column.
     analysisGrid.style.setProperty('display','block','important');
     analysisGrid.style.setProperty('grid-template-columns','minmax(0,1fr)','important');
@@ -5091,7 +5091,7 @@ function printMatchPdfReport(){
 
 
 
-    /* V150.114 FINAL: final analysis page must match team/setter header colors and stay inside the white A4 sheet. */
+    /* V150.115 FINAL: final analysis page must match team/setter header colors and stay inside the white A4 sheet. */
     #report #reportDashboard.pdfA4Document > .pdfFinalPage{
       height:190mm!important;min-height:190mm!important;max-height:190mm!important;
       padding:7mm!important;overflow:hidden!important;background:#fff!important;
@@ -5171,7 +5171,7 @@ function printMatchPdfReport(){
     }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.114</div>
+    <div class="pdfPreviewBuildMarker">V150.115</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 

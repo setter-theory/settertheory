@@ -4215,7 +4215,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   background-color:transparent!important;
 }
 </style>
-<script src="app_v141_setter_split.js?v=150114"></script>
+<script src="app_v141_setter_split.js?v=150115"></script>
 
 
 
@@ -4754,7 +4754,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.114</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.115</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -5443,7 +5443,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 
 
 <style id="v150-113-analysis-master-and-ranking-final-fix">
-/* V150.114: ANALYSIS/分析ヘッダー、濃紺の大カード、5ランキング同寸3列、小カードを用紙内へ収める。 */
+/* V150.115: ANALYSIS/分析ヘッダー、濃紺の大カード、5ランキング同寸3列、小カードを用紙内へ収める。 */
 #report #reportDashboard.pdfA4Document > .pdfFinalPage{
   box-sizing:border-box!important;
   overflow:hidden!important;
@@ -5527,6 +5527,86 @@ function closePositionManager(){const m=document.getElementById('positionManager
 #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineItem,#report #reportDashboard.pdfA4Document > .pdfFinalPage .recentLogItem,#report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineRow{min-height:0!important;padding:2px 4px!important;margin:0!important;line-height:1.05!important;border-radius:5px!important;overflow:hidden!important}
 </style>
 <script>/* cache marker: 150-114-analysis-paper-fit-and-color-match */</script>
+
+<style id="v150-115-ranking-frame-log20-header-match">
+/* V150.115: ランキング中枠と項目の間の余計な枠を除去、最新20プレーを全件表示、分析ヘッダーをチーム分析と同一配色へ統一。 */
+#report #reportDashboard.pdfA4Document > .pdfFinalPage{
+  height:190mm!important;min-height:190mm!important;max-height:190mm!important;
+  padding:7mm!important;box-sizing:border-box!important;overflow:hidden!important;background:#fff!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage > .pdfFinalGrid{
+  display:block!important;width:100%!important;height:176mm!important;max-height:176mm!important;
+  min-height:0!important;margin:0!important;overflow:hidden!important;box-sizing:border-box!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage > .pdfFinalGrid > .pdfAnalysisOuterCard{
+  display:grid!important;grid-template-rows:auto 54mm minmax(0,1fr)!important;gap:6px!important;
+  width:100%!important;height:176mm!important;max-height:176mm!important;min-height:0!important;
+  margin:0!important;padding:0!important;box-sizing:border-box!important;overflow:hidden!important;
+  background:#0f172a!important;background-color:#0f172a!important;
+  border:1px solid rgba(96,165,250,.34)!important;border-radius:16px!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisTitle{
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:1px!important;
+  margin:0!important;padding:10px 14px 8px!important;box-sizing:border-box!important;
+  background:linear-gradient(135deg,#0f172a,#172554)!important;
+  border-bottom:1px solid rgba(255,255,255,.14)!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisEyebrow{
+  color:#93c5fd!important;-webkit-text-fill-color:#93c5fd!important;font-size:9px!important;line-height:1!important;font-weight:900!important;letter-spacing:.16em!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisJapanese{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;font-size:20px!important;line-height:1.05!important;font-weight:900!important;letter-spacing:.05em!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSmallCard{
+  min-height:0!important;box-sizing:border-box!important;overflow:hidden!important;
+  background:#1e293b!important;background-color:#1e293b!important;
+  border:1px solid rgba(96,165,250,.32)!important;border-radius:14px!important;padding:7px!important;
+}
+/* ランキング中カードと小々カードの間にあった余計な枠だけを消す */
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .pdfRankingsBlock,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .singleReportWideGrid,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .reportPanel,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .reportAccordion,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .reportAccordionBody,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection #personalRankingHost{
+  width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
+  background:transparent!important;background-color:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;box-sizing:border-box!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .allRankingsGrid{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;width:100%!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .compactRankCard{
+  grid-column:auto!important;width:100%!important;min-width:0!important;max-width:none!important;
+  padding:4px 5px!important;box-sizing:border-box!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .compactRankCard h4{font-size:10px!important;line-height:1.05!important;margin:0 0 2px!important}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection .compactRankRow{font-size:8px!important;line-height:1.05!important;padding:1px 2px!important}
+/* 最新20プレーを10件×2列で全件表示 */
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection{
+  height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;
+  margin:0 7px 7px!important;padding:7px!important;box-sizing:border-box!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .pdfRecentLogsBlock,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .reportPanel,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .reportAccordion,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .reportAccordionBody{
+  display:block!important;width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;
+  margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:hidden!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .timeline{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-flow:column!important;grid-template-rows:repeat(10,minmax(0,1fr))!important;
+  gap:2px 4px!important;width:100%!important;height:calc(100% - 18px)!important;max-height:none!important;margin:2px 0 0!important;overflow:hidden!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .timelineItem,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .recentLogItem,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .timelineRow{
+  min-height:0!important;height:auto!important;padding:1px 3px!important;margin:0!important;line-height:1!important;border-radius:4px!important;overflow:hidden!important;box-sizing:border-box!important;
+}
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .timelineNo,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .timelineText,
+#report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection .timeline *{font-size:7px!important;line-height:1!important}
+</style>
+<script>/* cache marker: 150-115-ranking-frame-log20-header-match */</script>
 </body>
 </html>
 
