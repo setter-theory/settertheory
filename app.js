@@ -2800,7 +2800,7 @@ function printMatchPdfReport(){
       <section class="section"><h2>各項目ランキング TOP3</h2><div class="pdfRankGrid">${pdfRankingHtml}</div><div class="note">※通常トスはトスミスを除いた成功本数、二段トスは記録本数で表示します。</div></section>
       <section class="section"><h2>選手交代履歴</h2>${table(['ペア','回数','最終スコア','最終ローテ','最終時刻'], subRows, '選手交代の記録がありません。')}</section>
       <section class="section"><h2>直近ログ</h2>${table(['No','Set','Rot','プレー','選手','結果','得点','スコア','時刻'], recentRows, 'ログがありません。')}</section>
-      <footer class="footer"><span>Setter Theory</span><span>V150.59 PDF PREVIEW</span></footer>
+      <footer class="footer"><span>Setter Theory</span><span>V150.84 PDF PREVIEW</span></footer>
     </main>
   </body></html>`;
   const w=window.open('', '_blank');

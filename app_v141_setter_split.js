@@ -2467,7 +2467,7 @@ function buildSetterIqRadarChartPdf(breakdown){
   const labels=items.map((item,i)=>{
     const [x,y]=point(i,1.48);
     const anchor=x<cx-8?'end':x>cx+8?'start':'middle';
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="15" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#0f172a">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="18" fill="#1d4ed8" font-size="14" font-weight="1000">${item.value}/20</tspan></text>`;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" fill="#0f172a" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Noto Sans JP,sans-serif" font-size="12" font-weight="900"><tspan x="${x.toFixed(1)}" fill="#ffffff">${item.label}</tspan><tspan x="${x.toFixed(1)}" dy="15" fill="#ffffff" font-size="11" font-weight="1000">${item.value}/20</tspan></text>`;
   }).join('');
   return `<div class="setterIqRadar pdfSetterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
     <div class="setterIqRadarTitle">能力バランス</div>
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.83</div>
+    <div class="pdfCoverVersion">V150.84</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5025,9 +5025,41 @@ function printMatchPdfReport(){
       -webkit-text-fill-color:#ffffff!important;
     }
 
+    /* V150.84: PDFプレビューの能力バランスカード内部だけを調整。親カードとページ配置は維持。 */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar .pdfSetterIqRadar{
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:center!important;
+      justify-content:center!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar .pdfSetterIqRadar .setterIqRadarTitle{
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      text-align:center!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar .pdfSetterIqRadar svg{
+      margin-left:auto!important;
+      margin-right:auto!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar .pdfSetterIqRadar .radarLabels text,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar .pdfSetterIqRadar .radarLabels tspan{
+      fill:#ffffff!important;
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      font-size:12px!important;
+      font-weight:900!important;
+      paint-order:stroke!important;
+      stroke:rgba(15,23,42,.72)!important;
+      stroke-width:1.2px!important;
+      stroke-linejoin:round!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterRadar .pdfSetterIqRadar .radarLabels tspan + tspan{
+      font-size:11px!important;
+    }
+
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.83</div>
+    <div class="pdfPreviewBuildMarker">V150.84</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
