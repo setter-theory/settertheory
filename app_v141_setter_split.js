@@ -2455,7 +2455,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.94 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  // V150.96 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
   const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
@@ -3087,7 +3087,7 @@ function printMatchPdfReport(){
           const pct=Math.round(Number(item.count||0)/total*100);
           return `<div class="legendRow"><span><i class="dot" style="background:${colorMap[item.label]||'#64748b'}"></i>${escapeHtml(item.label)}</span><span>${item.count}本 ${pct}%</span></div>`;
         }).join('');
-        tossHost.innerHTML=`<div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="pdfDonutSvg"><svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${paths}</g><circle cx="55" cy="55" r="22" fill="#ffffff"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#475569">総数</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">${total}</text></svg></div><div class="legend">${legend}</div></div>`;
+        tossHost.innerHTML=`<div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="pdfDonutSvg"><svg viewBox="0 0 110 110" preserveAspectRatio="xMidYMid meet" role="img" aria-label="円グラフ"><g transform="rotate(-90 55 55)">${paths}</g><circle cx="55" cy="55" r="22" fill="#1e293b"/><text x="55" y="51" text-anchor="middle" font-size="8" font-weight="800" fill="#ffffff" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif">総数</text><text x="55" y="64" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans-serif">${total}</text></svg></div><div class="legend">${legend}</div></div>`;
       }else{
         tossHost.innerHTML='<div class="setterMasterChartTitle">トス配分</div><div class="v141SetterNoData">トス記録がありません</div>';
       }
@@ -3103,7 +3103,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.94</div>
+    <div class="pdfCoverVersion">V150.96</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5031,7 +5031,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.94</div>
+    <div class="pdfPreviewBuildMarker">V150.96</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5096,7 +5096,7 @@ function printMatchPdfReport(){
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
 
-            // V150.94: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
+            // V150.96: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
             // PDFプレビュー側と他カードには影響させない。
             clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
               card.style.overflow='hidden';
@@ -5135,6 +5135,27 @@ function printMatchPdfReport(){
                 label.style.webkitTextFillColor='#ffffff';
                 label.style.fontSize='12px';
                 label.style.fontWeight='900';
+              });
+            });
+
+            // V150.96: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
+            // 円グラフ中央の文字と数字をアプリ共通のゴシック系フォントへ統一する。
+            // SVGをPNG化する前にインライン指定し、iPad印刷でも色とフォントを保持する。
+            clone.querySelectorAll('.setterAnalysisTossCard').forEach(card=>{
+              card.querySelectorAll('.legend,.legendRow,.legendRow span,.setterMasterChartTitle').forEach(el=>{
+                el.style.color='#ffffff';
+                el.style.webkitTextFillColor='#ffffff';
+                el.style.fontFamily='-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif';
+              });
+              card.querySelectorAll('.pdfDonutSvg svg').forEach(svg=>{
+                const centerCircle=svg.querySelector('circle:last-of-type');
+                if(centerCircle) centerCircle.setAttribute('fill','#1e293b');
+                svg.querySelectorAll('text').forEach(text=>{
+                  text.setAttribute('fill','#ffffff');
+                  text.style.fill='#ffffff';
+                  text.style.webkitTextFillColor='#ffffff';
+                  text.style.fontFamily='-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif';
+                });
               });
             });
 
