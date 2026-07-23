@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.112</div>
+    <div class="pdfCoverVersion">V150.113</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3144,7 +3144,7 @@ function printMatchPdfReport(){
     analysisOuter.style.cssText='display:block;width:100%;max-width:100%;box-sizing:border-box;padding:10px;background:#2f394b;border:1px solid rgba(203,213,225,.28);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
     const analysisTitle=document.createElement('h2');
     analysisTitle.className='pdfAnalysisTitle';
-    analysisTitle.textContent='分析';
+    analysisTitle.innerHTML='<span class="pdfAnalysisEyebrow">ANALYSIS</span><span class="pdfAnalysisJapanese">分析</span>';
     analysisOuter.appendChild(analysisTitle);
     if(rankings){
       const rankSection=document.createElement('section');
@@ -3175,7 +3175,7 @@ function printMatchPdfReport(){
         allRanks.style.setProperty('width','100%','important');
         allRanks.style.setProperty('max-width','100%','important');
         Array.from(allRanks.children).forEach((card,index)=>{
-          card.style.setProperty('grid-column',index<3?'span 2':'span 3','important');
+          card.style.setProperty('grid-column','span 2','important');
           card.style.setProperty('width','auto','important');
           card.style.setProperty('min-width','0','important');
           card.style.setProperty('box-sizing','border-box','important');
@@ -3242,7 +3242,7 @@ function printMatchPdfReport(){
   const analysisOuter=a4Root.querySelector('.pdfFinalPage .pdfAnalysisOuterCard');
   const analysisGrid=a4Root.querySelector('.pdfFinalPage .pdfFinalGrid');
   if(analysisGrid){
-    // V150.112: PDF/print detached clone can lose ancestor-dependent CSS.
+    // V150.113: PDF/print detached clone can lose ancestor-dependent CSS.
     // The old two-column .pdfFinalGrid made the single analysis card occupy only the left column.
     analysisGrid.style.setProperty('display','block','important');
     analysisGrid.style.setProperty('grid-template-columns','minmax(0,1fr)','important');
@@ -3881,7 +3881,7 @@ function printMatchPdfReport(){
     /* V150.31: apply the setter-analysis dark surface to the actual inner panels. */
     #report #reportDashboard.pdfA4Document > .pdfTeamPage,
     #report #reportDashboard.pdfA4Document > .pdfFinalPage{
-      background:#2f394b!important;
+      background:#0f172a!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard,
     #report #reportDashboard.pdfA4Document > .pdfTeamPage .teamAnalysisCard>.playOverviewCard,
@@ -4379,9 +4379,14 @@ function printMatchPdfReport(){
     }
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard{
       display:grid!important;
-      grid-template-rows:auto minmax(0,1fr) auto!important;
+      grid-template-rows:auto auto minmax(0,1fr)!important;
       gap:8px!important;
-      height:100%!important;
+      width:100%!important;
+      max-width:100%!important;
+      height:auto!important;
+      max-height:100%!important;
+      min-height:0!important;
+      box-sizing:border-box!important;
       padding:12px!important;
       border:1px solid rgba(203,213,225,.28)!important;
       border-radius:16px!important;
@@ -4389,14 +4394,30 @@ function printMatchPdfReport(){
       overflow:hidden!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisTitle{
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:flex-start!important;
+      gap:1px!important;
       margin:0!important;
       padding:0 2px 8px!important;
       color:#ffffff!important;
+      border-bottom:1px solid rgba(255,255,255,.28)!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisEyebrow{
+      display:block!important;
+      color:#93c5fd!important;
+      font-size:9px!important;
+      line-height:1!important;
+      font-weight:1000!important;
+      letter-spacing:.16em!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisJapanese{
+      display:block!important;
+      color:#fff!important;
       font-size:22px!important;
       line-height:1.05!important;
       font-weight:1000!important;
       letter-spacing:.05em!important;
-      border-bottom:1px solid rgba(255,255,255,.28)!important;
     }
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSection{
       min-width:0!important;
@@ -5066,7 +5087,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.112</div>
+    <div class="pdfPreviewBuildMarker">V150.113</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
