@@ -3144,7 +3144,8 @@ function printMatchPdfReport(){
     analysisOuter.style.cssText='display:grid;grid-template-rows:auto 54mm minmax(0,1fr);gap:6px;width:100%;max-width:100%;height:100%;max-height:100%;min-height:0;box-sizing:border-box;padding:0;background:#0f172a;border:1px solid rgba(96,165,250,.34);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
     const analysisTitle=document.createElement('h2');
     analysisTitle.className='pdfAnalysisTitle';
-    analysisTitle.innerHTML='<span class="pdfAnalysisEyebrow">ANALYSIS</span><span class="pdfAnalysisJapanese">分析</span>';
+    analysisTitle.innerHTML='<span class="pdfAnalysisEyebrow" style="display:block;color:#fff;-webkit-text-fill-color:#fff;font-size:11px;line-height:1;font-weight:900;letter-spacing:.16em;">ANALYSIS</span><span class="pdfAnalysisJapanese" style="display:block;color:#fff;-webkit-text-fill-color:#fff;font-size:20px;line-height:1.05;font-weight:900;letter-spacing:.05em;">分析</span>';
+    analysisTitle.style.cssText='display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;margin:0;padding:10px 14px 8px;box-sizing:border-box;background:linear-gradient(135deg,#0f172a,#172554);border-bottom:1px solid rgba(255,255,255,.14);color:#fff;-webkit-text-fill-color:#fff;';
     analysisOuter.appendChild(analysisTitle);
     if(rankings){
       const rankSection=document.createElement('section');
@@ -5171,7 +5172,7 @@ function printMatchPdfReport(){
     }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.117</div>
+    <div class="pdfPreviewBuildMarker">V150.123</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
