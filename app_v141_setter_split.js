@@ -1904,6 +1904,12 @@ function getAquilaAdviceForSetter(num){
     `Aquila Coach's Key Point：${c.keyPoint}`
   ];
 }
+function setterAnalysisWhiteLegendHtml(items,total){
+  return `<div class="legend setterAnalysisWhiteLegend" style="color:#ffffff!important">`+items.map(x=>{
+    const pct=safePct(x.count,total);
+    return `<div class="legendRow" style="color:#ffffff!important"><span class="dot" style="background:${x.color}"></span><span style="color:#ffffff!important">${x.label}</span><span style="color:#ffffff!important">${pct}% (${x.count})</span></div>`;
+  }).join("")+`</div>`;
+}
 function buildSetterDetailReports(){
   const setters=reportSetterNumbers();
   if(!setters.length) return '';
@@ -1917,12 +1923,12 @@ function buildSetterDetailReports(){
     const toss=(s.logs||[]).filter(x=>x&&x.type==='トス'&&logBelongsToPlayer(x,String(n)));
     const items=labels.map(label=>({label,count:toss.filter(x=>x.result===label).length,color:colors[label]})).filter(x=>x.count>0);
     const donut=items.length
-      ? `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${legendHtml(items,toss.length)}</div></div>`
+      ? `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${setterAnalysisWhiteLegendHtml(items,toss.length)}</div></div>`
       : `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="v141SetterNoData">トス記録がありません</div></div>`;
     const successCount=Math.max(0,a.quality.total-a.quality.miss);
     const successPct=a.quality.total?Math.round(successCount/a.quality.total*100):0;
     const missPct=a.quality.total?Math.round(a.quality.miss/a.quality.total*100):0;
-    const qualityBar=`<div class="setterQualityOneBar"><div class="setterQualityOneBarStats"><span>総トス <b>${a.quality.total}</b>本</span><span>トスミス <b>${a.quality.miss}</b>本</span><span>成功率 <b>${a.quality.successRate}</b>%</span></div><div class="setterQualityOneBarTrack">${a.quality.total?`<i class="ok" style="width:${successPct}%"></i><i class="ng" style="width:${missPct}%"></i>`:`<em>記録なし</em>`}</div></div>`;
+    const qualityBar=`<div class="setterQualityOneBar"><div class="setterQualityOneBarStats" style="color:#ffffff!important"><span style="color:#ffffff!important">総トス <b style="color:#ffffff!important">${a.quality.total}</b>本</span><span style="color:#ffffff!important">トスミス <b style="color:#ffffff!important">${a.quality.miss}</b>本</span><span style="color:#ffffff!important">成功率 <b style="color:#ffffff!important">${a.quality.successRate}</b>%</span></div><div class="setterQualityOneBarTrack">${a.quality.total?`<i class="ok" style="width:${successPct}%"></i><i class="ng" style="width:${missPct}%"></i>`:`<em>記録なし</em>`}</div></div>`;
     return `<section class="reportPanel setterAnalysisUnit" data-setter-number="${escapeHtml(String(n))}">
       <div class="setterAnalysisHeader"><div><span class="setterAnalysisEyebrow">SETTER REPORT</span><h2>セッター分析${idx===0?'①':'②'}</h2></div><small>${escapeHtml(a.name||'')}の配球・能力バランス・ローテーション別傾向</small></div>
       <div class="setterAnalysisUnitBody"><div class="setterMasterCard">
@@ -2455,7 +2461,7 @@ function buildSetterIqRadarChartPdf(breakdown){
     {label:'勝負所',value:Number(breakdown?.clutch)||0},
     {label:'安定性',value:Number(breakdown?.stability)||0}
   ];
-  // V150.98 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
+  // V150.99 PDF/印刷専用：5項目と数値を含む全体を小さくし、カード中央へ収める。
   const cx=180, cy=154, radius=54;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
@@ -3056,7 +3062,7 @@ function printMatchPdfReport(){
     // V150.82: PDFプレビューのセッター①/②円グラフを、元画面のDOM状態に依存せず
     // セッター別集計データから直接再構築する。試合入力中と保存試合で同じ表示になる。
     const tossHost=card.querySelector('.setterAnalysisTossCard .setterMasterDonut');
-    // V150.98: 元DOMの凡例を引き継がず、セッター①・②とも集計データから必ず再構築する。
+    // V150.99: 元DOMの凡例を引き継がず、セッター①・②とも集計データから必ず再構築する。
     // 項目名・本数・％は各要素へ直接インライン指定し、PDFプレビュー／印刷変換時の
     // 全体CSSやiPadの色補正に上書きされないようにする。
     if(tossHost){
@@ -3105,7 +3111,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.98</div>
+    <div class="pdfCoverVersion">V150.99</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5042,7 +5048,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.98</div>
+    <div class="pdfPreviewBuildMarker">V150.99</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
@@ -5107,7 +5113,7 @@ function printMatchPdfReport(){
             // canvasを画像化した複製を使い、グラフがPDF内で消えるのを防ぐ。
             const clone=source.cloneNode(true);
 
-            // V150.98: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
+            // V150.99: V150.87の大きさを維持し、PDF/印刷用複製の位置だけを補正する。
             // PDFプレビュー側と他カードには影響させない。
             clone.querySelectorAll('.setterAnalysisRadarCard').forEach(card=>{
               card.style.overflow='hidden';
@@ -5149,7 +5155,7 @@ function printMatchPdfReport(){
               });
             });
 
-            // V150.98: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
+            // V150.99: 印刷用「トス配分」だけ、凡例・本数・％を白色へ固定し、
             // 円グラフ中央の文字と数字をアプリ共通のゴシック系フォントへ統一する。
             // SVGをPNG化する前にインライン指定し、iPad印刷でも色とフォントを保持する。
             clone.querySelectorAll('.setterAnalysisTossCard').forEach(card=>{
