@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.113</div>
+    <div class="pdfCoverVersion">V150.114</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3141,7 +3141,7 @@ function printMatchPdfReport(){
   if(rankings || recentLogs){
     const analysisOuter=document.createElement('section');
     analysisOuter.className='pdfFinalOuterCard pdfAnalysisOuterCard';
-    analysisOuter.style.cssText='display:block;width:100%;max-width:100%;box-sizing:border-box;padding:10px;background:#2f394b;border:1px solid rgba(203,213,225,.28);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
+    analysisOuter.style.cssText='display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:6px;width:100%;max-width:100%;height:100%;max-height:100%;min-height:0;box-sizing:border-box;padding:9px;background:#2f394b;border:1px solid rgba(203,213,225,.28);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
     const analysisTitle=document.createElement('h2');
     analysisTitle.className='pdfAnalysisTitle';
     analysisTitle.innerHTML='<span class="pdfAnalysisEyebrow">ANALYSIS</span><span class="pdfAnalysisJapanese">分析</span>';
@@ -3242,7 +3242,7 @@ function printMatchPdfReport(){
   const analysisOuter=a4Root.querySelector('.pdfFinalPage .pdfAnalysisOuterCard');
   const analysisGrid=a4Root.querySelector('.pdfFinalPage .pdfFinalGrid');
   if(analysisGrid){
-    // V150.113: PDF/print detached clone can lose ancestor-dependent CSS.
+    // V150.114: PDF/print detached clone can lose ancestor-dependent CSS.
     // The old two-column .pdfFinalGrid made the single analysis card occupy only the left column.
     analysisGrid.style.setProperty('display','block','important');
     analysisGrid.style.setProperty('grid-template-columns','minmax(0,1fr)','important');
@@ -3251,10 +3251,14 @@ function printMatchPdfReport(){
     analysisGrid.style.setProperty('min-width','0','important');
   }
   if(analysisOuter){
-    analysisOuter.style.setProperty('display','block','important');
+    analysisOuter.style.setProperty('display','grid','important');
+    analysisOuter.style.setProperty('grid-template-rows','auto auto minmax(0,1fr)','important');
+    analysisOuter.style.setProperty('gap','6px','important');
     analysisOuter.style.setProperty('width','100%','important');
     analysisOuter.style.setProperty('max-width','100%','important');
-    analysisOuter.style.setProperty('min-height','100%','important');
+    analysisOuter.style.setProperty('height','100%','important');
+    analysisOuter.style.setProperty('max-height','100%','important');
+    analysisOuter.style.setProperty('min-height','0','important');
     analysisOuter.style.setProperty('background',parentSurfaceColor,'important');
   }
   // V150.82: ランキング・直近ログの小カード外枠は透明化しない。
@@ -5085,9 +5089,89 @@ function printMatchPdfReport(){
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif!important;
     }
 
+
+
+    /* V150.114 FINAL: final analysis page must match team/setter header colors and stay inside the white A4 sheet. */
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage{
+      height:190mm!important;min-height:190mm!important;max-height:190mm!important;
+      padding:7mm!important;overflow:hidden!important;background:#fff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage > .pdfFinalGrid{
+      display:block!important;width:100%!important;height:176mm!important;max-height:176mm!important;
+      min-height:0!important;overflow:hidden!important;margin:0!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage > .pdfFinalGrid > .pdfAnalysisOuterCard{
+      display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;gap:6px!important;
+      width:100%!important;height:176mm!important;min-height:0!important;max-height:176mm!important;
+      margin:0!important;padding:9px!important;box-sizing:border-box!important;overflow:hidden!important;
+      background:#2f394b!important;background-color:#2f394b!important;
+      border:1px solid rgba(203,213,225,.28)!important;border-radius:16px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisTitle{
+      display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:1px!important;
+      margin:0!important;padding:0 2px 6px!important;border-bottom:1px solid rgba(255,255,255,.28)!important;
+      background:transparent!important;color:#fff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisEyebrow{
+      color:#93c5fd!important;-webkit-text-fill-color:#93c5fd!important;font-size:9px!important;
+      line-height:1!important;font-weight:1000!important;letter-spacing:.16em!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisJapanese{
+      color:#fff!important;-webkit-text-fill-color:#fff!important;font-size:20px!important;
+      line-height:1.05!important;font-weight:1000!important;letter-spacing:.05em!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSmallCard{
+      min-height:0!important;box-sizing:border-box!important;overflow:hidden!important;
+      background:#1e293b!important;background-color:#1e293b!important;
+      border:1px solid rgba(96,165,250,.32)!important;border-radius:14px!important;padding:7px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRankingsSection{height:auto!important;max-height:none!important;}
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsSection{
+      height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;
+      padding-top:7px!important;border-top:0!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisSection .pdfFinalSectionTitle{
+      margin:0 0 4px!important;font-size:13px!important;line-height:1.1!important;color:#fff!important;
+      -webkit-text-fill-color:#fff!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .allRankingsGrid{
+      display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .compactRankCard,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .compactRankCard:nth-child(4),
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfAnalysisOuterCard .compactRankCard:nth-child(5){
+      grid-column:auto!important;width:100%!important;min-width:0!important;max-width:none!important;
+      min-height:0!important;padding:5px!important;box-sizing:border-box!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock .reportPanel,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .pdfRecentLogsBlock .reportAccordionBody{
+      height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;
+      margin:0!important;padding:0!important;background:transparent!important;border:0!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timeline{
+      display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:2px 4px!important;
+      margin:2px 0 0!important;max-height:100%!important;overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineItem,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .recentLogItem,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineRow{
+      min-height:0!important;padding:2px 4px!important;margin:0!important;line-height:1.05!important;
+      border-radius:5px!important;overflow:hidden!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineNo,
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineText{
+      font-size:8px!important;line-height:1.05!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .timelineIcon{
+      width:16px!important;height:16px!important;line-height:16px!important;font-size:9px!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfFinalPage .logLegend{
+      margin-top:3px!important;gap:2px 4px!important;font-size:8px!important;line-height:1.05!important;
+    }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.113</div>
+    <div class="pdfPreviewBuildMarker">V150.114</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
