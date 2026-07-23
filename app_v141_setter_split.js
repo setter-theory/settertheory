@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.111</div>
+    <div class="pdfCoverVersion">V150.112</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3242,8 +3242,13 @@ function printMatchPdfReport(){
   const analysisOuter=a4Root.querySelector('.pdfFinalPage .pdfAnalysisOuterCard');
   const analysisGrid=a4Root.querySelector('.pdfFinalPage .pdfFinalGrid');
   if(analysisGrid){
+    // V150.112: PDF/print detached clone can lose ancestor-dependent CSS.
+    // The old two-column .pdfFinalGrid made the single analysis card occupy only the left column.
+    analysisGrid.style.setProperty('display','block','important');
+    analysisGrid.style.setProperty('grid-template-columns','minmax(0,1fr)','important');
     analysisGrid.style.setProperty('width','100%','important');
     analysisGrid.style.setProperty('max-width','100%','important');
+    analysisGrid.style.setProperty('min-width','0','important');
   }
   if(analysisOuter){
     analysisOuter.style.setProperty('display','block','important');
@@ -5061,7 +5066,7 @@ function printMatchPdfReport(){
 
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.111</div>
+    <div class="pdfPreviewBuildMarker">V150.112</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
