@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.117</div>
+    <div class="pdfCoverVersion">V150.125</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5170,9 +5170,25 @@ function printMatchPdfReport(){
     #report #reportDashboard.pdfA4Document > .pdfFinalPage .logLegend{
       margin-top:3px!important;gap:2px 4px!important;font-size:8px!important;line-height:1.05!important;
     }
+
+    /* V150.125: PDF preview / print setter-analysis card — all four corners rounded. */
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnit{
+      border-radius:18px!important;
+      overflow:hidden!important;
+      clip-path:inset(0 round 18px)!important;
+      -webkit-clip-path:inset(0 round 18px)!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisHeader{
+      border-radius:18px 18px 0 0!important;
+    }
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnitBody,
+    #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterMasterCard{
+      border-radius:0 0 18px 18px!important;
+      overflow:hidden!important;
+    }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.124</div>
+    <div class="pdfPreviewBuildMarker">V150.125</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
