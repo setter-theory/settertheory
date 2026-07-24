@@ -1922,8 +1922,11 @@ function buildSetterDetailReports(){
     const advice=getSetterAquilaCoach(n);
     const toss=(s.logs||[]).filter(x=>x&&x.type==='トス'&&logBelongsToPlayer(x,String(n)));
     const items=labels.map(label=>({label,count:toss.filter(x=>x.result===label).length,color:colors[label]})).filter(x=>x.count>0);
+    const tossLegend=window.__setterTheorySavedReportAccordion
+      ? `<div class="legend savedReportTossLegend">${items.map(x=>{const pct=safePct(x.count,toss.length);return `<div class="legendRow"><span class="dot" style="background:${x.color}"></span><span>${x.label}</span><span>${pct}% (${x.count})</span></div>`;}).join('')}</div>`
+      : setterAnalysisWhiteLegendHtml(items,toss.length);
     const donut=items.length
-      ? `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${setterAnalysisWhiteLegendHtml(items,toss.length)}</div></div>`
+      ? `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="tossPanel"><div class="donut" style="background:${donutStyle(items)}"><div class="donutCenter"><div class="label">総数</div><div class="num">${toss.length}</div></div></div>${tossLegend}</div></div>`
       : `<div class="setterMasterDonut"><div class="setterMasterChartTitle">トス配分</div><div class="v141SetterNoData">トス記録がありません</div></div>`;
     const successCount=Math.max(0,a.quality.total-a.quality.miss);
     const successPct=a.quality.total?Math.round(successCount/a.quality.total*100):0;
@@ -3032,7 +3035,7 @@ function printMatchPdfReport(){
   clone.id='reportDashboard';
   clone.classList.add('pdfPreviewReport');
 
-  // V150.129: PDFプレビュー／PDF印刷ではAquila Adviceを従来どおり全文表示する。
+  // V150.130: PDFプレビュー／PDF印刷ではAquila Adviceを従来どおり全文表示する。
   clone.querySelectorAll('details.setterAdviceAccordion').forEach(details=>{
     const body=details.querySelector('.setterAquilaAdviceList');
     const full=document.createElement('div');
@@ -3127,7 +3130,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.129</div>
+    <div class="pdfCoverVersion">V150.130</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5182,7 +5185,7 @@ function printMatchPdfReport(){
       margin-top:3px!important;gap:2px 4px!important;font-size:8px!important;line-height:1.05!important;
     }
 
-    /* V150.129: PDF preview / print setter-analysis card — all four corners rounded. */
+    /* V150.130: PDF preview / print setter-analysis card — all four corners rounded. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnit{
       border-radius:18px!important;
       overflow:hidden!important;
@@ -5199,7 +5202,7 @@ function printMatchPdfReport(){
     }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.129</div>
+    <div class="pdfPreviewBuildMarker">V150.130</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
