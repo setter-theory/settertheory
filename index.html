@@ -3940,7 +3940,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
 
 <style id="v150137-saved-report-match-metric-fit">
-/* V150.137: 保存した試合→チーム分析→試合指標のみ。
+/* V150.138: 保存した試合→チーム分析→試合指標のみ。
    凡例を左寄せ・小型化し、効果率を各行の一番右へ固定する。 */
 #csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewMetrics .playMetricRow{
   grid-template-columns:minmax(70px,.55fr) minmax(0,2fr)!important;
@@ -4005,7 +4005,72 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   }
 }
 </style>
-<script>/* cache marker: 150-137-saved-report-match-metric-fit */</script>
+<script>/* cache marker: 150-138-saved-report-result-ratio-restore */</script>
+
+<style id="v150138-saved-report-result-ratio-restore">
+/* V150.138: ホーム→保存した試合→レポートの「結果割合」だけを修正。
+   100%積み上げ棒グラフを再表示し、Team Aquila Adviceのロゴを小型化する。 */
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBar{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin-top:3px!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarTrack{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  width:100%!important;
+  height:18px!important;
+  min-height:18px!important;
+  border-radius:999px!important;
+  overflow:hidden!important;
+  background:#e2e8f0!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarTrack>span{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  height:100%!important;
+  min-height:18px!important;
+  flex:0 0 auto!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarTrack>em{
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  color:#475569!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarLegend{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px 8px!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarLegend span,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarLegend strong,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarLegend small,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .v146ResultOneBarTotal{
+  color:#0f172a!important;
+  -webkit-text-fill-color:#0f172a!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewResult .teamAquilaAdviceTitle img{
+  display:block!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  max-width:20px!important;
+  min-height:20px!important;
+  max-height:20px!important;
+  flex:0 0 20px!important;
+  object-fit:contain!important;
+  padding:0!important;
+  margin:0!important;
+}
+</style>
+<script>/* cache marker: 150-138-saved-report-result-ratio-restore */</script>
 
 </head>
 <body>
@@ -4520,7 +4585,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   background-color:transparent!important;
 }
 </style>
-<script src="app_v141_setter_split.js?v=150137"></script>
+<script src="app_v141_setter_split.js?v=150138"></script>
 
 
 
@@ -5059,7 +5124,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.137</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.138</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
