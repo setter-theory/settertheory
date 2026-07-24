@@ -3703,48 +3703,15 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <script>/* cache marker: 146-result-point-stack-rotation-order-1 */</script>
 
 
-<style id="v150127-saved-report-setter-advice-accordion">
-/* V150.128: 保存した試合→レポートのセッター分析①/②だけ、Aquila Adviceを初期折りたたみにする。 */
-#reportDashboard 
-#reportDashboard details.setterAdviceAccordion{
-  margin:0!important; min-width:0; height:auto!important; align-self:center;
-  border:0!important; background:transparent!important; box-shadow:none!important;
-  padding:0!important;
-}
-#reportDashboard #reportDashboard details.setterAdviceAccordion>summary{
-  list-style:none; cursor:pointer; user-select:none; -webkit-user-select:none;
-  display:flex; align-items:center; justify-content:center; gap:7px;
-  min-height:42px; padding:9px 14px; box-sizing:border-box;
-  border:1px solid rgba(96,165,250,.65); border-radius:12px;
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  color:#fff!important; font-size:12px; font-weight:900; letter-spacing:.01em;
-  box-shadow:0 6px 14px rgba(37,99,235,.20);
-}
-#reportDashboard #reportDashboard details.setterAdviceAccordion>summary::-webkit-details-marker{display:none}
-#reportDashboard details.setterAdviceAccordion>summary::before{content:'▼';font-size:10px;line-height:1;transform:rotate(-90deg);transition:transform .18s ease}
-#reportDashboard details.setterAdviceAccordion[open]>summary::before{transform:rotate(0deg)}
-#reportDashboard #reportDashboard details.setterAdviceAccordion .setterAdviceOpenLabel{display:none}
-#reportDashboard #reportDashboard details.setterAdviceAccordion[open] .setterAdviceClosedLabel{display:none}
-#reportDashboard #reportDashboard details.setterAdviceAccordion[open] .setterAdviceOpenLabel{display:inline}
-#reportDashboard #reportDashboard details.setterAdviceAccordion .setterAquilaAdviceList{margin-top:10px}
-@media(max-width:900px){
-  #reportDashboard #reportDashboard details.setterAdviceAccordion>summary{min-height:38px;padding:8px 11px;font-size:11px}
-}
-</style>
-
-<style id="v150127-saved-report-advice-toggle-fix">
-/* V150.128: 保存した試合レポートのAquila Advice開閉表示を排他的にし、能力バランスとの間隔を確保。 */
-
+<style id="v150129-saved-report-advice-toggle">
+/* V150.129: 保存した試合→レポートだけのAquila Advice開閉UI。 */
 #reportDashboard details.setterAdviceAccordion{
   display:block!important;
-  margin:0 0 22px!important;
-  min-width:0!important;
-  height:auto!important;
-  align-self:center!important;
+  margin:0 0 24px!important;
+  padding:0!important;
   border:0!important;
   background:transparent!important;
   box-shadow:none!important;
-  padding:0!important;
 }
 #reportDashboard details.setterAdviceAccordion>summary{
   list-style:none!important;
@@ -3754,18 +3721,35 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:7px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-height:42px!important;
+  margin:0 auto!important;
+  padding:9px 16px!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(96,165,250,.65)!important;
+  border-radius:12px!important;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
+  color:#fff!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  line-height:1.25!important;
+  box-shadow:0 6px 14px rgba(37,99,235,.20)!important;
 }
 #reportDashboard details.setterAdviceAccordion>summary::-webkit-details-marker{display:none!important}
-#reportDashboard details.setterAdviceAccordion .setterAdviceClosedLabel{display:inline!important}
-#reportDashboard details.setterAdviceAccordion .setterAdviceOpenLabel{display:none!important}
-#reportDashboard details.setterAdviceAccordion[open] .setterAdviceClosedLabel{display:none!important}
-#reportDashboard details.setterAdviceAccordion[open] .setterAdviceOpenLabel{display:inline!important}
-#reportDashboard details.setterAdviceAccordion .setterAquilaAdviceList{margin-top:10px!important}
-#reportDashboard .setterMasterHeaderRow + .setterMasterBottomGrid,
-#reportDashboard .setterMasterIqAdviceCard + .setterMasterBottomGrid{margin-top:0!important}
+#reportDashboard details.setterAdviceAccordion .setterAdviceToggleLabel{
+  display:inline!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  white-space:nowrap!important;
+}
+#reportDashboard details.setterAdviceAccordion .setterAquilaAdviceList{
+  margin-top:12px!important;
+}
 @media(max-width:900px){
-#reportDashboard details.setterAdviceAccordion{margin-bottom:18px!important}}
+  #reportDashboard details.setterAdviceAccordion{margin-bottom:20px!important}
+  #reportDashboard details.setterAdviceAccordion>summary{min-height:38px!important;padding:8px 12px!important;font-size:11px!important}
+}
 </style>
 </head>
 <body>
@@ -4280,7 +4264,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   background-color:transparent!important;
 }
 </style>
-<script src="app_v141_setter_split.js?v=150128"></script>
+<script src="app_v141_setter_split.js?v=150129"></script>
 
 
 
@@ -4819,7 +4803,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.128</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.129</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
