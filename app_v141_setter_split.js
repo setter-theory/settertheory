@@ -2132,6 +2132,7 @@ let reportRankingsOpen=false;
 let reportRecentLogsOpen=true;
 let reportRecentLogsExpanded=false;
 let importedReportRankingsOpen=false;
+let importedReportRecentLogsOpen=true;
 let importedReportRecentLogsExpanded=false;
 function toggleReportRankings(){
   reportRankingsOpen=!reportRankingsOpen;
@@ -2139,6 +2140,10 @@ function toggleReportRankings(){
 }
 function toggleImportedReportRankings(){
   importedReportRankingsOpen=!importedReportRankingsOpen;
+  if(importedCsv) renderCsvAnalysis(importedCsv);
+}
+function toggleImportedReportRecentSection(){
+  importedReportRecentLogsOpen=!importedReportRecentLogsOpen;
   if(importedCsv) renderCsvAnalysis(importedCsv);
 }
 function toggleImportedReportRecentLogs(){
@@ -6705,9 +6710,11 @@ function buildImportedUnifiedReport(parsed){
   const oldDash=dash.innerHTML;
   const oldSub=sub?sub.textContent:'';
   const oldRankingsOpen=reportRankingsOpen;
+  const oldRecentLogsOpen=reportRecentLogsOpen;
   let html='';
   withImportedMatchState(parsed,()=>{
     reportRankingsOpen=importedReportRankingsOpen;
+    reportRecentLogsOpen=importedReportRecentLogsOpen;
     report();
     // CSV画面には上部の共通ヘッダーを別途表示するため、
     // 試合レポート側の重複ヘッダー（PDF/CSVボタンを含む）は除外する。
@@ -6726,6 +6733,8 @@ function buildImportedUnifiedReport(parsed){
     const recentSection=[...holder.querySelectorAll('.setterUnifiedBottomGrid .reportAccordion')]
       .find(section=>String(section.querySelector('.reportAccordionToggle span')?.textContent||'').includes('直近ログ'));
     if(recentSection){
+      const importedRecentToggle=recentSection.querySelector('.reportAccordionToggle');
+      if(importedRecentToggle) importedRecentToggle.setAttribute('onclick','toggleImportedReportRecentSection()');
       const body=recentSection.querySelector('.reportAccordionBody');
       if(body){
         const source=importedReportRecentLogsExpanded?s.logs:s.logs.slice(-5);
@@ -6748,6 +6757,7 @@ function buildImportedUnifiedReport(parsed){
     html=holder.innerHTML;
   });
   reportRankingsOpen=oldRankingsOpen;
+  reportRecentLogsOpen=oldRecentLogsOpen;
   dash.innerHTML=oldDash;
   if(sub) sub.textContent=oldSub;
   return html;
@@ -6883,6 +6893,12 @@ function renderCsvPreview(parsed, fileName){
   const headers = parsed.headers || [];
 
   status.innerHTML = `✅ 読み込み完了：${escapeHtml(fileName)}<div class="csvSmall">列数 ${headers.length} / データ行 ${rows.length}</div>`;
+
+  // V150.152: CSVの生ログ一覧は、保存レポート内「直近ログ」に統合済み。
+  // データ管理カード下部へ1〜全件を重複表示しない。
+  box.style.display = "none";
+  box.innerHTML = "";
+  return;
 
   if(!headers.length){
     box.style.display = "block";
