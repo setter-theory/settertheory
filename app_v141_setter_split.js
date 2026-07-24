@@ -2173,6 +2173,9 @@ function buildRotationPointAnalysis(){
 }
 
 function buildRotationTossDistribution(setterNum=null){
+  const savedReportRotation=!!window.__setterTheorySavedReportAccordion;
+  const rotationTextColor=savedReportRotation?'#0f172a':'#ffffff';
+  const rotationTextStyle=`color:${rotationTextColor}!important;-webkit-text-fill-color:${rotationTextColor}!important`;
   const labels=["レフト","センター","ライト","バック","ツー"];
   const colors={"レフト":"#ef4444","センター":"#2563eb","ライト":"#22c55e","バック":"#f59e0b","ツー":"#111827"};
   const source=setterNum
@@ -2199,14 +2202,14 @@ function buildRotationTossDistribution(setterNum=null){
     const segments=stats.filter(x=>x.count>0).map(x=>
       `<span class="setterRotBarSegment" style="width:${x.pct}%;background:${colors[x.label]}" title="${x.label} ${x.count}本 (${x.pct}%)"></span>`
     ).join('');
-    const values=stats.map(x=>`<span class="setterRotValue ${x.count===0?'zero':''}" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><i style="background:${colors[x.label]}"></i><b style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${x.label}</b><em style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${x.pct}%</em><small style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${x.count}本</small></span>`).join('');
+    const values=stats.map(x=>`<span class="setterRotValue ${x.count===0?'zero':''}" style="${rotationTextStyle}"><i style="background:${colors[x.label]}"></i><b style="${rotationTextStyle}">${x.label}</b><em style="${rotationTextStyle}">${x.pct}%</em><small style="${rotationTextStyle}">${x.count}本</small></span>`).join('');
     return `<div class="setterRotBarRow ${total===0?'empty':''}">
-      <div class="setterRotBarLabel" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><strong style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">S${r}</strong><small style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${total}本</small></div>
-      <div class="setterRotBarMain"><div class="setterRotBarTrack">${segments||'<span class="setterRotBarEmpty" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">記録なし</span>'}</div><div class="setterRotBarValues">${values}</div></div>
+      <div class="setterRotBarLabel" style="${rotationTextStyle}"><strong style="${rotationTextStyle}">S${r}</strong><small style="${rotationTextStyle}">${total}本</small></div>
+      <div class="setterRotBarMain"><div class="setterRotBarTrack">${segments||`<span class="setterRotBarEmpty" style="${rotationTextStyle}">記録なし</span>`}</div><div class="setterRotBarValues">${values}</div></div>
     </div>`;
   }).join('');
 
-  return `<div class="setterRotBarWrap" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><div class="setterRotBarSummary" style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important"><span style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">全ローテーション合計</span><strong style="color:#ffffff!important;-webkit-text-fill-color:#ffffff!important">${allToss.length}本</strong></div>${rows}</div>`;
+  return `<div class="setterRotBarWrap ${savedReportRotation?'savedReportRotationBars':''}" style="${rotationTextStyle}"><div class="setterRotBarSummary" style="${rotationTextStyle}"><span style="${rotationTextStyle}">全ローテーション合計</span><strong style="${rotationTextStyle}">${allToss.length}本</strong></div>${rows}</div>`;
 }
 
 function buildSetterTossAnalysisPanel(setterNum){
@@ -3037,7 +3040,7 @@ function printMatchPdfReport(){
   clone.id='reportDashboard';
   clone.classList.add('pdfPreviewReport');
 
-  // V150.134: PDFプレビュー／PDF印刷ではAquila Adviceを従来どおり全文表示する。
+  // V150.135: PDFプレビュー／PDF印刷ではAquila Adviceを従来どおり全文表示する。
   clone.querySelectorAll('details.setterAdviceAccordion').forEach(details=>{
     const body=details.querySelector('.setterAquilaAdviceList');
     const full=document.createElement('div');
@@ -3132,7 +3135,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.134</div>
+    <div class="pdfCoverVersion">V150.135</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5187,7 +5190,7 @@ function printMatchPdfReport(){
       margin-top:3px!important;gap:2px 4px!important;font-size:8px!important;line-height:1.05!important;
     }
 
-    /* V150.134: PDF preview / print setter-analysis card — all four corners rounded. */
+    /* V150.135: PDF preview / print setter-analysis card — all four corners rounded. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnit{
       border-radius:18px!important;
       overflow:hidden!important;
@@ -5204,7 +5207,7 @@ function printMatchPdfReport(){
     }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.134</div>
+    <div class="pdfPreviewBuildMarker">V150.135</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
