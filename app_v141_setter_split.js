@@ -2132,12 +2132,17 @@ let reportRankingsOpen=false;
 let reportRecentLogsOpen=true;
 let reportRecentLogsExpanded=false;
 let importedReportRankingsOpen=false;
+let importedReportRecentLogsExpanded=false;
 function toggleReportRankings(){
   reportRankingsOpen=!reportRankingsOpen;
   report();
 }
 function toggleImportedReportRankings(){
   importedReportRankingsOpen=!importedReportRankingsOpen;
+  if(importedCsv) renderCsvAnalysis(importedCsv);
+}
+function toggleImportedReportRecentLogs(){
+  importedReportRecentLogsExpanded=!importedReportRecentLogsExpanded;
   if(importedCsv) renderCsvAnalysis(importedCsv);
 }
 function toggleReportRecentSection(){
@@ -6715,6 +6720,22 @@ function buildImportedUnifiedReport(parsed){
     // 通常試合レポートではなく保存レポート自身を再描画する。
     const importedRankingToggle=holder.querySelector('#personalRankingHost .reportAccordionToggle');
     if(importedRankingToggle) importedRankingToggle.setAttribute('onclick','toggleImportedReportRankings()');
+
+    // V150.151: 保存した試合レポートの全ログは、分析カード内「直近ログ」の
+    // 「すべて表示」ボタンでだけ展開し、レポート最下部へ分離しない。
+    const recentSection=[...holder.querySelectorAll('.setterUnifiedBottomGrid .reportAccordion')]
+      .find(section=>String(section.querySelector('.reportAccordionToggle span')?.textContent||'').includes('直近ログ'));
+    if(recentSection){
+      const body=recentSection.querySelector('.reportAccordionBody');
+      if(body){
+        const source=importedReportRecentLogsExpanded?s.logs:s.logs.slice(-5);
+        const iconFor=x=>{if(isMissResult(x)) return ['×','tMiss']; if(x.result==='被ブロック') return ['△','tBlock']; if(x.result==='継続') return ['−','tCont']; return ['○','tSuccess'];};
+        const items=source.map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${effectivePlayType(x)}${isTossMissLog(x)?'・ミス':''}</div></div>`;}).join('');
+        const label=importedReportRecentLogsExpanded?`全${s.logs.length}プレー`:'最新5プレー';
+        const toggle=s.logs.length>5?`<button class="recentLogToggle" type="button" onclick="toggleImportedReportRecentLogs()">${importedReportRecentLogsExpanded?'5件表示に戻す':'すべて表示'}</button>`:'';
+        body.innerHTML=`<div class="reportAccordionSubhead">${label}</div><div class="timeline">${items}</div>${toggle}<div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div>`;
+      }
+    }
 
     // V135 saved-report fix: 保存した試合から開くレポートでも、
     // コート入力後のレポートと同じ横棒グラフを必ず表示する。
