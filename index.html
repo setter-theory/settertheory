@@ -4179,7 +4179,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <script>/* cache marker: 150-140-match-report-rotation-outer-frame-restore */</script>
 
 <style id="v150141-saved-report-rotation-analysis-layout-fix">
-/* V150.141: 保存した試合→レポートのローテーション別分析だけを見やすく調整。
+/* V150.142: 保存した試合→レポートのローテーション別分析だけを見やすく調整。
    通常の試合レポート／PDFプレビュー／PDF印刷は対象外。 */
 #csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation{
   display:block!important;
@@ -4285,6 +4285,81 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 <script>/* cache marker: 150-141-saved-report-rotation-analysis-layout-fix */</script>
+
+<style id="v150142-saved-report-rotation-card-text-fit-fix">
+/* V150.142: 保存した試合→レポートのローテーション別分析だけ、
+   小カード内の文字色と収まりを修正。通常レポート・PDFは対象外。 */
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationRow{
+  min-height:92px!important;
+  padding:11px 12px!important;
+  row-gap:8px!important;
+  overflow:hidden!important;
+  background:rgba(255,255,255,.07)!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationLabel,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead span,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead b,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead small,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPointCounts,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPointCounts *,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPoints>strong{
+  color:#f8fafc!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  align-items:center!important;
+  gap:5px!important;
+  width:100%!important;
+  min-width:0!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead span{
+  min-width:0!important;
+  white-space:nowrap!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead b{
+  font-size:14px!important;
+  white-space:nowrap!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead small{
+  font-size:10px!important;
+  white-space:nowrap!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPoints{
+  align-items:flex-end!important;
+  gap:6px!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPointCounts{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:3px 8px!important;
+  min-width:0!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+  white-space:normal!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPointCounts span,
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPoints>strong{
+  white-space:nowrap!important;
+}
+#csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationPoints>strong{
+  flex:0 0 auto!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+}
+@media(max-width:900px){
+  #csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationRow{
+    min-height:88px!important;
+    padding:10px!important;
+  }
+  #csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead{gap:4px!important;font-size:10px!important}
+  #csvAnalysisBox .importedUnifiedReport .teamAnalysisCard .playOverviewRotation .teamRotationSuccessHead b{font-size:13px!important}
+}
+</style>
+<script>/* cache marker: 150-142-saved-report-rotation-card-text-fit-fix */</script>
 
 </head>
 <body>
@@ -4799,7 +4874,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   background-color:transparent!important;
 }
 </style>
-<script src="app_v141_setter_split.js?v=150141"></script>
+<script src="app_v141_setter_split.js?v=150142"></script>
 
 
 
@@ -5338,7 +5413,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.141</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.142</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
