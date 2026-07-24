@@ -2131,9 +2131,14 @@ function buildAllPersonalRankings(){
 let reportRankingsOpen=false;
 let reportRecentLogsOpen=true;
 let reportRecentLogsExpanded=false;
+let importedReportRankingsOpen=false;
 function toggleReportRankings(){
   reportRankingsOpen=!reportRankingsOpen;
   report();
+}
+function toggleImportedReportRankings(){
+  importedReportRankingsOpen=!importedReportRankingsOpen;
+  if(importedCsv) renderCsvAnalysis(importedCsv);
 }
 function toggleReportRecentSection(){
   reportRecentLogsOpen=!reportRecentLogsOpen;
@@ -6694,8 +6699,10 @@ function buildImportedUnifiedReport(parsed){
   if(!dash) return '';
   const oldDash=dash.innerHTML;
   const oldSub=sub?sub.textContent:'';
+  const oldRankingsOpen=reportRankingsOpen;
   let html='';
   withImportedMatchState(parsed,()=>{
+    reportRankingsOpen=importedReportRankingsOpen;
     report();
     // CSV画面には上部の共通ヘッダーを別途表示するため、
     // 試合レポート側の重複ヘッダー（PDF/CSVボタンを含む）は除外する。
@@ -6703,6 +6710,11 @@ function buildImportedUnifiedReport(parsed){
     holder.innerHTML=dash.innerHTML;
     const duplicateBrand=holder.querySelector('.unifiedReportBrand');
     if(duplicateBrand) duplicateBrand.remove();
+
+    // V150.146: 保存した試合レポートのランキング開閉は、
+    // 通常試合レポートではなく保存レポート自身を再描画する。
+    const importedRankingToggle=holder.querySelector('#personalRankingHost .reportAccordionToggle');
+    if(importedRankingToggle) importedRankingToggle.setAttribute('onclick','toggleImportedReportRankings()');
 
     // V135 saved-report fix: 保存した試合から開くレポートでも、
     // コート入力後のレポートと同じ横棒グラフを必ず表示する。
@@ -6714,6 +6726,7 @@ function buildImportedUnifiedReport(parsed){
     }
     html=holder.innerHTML;
   });
+  reportRankingsOpen=oldRankingsOpen;
   dash.innerHTML=oldDash;
   if(sub) sub.textContent=oldSub;
   return html;
