@@ -1299,5 +1299,33 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 </style>
 <script>/* cache marker: 150-124-recent-log-status-color-restore */</script>
 
+
+<style id="v150-154-saved-report-ranking-two-column-layout">
+/* V150.154: 保存レポートのランキングを同一幅の2列配置へ統一
+   1段目: スパイク・サーブ / 2段目: レセプション・ディグ / 3段目: ブロック */
+#csvAnalysisBox .importedUnifiedReport #personalRankingHost .allRankingsGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+#csvAnalysisBox .importedUnifiedReport #personalRankingHost .compactRankCard,
+#csvAnalysisBox .importedUnifiedReport #personalRankingHost .compactRankCard:nth-child(4),
+#csvAnalysisBox .importedUnifiedReport #personalRankingHost .compactRankCard:nth-child(5){
+  grid-column:span 1!important;
+  width:auto!important;
+  min-width:0!important;
+}
+@media(max-width:760px){
+  #csvAnalysisBox .importedUnifiedReport #personalRankingHost .allRankingsGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  #csvAnalysisBox .importedUnifiedReport #personalRankingHost .compactRankCard,
+  #csvAnalysisBox .importedUnifiedReport #personalRankingHost .compactRankCard:nth-child(4),
+  #csvAnalysisBox .importedUnifiedReport #personalRankingHost .compactRankCard:nth-child(5){
+    grid-column:span 1!important;
+  }
+}
+</style>
+<script>/* cache marker: 150-154-saved-report-ranking-two-column-layout */</script>
 </body>
 </html>
