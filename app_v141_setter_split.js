@@ -3116,7 +3116,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.126</div>
+    <div class="pdfCoverVersion">V150.127</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -5171,7 +5171,7 @@ function printMatchPdfReport(){
       margin-top:3px!important;gap:2px 4px!important;font-size:8px!important;line-height:1.05!important;
     }
 
-    /* V150.126: PDF preview / print setter-analysis card — all four corners rounded. */
+    /* V150.127: PDF preview / print setter-analysis card — all four corners rounded. */
     #report #reportDashboard.pdfA4Document > .pdfSetterPage .setterAnalysisUnit{
       border-radius:18px!important;
       overflow:hidden!important;
@@ -5188,7 +5188,7 @@ function printMatchPdfReport(){
     }
 </style><script src="https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script></head><body>
     <div class="pdfPreviewTopbar"><b>Setter Theory PDFプレビュー</b><div><button class="secondary" onclick="window.close()">← レポートへ戻る</button><button id="pdfPrintButton" type="button">PDF／印刷</button></div></div>
-    <div class="pdfPreviewBuildMarker">V150.126</div>
+    <div class="pdfPreviewBuildMarker">V150.127</div>
     <main class="pdfPreviewSheet"><section id="report" class="active">${a4Root.outerHTML}</section></main>
 </body></html>`;
 
