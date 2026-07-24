@@ -2268,7 +2268,7 @@ function buildSetterIqRadarChart(breakdown, compactReport=false){
   // コート入力→試合レポートのコンパクト表示だけ、
   // 項目名・数値の位置を変えずにレーダー本体を縮小して重なりを防ぐ。
   const radius=compactReport?84:96;
-  const labelRadius=96*1.18;
+  const labelRadius=96*1.28;
   const point=(index,ratio=1)=>{
     const angle=(-Math.PI/2)+(Math.PI*2*index/items.length);
     return [cx+Math.cos(angle)*radius*ratio,cy+Math.sin(angle)*radius*ratio];
@@ -2287,7 +2287,7 @@ function buildSetterIqRadarChart(breakdown, compactReport=false){
   }).join('');
   return `<div class="setterIqRadar" aria-label="Setter IQ 5項目レーダーチャート">
     <div class="setterIqRadarTitle">能力バランス</div>
-    <svg viewBox="0 0 300 270" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
+    <svg viewBox="0 0 300 290" role="img" aria-label="配球、多様性、ミドル、勝負所、安定性の評価">
       <g class="radarGrid"><polygon points="${polygon(1)}"/><polygon points="${polygon(.75)}"/><polygon points="${polygon(.5)}"/><polygon points="${polygon(.25)}"/>${axes}</g>
       <polygon class="radarData" points="${dataPoints}"/>
       <g class="radarDots">${items.map((item,i)=>{const [x,y]=point(i,Math.max(0,Math.min(20,item.value))/20);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join('')}</g>
