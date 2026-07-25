@@ -5897,7 +5897,18 @@ function savedMatchTeamMeta(match){
 
 function savedMatchTeamGroupKey(match){
   const meta=savedMatchTeamMeta(match);
-  return meta.teamId ? `team:${meta.teamId}` : `name:${meta.teamName}:${meta.teamYear}`;
+
+  // V150.166:
+  // 過去データには、実際のチーム情報が無いのに仮のteamIdだけが
+  // 保存されている試合がある。そのteamIdで分けると
+  // 「チーム未設定」が複数できるため、未設定試合は全て1つにまとめる。
+  if(!meta.teamName || meta.teamName==='チーム未設定'){
+    return 'unassigned';
+  }
+
+  return meta.teamId
+    ? `team:${meta.teamId}`
+    : `name:${meta.teamName}:${meta.teamYear}`;
 }
 
 function savedMatchesKey(){ return 'setterTheorySavedMatchesV21'; }
@@ -6279,6 +6290,100 @@ function deleteSavedMatch(id){
   setSavedMatches(getSavedMatches().filter(x=>x.id!==id));
   renderSavedMatches();
 }
+
+function chooseRegisteredTeamForSavedMatch(currentTeamId=''){
+  const teams=registeredTeamsForSetup().slice().sort((a,b)=>
+    Number(b.year||0)-Number(a.year||0) ||
+    String(a.name||'').localeCompare(String(b.name||''),'ja')
+  );
+
+  if(!teams.length){
+    alert('先に「チーム・選手管理」でチームを登録してください');
+    return null;
+  }
+
+  const choices=teams.map((team,index)=>{
+    const current=String(team.id||'')===String(currentTeamId||'')?' ← 現在':'';
+    return `${index+1}. ${team.name||'名称未設定'}（${team.year||'年度未設定'}年度）${current}`;
+  }).join('\n');
+
+  const answer=prompt(
+    `再設定するチームの番号を入力してください\n\n${choices}\n\n0. チーム未設定へ戻す`,
+    ''
+  );
+
+  if(answer===null) return null;
+  const selected=Number(String(answer).trim());
+
+  if(selected===0){
+    return {teamId:'',teamName:'チーム未設定',teamYear:''};
+  }
+
+  if(!Number.isInteger(selected) || selected<1 || selected>teams.length){
+    alert('一覧にある番号を入力してください');
+    return null;
+  }
+
+  const team=teams[selected-1];
+  return {
+    teamId:String(team.id||''),
+    teamName:String(team.name||'チーム未設定'),
+    teamYear:String(team.year||'')
+  };
+}
+
+function applySavedMatchTeamMeta(match,teamMeta){
+  if(!match||!teamMeta) return;
+  match.teamId=String(teamMeta.teamId||'');
+  match.teamName=String(teamMeta.teamName||'チーム未設定');
+  match.teamYear=String(teamMeta.teamYear||'');
+
+  // 保存CSV側にも所属情報を反映し、後から開いた時も同じチームとして扱う。
+  if(match.csv && typeof match.csv==='object'){
+    match.csv.teamId=match.teamId;
+    match.csv.teamName=match.teamName;
+    match.csv.teamYear=match.teamYear;
+  }
+}
+
+function reassignSavedMatchTeam(id){
+  const list=getSavedMatches();
+  const match=list.find(item=>String(item.id)===String(id));
+  if(!match) return;
+
+  const selected=chooseRegisteredTeamForSavedMatch(match.teamId);
+  if(!selected) return;
+
+  applySavedMatchTeamMeta(match,selected);
+  setSavedMatches(list);
+  renderSavedMatches();
+}
+
+function reassignUnassignedSavedMatches(){
+  const list=getSavedMatches();
+  const targets=list.filter(match=>savedMatchTeamGroupKey(match)==='unassigned');
+  if(!targets.length){
+    alert('チーム未設定の試合はありません');
+    return;
+  }
+
+  const selected=chooseRegisteredTeamForSavedMatch('');
+  if(!selected) return;
+
+  const teamLabel=selected.teamName==='チーム未設定'
+    ? 'チーム未設定'
+    : `${selected.teamName}${selected.teamYear?`（${selected.teamYear}年度）`:''}`;
+
+  const ok=confirm(
+    `チーム未設定の${targets.length}試合を、すべて「${teamLabel}」へ再設定しますか？`
+  );
+  if(!ok) return;
+
+  targets.forEach(match=>applySavedMatchTeamMeta(match,selected));
+  setSavedMatches(list);
+  renderSavedMatches();
+}
+
 function renameSavedMatch(id){
   const list=getSavedMatches();
   const m=list.find(x=>x.id===id);
@@ -6314,6 +6419,7 @@ function savedMatchItemHtml(m){
       <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">レポート</button>
       <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id}')">PDF</button>
       <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id}')">CSV</button>
+      <button class="miniBtn teamReassign" type="button" onclick="reassignSavedMatchTeam('${m.id}')">チーム再設定</button>
       <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
       <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
     </div>
@@ -6369,6 +6475,12 @@ function renderSavedMatches(){
         ${latestText?`<span class="savedTeamGroupLatest">最新 ${escapeHtml(latestText)}</span>`:''}
       </summary>
       <div class="savedTeamGroupBody">
+        ${savedMatchTeamGroupKey(group.matches[0])==='unassigned'
+          ? `<div class="savedTeamBulkAction">
+              <span>未設定の${group.matches.length}試合をまとめて移動できます</span>
+              <button class="miniBtn teamReassign" type="button" onclick="reassignUnassignedSavedMatches()">まとめてチーム再設定</button>
+            </div>`
+          : ''}
         ${group.matches.map(savedMatchItemHtml).join('')}
       </div>
     </details>`;
