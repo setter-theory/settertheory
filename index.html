@@ -4770,11 +4770,17 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <section id="setup" class="screen">
   <div class="logo" style="margin:6px 0 10px">
     <h1>ローテーション設定</h1>
-    <p>チーム名・選手を登録して、スタメン6人を選んでください</p>
+    <p>登録チームを呼び出すか、選手を直接登録してスタメン6人を選んでください</p>
   </div>
 
   <div class="setupCompact">
     <div class="setupTop card">
+      <div class="setupField setupRegisteredTeamField">
+        <div class="setupLabel">登録チームから呼び出す</div>
+        <select id="registeredTeamSelect" onchange="loadRegisteredTeamToSetup(this.value)">
+          <option value="">チームを選択</option>
+        </select>
+      </div>
       <div class="setupField">
         <div class="setupLabel">自チーム</div>
         <input id="team" type="text" value="自チーム" autocomplete="off">
@@ -5760,7 +5766,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.159</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.160</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -7693,6 +7699,42 @@ function closePositionManager(){const m=document.getElementById('positionManager
 })();
 </script>
 <script>/* cache marker: 150-159-player-management */</script>
+
+
+<style id="v150-160-rotation-team-link">
+/* V150.160: ローテーション設定と登録チームの連携 */
+#setup .setupRegisteredTeamField{
+  grid-column:1 / -1;
+  padding:8px 10px;
+  border:1px solid rgba(20,184,166,.42);
+  border-radius:12px;
+  background:rgba(20,184,166,.08);
+}
+#setup #registeredTeamSelect{
+  min-height:42px;
+  border:1px solid #64748b;
+  border-radius:9px;
+  background:#fff;
+  color:#111827;
+  font-size:15px;
+  font-weight:800;
+  padding:7px 10px;
+}
+#setup .registeredTeamLoadNote{
+  margin-top:5px;
+  color:#0f766e;
+  font-size:10px;
+  font-weight:800;
+}
+@media (orientation:landscape) and (min-width:700px){
+  #setup .setupTop{
+    grid-template-columns:1.3fr 1fr 1fr .8fr .65fr!important;
+  }
+  #setup .setupRegisteredTeamField{
+    grid-column:auto;
+  }
+}
+</style>
 
 </body>
 </html>

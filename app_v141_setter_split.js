@@ -1139,7 +1139,142 @@ function placeSetupCarryOnBench(){
   if(typeof showInputToast==='function') showInputToast('ベンチへ戻しました');
 }
 
+
+const REGISTERED_TEAM_STORAGE_KEY='setterTheoryTeamsV1';
+const SETUP_SELECTED_TEAM_KEY='setterTheorySetupSelectedTeamId';
+
+function registeredTeamsForSetup(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(REGISTERED_TEAM_STORAGE_KEY)||'[]');
+    return Array.isArray(parsed)?parsed:[];
+  }catch(error){
+    console.warn('registered team load failed',error);
+    return [];
+  }
+}
+
+function renderRegisteredTeamSelector(){
+  const select=document.getElementById('registeredTeamSelect');
+  if(!select) return;
+  const teams=registeredTeamsForSetup().sort((a,b)=>
+    Number(b.year)-Number(a.year) ||
+    String(a.name||'').localeCompare(String(b.name||''),'ja')
+  );
+  const selected=String(s.selectedTeamId||localStorage.getItem(SETUP_SELECTED_TEAM_KEY)||'');
+  select.innerHTML='<option value="">チームを選択</option>'+
+    teams.map(team=>{
+      const count=Array.isArray(team.players)?team.players.length:0;
+      const label=`${team.name||'名称未設定'}（${team.year||''}年度・${count}名）`;
+      return `<option value="${escapeAttr(team.id)}" ${String(team.id)===selected?'selected':''}>${escapeHtml(label)}</option>`;
+    }).join('');
+}
+
+function ensureImportedPlayerIdentity(num,name){
+  if(!s.playerIdentities||typeof s.playerIdentities!=='object') s.playerIdentities={};
+  const key=String(num||'');
+  if(!key) return '';
+  if(!s.playerIdentities[key]){
+    const safeName=String(name||'').trim().replace(/\s+/g,'_').slice(0,18);
+    s.playerIdentities[key]=`team_${String(s.selectedTeamId||'')}_${key}_${safeName}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
+  }
+  return s.playerIdentities[key];
+}
+
+function loadRegisteredTeamToSetup(teamId){
+  teamId=String(teamId||'');
+  if(!teamId){
+    s.selectedTeamId='';
+    localStorage.removeItem(SETUP_SELECTED_TEAM_KEY);
+    save();
+    renderSetup();
+    return;
+  }
+
+  const team=registeredTeamsForSetup().find(item=>String(item.id)===teamId);
+  if(!team){
+    alert('登録チームが見つかりません');
+    renderRegisteredTeamSelector();
+    return;
+  }
+
+  const players=(Array.isArray(team.players)?team.players:[])
+    .filter(player=>String(player.number||'').trim())
+    .map(player=>({
+      number:String(player.number).trim(),
+      name:String(player.name||'').trim(),
+      isSetter:!!player.isSetter
+    }));
+
+  if(!players.length){
+    alert('このチームには選手が登録されていません');
+    renderRegisteredTeamSelector();
+    return;
+  }
+
+  const existingCount=Object.keys(s.players||{}).length;
+  if(existingCount>0 && String(s.selectedTeamId||'')!==teamId){
+    const ok=confirm('現在のローテーション設定を、選択したチームの登録選手へ切り替えますか？');
+    if(!ok){
+      renderRegisteredTeamSelector();
+      return;
+    }
+  }
+
+  s.selectedTeamId=teamId;
+  localStorage.setItem(SETUP_SELECTED_TEAM_KEY,teamId);
+  s.team=String(team.name||'自チーム');
+  const teamInput=document.getElementById('team');
+  if(teamInput) teamInput.value=s.team;
+
+  s.players={};
+  s.playerIdentities={};
+  s.playerPositions={};
+  numberPool=[];
+
+  players.forEach(player=>{
+    const no=player.number;
+    s.players[no]=player.name;
+    if(!numberPool.includes(no)) numberPool.push(no);
+    const identity=ensureImportedPlayerIdentity(no,player.name);
+    if(player.isSetter && identity) s.playerPositions[identity]='S';
+  });
+
+  numberPool.sort((a,b)=>{
+    const an=Number(a),bn=Number(b);
+    if(Number.isFinite(an)&&Number.isFinite(bn)) return an-bn;
+    return String(a).localeCompare(String(b),'ja');
+  });
+
+  const validNumbers=new Set(numberPool.map(String));
+  const preserved=(s.nums||[]).map(String).filter(no=>validNumbers.has(no));
+  const lineup=[...new Set(preserved)];
+  numberPool.forEach(no=>{
+    if(lineup.length<6 && !lineup.includes(no)) lineup.push(no);
+  });
+  while(lineup.length<6) lineup.push('');
+  s.nums=lineup.slice(0,6);
+
+  const courtSet=new Set(s.nums.map(String));
+  const courtSetters=players.filter(player=>player.isSetter && courtSet.has(player.number)).map(player=>player.number);
+  const allSetters=players.filter(player=>player.isSetter).map(player=>player.number);
+  s.setterNums=[...new Set([...courtSetters,...allSetters])].filter(no=>courtSet.has(no)).slice(0,2);
+  if(!s.setterNums.length && s.nums[0]) s.setterNums=[String(s.nums[0])];
+  s.setterIndex=Math.max(0,s.nums.map(String).indexOf(String(s.setterNums[0]||'')));
+
+  s.benchCount=Math.max(0,Math.min(12,players.length-6));
+  setupSelected=0;
+
+  save();
+  renderSetup();
+  renderMatchNumberBank();
+  render();
+  if(typeof showInputToast==='function'){
+    showInputToast(`${team.name}（${team.year}年度）${players.length}名を読み込みました`);
+  }
+}
+
 function renderSetup(){
+  renderRegisteredTeamSelector();
   const spots=document.querySelectorAll(".setupSpot");
   spots.forEach((b,i)=>{
     b.classList.toggle("active", i===setupSelected);
