@@ -1246,8 +1246,20 @@ function loadRegisteredTeamToSetup(teamId){
   });
 
   const validNumbers=new Set(numberPool.map(String));
+  const registeredSetters=players.filter(player=>player.isSetter).map(player=>String(player.number));
+
+  // V150.161:
+  // チーム管理でセッター登録された選手を、スタメン候補とセッター設定で最優先する。
+  // 登録セッターが7人目以降の背番号でも、最初の6人から外れて別選手が
+  // セッター分析へ入る状態を防ぐ。
   const preserved=(s.nums||[]).map(String).filter(no=>validNumbers.has(no));
-  const lineup=[...new Set(preserved)];
+  const lineup=[];
+  registeredSetters.forEach(no=>{
+    if(lineup.length<6 && !lineup.includes(no)) lineup.push(no);
+  });
+  preserved.forEach(no=>{
+    if(lineup.length<6 && !lineup.includes(no)) lineup.push(no);
+  });
   numberPool.forEach(no=>{
     if(lineup.length<6 && !lineup.includes(no)) lineup.push(no);
   });
@@ -1255,9 +1267,7 @@ function loadRegisteredTeamToSetup(teamId){
   s.nums=lineup.slice(0,6);
 
   const courtSet=new Set(s.nums.map(String));
-  const courtSetters=players.filter(player=>player.isSetter && courtSet.has(player.number)).map(player=>player.number);
-  const allSetters=players.filter(player=>player.isSetter).map(player=>player.number);
-  s.setterNums=[...new Set([...courtSetters,...allSetters])].filter(no=>courtSet.has(no)).slice(0,2);
+  s.setterNums=[...new Set(registeredSetters.filter(no=>courtSet.has(no)))].slice(0,2);
   if(!s.setterNums.length && s.nums[0]) s.setterNums=[String(s.nums[0])];
   s.setterIndex=Math.max(0,s.nums.map(String).indexOf(String(s.setterNums[0]||'')));
 
