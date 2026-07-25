@@ -5227,7 +5227,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150167"></script>
+<script src="app_v141_setter_split.js?v=150168"></script>
 
 
 
@@ -5766,7 +5766,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.167</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.168</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -7267,6 +7267,100 @@ function closePositionManager(){const m=document.getElementById('positionManager
     openTeamEditor(teamId);
   };
 
+  window.copyTeamForNextYear = function(teamId){
+    const teams = loadTeams();
+    const source = teams.find(item => item.id === teamId);
+    if(!source){
+      alert('コピー元のチームが見つかりません。');
+      return;
+    }
+
+    const currentYear = Number(source.year);
+    const suggestedYear = Number.isInteger(currentYear) ? currentYear + 1 : new Date().getFullYear() + 1;
+    const enteredYear = prompt(
+      source.name + 'を次年度へコピーします。\n新年度を4桁で入力してください。',
+      String(suggestedYear)
+    );
+    if(enteredYear === null) return;
+
+    const newYear = Number(String(enteredYear).trim());
+    if(!Number.isInteger(newYear) || newYear < 2000 || newYear > 2100){
+      alert('年度は2000〜2100の4桁で入力してください。');
+      return;
+    }
+
+    const duplicate = teams.some(item =>
+      String(item.name||'').trim().toLowerCase() === String(source.name||'').trim().toLowerCase() &&
+      Number(item.year) === newYear
+    );
+    if(duplicate){
+      alert(source.name + '（' + newYear + '年度）はすでに登録されています。');
+      return;
+    }
+
+    const sourcePlayers = Array.isArray(source.players) ? source.players : [];
+    let excludedNumbers = new Set();
+
+    if(sourcePlayers.length){
+      const removeGraduates = confirm(
+        newYear + '年度へコピーする前に、卒業する3年生を除外しますか？\n\n' +
+        '「OK」：卒業選手の背番号を入力\n' +
+        '「キャンセル」：全選手をコピー'
+      );
+
+      if(removeGraduates){
+        const roster = sourcePlayers
+          .map(player => String(player.number||'-') + ' ' + String(player.name||'名前未設定'))
+          .join('\n');
+        const answer = prompt(
+          '卒業する選手の背番号を半角カンマで入力してください。\n' +
+          '例：1,4,10\n\n【現在の選手】\n' + roster,
+          ''
+        );
+        if(answer === null) return;
+
+        String(answer).split(',')
+          .map(value => value.trim())
+          .filter(Boolean)
+          .forEach(value => excludedNumbers.add(value));
+      }
+    }
+
+    const now = new Date().toISOString();
+    const copiedPlayers = sourcePlayers
+      .filter(player => !excludedNumbers.has(String(player.number||'').trim()))
+      .map(player => ({
+        ...JSON.parse(JSON.stringify(player)),
+        id:'player_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+        createdAt:now,
+        updatedAt:now
+      }));
+
+    const copiedTeam = {
+      ...JSON.parse(JSON.stringify(source)),
+      id:'team_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+      year:newYear,
+      players:copiedPlayers,
+      createdAt:now,
+      updatedAt:now,
+      copiedFromTeamId:String(source.id||''),
+      copiedFromYear:String(source.year||'')
+    };
+
+    teams.push(copiedTeam);
+    storeTeams(teams);
+    renderTeamManagement();
+
+    const removedCount = sourcePlayers.length - copiedPlayers.length;
+    alert(
+      newYear + '年度へコピーしました。\n\n' +
+      'チーム名：' + copiedTeam.name + '\n' +
+      'コピー選手：' + copiedPlayers.length + '名\n' +
+      '除外選手：' + removedCount + '名\n\n' +
+      '背番号変更や新入生追加は、コピー先の「選手管理」から行ってください。'
+    );
+  };
+
   window.deleteTeamRecord = function(teamId){
     const teams = loadTeams();
     const team = teams.find(item => item.id === teamId);
@@ -7309,6 +7403,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
             <div class="teamYearMeta">登録選手 ${playerCount}名</div>
             <div class="teamYearActions">
               <button type="button" class="teamPlayerButton" onclick="openPlayerManager('${escapeTeamText(team.id)}')">選手管理</button>
+              <button type="button" class="teamCopyButton" onclick="copyTeamForNextYear('${escapeTeamText(team.id)}')">前年度コピー</button>
               <button type="button" class="teamEditButton" onclick="editTeamRecord('${escapeTeamText(team.id)}')">チーム編集</button>
               <button type="button" class="teamDeleteButton" onclick="deleteTeamRecord('${escapeTeamText(team.id)}')">削除</button>
             </div>
@@ -7863,6 +7958,22 @@ function closePositionManager(){const m=document.getElementById('positionManager
 </style>
 
 <script>/* cache marker: 150-167-saved-match-team-reassign */</script>
+
+<style id="v150-168-previous-year-copy">
+.teamCopyButton{
+  border:0;
+  border-radius:9px;
+  min-height:38px;
+  padding:0 12px;
+  background:#7c3aed;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.teamCopyButton:active{transform:translateY(1px)}
+</style>
+
+<script>/* cache marker: 150-168-previous-year-copy */</script>
 </body>
 </html>
 
