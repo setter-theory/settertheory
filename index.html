@@ -4537,6 +4537,15 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 </style>
 <script>/* cache marker: 150-148-saved-report-rotation-card-content-fit */</script>
 
+
+<style id="v150-172-launch-critical">
+#launchLanding{background:#02040a;color:#fff}
+#launchLandingActions{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#launchLanding.launchFinished #launchLandingActions{
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important
+}
+</style>
+
 </head>
 <body>
 
@@ -4556,7 +4565,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
     </div>
   </div>
 
-  <div class="launchLandingActions" id="launchLandingActions">
+  <div class="launchLandingActions" id="launchLandingActions" style="opacity:0;visibility:hidden;pointer-events:none;">
     <button class="launchPrimaryButton" type="button" onclick="enterSetterTheory()">
       ゲストで始める
       <small>現在のデータをそのまま使用</small>
@@ -4567,7 +4576,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.171</div>
+    <div class="launchVersion">SETTER THEORY　V150.172</div>
   </div>
 </section>
 
@@ -5259,7 +5268,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150171"></script>
+<script src="app_v141_setter_split.js?v=150172"></script>
 
 
 
@@ -5798,7 +5807,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.171</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.172</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8103,7 +8112,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 .launchTitle{
   position:absolute;
-  top:36%;
+  top:53%;
   left:50%;
   display:flex;
   gap:.28em;
@@ -8116,7 +8125,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
   text-shadow:0 0 28px rgba(59,130,246,.2);
   opacity:0;
   filter:blur(12px);
-  animation:launchTitleReveal 1.15s cubic-bezier(.2,.8,.2,1) forwards .1s;
+  animation:launchTitleReveal .85s cubic-bezier(.2,.8,.2,1) forwards 1.35s;
 }
 .launchTitle::after{
   content:"";
@@ -8128,18 +8137,18 @@ function closePositionManager(){const m=document.getElementById('positionManager
   background:linear-gradient(90deg,transparent,#60a5fa,#fff,#60a5fa,transparent);
   transform:scaleX(0);
   box-shadow:0 0 18px #3b82f6;
-  animation:launchLineReveal .85s ease forwards .7s;
+  animation:launchLineReveal .6s ease forwards 1.75s;
 }
 .launchAquilaWrap{
   position:absolute;
-  top:43%;
+  top:24%;
   left:50%;
   width:clamp(120px,23vw,250px);
   text-align:center;
   opacity:0;
   transform:translate(-50%,-170%) scale(.35) rotate(-7deg);
   filter:blur(9px);
-  animation:aquilaFlyIn 1.35s cubic-bezier(.18,.8,.2,1) forwards 1.05s;
+  animation:aquilaFlyIn 1.15s cubic-bezier(.18,.8,.2,1) forwards .18s;
 }
 .launchAquila{
   display:block;
@@ -8169,7 +8178,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
   opacity:0;
   transform:translateY(24px);
   pointer-events:none;
-  animation:launchActionsIn .65s ease forwards 2.25s;
+  animation:launchActionsIn .55s ease forwards 2.15s;
 }
 .launchLandingScreen.launchFinished .launchTitle,
 .launchLandingScreen.launchFinished .launchAquilaWrap,
@@ -8189,6 +8198,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 .launchLandingScreen.launchFinished .launchLandingActions{
   transform:none;
   pointer-events:auto;
+  visibility:visible;
 }
 
 .launchPrimaryButton{
@@ -8247,12 +8257,14 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 @keyframes launchGlowIn{to{opacity:1}}
 @keyframes launchActionsIn{
-  to{opacity:1;transform:none;pointer-events:auto}
+  0%{opacity:0;visibility:hidden;transform:translateY(24px);pointer-events:none}
+  1%{visibility:visible}
+  100%{opacity:1;visibility:visible;transform:none;pointer-events:auto}
 }
 
 @media(max-height:650px){
-  .launchTitle{top:28%;font-size:clamp(30px,6vw,58px)}
-  .launchAquilaWrap{top:34%;width:clamp(105px,19vw,175px)}
+  .launchTitle{top:51%;font-size:clamp(30px,6vw,58px)}
+  .launchAquilaWrap{top:18%;width:clamp(105px,19vw,175px)}
   .launchPrimaryButton{min-height:54px}
   .launchLandingActions{padding-top:6px}
 }
@@ -8273,7 +8285,12 @@ function closePositionManager(){const m=document.getElementById('positionManager
     if(!screen) return;
     screen.classList.add('launchFinished');
     const actions=document.getElementById('launchLandingActions');
-    if(actions) actions.style.pointerEvents='auto';
+    if(actions){
+      actions.style.opacity='1';
+      actions.style.visibility='visible';
+      actions.style.pointerEvents='auto';
+      actions.style.transform='none';
+    }
     if(launchTimer){
       clearTimeout(launchTimer);
       launchTimer=null;
@@ -8298,7 +8315,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
   };
 
   document.addEventListener('DOMContentLoaded',function(){
-    launchTimer=setTimeout(finishLaunchAnimation,3000);
+    launchTimer=setTimeout(finishLaunchAnimation,2850);
   });
 })();
 </script>
