@@ -4540,7 +4540,39 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 </head>
 <body>
 
-<section id="home" class="screen active">
+<section id="launchLanding" class="screen active launchLandingScreen" aria-label="Setter Theory 起動画面">
+  <button class="launchSkipButton" type="button" onclick="finishLaunchAnimation()" aria-label="演出をスキップ">SKIP</button>
+
+  <div class="launchStage" onclick="finishLaunchAnimation()">
+    <div class="launchGlow"></div>
+    <div class="launchTitle" aria-label="SETTER THEORY">
+      <span>SETTER</span>
+      <span>THEORY</span>
+    </div>
+
+    <div class="launchAquilaWrap">
+      <img src="icons/aquila-192.png" alt="Aquila" class="launchAquila">
+      <div class="launchAquilaName">Aquila</div>
+    </div>
+  </div>
+
+  <div class="launchLandingActions" id="launchLandingActions">
+    <button class="launchPrimaryButton" type="button" onclick="enterSetterTheory()">
+      ゲストで始める
+      <small>現在のデータをそのまま使用</small>
+    </button>
+
+    <div class="launchAccountButtons">
+      <button type="button" onclick="showAccountComingSoon('新規登録')">新規登録</button>
+      <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
+    </div>
+
+    <div class="launchVersion">SETTER THEORY　V150.171</div>
+  </div>
+</section>
+
+
+<section id="home" class="screen">
   <div class="logo">
     <h1>SETTER THEORY</h1>
 
@@ -5227,7 +5259,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150170"></script>
+<script src="app_v141_setter_split.js?v=150171"></script>
 
 
 
@@ -5766,7 +5798,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.170</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.171</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8020,6 +8052,257 @@ function closePositionManager(){const m=document.getElementById('positionManager
 
 <script>/* cache marker: 150-169-team-quick-match-setup */</script>
 <script>/* cache marker: 150-170-saved-two-setter-pdf */</script>
+
+<style id="v150-171-launch-landing">
+.launchLandingScreen{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(30,64,175,.23),transparent 34%),
+    linear-gradient(180deg,#02040a 0%,#050b16 58%,#02040a 100%);
+  color:#fff;
+}
+.launchLandingScreen:not(.active){display:none!important}
+
+.launchSkipButton{
+  position:absolute;
+  top:max(16px,env(safe-area-inset-top));
+  right:18px;
+  z-index:8;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;
+  padding:7px 13px;
+  background:rgba(3,7,18,.45);
+  color:rgba(255,255,255,.72);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.12em;
+  backdrop-filter:blur(8px);
+}
+
+.launchStage{
+  position:relative;
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.launchGlow{
+  position:absolute;
+  width:min(76vw,680px);
+  height:min(76vw,680px);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,.18),rgba(2,6,23,0) 68%);
+  opacity:0;
+  animation:launchGlowIn 2.5s ease forwards .7s;
+}
+.launchTitle{
+  position:absolute;
+  top:36%;
+  left:50%;
+  display:flex;
+  gap:.28em;
+  transform:translate(-50%,-50%) scale(.9);
+  white-space:nowrap;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(34px,7vw,78px);
+  font-weight:700;
+  letter-spacing:.06em;
+  text-shadow:0 0 28px rgba(59,130,246,.2);
+  opacity:0;
+  filter:blur(12px);
+  animation:launchTitleReveal 1.15s cubic-bezier(.2,.8,.2,1) forwards .1s;
+}
+.launchTitle::after{
+  content:"";
+  position:absolute;
+  left:4%;
+  right:4%;
+  bottom:-13px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,#60a5fa,#fff,#60a5fa,transparent);
+  transform:scaleX(0);
+  box-shadow:0 0 18px #3b82f6;
+  animation:launchLineReveal .85s ease forwards .7s;
+}
+.launchAquilaWrap{
+  position:absolute;
+  top:43%;
+  left:50%;
+  width:clamp(120px,23vw,250px);
+  text-align:center;
+  opacity:0;
+  transform:translate(-50%,-170%) scale(.35) rotate(-7deg);
+  filter:blur(9px);
+  animation:aquilaFlyIn 1.35s cubic-bezier(.18,.8,.2,1) forwards 1.05s;
+}
+.launchAquila{
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  object-fit:contain;
+  border-radius:50%;
+  filter:drop-shadow(0 24px 26px rgba(0,0,0,.7)) drop-shadow(0 0 18px rgba(59,130,246,.32));
+}
+.launchAquilaName{
+  margin-top:-13px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,3vw,32px);
+  font-style:italic;
+  letter-spacing:.08em;
+  color:#bfdbfe;
+  text-shadow:0 0 15px rgba(96,165,250,.55);
+}
+
+.launchLandingActions{
+  position:relative;
+  z-index:6;
+  flex:0 0 auto;
+  width:min(620px,calc(100% - 32px));
+  margin:0 auto;
+  padding:12px 0 max(22px,env(safe-area-inset-bottom));
+  opacity:0;
+  transform:translateY(24px);
+  pointer-events:none;
+  animation:launchActionsIn .65s ease forwards 2.25s;
+}
+.launchLandingScreen.launchFinished .launchTitle,
+.launchLandingScreen.launchFinished .launchAquilaWrap,
+.launchLandingScreen.launchFinished .launchGlow,
+.launchLandingScreen.launchFinished .launchLandingActions{
+  animation-delay:0s!important;
+  animation-duration:.2s!important;
+  opacity:1;
+  filter:none;
+}
+.launchLandingScreen.launchFinished .launchAquilaWrap{
+  transform:translate(-50%,-8%) scale(1) rotate(0);
+}
+.launchLandingScreen.launchFinished .launchTitle{
+  transform:translate(-50%,-50%) scale(1);
+}
+.launchLandingScreen.launchFinished .launchLandingActions{
+  transform:none;
+  pointer-events:auto;
+}
+
+.launchPrimaryButton{
+  width:100%;
+  min-height:62px;
+  border:1px solid rgba(96,165,250,.75);
+  border-radius:16px;
+  background:linear-gradient(135deg,#1d4ed8,#1e40af);
+  color:#fff;
+  font-size:18px;
+  font-weight:1000;
+  box-shadow:0 14px 34px rgba(30,64,175,.38);
+}
+.launchPrimaryButton small{
+  display:block;
+  margin-top:4px;
+  color:#dbeafe;
+  font-size:11px;
+  font-weight:800;
+}
+.launchAccountButtons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.launchAccountButtons button{
+  min-height:46px;
+  border:1px solid rgba(148,163,184,.36);
+  border-radius:13px;
+  background:rgba(15,23,42,.72);
+  color:#e2e8f0;
+  font-weight:1000;
+  backdrop-filter:blur(10px);
+}
+.launchVersion{
+  padding-top:12px;
+  text-align:center;
+  color:#64748b;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+@keyframes launchTitleReveal{
+  0%{opacity:0;filter:blur(14px);transform:translate(-50%,-50%) scale(.86)}
+  60%{opacity:1;filter:blur(2px)}
+  100%{opacity:1;filter:none;transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes launchLineReveal{to{transform:scaleX(1)}}
+@keyframes aquilaFlyIn{
+  0%{opacity:0;transform:translate(-50%,-190%) scale(.25) rotate(-8deg);filter:blur(10px)}
+  58%{opacity:1;filter:blur(1px)}
+  82%{transform:translate(-50%,-1%) scale(1.06) rotate(1deg)}
+  100%{opacity:1;transform:translate(-50%,-8%) scale(1) rotate(0);filter:none}
+}
+@keyframes launchGlowIn{to{opacity:1}}
+@keyframes launchActionsIn{
+  to{opacity:1;transform:none;pointer-events:auto}
+}
+
+@media(max-height:650px){
+  .launchTitle{top:28%;font-size:clamp(30px,6vw,58px)}
+  .launchAquilaWrap{top:34%;width:clamp(105px,19vw,175px)}
+  .launchPrimaryButton{min-height:54px}
+  .launchLandingActions{padding-top:6px}
+}
+@media(prefers-reduced-motion:reduce){
+  .launchTitle,.launchAquilaWrap,.launchGlow,.launchLandingActions,.launchTitle::after{
+    animation-duration:.01ms!important;
+    animation-delay:0s!important;
+  }
+}
+</style>
+
+<script id="v150-171-launch-controller">
+(function(){
+  let launchTimer=null;
+
+  window.finishLaunchAnimation=function(){
+    const screen=document.getElementById('launchLanding');
+    if(!screen) return;
+    screen.classList.add('launchFinished');
+    const actions=document.getElementById('launchLandingActions');
+    if(actions) actions.style.pointerEvents='auto';
+    if(launchTimer){
+      clearTimeout(launchTimer);
+      launchTimer=null;
+    }
+  };
+
+  window.enterSetterTheory=function(){
+    finishLaunchAnimation();
+    const launch=document.getElementById('launchLanding');
+    if(launch) launch.classList.remove('active');
+    if(typeof show==='function'){
+      show('home');
+    }else{
+      const home=document.getElementById('home');
+      if(home) home.classList.add('active');
+    }
+  };
+
+  window.showAccountComingSoon=function(label){
+    finishLaunchAnimation();
+    alert(label+'機能は、クラウド保存・端末同期と一緒に実装予定です。\\n現在は「ゲストで始める」から既存データを利用できます。');
+  };
+
+  document.addEventListener('DOMContentLoaded',function(){
+    launchTimer=setTimeout(finishLaunchAnimation,3000);
+  });
+})();
+</script>
+
 </body>
 </html>
 
