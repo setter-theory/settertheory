@@ -6247,6 +6247,44 @@ function showRestoredFullReport(payload,title='試合レポート') {
   }
 }
 
+function enrichParsedWithSavedSetterMetadata(parsed,match){
+  if(!parsed || typeof parsed!=='object' || !match) return parsed;
+
+  // V150.170: 保存一覧には2人分のIQが残っていても、PDF用のCSV復元時に
+  // 可変幅のMetadata / SetterSummary行が正規化で欠ける場合がある。
+  // 保存試合本体のセッター別情報をPDF復元データへ明示的に引き継ぐ。
+  const fromSummary=Array.isArray(match?.summary?.setterIqs)
+    ? match.summary.setterIqs.map((item,index)=>({
+        role:String(item?.role||`Setter${index+1}`),
+        num:String(item?.number||item?.num||'').trim(),
+        name:String(item?.name||'').trim(),
+        playerId:String(item?.playerId||match?.playerIdentities?.[String(item?.number||item?.num||'')]||'').trim(),
+        order:index+1
+      })).filter(item=>item.num)
+    : [];
+  const fromCsv=savedMatchSetterMeta(match).map((item,index)=>({
+    role:String(item?.role||`Setter${index+1}`),
+    num:String(item?.num||item?.number||'').trim(),
+    name:String(item?.name||'').trim(),
+    playerId:String(item?.playerId||match?.playerIdentities?.[String(item?.num||item?.number||'')]||'').trim(),
+    order:index+1
+  })).filter(item=>item.num);
+
+  const merged=[];
+  [...fromSummary,...fromCsv].forEach(item=>{
+    if(!item.num || merged.some(existing=>existing.num===item.num)) return;
+    merged.push(item);
+  });
+
+  if(merged.length){
+    parsed.savedSetterMeta=merged.slice(0,2);
+    parsed.setterCount=parsed.savedSetterMeta.length;
+    parsed.setterNumbers=parsed.savedSetterMeta.map(item=>item.num);
+  }
+  parsed.teamId=String(parsed.teamId||match.teamId||match?.csv?.teamId||'');
+  return parsed;
+}
+
 function loadSavedMatch(id){
   try{
     const m=getSavedMatches().find(x=>String(x.id)===String(id));
@@ -6258,7 +6296,10 @@ function loadSavedMatch(id){
     if(dataManagement) dataManagement.open=true;
 
     const source=m.csv||m.parsed||m.data||m;
-    importedCsv=recoveryNormalizePayload(source,m.fileName||m.title||'保存済みデータ');
+    importedCsv=enrichParsedWithSavedSetterMetadata(
+      recoveryNormalizePayload(source,m.fileName||m.title||'保存済みデータ'),
+      m
+    );
     try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv)); }catch(_){}
     renderCsvPreview(importedCsv,importedCsv.fileName||m.title||'保存済みデータ');
     window.__setterTheorySavedReportAccordion=true;
@@ -6309,7 +6350,10 @@ function printSavedMatchPdf(id){
   try{
     const match=getSavedMatches().find(x=>String(x.id)===String(id));
     if(!match){ alert('保存データが見つかりません。'); return; }
-    const parsed=recoveryNormalizePayload(match.csv||match,match.fileName||match.title||'保存試合');
+    const parsed=enrichParsedWithSavedSetterMetadata(
+      recoveryNormalizePayload(match.csv||match,match.fileName||match.title||'保存試合'),
+      match
+    );
     importedCsv=parsed;
     try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(parsed)); }catch(_){}
     printCsvReport();
@@ -7049,10 +7093,25 @@ function buildPlainDiagnosis(a){
 
 
 function importedSetterMetadata(parsed){
+  // V150.170: 保存試合PDFでは、正規化後も保持される直接メタデータを最優先する。
+  const directNumbers=Array.isArray(parsed?.setterNumbers)
+    ? parsed.setterNumbers.map(value=>String(value||'').trim()).filter(Boolean).slice(0,2)
+    : [];
+  const directCount=parsed?.setterCount===null||parsed?.setterCount===undefined||parsed?.setterCount===''
+    ? null
+    : Math.max(0,Math.min(2,Number(parsed.setterCount)||0));
+  if(directNumbers.length || directCount!==null){
+    return {
+      count:directCount===null?directNumbers.length:directCount,
+      numbers:directNumbers,
+      teamId:String(parsed?.teamId||'')
+    };
+  }
+
   const rows=parsed?.data||[];
   const metadata=rows.find(r=>String(r?.[0]||'').trim()==='Metadata');
-  if(!metadata) return {count:null,numbers:[],teamId:''};
-  const result={count:null,numbers:[],teamId:''};
+  if(!metadata) return {count:null,numbers:[],teamId:String(parsed?.teamId||'')};
+  const result={count:null,numbers:[],teamId:String(parsed?.teamId||'')};
   for(let i=1;i<metadata.length-1;i+=2){
     const key=String(metadata[i]||'').trim();
     const value=String(metadata[i+1]||'').trim();
@@ -7142,6 +7201,18 @@ function importedSetterMeta(parsed){
     });
   }
   found.sort((a,b)=>a.order-b.order);
+
+  // V150.170: 保存試合本体から引き継いだ2人分を、PDFカード生成の正解として使う。
+  const savedMeta=Array.isArray(parsed?.savedSetterMeta)
+    ? parsed.savedSetterMeta.map((item,index)=>({
+        role:String(item?.role||`Setter${index+1}`),
+        num:String(item?.num||item?.number||'').trim(),
+        name:String(item?.name||'').trim(),
+        playerId:String(item?.playerId||'').trim(),
+        order:Number(item?.order||index+1)
+      })).filter(item=>item.num).slice(0,2)
+    : [];
+  if(savedMeta.length) return savedMeta;
 
   const metadata=importedSetterMetadata(parsed);
 
