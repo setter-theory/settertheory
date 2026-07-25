@@ -4603,26 +4603,99 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
 
 
+
+<style id="v150-179-launch-final">
+html.booting body > *:not(#launchLanding):not(script):not(style):not(link){
+  display:none!important;
+}
+html.booting #launchLanding,
+#launchLanding.active{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+#launchLanding{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  background:#000!important;
+  overflow:hidden!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+#launchLanding .launchStage{
+  position:absolute!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+#launchLanding .logoIntroWrap{
+  position:absolute!important;
+  left:50%!important;
+  top:43%!important;
+  width:min(88vw,860px)!important;
+  height:190px!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  opacity:0;
+  visibility:hidden;
+}
+#launchLanding .logoIntroText{
+  opacity:0;
+  transform:scale(.94);
+  filter:blur(8px);
+}
+#launchLanding.launchPlaying .logoIntroWrap{
+  visibility:visible!important;
+  animation:logoWrapIn .01s linear forwards .10s!important;
+}
+#launchLanding.launchPlaying .logoIntroText{
+  animation:logoTextReveal 1.35s cubic-bezier(.18,.78,.2,1) forwards .18s!important;
+}
+#launchLanding.launchPlaying .logoIntroShine{
+  animation:logoShinePass .82s ease-in-out forwards 1.32s!important;
+}
+#launchLandingActions{
+  position:absolute!important;
+  left:50%!important;
+  top:70%!important;
+  transform:translate(-50%,18px)!important;
+  width:min(88vw,560px)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#launchLanding.launchPlaying #launchLandingActions{
+  animation:launchActionsIn .58s ease forwards 2.12s!important;
+}
+#launchLanding.launchFinished #launchLandingActions{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transform:translate(-50%,0)!important;
+}
+</style>
+
 </head>
 <body>
+
 
 
 <section id="launchLanding" class="screen active launchLandingScreen" aria-label="Setter Theory 起動画面">
   <button class="launchSkipButton" type="button" onclick="finishLaunchAnimation()" aria-label="演出をスキップ">SKIP</button>
 
-  <div class="launchStage" onclick="finishLaunchAnimation()">
-    <div class="launchAtmosphere"></div>
-
+  <div class="launchStage">
     <div class="logoIntroWrap" aria-hidden="true">
       <div class="logoIntroText">SETTER THEORY</div>
       <div class="logoIntroShine"></div>
     </div>
   </div>
 
-    <div class="titleLandingFlash"></div>
-  </div>
-
-  <div class="launchLandingActions" id="launchLandingActions" style="opacity:0;visibility:hidden;pointer-events:none;">
+  <div class="launchLandingActions" id="launchLandingActions">
     <button class="launchPrimaryButton" type="button" onclick="enterSetterTheory()">
       ゲストで始める
       <small>現在のデータをそのまま使用</small>
@@ -4633,9 +4706,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.178</div>
+    <div class="launchVersion">SETTER THEORY　V150.179</div>
   </div>
 </section>
+
 
 
 
@@ -5326,7 +5400,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150178"></script>
+<script src="app_v141_setter_split.js?v=150179"></script>
 
 
 
@@ -5865,7 +5939,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.178</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.179</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8433,70 +8507,96 @@ html,body{background:#02040a!important}
 }
 </style>
 
-<script id="v150-173-launch-controller">
+
+<script id="v150-179-launch-controller">
 (function(){
-  let launchTimer=null;
+  let launchTimer = null;
+  let started = false;
 
-  window.finishLaunchAnimation=function(){
-    document.documentElement.classList.remove('booting');
-    const screen=document.getElementById('launchLanding');
-    if(!screen) return;
+  function showActions(){
+    const screen = document.getElementById('launchLanding');
+    const actions = document.getElementById('launchLandingActions');
 
-    screen.classList.add('launchFinished');
-
-    const actions=document.getElementById('launchLandingActions');
-    if(actions){
-      actions.style.opacity='1';
-      actions.style.visibility='visible';
-      actions.style.pointerEvents='auto';
-      actions.style.transform='none';
+    if(screen){
+      screen.classList.add('launchFinished');
     }
+    if(actions){
+      actions.style.opacity = '1';
+      actions.style.visibility = 'visible';
+      actions.style.pointerEvents = 'auto';
+      actions.style.transform = 'translateY(0)';
+    }
+  }
+
+  window.finishLaunchAnimation = function(){
+    document.documentElement.classList.remove('booting');
+    showActions();
 
     if(launchTimer){
       clearTimeout(launchTimer);
-      launchTimer=null;
+      launchTimer = null;
     }
   };
 
-  window.enterSetterTheory=function(){
+  window.enterSetterTheory = function(){
     document.documentElement.classList.remove('booting');
-    finishLaunchAnimation();
 
-    const launch=document.getElementById('launchLanding');
-    if(launch) launch.classList.remove('active');
+    if(launchTimer){
+      clearTimeout(launchTimer);
+      launchTimer = null;
+    }
 
-    if(typeof show==='function'){
+    const launch = document.getElementById('launchLanding');
+    if(launch){
+      launch.classList.remove('active', 'launchPlaying', 'launchFinished');
+      launch.style.display = 'none';
+    }
+
+    if(typeof show === 'function'){
       show('home');
     }else{
-      const home=document.getElementById('home');
-      if(home) home.classList.add('active');
+      const home = document.getElementById('home');
+      if(home){
+        home.classList.add('active');
+        home.style.display = '';
+      }
     }
   };
 
-  window.showAccountComingSoon=function(label){
+  window.showAccountComingSoon = function(label){
     finishLaunchAnimation();
-    alert(label+'機能は、クラウド保存・端末同期と一緒に実装予定です。\\n現在は「ゲストで始める」から既存データを利用できます。');
+    alert(label + '機能は、クラウド保存・端末同期と一緒に実装予定です。\n現在は「ゲストで始める」から既存データを利用できます。');
   };
 
-  document.addEventListener('DOMContentLoaded',function(){
-    const screen=document.getElementById('launchLanding');
-    const startLaunch=function(){
+  function startLaunch(){
+    if(started) return;
+    started = true;
+
+    const screen = document.getElementById('launchLanding');
+    document.documentElement.classList.add('launchReady');
+
+    requestAnimationFrame(function(){
       requestAnimationFrame(function(){
-        document.documentElement.classList.add('launchReady');
-        if(screen) screen.classList.add('launchPlaying');
+        if(screen){
+          screen.classList.add('launchPlaying');
+        }
       });
-      launchTimer=setTimeout(finishLaunchAnimation,3050);
-    };
-    setTimeout(startLaunch,120);
-  });
-      bird.addEventListener('error',startLaunch,{once:true});
-      setTimeout(startLaunch,1200);
-    }else{
-      startLaunch();
-    }
-  });
+    });
+
+    launchTimer = setTimeout(function(){
+      document.documentElement.classList.remove('booting');
+      showActions();
+    }, 3000);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', startLaunch, {once:true});
+  }else{
+    startLaunch();
+  }
 })();
 </script>
+
 
 </body>
 </html>
