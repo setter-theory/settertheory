@@ -1250,7 +1250,15 @@ function loadRegisteredTeamToSetup(teamId){
   // 登録セッターが7人目以降の背番号でも、最初の6人から外れて別選手が
   // セッター分析へ入る状態を防ぐ。
   const preserved=(s.nums||[]).map(String).filter(no=>validNumbers.has(no));
+  const savedStartingLineup=(Array.isArray(team.startingLineup)?team.startingLineup:[])
+    .map(String)
+    .filter(no=>validNumbers.has(no));
   const lineup=[];
+
+  // V150.169: 前回このチームで試合開始した6人を、次回の初期スタメンとして優先する。
+  savedStartingLineup.forEach(no=>{
+    if(lineup.length<6 && !lineup.includes(no)) lineup.push(no);
+  });
   registeredSetters.forEach(no=>{
     if(lineup.length<6 && !lineup.includes(no)) lineup.push(no);
   });
@@ -1380,6 +1388,31 @@ function returnToMatch(){
   showInputToast("設定を反映して試合に戻りました");
 }
 
+function saveCurrentStartingLineupToRegisteredTeam(starters){
+  const teamId=String(s.selectedTeamId||s.teamId||localStorage.getItem(SETUP_SELECTED_TEAM_KEY)||'');
+  if(!teamId) return;
+
+  const teams=registeredTeamsForSetup();
+  const index=teams.findIndex(team=>String(team.id||'')===teamId);
+  if(index<0) return;
+
+  teams[index].startingLineup=(Array.isArray(starters)?starters:[])
+    .map(String)
+    .filter(Boolean)
+    .slice(0,6);
+  teams[index].startingSetterNums=setterNumbers()
+    .map(String)
+    .filter(no=>teams[index].startingLineup.includes(no))
+    .slice(0,2);
+  teams[index].updatedAt=new Date().toISOString();
+
+  try{
+    localStorage.setItem(REGISTERED_TEAM_STORAGE_KEY,JSON.stringify(teams));
+  }catch(error){
+    console.warn('starting lineup save failed',error);
+  }
+}
+
 function startMatch(){
   const starters=(s.nums||[]).filter(Boolean).map(String);
   if(starters.length!==6 || new Set(starters).size!==6){ alert("スタメン6人の背番号を重複なく設定してください"); return; }
@@ -1391,6 +1424,7 @@ function startMatch(){
   if(hasAssignedPlayerPositions()) syncActiveSettersFromCourt();
   if(!s.setterNums.length){ alert("セッターを1人以上設定するか、基本ポジションを『セッター』にしてください"); return; }
   s.setterIndex=Math.max(0,starters.indexOf(String(s.setterNums[0])));
+  saveCurrentStartingLineupToRegisteredTeam(starters);
   s.rot=1; s.my=0; s.op=0; s.mode="スパイク"; s.result="成功"; s.logs=[]; s.hist=[]; s.lastSubstitution=null; s.substitutionCounts={}; selectedCourtNum=null;
   s.matchActive=true; s.matchStartedAt=new Date().toISOString();
   s.matchId=createEntityId('match');
