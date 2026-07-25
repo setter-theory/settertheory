@@ -6844,7 +6844,15 @@ function importedSetterMeta(parsed){
   const registered=registeredSetterMetaForImported(found,metadata.teamId);
   if(registered.length) return registered;
 
-  // 登録情報と照合できない旧データはSetter1のみを安全側で復元する。
+  // V150.163:
+  // SetterSummary / SetterRoleが無い旧CSVでは、通常トス最多の1名を
+  // セッター分析①の対象として復元する。
+  // 現在開いている別試合のsetterNumsを流用しない。
+  if(!found.length){
+    return inferLegacySetterMeta(parsed).slice(0,1);
+  }
+
+  // 明示情報が残る旧データはSetter1のみを安全側で復元する。
   return found.slice(0,1);
 }
 
@@ -6898,7 +6906,10 @@ function importedCsvToMatchState(parsed){
   const score=scoreParts(last.score||'');
   const rotMatch=String(last.rot||'S1').match(/(\d+)/);
   const restoredNums=nums.length?nums:s.nums.slice();
-  const restoredSetters=setterNums.length?setterNums:(s.setterNums||[]).map(String).filter(n=>restoredNums.includes(n)).slice(0,2);
+  // V150.163: 保存試合は保存データから復元したセッターだけを使用する。
+  // 現在進行中・直前の試合のセッター設定を流用すると、
+  // セッター分析①に別選手が表示されるためフォールバックを廃止。
+  const restoredSetters=setterNums.slice(0,2);
   return {
     ...s,
     team:'自チーム', oppTeam:'相手',
