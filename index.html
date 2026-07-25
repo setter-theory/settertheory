@@ -4538,31 +4538,77 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 <script>/* cache marker: 150-148-saved-report-rotation-card-content-fit */</script>
 
 
-<style id="v150-172-launch-critical">
-#launchLanding{background:#02040a;color:#fff}
-#launchLandingActions{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
-#launchLanding.launchFinished #launchLandingActions{
-  opacity:1!important;visibility:visible!important;pointer-events:auto!important
-}
-</style>
+
 
 </head>
 <body>
+
 
 <section id="launchLanding" class="screen active launchLandingScreen" aria-label="Setter Theory 起動画面">
   <button class="launchSkipButton" type="button" onclick="finishLaunchAnimation()" aria-label="演出をスキップ">SKIP</button>
 
   <div class="launchStage" onclick="finishLaunchAnimation()">
-    <div class="launchGlow"></div>
-    <div class="launchTitle" aria-label="SETTER THEORY">
-      <span>SETTER</span>
-      <span>THEORY</span>
+    <div class="launchAtmosphere"></div>
+
+    <div class="aquilaCarrier" aria-hidden="true">
+      <svg class="aquilaBird" viewBox="0 0 760 320" role="img" aria-label="Aquila">
+        <defs>
+          <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#111827"/>
+            <stop offset=".55" stop-color="#020617"/>
+            <stop offset="1" stop-color="#334155"/>
+          </linearGradient>
+          <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f8fafc"/>
+            <stop offset="1" stop-color="#cbd5e1"/>
+          </linearGradient>
+          <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fde68a"/>
+            <stop offset=".5" stop-color="#f59e0b"/>
+            <stop offset="1" stop-color="#92400e"/>
+          </linearGradient>
+          <filter id="birdShadow" x="-20%" y="-20%" width="140%" height="160%">
+            <feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#000" flood-opacity=".75"/>
+          </filter>
+        </defs>
+
+        <g filter="url(#birdShadow)">
+          <path class="aquilaWing aquilaWingLeft"
+            d="M366 120 C300 66 230 34 115 28 C70 26 28 36 4 52
+               C74 56 118 74 167 102 C116 92 78 94 43 110
+               C111 118 157 136 211 163 C160 152 128 155 94 170
+               C157 182 216 199 283 215 C309 222 338 214 365 192 Z"
+            fill="url(#wingGrad)"/>
+          <path class="aquilaWing aquilaWingRight"
+            d="M394 120 C460 66 530 34 645 28 C690 26 732 36 756 52
+               C686 56 642 74 593 102 C644 92 682 94 717 110
+               C649 118 603 136 549 163 C600 152 632 155 666 170
+               C603 182 544 199 477 215 C451 222 422 214 395 192 Z"
+            fill="url(#wingGrad)"/>
+
+          <ellipse cx="380" cy="168" rx="76" ry="92" fill="#0f172a"/>
+          <ellipse cx="380" cy="122" rx="48" ry="43" fill="url(#headGrad)"/>
+          <path d="M364 124 L396 124 L380 148 Z" fill="url(#goldGrad)"/>
+          <circle cx="364" cy="115" r="4.5" fill="#f59e0b"/>
+          <circle cx="396" cy="115" r="4.5" fill="#f59e0b"/>
+
+          <path d="M345 206 C330 221 326 240 336 254" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round"/>
+          <path d="M415 206 C430 221 434 240 424 254" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round"/>
+
+          <path d="M334 252 l-18 16 M336 252 l0 20 M340 252 l18 16"
+                stroke="#f59e0b" stroke-width="7" stroke-linecap="round"/>
+          <path d="M426 252 l18 16 M424 252 l0 20 M420 252 l-18 16"
+                stroke="#f59e0b" stroke-width="7" stroke-linecap="round"/>
+        </g>
+      </svg>
+
+      <div class="carriedTitle" aria-label="SETTER THEORY">
+        <span>SETTER</span>
+        <span>THEORY</span>
+      </div>
     </div>
 
-    <div class="launchAquilaWrap">
-      <img src="icons/aquila-192.png" alt="Aquila" class="launchAquila">
-      <div class="launchAquilaName">Aquila</div>
-    </div>
+    <div class="titleLandingFlash"></div>
   </div>
 
   <div class="launchLandingActions" id="launchLandingActions" style="opacity:0;visibility:hidden;pointer-events:none;">
@@ -4576,9 +4622,10 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.172</div>
+    <div class="launchVersion">SETTER THEORY　V150.173</div>
   </div>
 </section>
+
 
 
 <section id="home" class="screen">
@@ -5268,7 +5315,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150172"></script>
+<script src="app_v141_setter_split.js?v=150173"></script>
 
 
 
@@ -5807,7 +5854,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.172</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.173</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8062,7 +8109,30 @@ function closePositionManager(){const m=document.getElementById('positionManager
 <script>/* cache marker: 150-169-team-quick-match-setup */</script>
 <script>/* cache marker: 150-170-saved-two-setter-pdf */</script>
 
-<style id="v150-171-launch-landing">
+
+
+
+
+
+<style id="v150-173-launch-critical">
+html,body{background:#02040a!important}
+#launchLanding{
+  background:#02040a;
+  color:#fff;
+}
+#launchLandingActions{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#launchLanding.launchFinished #launchLandingActions{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+</style>
+
+<style id="v150-173-aquila-carries-title">
 .launchLandingScreen{
   position:fixed;
   inset:0;
@@ -8071,8 +8141,8 @@ function closePositionManager(){const m=document.getElementById('positionManager
   flex-direction:column;
   overflow:hidden;
   background:
-    radial-gradient(circle at 50% 38%,rgba(30,64,175,.23),transparent 34%),
-    linear-gradient(180deg,#02040a 0%,#050b16 58%,#02040a 100%);
+    radial-gradient(circle at 50% 34%,rgba(30,64,175,.18),transparent 32%),
+    linear-gradient(180deg,#02040a 0%,#06101f 56%,#02040a 100%);
   color:#fff;
 }
 .launchLandingScreen:not(.active){display:none!important}
@@ -8081,15 +8151,15 @@ function closePositionManager(){const m=document.getElementById('positionManager
   position:absolute;
   top:max(16px,env(safe-area-inset-top));
   right:18px;
-  z-index:8;
-  border:1px solid rgba(255,255,255,.22);
+  z-index:20;
+  border:1px solid rgba(255,255,255,.23);
   border-radius:999px;
-  padding:7px 13px;
-  background:rgba(3,7,18,.45);
-  color:rgba(255,255,255,.72);
+  padding:8px 14px;
+  background:rgba(2,6,23,.5);
+  color:#e2e8f0;
   font-size:11px;
-  font-weight:900;
-  letter-spacing:.12em;
+  font-weight:1000;
+  letter-spacing:.14em;
   backdrop-filter:blur(8px);
 }
 
@@ -8099,114 +8169,98 @@ function closePositionManager(){const m=document.getElementById('positionManager
   min-height:0;
   display:grid;
   place-items:center;
-  cursor:pointer;
+  overflow:hidden;
 }
-.launchGlow{
+.launchAtmosphere{
   position:absolute;
-  width:min(76vw,680px);
-  height:min(76vw,680px);
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(37,99,235,.18),rgba(2,6,23,0) 68%);
+  inset:-10%;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(245,158,11,.08),transparent 20%),
+    radial-gradient(circle at 50% 52%,rgba(37,99,235,.16),transparent 32%);
   opacity:0;
-  animation:launchGlowIn 2.5s ease forwards .7s;
+  animation:atmosphereIn 1.1s ease forwards .15s;
 }
-.launchTitle{
+
+.aquilaCarrier{
   position:absolute;
-  top:53%;
   left:50%;
-  display:flex;
-  gap:.28em;
-  transform:translate(-50%,-50%) scale(.9);
-  white-space:nowrap;
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(34px,7vw,78px);
-  font-weight:700;
-  letter-spacing:.06em;
-  text-shadow:0 0 28px rgba(59,130,246,.2);
+  top:48%;
+  width:min(74vw,760px);
+  transform:translate(-50%,-245%) scale(.42);
   opacity:0;
-  filter:blur(12px);
-  animation:launchTitleReveal .85s cubic-bezier(.2,.8,.2,1) forwards 1.35s;
+  filter:blur(10px);
+  animation:carrierFlyIn 1.75s cubic-bezier(.16,.78,.18,1) forwards .08s;
 }
-.launchTitle::after{
-  content:"";
-  position:absolute;
-  left:4%;
-  right:4%;
-  bottom:-13px;
-  height:2px;
-  background:linear-gradient(90deg,transparent,#60a5fa,#fff,#60a5fa,transparent);
-  transform:scaleX(0);
-  box-shadow:0 0 18px #3b82f6;
-  animation:launchLineReveal .6s ease forwards 1.75s;
-}
-.launchAquilaWrap{
-  position:absolute;
-  top:24%;
-  left:50%;
-  width:clamp(120px,23vw,250px);
-  text-align:center;
-  opacity:0;
-  transform:translate(-50%,-170%) scale(.35) rotate(-7deg);
-  filter:blur(9px);
-  animation:aquilaFlyIn 1.15s cubic-bezier(.18,.8,.2,1) forwards .18s;
-}
-.launchAquila{
+.aquilaBird{
   display:block;
   width:100%;
-  aspect-ratio:1;
-  object-fit:contain;
-  border-radius:50%;
-  filter:drop-shadow(0 24px 26px rgba(0,0,0,.7)) drop-shadow(0 0 18px rgba(59,130,246,.32));
+  height:auto;
+  overflow:visible;
 }
-.launchAquilaName{
-  margin-top:-13px;
+.aquilaWing{
+  transform-box:fill-box;
+  transform-origin:center;
+}
+.aquilaWingLeft{
+  animation:leftWingBeat .46s ease-in-out 0s 4 alternate;
+}
+.aquilaWingRight{
+  animation:rightWingBeat .46s ease-in-out 0s 4 alternate;
+}
+
+.carriedTitle{
+  position:absolute;
+  left:50%;
+  top:73%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transform:translateX(-50%);
   font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(20px,3vw,32px);
-  font-style:italic;
-  letter-spacing:.08em;
-  color:#bfdbfe;
-  text-shadow:0 0 15px rgba(96,165,250,.55);
+  font-size:clamp(38px,6.8vw,84px);
+  font-weight:700;
+  line-height:.82;
+  letter-spacing:.04em;
+  color:#f8fafc;
+  text-align:center;
+  text-shadow:
+    0 0 10px rgba(255,255,255,.28),
+    0 0 24px rgba(245,158,11,.26),
+    0 10px 28px rgba(0,0,0,.75);
+  white-space:nowrap;
+}
+.carriedTitle span{
+  display:block;
+}
+
+.titleLandingFlash{
+  position:absolute;
+  left:50%;
+  top:61%;
+  width:min(72vw,700px);
+  height:3px;
+  transform:translateX(-50%) scaleX(0);
+  background:linear-gradient(90deg,transparent,#f59e0b,#fff,#f59e0b,transparent);
+  box-shadow:0 0 28px rgba(245,158,11,.9);
+  animation:titleFlash .65s ease forwards 1.82s;
 }
 
 .launchLandingActions{
   position:relative;
-  z-index:6;
+  z-index:10;
   flex:0 0 auto;
   width:min(620px,calc(100% - 32px));
   margin:0 auto;
-  padding:12px 0 max(22px,env(safe-area-inset-bottom));
-  opacity:0;
-  transform:translateY(24px);
-  pointer-events:none;
-  animation:launchActionsIn .55s ease forwards 2.15s;
+  padding:10px 0 max(20px,env(safe-area-inset-bottom));
+  transform:translateY(28px);
+  animation:launchActionsIn .56s ease forwards 2.15s;
 }
-.launchLandingScreen.launchFinished .launchTitle,
-.launchLandingScreen.launchFinished .launchAquilaWrap,
-.launchLandingScreen.launchFinished .launchGlow,
-.launchLandingScreen.launchFinished .launchLandingActions{
-  animation-delay:0s!important;
-  animation-duration:.2s!important;
-  opacity:1;
-  filter:none;
-}
-.launchLandingScreen.launchFinished .launchAquilaWrap{
-  transform:translate(-50%,-8%) scale(1) rotate(0);
-}
-.launchLandingScreen.launchFinished .launchTitle{
-  transform:translate(-50%,-50%) scale(1);
-}
-.launchLandingScreen.launchFinished .launchLandingActions{
-  transform:none;
-  pointer-events:auto;
-  visibility:visible;
-}
-
 .launchPrimaryButton{
   width:100%;
   min-height:62px;
-  border:1px solid rgba(96,165,250,.75);
+  border:1px solid rgba(96,165,250,.78);
   border-radius:16px;
-  background:linear-gradient(135deg,#1d4ed8,#1e40af);
+  background:linear-gradient(135deg,#1d4ed8,#1e3a8a);
   color:#fff;
   font-size:18px;
   font-weight:1000;
@@ -8229,7 +8283,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
   min-height:46px;
   border:1px solid rgba(148,163,184,.36);
   border-radius:13px;
-  background:rgba(15,23,42,.72);
+  background:rgba(15,23,42,.76);
   color:#e2e8f0;
   font-weight:1000;
   backdrop-filter:blur(10px);
@@ -8243,47 +8297,87 @@ function closePositionManager(){const m=document.getElementById('positionManager
   letter-spacing:.08em;
 }
 
-@keyframes launchTitleReveal{
-  0%{opacity:0;filter:blur(14px);transform:translate(-50%,-50%) scale(.86)}
-  60%{opacity:1;filter:blur(2px)}
-  100%{opacity:1;filter:none;transform:translate(-50%,-50%) scale(1)}
+.launchLandingScreen.launchFinished .aquilaCarrier,
+.launchLandingScreen.launchFinished .launchAtmosphere,
+.launchLandingScreen.launchFinished .titleLandingFlash,
+.launchLandingScreen.launchFinished .launchLandingActions{
+  animation-delay:0s!important;
+  animation-duration:.18s!important;
 }
-@keyframes launchLineReveal{to{transform:scaleX(1)}}
-@keyframes aquilaFlyIn{
-  0%{opacity:0;transform:translate(-50%,-190%) scale(.25) rotate(-8deg);filter:blur(10px)}
-  58%{opacity:1;filter:blur(1px)}
-  82%{transform:translate(-50%,-1%) scale(1.06) rotate(1deg)}
-  100%{opacity:1;transform:translate(-50%,-8%) scale(1) rotate(0);filter:none}
+.launchLandingScreen.launchFinished .aquilaCarrier{
+  opacity:1;
+  filter:none;
+  transform:translate(-50%,-50%) scale(1);
 }
-@keyframes launchGlowIn{to{opacity:1}}
+.launchLandingScreen.launchFinished .launchLandingActions{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transform:none;
+}
+
+@keyframes carrierFlyIn{
+  0%{
+    opacity:0;
+    filter:blur(12px);
+    transform:translate(-50%,-245%) scale(.42);
+  }
+  48%{
+    opacity:1;
+    filter:blur(2px);
+  }
+  78%{
+    transform:translate(-50%,-43%) scale(1.06);
+  }
+  100%{
+    opacity:1;
+    filter:none;
+    transform:translate(-50%,-50%) scale(1);
+  }
+}
+@keyframes leftWingBeat{
+  from{transform:rotate(5deg) translateY(0)}
+  to{transform:rotate(-6deg) translateY(5px)}
+}
+@keyframes rightWingBeat{
+  from{transform:rotate(-5deg) translateY(0)}
+  to{transform:rotate(6deg) translateY(5px)}
+}
+@keyframes atmosphereIn{to{opacity:1}}
+@keyframes titleFlash{
+  0%{transform:translateX(-50%) scaleX(0);opacity:0}
+  45%{opacity:1}
+  100%{transform:translateX(-50%) scaleX(1);opacity:.9}
+}
 @keyframes launchActionsIn{
-  0%{opacity:0;visibility:hidden;transform:translateY(24px);pointer-events:none}
+  0%{opacity:0;visibility:hidden;transform:translateY(28px);pointer-events:none}
   1%{visibility:visible}
   100%{opacity:1;visibility:visible;transform:none;pointer-events:auto}
 }
 
-@media(max-height:650px){
-  .launchTitle{top:51%;font-size:clamp(30px,6vw,58px)}
-  .launchAquilaWrap{top:18%;width:clamp(105px,19vw,175px)}
+@media(max-height:700px){
+  .aquilaCarrier{top:44%;width:min(64vw,640px)}
+  .carriedTitle{font-size:clamp(32px,5.6vw,66px)}
   .launchPrimaryButton{min-height:54px}
-  .launchLandingActions{padding-top:6px}
 }
 @media(prefers-reduced-motion:reduce){
-  .launchTitle,.launchAquilaWrap,.launchGlow,.launchLandingActions,.launchTitle::after{
+  .aquilaCarrier,.aquilaWing,.launchAtmosphere,.titleLandingFlash,.launchLandingActions{
     animation-duration:.01ms!important;
     animation-delay:0s!important;
   }
 }
 </style>
 
-<script id="v150-171-launch-controller">
+<script id="v150-173-launch-controller">
 (function(){
   let launchTimer=null;
 
   window.finishLaunchAnimation=function(){
     const screen=document.getElementById('launchLanding');
     if(!screen) return;
+
     screen.classList.add('launchFinished');
+
     const actions=document.getElementById('launchLandingActions');
     if(actions){
       actions.style.opacity='1';
@@ -8291,6 +8385,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
       actions.style.pointerEvents='auto';
       actions.style.transform='none';
     }
+
     if(launchTimer){
       clearTimeout(launchTimer);
       launchTimer=null;
@@ -8299,8 +8394,10 @@ function closePositionManager(){const m=document.getElementById('positionManager
 
   window.enterSetterTheory=function(){
     finishLaunchAnimation();
+
     const launch=document.getElementById('launchLanding');
     if(launch) launch.classList.remove('active');
+
     if(typeof show==='function'){
       show('home');
     }else{
@@ -8315,7 +8412,10 @@ function closePositionManager(){const m=document.getElementById('positionManager
   };
 
   document.addEventListener('DOMContentLoaded',function(){
-    launchTimer=setTimeout(finishLaunchAnimation,2850);
+    requestAnimationFrame(function(){
+      document.documentElement.classList.add('launchReady');
+    });
+    launchTimer=setTimeout(finishLaunchAnimation,2900);
   });
 })();
 </script>
