@@ -32,6 +32,55 @@ html.booting #launchLandingActions{
 }
 </style>
 
+<style id="v150-182-logo-flicker-fix">
+html,
+body,
+#launchLanding{
+  background:#000!important;
+}
+
+/* ロゴ領域は最初から黒画面上に固定し、文字だけを透明状態から表示する */
+#launchLanding .logoIntroWrap{
+  visibility:visible!important;
+  opacity:1!important;
+  animation:none!important;
+  background:transparent!important;
+  transform:translate3d(-50%,-50%,0)!important;
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+  contain:layout paint style;
+}
+
+#launchLanding .logoIntroText{
+  opacity:0;
+  transform:translate3d(0,0,0) scale(.94);
+  filter:blur(8px);
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+  will-change:opacity,transform,filter;
+}
+
+/* launchPlayingが付いた時だけ文字を表示。ラッパー自体は点滅させない */
+#launchLanding.launchPlaying .logoIntroWrap{
+  visibility:visible!important;
+  opacity:1!important;
+  animation:none!important;
+}
+
+#launchLanding.launchPlaying .logoIntroText{
+  animation:logoTextReveal 1.35s cubic-bezier(.18,.78,.2,1) forwards .18s!important;
+}
+
+#launchLanding .logoIntroShine{
+  opacity:0;
+  visibility:hidden;
+}
+
+#launchLanding.launchPlaying .logoIntroShine{
+  visibility:visible;
+  animation:logoShinePass .82s ease-in-out forwards 1.32s!important;
+}
+</style>
 
 <style id="v150-175-first-paint">
 html,body{
@@ -66,7 +115,8 @@ html.launchReady body > .screen:not(#launchLanding){
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ff8a1d">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#000000">
 <link rel="manifest" href="manifest.json">
 <title>Setter Theory</title>
 <style>
@@ -3086,7 +3136,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 
 <link rel="icon" type="image/png" sizes="192x192" href="icons/aquila-192.png">
 <link rel="apple-touch-icon" href="icons/aquila-180.png">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#000000">
 
 <style>
 /* V59: final iPad PWA input and landscape button sizing */
@@ -4695,42 +4745,6 @@ html.appEntered #home.active{
 }
 </style>
 
-
-<style id="v150-181-launch-timing-polish">
-#launchLanding .logoIntroWrap{
-  opacity:0!important;
-  visibility:hidden!important;
-  will-change:opacity,transform;
-  backface-visibility:hidden;
-  transform:translate3d(-50%,-50%,0)!important;
-}
-#launchLanding .logoIntroText{
-  opacity:0!important;
-  transform:translate3d(0,0,0) scale(.965)!important;
-  filter:blur(5px)!important;
-  will-change:opacity,transform,filter;
-  backface-visibility:hidden;
-}
-#launchLanding .logoIntroShine{
-  opacity:0!important;
-  will-change:transform,opacity;
-  backface-visibility:hidden;
-}
-#launchLanding.launchPlaying .logoIntroWrap{
-  visibility:visible!important;
-  animation:logoWrapIn .01s linear forwards .03s!important;
-}
-#launchLanding.launchPlaying .logoIntroText{
-  animation:logoTextReveal 1.05s cubic-bezier(.18,.78,.2,1) forwards .08s!important;
-}
-#launchLanding.launchPlaying .logoIntroShine{
-  animation:logoShinePass .70s ease-in-out forwards .98s!important;
-}
-#launchLanding.launchPlaying #launchLandingActions{
-  animation:launchActionsIn .48s ease forwards 1.72s!important;
-}
-</style>
-
 </head>
 <body>
 
@@ -4757,7 +4771,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.181</div>
+    <div class="launchVersion">SETTER THEORY　V150.182</div>
   </div>
 </section>
 
@@ -5451,7 +5465,7 @@ html.appEntered #home.active{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150181"></script>
+<script src="app_v141_setter_split.js?v=150182"></script>
 
 
 
@@ -5990,7 +6004,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.181</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.182</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8663,7 +8677,7 @@ html,body{background:#02040a!important}
     launchTimer = setTimeout(function(){
       document.documentElement.classList.remove('booting');
       showActions();
-    }, 2350);
+    }, 3000);
   }
 
   if(document.readyState === 'loading'){
