@@ -4605,7 +4605,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.175</div>
+    <div class="launchVersion">SETTER THEORY　V150.176</div>
   </div>
 </section>
 
@@ -5298,7 +5298,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150175"></script>
+<script src="app_v141_setter_split.js?v=150176"></script>
 
 
 
@@ -5837,7 +5837,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.175</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.176</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8129,10 +8129,12 @@ html,body{background:#02040a!important}
   animation:none;
 }
 @keyframes realAquilaGlide{
-  0%{transform:scale(.95) translateY(-8px)}
-  45%{transform:scale(1.015) translateY(4px)}
-  76%{transform:scale(.992) translateY(-2px)}
-  100%{transform:scale(1) translateY(0)}
+  0%{transform:scale(.88) translateY(-18px) rotate(-1.5deg)}
+  18%{transform:scale(1.06) translateY(5px) rotate(1.5deg)}
+  38%{transform:scale(.95) translateY(-10px) rotate(-1deg)}
+  58%{transform:scale(1.04) translateY(6px) rotate(.8deg)}
+  78%{transform:scale(.98) translateY(-3px) rotate(-.4deg)}
+  100%{transform:scale(1) translateY(0) rotate(0)}
 }
 
 .launchLandingScreen{
@@ -8189,7 +8191,7 @@ html,body{background:#02040a!important}
   left:50%;
   top:43%;
   width:min(74vw,760px);
-  transform:translate(-50%,-245%) scale(.42);
+  transform:translate(-50%,-360%) scale(.16);
   opacity:0;
   filter:blur(10px);
   animation:none;
@@ -8202,7 +8204,7 @@ html,body{background:#02040a!important}
 .carriedTitle{
   position:absolute;
   left:50%;
-  top:76%;
+  top:72%;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -8228,11 +8230,11 @@ html,body{background:#02040a!important}
   position:absolute;
   left:50%;
   top:64%;
-  width:min(72vw,700px);
-  height:3px;
+  width:min(78vw,760px);
+  height:5px;
   transform:translateX(-50%) scaleX(0);
   background:linear-gradient(90deg,transparent,#f59e0b,#fff,#f59e0b,transparent);
-  box-shadow:0 0 28px rgba(245,158,11,.9);
+  box-shadow:0 0 18px rgba(255,255,255,.9),0 0 42px rgba(245,158,11,.95);
   animation:none;
 }
 
@@ -8317,30 +8319,41 @@ html,body{background:#02040a!important}
 .launchLandingScreen.launchPlaying .aquilaBirdReal{
   animation:realAquilaGlide 1.75s cubic-bezier(.16,.78,.18,1) forwards .08s;
 }
+.launchLandingScreen.launchPlaying .carriedTitle{
+  animation:titleImpact .72s ease forwards 1.72s;
+}
 .launchLandingScreen.launchPlaying .titleLandingFlash{
-  animation:titleFlash .65s ease forwards 1.82s;
+  animation:titleFlash .72s ease forwards 1.78s;
 }
 .launchLandingScreen.launchPlaying .launchLandingActions{
-  animation:launchActionsIn .56s ease forwards 2.15s;
+  animation:launchActionsIn .58s ease forwards 2.52s;
 }
 
 @keyframes carrierFlyIn{
   0%{
     opacity:0;
-    filter:blur(12px);
-    transform:translate(-50%,-245%) scale(.42);
+    filter:blur(15px);
+    transform:translate(-50%,-360%) scale(.16) rotate(-5deg);
   }
-  48%{
+  22%{
+    opacity:.65;
+    filter:blur(8px);
+  }
+  52%{
     opacity:1;
-    filter:blur(2px);
+    filter:blur(1px);
+    transform:translate(-50%,-125%) scale(.72) rotate(2deg);
   }
-  78%{
-    transform:translate(-50%,-43%) scale(1.06);
+  76%{
+    transform:translate(-50%,-42%) scale(1.10) rotate(-1deg);
+  }
+  88%{
+    transform:translate(-50%,-53%) scale(.97) rotate(.4deg);
   }
   100%{
     opacity:1;
     filter:none;
-    transform:translate(-50%,-50%) scale(1);
+    transform:translate(-50%,-50%) scale(1) rotate(0);
   }
 }
 
@@ -8350,6 +8363,24 @@ html,body{background:#02040a!important}
   to{transform:rotate(6deg) translateY(5px)}
 }
 @keyframes atmosphereIn{to{opacity:1}}
+@keyframes titleImpact{
+  0%{
+    transform:translateX(-50%) scale(.92);
+    filter:brightness(.85);
+  }
+  42%{
+    transform:translateX(-50%) scale(1.08);
+    filter:brightness(1.8);
+    text-shadow:
+      0 0 18px rgba(255,255,255,.95),
+      0 0 42px rgba(245,158,11,.95),
+      0 12px 34px rgba(0,0,0,.8);
+  }
+  100%{
+    transform:translateX(-50%) scale(1);
+    filter:brightness(1);
+  }
+}
 @keyframes titleFlash{
   0%{transform:translateX(-50%) scaleX(0);opacity:0}
   45%{opacity:1}
@@ -8426,7 +8457,7 @@ html,body{background:#02040a!important}
         document.documentElement.classList.add('launchReady');
         if(screen) screen.classList.add('launchPlaying');
       });
-      launchTimer=setTimeout(finishLaunchAnimation,3200);
+      launchTimer=setTimeout(finishLaunchAnimation,3550);
     };
 
     if(bird && !bird.complete){
