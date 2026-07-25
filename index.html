@@ -4629,7 +4629,7 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
               <div class="teamEditorGrid">
                 <label>
                   <span>チーム名</span>
-                  <input id="teamNameInput" type="text" maxlength="40" placeholder="例：佐沼高校">
+                  <input id="teamNameInput" type="text" maxlength="40" placeholder="例：Aquila高校">
                 </label>
                 <label>
                   <span>年度</span>
@@ -4644,6 +4644,45 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
             </div>
 
             <div id="teamManagementList" class="teamManagementList"></div>
+
+            <div id="playerManager" class="playerManager" hidden>
+              <div class="playerManagerHeader">
+                <div>
+                  <strong id="playerManagerTitle">選手管理</strong>
+                  <p>背番号・選手名・セッター設定を登録できます。</p>
+                </div>
+                <button type="button" class="playerManagerCloseButton" onclick="closePlayerManager()">閉じる</button>
+              </div>
+
+              <input type="hidden" id="playerTeamId">
+              <input type="hidden" id="playerEditId">
+
+              <div class="playerEditorGrid">
+                <label>
+                  <span>背番号</span>
+                  <input id="playerNumberInput" type="text" maxlength="4" inputmode="numeric" placeholder="例：1">
+                </label>
+                <label>
+                  <span>選手名</span>
+                  <input id="playerNameInput" type="text" maxlength="30" placeholder="例：Aquila">
+                </label>
+                <label class="playerSetterLabel">
+                  <span>セッター</span>
+                  <select id="playerSetterInput">
+                    <option value="false">いいえ</option>
+                    <option value="true">はい</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="playerEditorActions">
+                <button type="button" class="playerSaveButton" onclick="savePlayerRecord()">選手を保存</button>
+                <button type="button" class="playerCancelButton" onclick="resetPlayerEditor()">入力をクリア</button>
+              </div>
+              <div id="playerEditorMessage" class="playerEditorMessage"></div>
+
+              <div id="playerManagementList" class="playerManagementList"></div>
+            </div>
           </div>
         </div>
       </details>
@@ -5721,7 +5760,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.158</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.159</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -7261,9 +7300,10 @@ function closePositionManager(){const m=document.getElementById('positionManager
             <span class="teamYearArrow">▼</span>
           </summary>
           <div class="teamYearBody">
-            <div class="teamYearMeta">登録選手 ${playerCount}名（選手登録は次の更新で追加）</div>
+            <div class="teamYearMeta">登録選手 ${playerCount}名</div>
             <div class="teamYearActions">
-              <button type="button" class="teamEditButton" onclick="editTeamRecord('${escapeTeamText(team.id)}')">編集</button>
+              <button type="button" class="teamPlayerButton" onclick="openPlayerManager('${escapeTeamText(team.id)}')">選手管理</button>
+              <button type="button" class="teamEditButton" onclick="editTeamRecord('${escapeTeamText(team.id)}')">チーム編集</button>
               <button type="button" class="teamDeleteButton" onclick="deleteTeamRecord('${escapeTeamText(team.id)}')">削除</button>
             </div>
           </div>
@@ -7285,6 +7325,374 @@ function closePositionManager(){const m=document.getElementById('positionManager
 })();
 </script>
 <script>/* cache marker: 150-158-team-year-management */</script>
+
+
+<style id="v150-159-player-management">
+/* V150.159: Aquila高校プレースホルダー・チーム別選手管理 */
+.teamPlayerButton{
+  border:0;
+  border-radius:9px;
+  background:#0f766e;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  min-height:38px;
+  padding:8px 12px;
+}
+.playerManager{
+  margin-top:4px;
+  padding:12px;
+  border:1px solid rgba(20,184,166,.55);
+  border-radius:12px;
+  background:rgba(15,23,42,.78);
+}
+.playerManager[hidden]{display:none!important}
+.playerManagerHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.playerManagerHeader strong{
+  display:block;
+  color:#fff;
+  font-size:15px;
+}
+.playerManagerHeader p{
+  margin:4px 0 0;
+  color:#cbd5e1;
+  font-size:11px;
+}
+.playerManagerCloseButton,.playerSaveButton,.playerCancelButton,.playerEditButton,.playerDeleteButton{
+  border:0;
+  border-radius:9px;
+  font-weight:800;
+  cursor:pointer;
+  min-height:38px;
+  padding:8px 12px;
+}
+.playerManagerCloseButton,.playerCancelButton,.playerEditButton{
+  background:#334155;
+  color:#fff;
+}
+.playerSaveButton{
+  background:#14b8a6;
+  color:#042f2e;
+}
+.playerDeleteButton{
+  background:#7f1d1d;
+  color:#fff;
+}
+.playerEditorGrid{
+  display:grid;
+  grid-template-columns:110px minmax(0,1fr) 110px;
+  gap:10px;
+}
+.playerEditorGrid label{
+  display:grid;
+  gap:5px;
+  color:#e2e8f0;
+  font-size:11px;
+  font-weight:800;
+}
+.playerEditorGrid input,.playerEditorGrid select{
+  width:100%;
+  box-sizing:border-box;
+  min-height:42px;
+  border:1px solid #64748b;
+  border-radius:9px;
+  background:#fff;
+  color:#111827;
+  font-size:16px;
+  padding:8px 10px;
+}
+.playerEditorActions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.playerEditorMessage{
+  min-height:18px;
+  margin-top:6px;
+  color:#fca5a5;
+  font-size:11px;
+  font-weight:700;
+}
+.playerManagementList{
+  display:grid;
+  gap:7px;
+  margin-top:8px;
+}
+.playerEmptyState{
+  padding:16px 12px;
+  border:1px dashed #64748b;
+  border-radius:10px;
+  color:#cbd5e1;
+  text-align:center;
+  font-size:12px;
+}
+.playerRow{
+  display:grid;
+  grid-template-columns:60px minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  border:1px solid rgba(148,163,184,.25);
+  border-radius:10px;
+  background:rgba(30,41,59,.75);
+}
+.playerNumberBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:32px;
+  border-radius:8px;
+  background:#f59e0b;
+  color:#111827;
+  font-size:13px;
+  font-weight:900;
+}
+.playerNameText{
+  min-width:0;
+  overflow:hidden;
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.playerSetterBadge{
+  padding:4px 7px;
+  border-radius:999px;
+  background:#0f766e;
+  color:#fff;
+  font-size:10px;
+  font-weight:900;
+}
+.playerRowActions{
+  display:flex;
+  gap:6px;
+}
+@media(max-width:640px){
+  .playerManagerHeader{align-items:stretch;flex-direction:column}
+  .playerManagerCloseButton{width:100%}
+  .playerEditorGrid{grid-template-columns:1fr}
+  .playerRow{
+    grid-template-columns:52px minmax(0,1fr) auto;
+  }
+  .playerRowActions{
+    grid-column:1/-1;
+    width:100%;
+  }
+  .playerEditButton,.playerDeleteButton{flex:1}
+}
+</style>
+
+
+<script>
+(function(){
+  const TEAM_STORAGE_KEY = 'setterTheoryTeamsV1';
+
+  function loadTeamsForPlayers(){
+    try{
+      const raw = localStorage.getItem(TEAM_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(error){
+      console.warn('player team data load failed', error);
+      return [];
+    }
+  }
+
+  function saveTeamsForPlayers(teams){
+    localStorage.setItem(TEAM_STORAGE_KEY, JSON.stringify(teams));
+  }
+
+  function escapePlayerText(value){
+    return String(value ?? '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function getActivePlayerTeam(){
+    const teamId = document.getElementById('playerTeamId')?.value || '';
+    const teams = loadTeamsForPlayers();
+    return {teams, teamId, team: teams.find(item => item.id === teamId)};
+  }
+
+  window.openPlayerManager = function(teamId){
+    const manager = document.getElementById('playerManager');
+    const teamIdInput = document.getElementById('playerTeamId');
+    const title = document.getElementById('playerManagerTitle');
+    if(!manager || !teamIdInput) return;
+
+    const teams = loadTeamsForPlayers();
+    const team = teams.find(item => item.id === teamId);
+    if(!team) return;
+
+    teamIdInput.value = teamId;
+    if(title) title.textContent = team.name + '（' + team.year + '年度）選手管理';
+    manager.hidden = false;
+    resetPlayerEditor();
+    renderPlayerManagement();
+    manager.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  window.closePlayerManager = function(){
+    const manager = document.getElementById('playerManager');
+    if(manager) manager.hidden = true;
+    resetPlayerEditor();
+  };
+
+  window.resetPlayerEditor = function(){
+    const editId = document.getElementById('playerEditId');
+    const numberInput = document.getElementById('playerNumberInput');
+    const nameInput = document.getElementById('playerNameInput');
+    const setterInput = document.getElementById('playerSetterInput');
+    const message = document.getElementById('playerEditorMessage');
+    if(editId) editId.value = '';
+    if(numberInput) numberInput.value = '';
+    if(nameInput) nameInput.value = '';
+    if(setterInput) setterInput.value = 'false';
+    if(message) message.textContent = '';
+  };
+
+  window.savePlayerRecord = function(){
+    const editId = document.getElementById('playerEditId');
+    const numberInput = document.getElementById('playerNumberInput');
+    const nameInput = document.getElementById('playerNameInput');
+    const setterInput = document.getElementById('playerSetterInput');
+    const message = document.getElementById('playerEditorMessage');
+    if(!editId || !numberInput || !nameInput || !setterInput) return;
+
+    const number = numberInput.value.trim();
+    const name = nameInput.value.trim();
+    const isSetter = setterInput.value === 'true';
+
+    if(!number){
+      if(message) message.textContent = '背番号を入力してください。';
+      numberInput.focus();
+      return;
+    }
+    if(!name){
+      if(message) message.textContent = '選手名を入力してください。';
+      nameInput.focus();
+      return;
+    }
+
+    const {teams, teamId, team} = getActivePlayerTeam();
+    if(!team) return;
+    if(!Array.isArray(team.players)) team.players = [];
+
+    const duplicateNumber = team.players.some(player =>
+      player.id !== editId.value &&
+      String(player.number).trim() === number
+    );
+    if(duplicateNumber){
+      if(message) message.textContent = '同じ背番号がすでに登録されています。';
+      return;
+    }
+
+    const now = new Date().toISOString();
+    if(editId.value){
+      const index = team.players.findIndex(player => player.id === editId.value);
+      if(index >= 0){
+        team.players[index] = {
+          ...team.players[index],
+          number,
+          name,
+          isSetter,
+          updatedAt: now
+        };
+      }
+    }else{
+      team.players.push({
+        id:'player_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+        number,
+        name,
+        isSetter,
+        createdAt: now,
+        updatedAt: now
+      });
+    }
+
+    const teamIndex = teams.findIndex(item => item.id === teamId);
+    teams[teamIndex] = {...team, updatedAt: now};
+    saveTeamsForPlayers(teams);
+    resetPlayerEditor();
+    renderPlayerManagement();
+    if(typeof window.renderTeamManagement === 'function') window.renderTeamManagement();
+  };
+
+  window.editPlayerRecord = function(playerId){
+    const {team} = getActivePlayerTeam();
+    if(!team || !Array.isArray(team.players)) return;
+    const player = team.players.find(item => item.id === playerId);
+    if(!player) return;
+
+    document.getElementById('playerEditId').value = player.id;
+    document.getElementById('playerNumberInput').value = player.number ?? '';
+    document.getElementById('playerNameInput').value = player.name ?? '';
+    document.getElementById('playerSetterInput').value = player.isSetter ? 'true' : 'false';
+    document.getElementById('playerEditorMessage').textContent = '編集中：保存すると上書きされます。';
+  };
+
+  window.deletePlayerRecord = function(playerId){
+    const {teams, teamId, team} = getActivePlayerTeam();
+    if(!team || !Array.isArray(team.players)) return;
+    const player = team.players.find(item => item.id === playerId);
+    if(!player) return;
+    if(!confirm('背番号' + player.number + ' ' + player.name + 'を削除しますか？')) return;
+
+    team.players = team.players.filter(item => item.id !== playerId);
+    const teamIndex = teams.findIndex(item => item.id === teamId);
+    teams[teamIndex] = {...team, updatedAt:new Date().toISOString()};
+    saveTeamsForPlayers(teams);
+    resetPlayerEditor();
+    renderPlayerManagement();
+    if(typeof window.renderTeamManagement === 'function') window.renderTeamManagement();
+  };
+
+  window.renderPlayerManagement = function(){
+    const list = document.getElementById('playerManagementList');
+    if(!list) return;
+    const {team} = getActivePlayerTeam();
+    if(!team) {
+      list.innerHTML = '';
+      return;
+    }
+
+    const players = Array.isArray(team.players) ? [...team.players] : [];
+    players.sort((a,b) => {
+      const an = Number(a.number), bn = Number(b.number);
+      if(Number.isFinite(an) && Number.isFinite(bn) && an !== bn) return an - bn;
+      return String(a.number).localeCompare(String(b.number), 'ja');
+    });
+
+    if(!players.length){
+      list.innerHTML = '<div class="playerEmptyState">登録選手はまだありません。<br>上の入力欄から追加してください。</div>';
+      return;
+    }
+
+    list.innerHTML = players.map(player => `
+      <div class="playerRow">
+        <div class="playerNumberBadge">${escapePlayerText(player.number)}</div>
+        <div class="playerNameText">${escapePlayerText(player.name)}</div>
+        ${player.isSetter ? '<span class="playerSetterBadge">SETTER</span>' : '<span></span>'}
+        <div class="playerRowActions">
+          <button type="button" class="playerEditButton" onclick="editPlayerRecord('${escapePlayerText(player.id)}')">編集</button>
+          <button type="button" class="playerDeleteButton" onclick="deletePlayerRecord('${escapePlayerText(player.id)}')">削除</button>
+        </div>
+      </div>
+    `).join('');
+  };
+})();
+</script>
+<script>/* cache marker: 150-159-player-management */</script>
 
 </body>
 </html>
