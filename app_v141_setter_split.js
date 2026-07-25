@@ -1414,6 +1414,7 @@ function archiveFinishedCurrentMatch(){
   const analysis=analyzeImportedCsv(parsed);
   const setterIqs=setterIqItemsFromCurrentState();
   const primarySetterIq=setterIqs[0]||null;
+  const teamMeta=currentSavedMatchTeamMeta();
   const now=new Date();
   const title=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")} ${s.team||"自チーム"} vs ${s.oppTeam||"相手"} ${s.my||0}-${s.op||0}`;
   const list=getSavedMatches();
@@ -1432,7 +1433,11 @@ function archiveFinishedCurrentMatch(){
     },
     liveState:JSON.parse(JSON.stringify({...s,hist:[]})),
     dataVersion:DATA_SCHEMA_VERSION, schemaVersion:DATA_SCHEMA_VERSION,
-    userId:s.userId, teamId:s.teamId, matchId:s.matchId, setId:s.setId,
+    userId:s.userId,
+    teamId:teamMeta.teamId,
+    teamName:teamMeta.teamName,
+    teamYear:teamMeta.teamYear,
+    matchId:s.matchId, setId:s.setId,
     playerIdentities:{...(s.playerIdentities||{})}
   });
   const withoutSame=list.filter(m=>String(m.matchId||m.id)!==String(saved.matchId));
@@ -5851,6 +5856,50 @@ function buildCoachCards(a){
   </div>`;
 }
 
+
+function registeredTeamById(teamId){
+  const id=String(teamId||'');
+  if(!id) return null;
+  return registeredTeamsForSetup().find(team=>String(team.id||'')===id)||null;
+}
+
+function currentSavedMatchTeamMeta(){
+  const teamId=String(s.teamId||s.selectedTeamId||localStorage.getItem('setterTheoryTeamId')||'');
+  const registered=registeredTeamById(teamId);
+  return {
+    teamId,
+    teamName:String(registered?.name||s.team||'').trim(),
+    teamYear:String(registered?.year||'').trim()
+  };
+}
+
+function savedMatchTeamMeta(match){
+  const teamId=String(match?.teamId||match?.csv?.teamId||'').trim();
+  const registered=registeredTeamById(teamId);
+  const teamName=String(
+    match?.teamName||
+    match?.csv?.teamName||
+    registered?.name||
+    ''
+  ).trim();
+  const teamYear=String(
+    match?.teamYear||
+    match?.csv?.teamYear||
+    registered?.year||
+    ''
+  ).trim();
+  return {
+    teamId,
+    teamName:teamName||'チーム未設定',
+    teamYear
+  };
+}
+
+function savedMatchTeamGroupKey(match){
+  const meta=savedMatchTeamMeta(match);
+  return meta.teamId ? `team:${meta.teamId}` : `name:${meta.teamName}:${meta.teamYear}`;
+}
+
 function savedMatchesKey(){ return 'setterTheorySavedMatchesV21'; }
 function playerRegistryKey(){ return 'setterTheoryPlayerRegistryV1'; }
 function createStablePlayerId(){ return createEntityId('player'); }
@@ -5902,7 +5951,10 @@ function migrateSavedMatchIdentities(match){
   match.dataVersion=DATA_SCHEMA_VERSION;
   match.schemaVersion=DATA_SCHEMA_VERSION;
   match.userId=String(match.userId||localStorage.getItem('setterTheoryUserId')||createEntityId('user'));
-  match.teamId=String(match.teamId||localStorage.getItem('setterTheoryTeamId')||createEntityId('team'));
+  match.teamId=String(match.teamId||match?.csv?.teamId||'');
+  const teamMeta=savedMatchTeamMeta(match);
+  match.teamName=String(match.teamName||teamMeta.teamName||'チーム未設定');
+  match.teamYear=String(match.teamYear||teamMeta.teamYear||'');
   match.id=String(match.id||createEntityId('match'));
   match.matchId=String(match.matchId||match.id);
   match.setId=String(match.setId||`${match.matchId}_set_${match?.csv?.setNo||1}`);
@@ -6056,6 +6108,7 @@ function saveCurrentMatch(){
   const title=(nameInput && nameInput.value.trim()) || suggestedMatchName();
   const list=getSavedMatches();
   const summary=currentAnalysisSummary();
+  const teamMeta=currentSavedMatchTeamMeta();
   const saved={
     id:createEntityId('match'),
     title,
@@ -6067,7 +6120,9 @@ function saveCurrentMatch(){
     dataVersion:DATA_SCHEMA_VERSION,
     schemaVersion:DATA_SCHEMA_VERSION,
     userId:String(s.userId||localStorage.getItem('setterTheoryUserId')||''),
-    teamId:String(s.teamId||localStorage.getItem('setterTheoryTeamId')||''),
+    teamId:teamMeta.teamId,
+    teamName:teamMeta.teamName,
+    teamYear:teamMeta.teamYear,
     matchId:String(s.matchId||createEntityId('match')),
     setId:String(s.setId||''),
     playerIdentities:Object.fromEntries(savedMatchSetterMeta({csv:importedCsv}).map(meta=>[String(meta.num||''),ensureStablePlayerId(meta.name,meta.num,meta.playerId)]).filter(x=>x[0]&&x[1]))
@@ -6234,6 +6289,37 @@ function renameSavedMatch(id){
   setSavedMatches(list);
   renderSavedMatches();
 }
+function savedMatchItemHtml(m){
+  const d=m.savedAt ? new Date(m.savedAt) : new Date();
+  const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  const iqItems=savedMatchIqItems(m);
+  const iqBadges=iqItems.length
+    ? iqItems.map((item,index)=>{
+        const iqRaw=Number.isFinite(Number(item.iq))?Number(item.iq):null;
+        const iq=iqRaw===null?'--':Math.round(iqRaw);
+        const iqClass=iqRaw===null?'iqEmpty':iqRaw>=90?'iqExcellent':iqRaw>=80?'iqGood':iqRaw>=70?'iqFair':'iqLow';
+        const label=iqItems.length>1?`S${index+1}`:'IQ';
+        const name=item.name?` ${escapeHtml(item.name)}`:'';
+        return `<div class="savedIqUnit"><small>${label}${name}</small><div class="savedIqBadge ${iqClass}" aria-label="${label} Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div></div>`;
+      }).join('')
+    : `<div class="savedIqUnit"><small>IQ</small><div class="savedIqBadge iqEmpty" aria-label="Setter IQ --/100"><b>--</b><span>/100</span></div></div>`;
+  const total=iqItems.reduce((sum,item)=>sum+Number(item.total||0),0) || ((m.summary && m.summary.total) ? m.summary.total : 0);
+  return `<div class="savedMatchItem">
+    <div>
+      <div class="savedMatchTitle">${escapeHtml(m.title||'無題の試合')}</div>
+      <div class="savedMatchMeta">${escapeHtml(date)}　${escapeHtml(m.fileName||'CSV')}　トス${total}本</div>
+    </div>
+    <div class="savedMatchActions">
+      <div class="savedIqBadgeGroup ${iqItems.length>1?'isTwoSetter':''}">${iqBadges}</div>
+      <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">レポート</button>
+      <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id}')">PDF</button>
+      <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id}')">CSV</button>
+      <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
+      <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
+    </div>
+  </div>`;
+}
+
 function renderSavedMatches(){
   const listEl=document.getElementById('savedMatchList');
   const countEl=document.getElementById('savedMatchCount');
@@ -6243,38 +6329,49 @@ function renderSavedMatches(){
   const backup=readSavedMatchStore(savedMatchesBackupKey());
   updateSavedMatchBackupState(backup&&backup.savedAt);
   renderCompareSelectors();
-  // V93.7: 保存件数の変化を成長ダッシュボードへ即時反映する。
   setTimeout(()=>{ try{ renderGrowthDashboard(); }catch(e){ console.error('growth dashboard render failed',e); } },0);
-  if(!list.length){ listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。試合終了後、ここへ自動保存されます。</div>'; return; }
-  listEl.innerHTML=list.map(m=>{
-    const d=m.savedAt ? new Date(m.savedAt) : new Date();
-    const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-    const iqItems=savedMatchIqItems(m);
-    const iqBadges=iqItems.length
-      ? iqItems.map((item,index)=>{
-          const iqRaw=Number.isFinite(Number(item.iq))?Number(item.iq):null;
-          const iq=iqRaw===null?'--':Math.round(iqRaw);
-          const iqClass=iqRaw===null?'iqEmpty':iqRaw>=90?'iqExcellent':iqRaw>=80?'iqGood':iqRaw>=70?'iqFair':'iqLow';
-          const label=iqItems.length>1?`S${index+1}`:'IQ';
-          const name=item.name?` ${escapeHtml(item.name)}`:'';
-          return `<div class="savedIqUnit"><small>${label}${name}</small><div class="savedIqBadge ${iqClass}" aria-label="${label} Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div></div>`;
-        }).join('')
-      : `<div class="savedIqUnit"><small>IQ</small><div class="savedIqBadge iqEmpty" aria-label="Setter IQ --/100"><b>--</b><span>/100</span></div></div>`;
-    const total=iqItems.reduce((sum,item)=>sum+Number(item.total||0),0) || ((m.summary && m.summary.total) ? m.summary.total : 0);
-    return `<div class="savedMatchItem">
-      <div>
-        <div class="savedMatchTitle">${escapeHtml(m.title||'無題の試合')}</div>
-        <div class="savedMatchMeta">${escapeHtml(date)}　${escapeHtml(m.fileName||'CSV')}　トス${total}本</div>
+
+  if(!list.length){
+    listEl.innerHTML='<div class="csvSmall">保存された試合はまだありません。試合終了後、ここへ自動保存されます。</div>';
+    return;
+  }
+
+  const grouped=new Map();
+  list.forEach(match=>{
+    const key=savedMatchTeamGroupKey(match);
+    if(!grouped.has(key)){
+      grouped.set(key,{meta:savedMatchTeamMeta(match),matches:[]});
+    }
+    grouped.get(key).matches.push(match);
+  });
+
+  const groups=[...grouped.values()].sort((a,b)=>{
+    if(a.meta.teamName==='チーム未設定' && b.meta.teamName!=='チーム未設定') return 1;
+    if(b.meta.teamName==='チーム未設定' && a.meta.teamName!=='チーム未設定') return -1;
+    const yearDiff=Number(b.meta.teamYear||0)-Number(a.meta.teamYear||0);
+    if(yearDiff) return yearDiff;
+    return String(a.meta.teamName).localeCompare(String(b.meta.teamName),'ja');
+  });
+
+  listEl.innerHTML=groups.map((group,index)=>{
+    const meta=group.meta;
+    const yearLabel=meta.teamYear?`${escapeHtml(meta.teamYear)}年度`:'年度未設定';
+    const latest=group.matches[0]?.savedAt ? new Date(group.matches[0].savedAt) : null;
+    const latestText=latest&&!Number.isNaN(latest.getTime())
+      ? `${latest.getFullYear()}/${String(latest.getMonth()+1).padStart(2,'0')}/${String(latest.getDate()).padStart(2,'0')}`
+      : '';
+    const open=index===0?' open':'';
+    return `<details class="savedTeamGroup"${open}>
+      <summary>
+        <span class="savedTeamGroupName">${escapeHtml(meta.teamName)}</span>
+        <span class="savedTeamGroupYear">${yearLabel}</span>
+        <span class="savedTeamGroupCount">${group.matches.length}試合</span>
+        ${latestText?`<span class="savedTeamGroupLatest">最新 ${escapeHtml(latestText)}</span>`:''}
+      </summary>
+      <div class="savedTeamGroupBody">
+        ${group.matches.map(savedMatchItemHtml).join('')}
       </div>
-      <div class="savedMatchActions">
-        <div class="savedIqBadgeGroup ${iqItems.length>1?'isTwoSetter':''}">${iqBadges}</div>
-        <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">レポート</button>
-        <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id}')">PDF</button>
-        <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id}')">CSV</button>
-        <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
-        <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
-      </div>
-    </div>`;
+    </details>`;
   }).join('');
 }
 
