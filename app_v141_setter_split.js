@@ -1412,13 +1412,18 @@ function currentMatchAsImportedCsv(){
 function archiveFinishedCurrentMatch(){
   const parsed=currentMatchAsImportedCsv();
   const analysis=analyzeImportedCsv(parsed);
+  const setterIqs=setterIqItemsFromCurrentState();
+  const primarySetterIq=setterIqs[0]||null;
   const now=new Date();
   const title=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")} ${s.team||"自チーム"} vs ${s.oppTeam||"相手"} ${s.my||0}-${s.op||0}`;
   const list=getSavedMatches();
   const saved=migrateSavedMatchIdentities({
     id:String(s.matchId||createEntityId("match")), title, fileName:parsed.fileName,
     savedAt:now.toISOString(), memo:"", csv:parsed, summary:{
-      total:analysis.total, setterIq:analysis.setterIq, balance:analysis.balance,
+      total:setterIqs.reduce((sum,item)=>sum+Number(item.total||0),0) || analysis.total,
+      setterIq:primarySetterIq&&primarySetterIq.iq!==null ? primarySetterIq.iq : analysis.setterIq,
+      setterIqs,
+      balance:analysis.balance,
       diversity:analysis.diversity, quick:analysis.quick, clutch:analysis.clutch,
       foreshadow:analysis.foreshadow, blockInduce:analysis.blockInduce,
       sideDepend:analysis.sideDepend, centerPct:analysis.centerPct, items:analysis.items,
@@ -5975,11 +5980,70 @@ function suggestedMatchName(){
   const file=(importedCsv && importedCsv.fileName) ? importedCsv.fileName.replace(/\.csv$/i,'') : 'CSV解析';
   return `${day} ${file}`;
 }
+
+function setterIqItemsFromCurrentState(){
+  return reportSetterNumbers().slice(0,2).map((num,index)=>{
+    const analysis=currentSetterAnalysisFor(num);
+    return {
+      role:`Setter${index+1}`,
+      number:String(num),
+      name:String(analysis.name||getPlayerName(num)||''),
+      iq:analysis.total ? Number(analysis.setterIq||0) : null,
+      total:Number(analysis.total||0)
+    };
+  });
+}
+
+function setterIqItemsForParsed(parsed){
+  if(!parsed) return [];
+  try{
+    return withImportedMatchState(parsed,()=>setterIqItemsFromCurrentState());
+  }catch(error){
+    console.warn('setter IQ restore failed',error);
+    return [];
+  }
+}
+
+function savedMatchIqItems(match){
+  const stored=Array.isArray(match?.summary?.setterIqs)
+    ? match.summary.setterIqs.map((item,index)=>({
+        role:String(item?.role||`Setter${index+1}`),
+        number:String(item?.number||item?.num||''),
+        name:String(item?.name||''),
+        iq:item?.iq===null||item?.iq===undefined||item?.iq===''?null:Number(item.iq),
+        total:Number(item?.total||0)
+      })).slice(0,2)
+    : [];
+
+  // 保存時にセッター別IQを保持している新データは、それを使用する。
+  if(stored.length) return stored;
+
+  // 旧保存データはCSVからセッター分析カードと同じ計算処理で再計算する。
+  const parsed=recoveryNormalizePayload(
+    match?.csv||match?.parsed||match?.data||match,
+    match?.fileName||match?.title||'保存試合'
+  );
+  const restored=setterIqItemsForParsed(parsed);
+  if(restored.length) return restored;
+
+  // 最後の互換処理。旧summaryの単一IQを1名分として扱う。
+  const legacy=match?.summary?.setterIq;
+  return Number.isFinite(Number(legacy))
+    ? [{role:'Setter1',number:'',name:'',iq:Number(legacy),total:Number(match?.summary?.total||0)}]
+    : [];
+}
+
 function currentAnalysisSummary(){
   if(!importedCsv) return null;
   const a=analyzeImportedCsv(importedCsv);
+  const setterIqs=setterIqItemsForParsed(importedCsv);
+  const primary=setterIqs[0]||null;
   return {
-    total:a.total, setterIq:a.setterIq, balance:a.balance, diversity:a.diversity, quick:a.quick,
+    total:setterIqs.reduce((sum,item)=>sum+Number(item.total||0),0) || a.total,
+    // 旧画面との互換用。ワンセッター時は分析カード①と同じIQになる。
+    setterIq:primary&&primary.iq!==null ? primary.iq : a.setterIq,
+    setterIqs,
+    balance:a.balance, diversity:a.diversity, quick:a.quick,
     clutch:a.clutch, foreshadow:a.foreshadow, blockInduce:a.blockInduce, sideDepend:a.sideDepend, centerPct:a.centerPct, items:a.items,
     bySet:a.bySet, byRot:a.byRot, byScore:a.byScore, byPass:a.byPass,
     terminalCounts:a.terminalCounts, usedFallback:a.usedFallback
@@ -6185,17 +6249,25 @@ function renderSavedMatches(){
   listEl.innerHTML=list.map(m=>{
     const d=m.savedAt ? new Date(m.savedAt) : new Date();
     const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-    const iqRaw=(m.summary && Number.isFinite(Number(m.summary.setterIq))) ? Number(m.summary.setterIq) : null;
-    const iq=iqRaw===null ? '--' : Math.round(iqRaw);
-    const iqClass=iqRaw===null?'iqEmpty':iqRaw>=90?'iqExcellent':iqRaw>=80?'iqGood':iqRaw>=70?'iqFair':'iqLow';
-    const total=(m.summary && m.summary.total) ? m.summary.total : 0;
+    const iqItems=savedMatchIqItems(m);
+    const iqBadges=iqItems.length
+      ? iqItems.map((item,index)=>{
+          const iqRaw=Number.isFinite(Number(item.iq))?Number(item.iq):null;
+          const iq=iqRaw===null?'--':Math.round(iqRaw);
+          const iqClass=iqRaw===null?'iqEmpty':iqRaw>=90?'iqExcellent':iqRaw>=80?'iqGood':iqRaw>=70?'iqFair':'iqLow';
+          const label=iqItems.length>1?`S${index+1}`:'IQ';
+          const name=item.name?` ${escapeHtml(item.name)}`:'';
+          return `<div class="savedIqUnit"><small>${label}${name}</small><div class="savedIqBadge ${iqClass}" aria-label="${label} Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div></div>`;
+        }).join('')
+      : `<div class="savedIqUnit"><small>IQ</small><div class="savedIqBadge iqEmpty" aria-label="Setter IQ --/100"><b>--</b><span>/100</span></div></div>`;
+    const total=iqItems.reduce((sum,item)=>sum+Number(item.total||0),0) || ((m.summary && m.summary.total) ? m.summary.total : 0);
     return `<div class="savedMatchItem">
       <div>
         <div class="savedMatchTitle">${escapeHtml(m.title||'無題の試合')}</div>
         <div class="savedMatchMeta">${escapeHtml(date)}　${escapeHtml(m.fileName||'CSV')}　トス${total}本</div>
       </div>
       <div class="savedMatchActions">
-        <div class="savedIqBadge ${iqClass}" aria-label="Setter IQ ${iq}/100"><b>${iq}</b><span>/100</span></div>
+        <div class="savedIqBadgeGroup ${iqItems.length>1?'isTwoSetter':''}">${iqBadges}</div>
         <button class="miniBtn" type="button" onclick="loadSavedMatch('${m.id}')">レポート</button>
         <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id}')">PDF</button>
         <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id}')">CSV</button>
@@ -6209,8 +6281,11 @@ function renderSavedMatches(){
 function matchOptionLabel(m){
   const d=m.savedAt ? new Date(m.savedAt) : new Date();
   const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-  const iq=(m.summary && m.summary.setterIq) ? m.summary.setterIq : '-';
-  return `${date}｜${m.title || m.fileName || '無題'}｜IQ ${iq}`;
+  const iqItems=savedMatchIqItems(m);
+  const iqText=iqItems.length
+    ? iqItems.map((item,index)=>`${iqItems.length>1?`S${index+1} `:''}${item.iq===null?'--':Math.round(Number(item.iq))}`).join(' / ')
+    : '-';
+  return `${date}｜${m.title || m.fileName || '無題'}｜IQ ${iqText}`;
 }
 function renderCompareSelectors(){
   const from=document.getElementById('compareFrom');
