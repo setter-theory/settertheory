@@ -4745,6 +4745,56 @@ html.appEntered #home.active{
 }
 </style>
 
+
+<style id="v150-183-deferred-logo-mount">
+#logoIntroMount{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  background:transparent!important;
+}
+
+#logoIntroMount:empty{
+  display:block!important;
+}
+
+/* 初回描画時にはロゴ要素そのものが存在しない */
+#logoIntroMount .logoIntroWrap{
+  visibility:visible!important;
+  opacity:1!important;
+  animation:none!important;
+  background:transparent!important;
+  transform:translate3d(-50%,-50%,0)!important;
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+  contain:layout paint style;
+}
+
+#logoIntroMount .logoIntroText{
+  opacity:0;
+  transform:translate3d(0,0,0) scale(.94);
+  filter:blur(8px);
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+  will-change:opacity,transform,filter;
+}
+
+#launchLanding.launchPlaying #logoIntroMount .logoIntroText{
+  animation:logoTextReveal 1.35s cubic-bezier(.18,.78,.2,1) forwards .18s!important;
+}
+
+#logoIntroMount .logoIntroShine{
+  opacity:0;
+  visibility:hidden;
+}
+
+#launchLanding.launchPlaying #logoIntroMount .logoIntroShine{
+  visibility:visible;
+  animation:logoShinePass .82s ease-in-out forwards 1.32s!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4754,10 +4804,7 @@ html.appEntered #home.active{
   <button class="launchSkipButton" type="button" onclick="finishLaunchAnimation()" aria-label="演出をスキップ">SKIP</button>
 
   <div class="launchStage">
-    <div class="logoIntroWrap" aria-hidden="true">
-      <div class="logoIntroText">SETTER THEORY</div>
-      <div class="logoIntroShine"></div>
-    </div>
+    <div id="logoIntroMount" class="logoIntroMount" aria-hidden="true"></div>
   </div>
 
   <div class="launchLandingActions" id="launchLandingActions">
@@ -4771,7 +4818,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.182</div>
+    <div class="launchVersion">SETTER THEORY　V150.183</div>
   </div>
 </section>
 
@@ -5465,7 +5512,7 @@ html.appEntered #home.active{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150182"></script>
+<script src="app_v141_setter_split.js?v=150183"></script>
 
 
 
@@ -6004,7 +6051,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.182</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.183</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8659,6 +8706,27 @@ html,body{background:#02040a!important}
     alert(label + '機能は、クラウド保存・端末同期と一緒に実装予定です。\n現在は「ゲストで始める」から既存データを利用できます。');
   };
 
+  function mountLaunchLogo(){
+    const mount = document.getElementById('logoIntroMount');
+    if(!mount || mount.dataset.mounted === 'true') return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'logoIntroWrap';
+    wrap.setAttribute('aria-hidden', 'true');
+
+    const text = document.createElement('div');
+    text.className = 'logoIntroText';
+    text.textContent = 'SETTER THEORY';
+
+    const shine = document.createElement('div');
+    shine.className = 'logoIntroShine';
+
+    wrap.appendChild(text);
+    wrap.appendChild(shine);
+    mount.appendChild(wrap);
+    mount.dataset.mounted = 'true';
+  }
+
   function startLaunch(){
     if(started) return;
     started = true;
@@ -8668,9 +8736,13 @@ html,body{background:#02040a!important}
 
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
-        if(screen){
-          screen.classList.add('launchPlaying');
-        }
+        mountLaunchLogo();
+
+        requestAnimationFrame(function(){
+          if(screen){
+            screen.classList.add('launchPlaying');
+          }
+        });
       });
     });
 
