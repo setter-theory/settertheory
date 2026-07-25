@@ -4612,12 +4612,38 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
       <details class="homeAccordion teamManagementAccordion" id="teamManagementCard">
         <summary>
           <span>👥 チーム管理</span>
-          <span class="savedMatchCount">チーム・選手登録</span>
+          <span class="savedMatchCount" id="teamManagementCount">0チーム</span>
         </summary>
         <div class="homeAccordionBody">
-          <div class="teamManagementPlaceholder">
-            <strong>チーム管理</strong>
-            <p>次の更新で、チーム名・背番号・選手名を登録できるようにします。</p>
+          <div class="teamManagementPanel">
+            <div class="teamManagementHeader">
+              <div>
+                <strong>チーム・年度管理</strong>
+                <p>チーム名と年度を登録します。選手登録は次の更新で追加します。</p>
+              </div>
+              <button type="button" class="teamAddButton" onclick="openTeamEditor()">＋ チーム追加</button>
+            </div>
+
+            <div id="teamEditor" class="teamEditor" hidden>
+              <input type="hidden" id="teamEditId">
+              <div class="teamEditorGrid">
+                <label>
+                  <span>チーム名</span>
+                  <input id="teamNameInput" type="text" maxlength="40" placeholder="例：佐沼高校">
+                </label>
+                <label>
+                  <span>年度</span>
+                  <input id="teamYearInput" type="number" min="2000" max="2100" inputmode="numeric">
+                </label>
+              </div>
+              <div class="teamEditorActions">
+                <button type="button" class="teamSaveButton" onclick="saveTeamRecord()">保存</button>
+                <button type="button" class="teamCancelButton" onclick="closeTeamEditor()">キャンセル</button>
+              </div>
+              <div id="teamEditorMessage" class="teamEditorMessage"></div>
+            </div>
+
+            <div id="teamManagementList" class="teamManagementList"></div>
           </div>
         </div>
       </details>
@@ -5695,7 +5721,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.157</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.158</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -6911,6 +6937,355 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 <script>/* cache marker: 150-156-saved-report-ranking-black-text */</script>
+
+<style id="v150-158-team-year-management">
+/* V150.158: チーム名・年度の登録、編集、削除、端末保存 */
+.teamManagementPanel{
+  display:grid;
+  gap:12px;
+}
+.teamManagementHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  border:1px solid rgba(148,163,184,.28);
+  border-radius:12px;
+  background:rgba(15,23,42,.42);
+}
+.teamManagementHeader strong{
+  display:block;
+  color:#fff;
+  font-size:15px;
+}
+.teamManagementHeader p{
+  margin:4px 0 0;
+  color:#cbd5e1;
+  font-size:11px;
+}
+.teamAddButton,.teamSaveButton,.teamCancelButton,.teamEditButton,.teamDeleteButton{
+  border:0;
+  border-radius:9px;
+  font-weight:800;
+  cursor:pointer;
+  min-height:38px;
+  padding:8px 12px;
+}
+.teamAddButton,.teamSaveButton{
+  background:#f59e0b;
+  color:#111827;
+}
+.teamCancelButton,.teamEditButton{
+  background:#334155;
+  color:#fff;
+}
+.teamDeleteButton{
+  background:#7f1d1d;
+  color:#fff;
+}
+.teamEditor{
+  padding:12px;
+  border:1px solid rgba(245,158,11,.55);
+  border-radius:12px;
+  background:rgba(15,23,42,.70);
+}
+.teamEditor[hidden]{display:none!important}
+.teamEditorGrid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 130px;
+  gap:10px;
+}
+.teamEditorGrid label{
+  display:grid;
+  gap:5px;
+  color:#e2e8f0;
+  font-size:11px;
+  font-weight:800;
+}
+.teamEditorGrid input{
+  width:100%;
+  box-sizing:border-box;
+  min-height:42px;
+  border:1px solid #64748b;
+  border-radius:9px;
+  background:#fff;
+  color:#111827;
+  font-size:16px;
+  padding:8px 10px;
+}
+.teamEditorActions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.teamEditorMessage{
+  min-height:18px;
+  margin-top:6px;
+  color:#fca5a5;
+  font-size:11px;
+  font-weight:700;
+}
+.teamManagementList{
+  display:grid;
+  gap:8px;
+}
+.teamEmptyState{
+  padding:18px 12px;
+  border:1px dashed #64748b;
+  border-radius:11px;
+  color:#cbd5e1;
+  text-align:center;
+  font-size:12px;
+}
+.teamYearCard{
+  border:1px solid rgba(148,163,184,.30);
+  border-radius:11px;
+  overflow:hidden;
+  background:rgba(15,23,42,.48);
+}
+.teamYearCard summary{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  list-style:none;
+  padding:12px;
+}
+.teamYearCard summary::-webkit-details-marker{display:none}
+.teamYearMain{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+.teamYearBadge{
+  flex:0 0 auto;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#f59e0b;
+  color:#111827;
+  font-size:10px;
+  font-weight:900;
+}
+.teamYearName{
+  overflow:hidden;
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.teamYearArrow{
+  color:#cbd5e1;
+  font-size:11px;
+}
+.teamYearCard[open] .teamYearArrow{transform:rotate(180deg)}
+.teamYearBody{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px 12px;
+  border-top:1px solid rgba(148,163,184,.22);
+}
+.teamYearMeta{
+  color:#cbd5e1;
+  font-size:11px;
+}
+.teamYearActions{
+  display:flex;
+  gap:7px;
+}
+@media(max-width:640px){
+  .teamManagementHeader{align-items:stretch;flex-direction:column}
+  .teamAddButton{width:100%}
+  .teamEditorGrid{grid-template-columns:1fr}
+  .teamYearBody{align-items:stretch;flex-direction:column}
+  .teamYearActions{width:100%}
+  .teamEditButton,.teamDeleteButton{flex:1}
+}
+</style>
+
+<script>
+(function(){
+  const TEAM_STORAGE_KEY = 'setterTheoryTeamsV1';
+
+  function loadTeams(){
+    try{
+      const raw = localStorage.getItem(TEAM_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(error){
+      console.warn('team data load failed', error);
+      return [];
+    }
+  }
+
+  function storeTeams(teams){
+    localStorage.setItem(TEAM_STORAGE_KEY, JSON.stringify(teams));
+  }
+
+  function escapeTeamText(value){
+    return String(value ?? '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function currentTeamYear(){
+    return new Date().getFullYear();
+  }
+
+  window.openTeamEditor = function(teamId){
+    const editor = document.getElementById('teamEditor');
+    const idInput = document.getElementById('teamEditId');
+    const nameInput = document.getElementById('teamNameInput');
+    const yearInput = document.getElementById('teamYearInput');
+    const message = document.getElementById('teamEditorMessage');
+    if(!editor || !idInput || !nameInput || !yearInput) return;
+
+    const teams = loadTeams();
+    const team = teamId ? teams.find(item => item.id === teamId) : null;
+    idInput.value = team ? team.id : '';
+    nameInput.value = team ? team.name : '';
+    yearInput.value = team ? team.year : currentTeamYear();
+    if(message) message.textContent = '';
+    editor.hidden = false;
+    requestAnimationFrame(() => nameInput.focus());
+  };
+
+  window.closeTeamEditor = function(){
+    const editor = document.getElementById('teamEditor');
+    const message = document.getElementById('teamEditorMessage');
+    if(editor) editor.hidden = true;
+    if(message) message.textContent = '';
+  };
+
+  window.saveTeamRecord = function(){
+    const idInput = document.getElementById('teamEditId');
+    const nameInput = document.getElementById('teamNameInput');
+    const yearInput = document.getElementById('teamYearInput');
+    const message = document.getElementById('teamEditorMessage');
+    if(!idInput || !nameInput || !yearInput) return;
+
+    const name = nameInput.value.trim();
+    const year = Number(yearInput.value);
+    if(!name){
+      if(message) message.textContent = 'チーム名を入力してください。';
+      nameInput.focus();
+      return;
+    }
+    if(!Number.isInteger(year) || year < 2000 || year > 2100){
+      if(message) message.textContent = '年度は2000〜2100の数字で入力してください。';
+      yearInput.focus();
+      return;
+    }
+
+    const teams = loadTeams();
+    const duplicate = teams.some(item =>
+      item.id !== idInput.value &&
+      item.name.trim().toLowerCase() === name.toLowerCase() &&
+      Number(item.year) === year
+    );
+    if(duplicate){
+      if(message) message.textContent = '同じチーム名・年度がすでに登録されています。';
+      return;
+    }
+
+    const now = new Date().toISOString();
+    if(idInput.value){
+      const index = teams.findIndex(item => item.id === idInput.value);
+      if(index >= 0){
+        teams[index] = {...teams[index], name, year, updatedAt: now};
+      }
+    }else{
+      teams.push({
+        id: 'team_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+        name,
+        year,
+        players: [],
+        createdAt: now,
+        updatedAt: now
+      });
+    }
+
+    storeTeams(teams);
+    closeTeamEditor();
+    renderTeamManagement();
+  };
+
+  window.editTeamRecord = function(teamId){
+    openTeamEditor(teamId);
+  };
+
+  window.deleteTeamRecord = function(teamId){
+    const teams = loadTeams();
+    const team = teams.find(item => item.id === teamId);
+    if(!team) return;
+    const label = team.name + '（' + team.year + '年度）';
+    if(!confirm(label + 'を削除しますか？\\n登録選手が追加された後は、その選手情報も一緒に削除されます。')) return;
+    storeTeams(teams.filter(item => item.id !== teamId));
+    closeTeamEditor();
+    renderTeamManagement();
+  };
+
+  window.renderTeamManagement = function(){
+    const list = document.getElementById('teamManagementList');
+    const count = document.getElementById('teamManagementCount');
+    if(!list) return;
+
+    const teams = loadTeams().sort((a,b) =>
+      Number(b.year) - Number(a.year) ||
+      String(a.name).localeCompare(String(b.name), 'ja')
+    );
+    if(count) count.textContent = teams.length + 'チーム';
+
+    if(!teams.length){
+      list.innerHTML = '<div class="teamEmptyState">登録チームはまだありません。<br>「＋ チーム追加」から登録してください。</div>';
+      return;
+    }
+
+    list.innerHTML = teams.map(team => {
+      const playerCount = Array.isArray(team.players) ? team.players.length : 0;
+      return `
+        <details class="teamYearCard">
+          <summary>
+            <div class="teamYearMain">
+              <span class="teamYearBadge">${escapeTeamText(team.year)}年度</span>
+              <span class="teamYearName">${escapeTeamText(team.name)}</span>
+            </div>
+            <span class="teamYearArrow">▼</span>
+          </summary>
+          <div class="teamYearBody">
+            <div class="teamYearMeta">登録選手 ${playerCount}名（選手登録は次の更新で追加）</div>
+            <div class="teamYearActions">
+              <button type="button" class="teamEditButton" onclick="editTeamRecord('${escapeTeamText(team.id)}')">編集</button>
+              <button type="button" class="teamDeleteButton" onclick="deleteTeamRecord('${escapeTeamText(team.id)}')">削除</button>
+            </div>
+          </div>
+        </details>`;
+    }).join('');
+  };
+
+  function initTeamManagement(){
+    const yearInput = document.getElementById('teamYearInput');
+    if(yearInput && !yearInput.value) yearInput.value = currentTeamYear();
+    renderTeamManagement();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initTeamManagement);
+  }else{
+    initTeamManagement();
+  }
+})();
+</script>
+<script>/* cache marker: 150-158-team-year-management */</script>
+
 </body>
 </html>
 
