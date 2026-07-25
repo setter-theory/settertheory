@@ -821,29 +821,24 @@ function setterNumbers(){
 // 単発の二段トス・アタッカーのトスを「セッター2」と誤認しないよう、
 // ログだけから追加する場合は十分な通常トス記録がある選手に限定する。
 function reportSetterNumbers(){
-  const active=setterNumbers();
-  const out=[...active];
-  const candidates=[...new Set((s.logs||[])
-    .filter(x=>x && x.type==='トス' && String(x.result||'')!=='二段トス')
-    .map(x=>String(x.playerNumberSnapshot||x.num||'').trim())
-    .filter(n=>n && n!=='-' && n!=='undefined' && n!=='null'))];
+  const active=[...new Set(setterNumbers().map(String).filter(Boolean))].slice(0,2);
 
-  // 基本ポジションで明示されたセッターは、トス本数に関係なく保持する。
-  candidates.forEach(n=>{
-    if(isSetterPosition(playerPositionForNumber(n)) && !out.includes(n)) out.push(n);
-  });
+  // V150.162:
+  // ローテーション設定で登録されたセッターを正解として扱う。
+  // アタッカー等が通常トスを複数回記録しても、セッター2へ自動追加しない。
+  if(active.length) return active;
 
-  // 旧データのセッター交代を復元するための補助判定。
-  // 最多セッターに対して35%以上、かつ2本以上の通常トスがある場合だけ追加する。
-  const tossCounts=candidates.map(n=>({
-    num:n,
-    count:(s.logs||[]).filter(x=>x && x.type==='トス' && String(x.result||'')!=='二段トス' && logBelongsToPlayer(x,n)).length
-  })).sort((a,b)=>b.count-a.count);
-  const maxCount=tossCounts[0]?.count||0;
-  tossCounts.forEach(x=>{
-    if(!out.includes(x.num) && x.count>=2 && x.count>=Math.ceil(maxCount*0.35)) out.push(x.num);
+  // セッター情報を持たない旧データだけ、通常トス最多の1名を補助復元する。
+  // ここでは2人目を推定しないため、旧ワンセッター試合がツーセッター表示にならない。
+  const counts=new Map();
+  (s.logs||[]).forEach(x=>{
+    if(!x || x.type!=='トス' || String(x.result||'')==='二段トス') return;
+    const n=String(x.playerNumberSnapshot||x.num||'').trim();
+    if(!n || n==='-' || n==='undefined' || n==='null') return;
+    counts.set(n,(counts.get(n)||0)+1);
   });
-  return [...new Set(out)].slice(0,2);
+  const first=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];
+  return first ? [String(first[0])] : [];
 }
 function isSetterNumber(num){ return setterNumbers().includes(String(num)); }
 function transferSetterRole(outNum,inNum){
@@ -1221,7 +1216,9 @@ function loadRegisteredTeamToSetup(teamId){
   }
 
   s.selectedTeamId=teamId;
+  s.teamId=teamId;
   localStorage.setItem(SETUP_SELECTED_TEAM_KEY,teamId);
+  localStorage.setItem('setterTheoryTeamId',teamId);
   s.team=String(team.name||'自チーム');
   const teamInput=document.getElementById('team');
   if(teamInput) teamInput.value=s.team;
@@ -3083,7 +3080,7 @@ function downloadCSV(){
     rows.push([x.no,x.set,x.rot,effectivePlayType(x),x.num,(x.playerNameSnapshot||getPlayerName(x.num)),effectivePlayType(x)==="二段トス"?"1":"0",d?`Setter${d.idx}`:"",a&&a.total?a.setterIq:"",a?a.quality.total:"",a?a.quality.miss:"",a?a.quality.successRate:"",a?a.counts['レフト']||0:"",a?a.counts['センター']||0:"",a?a.counts['ライト']||0:"",a?a.counts['バック']||0:"",a?a.counts['ツー']||0:"",x.pos,x.result,isTossMissLog(x)?"1":"0",x.point,x.score,x.time,(x.playerId||ensureStablePlayerId(x.playerNameSnapshot||getPlayerName(x.num),x.playerNumberSnapshot||x.num))]);
   });
   rows.push([]);
-  rows.push(["Metadata","DataVersion",DATA_SCHEMA_VERSION,"UserId",s.userId||"","TeamId",s.teamId||"","MatchId",s.matchId||"","SetId",s.setId||""]);
+  rows.push(["Metadata","DataVersion",DATA_SCHEMA_VERSION,"UserId",s.userId||"","TeamId",s.teamId||"","MatchId",s.matchId||"","SetId",s.setId||"","SetterCount",reportSetters.length,"SetterNumbers",reportSetters.join("|")]);
   rows.push([]);
   rows.push(["SetterSummary","Role","Number","Name","IQ","TossTotal","TossMiss","SuccessRate","Left","Center","Right","Back","Two","PlayerId"]);
   reportSetters.forEach((n,i)=>{const a=currentSetterAnalysisFor(n);rows.push(["SetterSummary",`Setter${i+1}`,n,a.name,a.total?a.setterIq:"",a.quality.total,a.quality.miss,a.quality.successRate,a.counts['レフト']||0,a.counts['センター']||0,a.counts['ライト']||0,a.counts['バック']||0,a.counts['ツー']||0,playerIdForNumber(n)]);});
@@ -6455,12 +6452,9 @@ function inferLegacySetterMeta(parsed){
   });
   const ranked=[...counts.values()].sort((a,b)=>b.count-a.count);
   if(!ranked.length) return [];
-  // 旧ワンセッター試合を確実に拾う。2人目は十分なトス記録がある場合だけ採用する。
-  const out=[{role:'Setter1',num:ranked[0].num,name:ranked[0].name||'',order:1,inferred:true}];
-  if(ranked[1] && ranked[1].count>=Math.max(2,Math.ceil(ranked[0].count*0.35))){
-    out.push({role:'Setter2',num:ranked[1].num,name:ranked[1].name||'',order:2,inferred:true});
-  }
-  return out;
+  // セッター情報が無い旧CSVは最多トスの1名だけを復元する。
+  // 2人目をトス本数から推定すると、ワンセッター試合を誤ってツーセッター表示するため。
+  return [{role:'Setter1',num:ranked[0].num,name:ranked[0].name||'',order:1,inferred:true}];
 }
 function savedMatchSetterMeta(match){
   try{
@@ -6735,6 +6729,60 @@ function buildPlainDiagnosis(a){
 }
 
 
+
+function importedSetterMetadata(parsed){
+  const rows=parsed?.data||[];
+  const metadata=rows.find(r=>String(r?.[0]||'').trim()==='Metadata');
+  if(!metadata) return {count:null,numbers:[],teamId:''};
+  const result={count:null,numbers:[],teamId:''};
+  for(let i=1;i<metadata.length-1;i+=2){
+    const key=String(metadata[i]||'').trim();
+    const value=String(metadata[i+1]||'').trim();
+    if(key==='SetterCount' && value!=='') result.count=Math.max(0,Math.min(2,Number(value)||0));
+    if(key==='SetterNumbers') result.numbers=value.split('|').map(x=>x.trim()).filter(Boolean);
+    if(key==='TeamId') result.teamId=value;
+  }
+  return result;
+}
+
+function registeredSetterMetaForImported(found,teamId=''){
+  if(!found.length) return [];
+  let teams=[];
+  try{
+    const parsed=JSON.parse(localStorage.getItem('setterTheoryTeamsV1')||'[]');
+    teams=Array.isArray(parsed)?parsed:[];
+  }catch(_){ teams=[]; }
+
+  const candidates=teamId ? teams.filter(t=>String(t.id||'')===String(teamId)) : teams;
+  let best=null;
+  candidates.forEach(team=>{
+    const players=Array.isArray(team.players)?team.players:[];
+    let score=0;
+    const matchedSetters=[];
+    found.forEach(meta=>{
+      const name=String(meta.name||'').normalize('NFKC').trim();
+      const num=String(meta.num||'').trim();
+      const player=players.find(p=>{
+        const pn=String(p.number||'').trim();
+        const pName=String(p.name||'').normalize('NFKC').trim();
+        return (num && pn===num && name && pName===name) ||
+               (num && pn===num) ||
+               (name && pName===name);
+      });
+      if(player){
+        score += String(player.number||'').trim()===num && String(player.name||'').normalize('NFKC').trim()===name ? 3 : 1;
+        if(player.isSetter) matchedSetters.push(meta);
+      }
+    });
+    if(!best || score>best.score) best={score,matchedSetters};
+  });
+
+  if(best && best.score>0 && best.matchedSetters.length){
+    return [...new Map(best.matchedSetters.map(x=>[String(x.num),x])).values()].slice(0,2);
+  }
+  return [];
+}
+
 // V93.5: CSV末尾のSetterSummary、または各ログ行のSetterRoleから登録セッターを復元する。
 function importedSetterMeta(parsed){
   const headers=parsed?.headers||[];
@@ -6776,7 +6824,28 @@ function importedSetterMeta(parsed){
     });
   }
   found.sort((a,b)=>a.order-b.order);
-  return found.slice(0,2);
+
+  const metadata=importedSetterMetadata(parsed);
+
+  // V150.162以降で保存した試合は、保存時のセッター人数・背番号をそのまま使用する。
+  if(metadata.numbers.length){
+    const byNumber=metadata.numbers.map((num,index)=>{
+      const existing=found.find(x=>String(x.num)===String(num));
+      return existing || {role:`Setter${index+1}`,num:String(num),name:'',playerId:'',order:index+1};
+    });
+    return byNumber.slice(0,metadata.count===null?2:metadata.count);
+  }
+  if(metadata.count!==null){
+    return found.slice(0,metadata.count);
+  }
+
+  // 既存の保存試合は、チーム管理に登録された「セッター：はい」と照合して補正する。
+  // 1名だけ登録されているチームなら、誤って作られたSetter2を除外する。
+  const registered=registeredSetterMetaForImported(found,metadata.teamId);
+  if(registered.length) return registered;
+
+  // 登録情報と照合できない旧データはSetter1のみを安全側で復元する。
+  return found.slice(0,1);
 }
 
 // V74: Setter Theory CSVを試合中と同じレポートエンジンで表示する。
