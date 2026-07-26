@@ -3491,7 +3491,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.141</div>
+    <div class="pdfCoverVersion">V150.196</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3507,75 +3507,35 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // 5ページ目：ランキングと直近ログを1つの「分析」カードへ統合する。
-  const finalPage=makePage('pdfFinalPage');
-  const finalGrid=document.createElement('div');
-  finalGrid.className='pdfFinalGrid';
-  const rankings=clone.querySelector('.singleReportWideGrid');
-  const recentLogs=clone.querySelector('.setterUnifiedBottomGrid');
-  if(rankings || recentLogs){
-    const analysisOuter=document.createElement('section');
-    analysisOuter.className='pdfFinalOuterCard pdfAnalysisOuterCard';
-    analysisOuter.style.cssText='display:grid;grid-template-rows:auto 54mm minmax(0,1fr);gap:6px;width:100%;max-width:100%;height:100%;max-height:100%;min-height:0;box-sizing:border-box;padding:0;background:#0f172a;border:1px solid rgba(96,165,250,.34);border-radius:16px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
-    const analysisTitle=document.createElement('h2');
-    analysisTitle.className='pdfAnalysisTitle';
-    analysisTitle.innerHTML='<span class="pdfAnalysisEyebrow" style="display:block;color:#fff;-webkit-text-fill-color:#fff;font-size:11px;line-height:1;font-weight:900;letter-spacing:.16em;">ANALYSIS</span><span class="pdfAnalysisJapanese" style="display:block;color:#fff;-webkit-text-fill-color:#fff;font-size:20px;line-height:1.05;font-weight:900;letter-spacing:.05em;">分析</span>';
-    analysisTitle.style.cssText='display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;margin:0;padding:10px 14px 8px;box-sizing:border-box;background:linear-gradient(135deg,#0f172a,#172554);border-bottom:1px solid rgba(255,255,255,.14);color:#fff;-webkit-text-fill-color:#fff;';
-    analysisOuter.appendChild(analysisTitle);
-    if(rankings){
-      const rankSection=document.createElement('section');
-      rankSection.className='pdfAnalysisSection pdfRankingsSection pdfAnalysisSmallCard';
-      rankSection.style.cssText='background:#1e293b;border:1px solid rgba(96,165,250,.32);border-radius:14px;padding:7px;box-shadow:none;box-sizing:border-box;overflow:hidden;';
-      const rankTitle=document.createElement('h3');
-      rankTitle.className='pdfFinalSectionTitle';
-      rankTitle.textContent='ランキング';
-      rankSection.appendChild(rankTitle);
-      const rankClone=rankings.cloneNode(true);
-      rankClone.classList.add('pdfRankingsBlock');
-      // V150.82: singleReportWideGrid自身が2列グリッドになり、唯一の子要素が左半分へ寄るのを防ぐ。
-      // 外側は全幅、内側のランキング5項目は試合レポート画面と同じ2列配置にする。
-      rankClone.style.setProperty('display','block','important');
-      rankClone.style.setProperty('width','100%','important');
-      rankClone.style.setProperty('max-width','100%','important');
-      const rankPanel=rankClone.querySelector('.reportPanel');
-      if(rankPanel){
-        rankPanel.style.setProperty('display','block','important');
-        rankPanel.style.setProperty('width','100%','important');
-        rankPanel.style.setProperty('max-width','100%','important');
-      }
-      const allRanks=rankClone.querySelector('.allRankingsGrid');
-      if(allRanks){
-        allRanks.style.setProperty('display','grid','important');
-        allRanks.style.setProperty('grid-template-columns','repeat(6,minmax(0,1fr))','important');
-        allRanks.style.setProperty('gap','6px','important');
-        allRanks.style.setProperty('width','100%','important');
-        allRanks.style.setProperty('max-width','100%','important');
-        Array.from(allRanks.children).forEach((card,index)=>{
-          card.style.setProperty('grid-column','span 2','important');
-          card.style.setProperty('width','auto','important');
-          card.style.setProperty('min-width','0','important');
-          card.style.setProperty('box-sizing','border-box','important');
-        });
-      }
-      rankSection.appendChild(rankClone);
-      analysisOuter.appendChild(rankSection);
-    }
-    if(recentLogs){
-      const logSection=document.createElement('section');
-      logSection.className='pdfAnalysisSection pdfRecentLogsSection pdfRecentLogsOuterCard pdfAnalysisSmallCard';
-      logSection.style.cssText='background:#1e293b;border:1px solid rgba(96,165,250,.32);border-radius:14px;padding:12px;box-shadow:0 7px 18px rgba(2,6,23,.14);';
-      const logTitle=document.createElement('h3');
-      logTitle.className='pdfFinalSectionTitle';
-      logTitle.textContent='直近ログ';
-      logSection.appendChild(logTitle);
-      const logClone=recentLogs.cloneNode(true);
-      logClone.classList.add('pdfRecentLogsBlock');
-      logSection.appendChild(logClone);
-      analysisOuter.appendChild(logSection);
-    }
-    finalGrid.appendChild(analysisOuter);
-  }
-  if(finalGrid.children.length){ finalPage.appendChild(finalGrid); a4Root.appendChild(finalPage); }
+  // V150.196: 5ページ目以降は、1選手につき1ページの個人成績レポート。
+  // 試合レポート画面と同じダッシュボード生成関数を使い、評価色・本数・割合を統一する。
+  const pdfPlayerNumbers=[...new Set(
+    s.nums.concat(s.logs.map(x=>x.num))
+      .map(n=>String(n||'').trim())
+      .filter(n=>n && n!=='-')
+  )].sort((a,b)=>{
+    const na=Number(a), nb=Number(b);
+    if(Number.isFinite(na)&&Number.isFinite(nb)) return na-nb;
+    return a.localeCompare(b,'ja');
+  }).filter(num=>s.logs.some(x=>String(x.num)===String(num)));
+
+  pdfPlayerNumbers.forEach((num,index)=>{
+    const page=makePage('pdfPlayerPage');
+    page.dataset.playerNumber=String(num);
+    const header=document.createElement('header');
+    header.className='pdfPlayerHeader';
+    header.innerHTML=`<div><span>PLAYER ANALYSIS</span><h2>${escapeHtml(num)}番 ${escapeHtml(getPlayerName(num)||'選手')}</h2></div><div class="pdfPlayerPageNo">PLAYER ${index+1}</div>`;
+    const body=document.createElement('div');
+    body.className='pdfPlayerBody';
+    body.innerHTML=buildPlayerDashboard(num);
+    body.querySelectorAll('button,[onclick],[onchange],[oninput]').forEach(el=>{
+      if(el.tagName==='BUTTON') el.remove();
+      else{ el.removeAttribute('onclick'); el.removeAttribute('onchange'); el.removeAttribute('oninput'); }
+    });
+    page.appendChild(header);
+    page.appendChild(body);
+    a4Root.appendChild(page);
+  });
 
   // V150.69: html2pdf.js creates its own detached rendering clone, so CSS selectors
   // that depend on the #report ancestor may be lost. Apply the requested parent
