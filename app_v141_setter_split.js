@@ -2324,24 +2324,124 @@ function buildPlayerBlock(num){
   if(logs.length) rows.push(['合計',logs.length]);
   return detailTable(['判定','本数'],rows,'ブロック記録がありません');
 }
+function clampPlayerRate(v){
+  const n=Number(v)||0;
+  return Math.max(0,Math.min(100,n));
+}
+function playerRateBar(label,value,sub){
+  const v=clampPlayerRate(value);
+  return `<div class="playerRateRow"><div class="playerRateLabel"><span>${label}</span><b>${Math.round(value)}%</b></div><div class="playerRateTrack"><i style="width:${v}%"></i></div>${sub?`<small>${sub}</small>`:''}</div>`;
+}
+function playerMiniStats(items){
+  return `<div class="playerMiniStats">${items.map(([label,value])=>`<div><span>${label}</span><b>${value}</b></div>`).join('')}</div>`;
+}
+function playerPositionSummary(num){
+  const logs=playerLogs(num,'スパイク');
+  const positions=['1','2','3','4','5','6'];
+  const chips=positions.map(pos=>{
+    const a=logs.filter(x=>String(x.pos)===pos);
+    if(!a.length) return '';
+    return `<span>${courtPositionLabel(pos)} ${countResult(a,'成功')}/${a.length}</span>`;
+  }).filter(Boolean);
+  return chips.length?`<div class="playerDetailChips">${chips.join('')}</div>`:'';
+}
+function playerRotationSummary(num,type){
+  const chips=[1,2,3,4,5,6].map(r=>{
+    const a=playerLogs(num,type).filter(x=>x.rot===`S${r}`);
+    if(!a.length) return '';
+    let good=0;
+    if(type==='レセプ') good=countResult(a,['Aパス','Bパス']);
+    else good=countResult(a,['成功','継続']);
+    return `<span>S${r} ${good}/${a.length}</span>`;
+  }).filter(Boolean);
+  return chips.length?`<div class="playerDetailChips">${chips.join('')}</div>`:'';
+}
+function buildPlayerDashboard(num){
+  const spike=playerLogs(num,'スパイク');
+  const serve=playerLogs(num,'サーブ');
+  const receive=playerLogs(num,'レセプ');
+  const dig=playerLogs(num,'ディグ');
+  const block=playerLogs(num,'ブロック');
+  const all=[...spike,...serve,...receive,...dig,...block];
+
+  const spikeKills=countResult(spike,'成功');
+  const spikeMiss=countResult(spike,'ミス');
+  const spikeBlocked=countResult(spike,'被ブロック');
+  const serveAce=countResult(serve,'エース');
+  const serveGood=countResult(serve,['成功','エース']);
+  const serveMiss=countResult(serve,'ミス');
+  const recA=countResult(receive,'Aパス');
+  const recB=countResult(receive,'Bパス');
+  const recC=countResult(receive,'Cパス');
+  const recMiss=countResult(receive,['ミス','レセプミス']);
+  const digSuccess=countResult(dig,'成功');
+  const digContinue=countResult(dig,'継続');
+  const digMiss=countResult(dig,'ミス');
+  const blockPoint=countResult(block,'シャット');
+  const blockTouch=countResult(block,'ワンタッチ');
+  const blockContinue=countResult(block,'継続');
+  const blockMiss=countResult(block,['ブロックミス','ミス']);
+
+  const points=spikeKills+serveAce+blockPoint;
+  const positives=spikeKills+serveGood+recA+recB+recC+digSuccess+digContinue+blockPoint+blockTouch+blockContinue;
+  const errors=spikeMiss+serveMiss+recMiss+digMiss+blockMiss;
+  const spikeRate=safePct(spikeKills,spike.length);
+  const serveRate=safePct(serveGood,serve.length);
+  const receiveRate=safePct(recA+recB,receive.length);
+  const digRate=safePct(digSuccess+digContinue,dig.length);
+  const blockRate=safePct(blockPoint+blockTouch,block.length);
+
+  const hasAny=all.length>0;
+  if(!hasAny) return `<div class="playerDetailEmpty">この選手のプレー記録がありません</div>`;
+
+  return `<div class="playerDashboard">
+    <div class="playerHeadlineStats">
+      <div><span>総プレー</span><b>${all.length}</b><small>本</small></div>
+      <div><span>得点</span><b>${points}</b><small>点</small></div>
+      <div><span>良いプレー</span><b>${positives}</b><small>本</small></div>
+      <div><span>ミス</span><b>${errors}</b><small>本</small></div>
+    </div>
+    <div class="playerPerformanceGrid">
+      <section class="playerPerformanceCard">
+        <h4>スパイク</h4>
+        ${playerRateBar('決定率',spikeRate,`効果率 ${signedRate(effectRate(spike))}`)}
+        ${playerMiniStats([['打数',spike.length],['得点',spikeKills],['ミス',spikeMiss],['被ブロック',spikeBlocked]])}
+        ${playerPositionSummary(num)}
+      </section>
+      <section class="playerPerformanceCard">
+        <h4>サーブ</h4>
+        ${playerRateBar('成功率',serveRate,`効果率 ${signedRate(effectRate(serve))}`)}
+        ${playerMiniStats([['本数',serve.length],['エース',serveAce],['成功',countResult(serve,'成功')],['ミス',serveMiss]])}
+      </section>
+      <section class="playerPerformanceCard">
+        <h4>レセプション</h4>
+        ${playerRateBar('A・B率',receiveRate,`効果率 ${signedRate(effectRate(receive))}`)}
+        ${playerMiniStats([['本数',receive.length],['A',recA],['B',recB],['C',recC],['ミス',recMiss]])}
+        ${playerRotationSummary(num,'レセプ')}
+      </section>
+      <section class="playerPerformanceCard">
+        <h4>ディグ</h4>
+        ${playerRateBar('返球率',digRate,`効果率 ${signedRate(effectRate(dig))}`)}
+        ${playerMiniStats([['本数',dig.length],['成功',digSuccess],['継続',digContinue],['ミス',digMiss]])}
+        ${playerRotationSummary(num,'ディグ')}
+      </section>
+      <section class="playerPerformanceCard playerPerformanceCardWide">
+        <h4>ブロック</h4>
+        ${playerRateBar('得点・ワンタッチ率',blockRate,`効果率 ${signedRate(effectRate(block))}`)}
+        ${playerMiniStats([['本数',block.length],['得点',blockPoint],['ワンタッチ',blockTouch],['継続',blockContinue],['ミス',blockMiss]])}
+      </section>
+    </div>
+  </div>`;
+}
 function buildPlayerAccordion(num){
   num=String(num);
   const open=reportPlayerOpenNumbers.has(num);
   const name=getPlayerName(num)||'';
-  const tabs=[['overview','概要'],['spike','スパイク'],['serve','サーブ'],['receive','レセプション'],['dig','ディグ'],['block','ブロック']];
-  const tab=tabs.some(x=>x[0]===reportPlayerTabs[num])?reportPlayerTabs[num]:'overview';
-  let body='';
-  if(tab==='spike') body=buildPlayerSpike(num);
-  else if(tab==='serve') body=buildPlayerServe(num);
-  else if(tab==='receive') body=buildPlayerRotationDetail(num,'レセプ');
-  else if(tab==='dig') body=buildPlayerRotationDetail(num,'ディグ');
-  else if(tab==='block') body=buildPlayerBlock(num);
-  else body=buildPlayerOverview(num);
   return `<section class="playerAccordion ${open?'open':''}">
     <button type="button" class="playerAccordionToggle" data-player-action="toggle" data-player-num="${escapeAttr(num)}">
       <span><b>No.${escapeHtml(num)}</b>${name?`<small>${escapeHtml(name)}</small>`:''}</span><strong>${open?'▲':'▼'}</strong>
     </button>
-    ${open?`<div class="playerAccordionBody"><div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${tab===key?'active':''}" data-player-action="tab" data-player-num="${escapeAttr(num)}" data-player-tab="${key}">${label}</button>`).join('')}</div><div class="playerAnalysisBody">${body}</div></div>`:''}
+    ${open?`<div class="playerAccordionBody">${buildPlayerDashboard(num)}</div>`:''}
   </section>`;
 }
 function buildPersonalRanking(){
