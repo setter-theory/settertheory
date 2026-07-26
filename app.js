@@ -1907,106 +1907,130 @@ function metricCard(label,value,sub,color,icon,pct){
   </div>`;
 }
 
-let reportRankType = localStorage.getItem("vollyzeReportRankType") || "スパイク";
-if(reportRankType === "トス") reportRankType = "スパイク";
-let reportSortType = localStorage.getItem("vollyzeReportSortType") || "rate";
+let reportPlayerNumber = localStorage.getItem("setterTheoryReportPlayerNumber") || "";
+let reportPlayerTab = localStorage.getItem("setterTheoryReportPlayerTab") || "overview";
 
-function refreshPersonalRanking(){
+function reportPlayerNumbers(){
+  return [...new Set([...(s.nums||[]), ...(s.logs||[]).map(x=>x.num)]
+    .map(String).filter(n=>n && n!=="-" && !n.includes("→")))]
+    .sort((a,b)=>Number(a)-Number(b));
+}
+function selectedReportPlayer(){
+  const nums=reportPlayerNumbers();
+  if(!nums.length) return "";
+  if(!nums.includes(String(reportPlayerNumber))) reportPlayerNumber=nums[0];
+  return String(reportPlayerNumber);
+}
+function setReportPlayerNumber(value){
+  reportPlayerNumber=String(value||"");
+  localStorage.setItem("setterTheoryReportPlayerNumber",reportPlayerNumber);
+  refreshPersonalAnalysis();
+}
+function setReportPlayerTab(value){
+  reportPlayerTab=String(value||"overview");
+  localStorage.setItem("setterTheoryReportPlayerTab",reportPlayerTab);
+  refreshPersonalAnalysis();
+}
+function refreshPersonalAnalysis(){
   const host=document.getElementById("personalRankingHost");
-  if(host){
-    host.innerHTML=buildPersonalRanking();
-  }else{
-    report();
+  if(host) host.innerHTML=buildPersonalRanking(); else report();
+}
+function playerLogs(num,type){
+  return (s.logs||[]).filter(x=>String(x.num)===String(num) && (!type || x.type===type));
+}
+function signedRate(value){ return `${value>0?'+':''}${value}%`; }
+function countResult(logs,results){
+  const wanted=Array.isArray(results)?results:[results];
+  return logs.filter(x=>wanted.includes(x.result)).length;
+}
+function detailTable(headers,rows,empty='記録がありません'){
+  if(!rows.length) return `<div class="playerDetailEmpty">${empty}</div>`;
+  return `<div class="playerDetailTableWrap"><table class="playerDetailTable"><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((cell,i)=>`<${i?'td':'th'}>${cell}</${i?'td':'th'}>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function courtPositionLabel(pos){
+  return ({'1':'位置1','2':'位置2','3':'位置3','4':'位置4','5':'位置5','6':'位置6'})[String(pos)] || '位置不明';
+}
+function buildPlayerOverview(num){
+  const configs=[
+    ['スパイク','スパイク',x=>x.result==='成功'],
+    ['サーブ','サーブ',x=>x.result==='成功'||x.result==='エース'],
+    ['レセプション','レセプ',x=>['Aパス','Bパス','Cパス'].includes(x.result)],
+    ['ディグ','ディグ',x=>x.result==='成功'],
+    ['ブロック','ブロック',x=>x.result==='シャット'||x.result==='ワンタッチ']
+  ];
+  return `<div class="playerOverviewGrid">${configs.map(([label,type,ok])=>{
+    const logs=playerLogs(num,type), success=logs.filter(ok).length;
+    return `<button type="button" class="playerOverviewCard" onclick="setReportPlayerTab('${type==='レセプ'?'receive':type==='スパイク'?'spike':type==='サーブ'?'serve':type==='ディグ'?'dig':'block'}')"><span>${label}</span><b>${success}/${logs.length}</b><small>成功率 ${safePct(success,logs.length)}%　効果率 ${signedRate(effectRate(logs))}</small></button>`;
+  }).join('')}</div>`;
+}
+function buildPlayerSpike(num){
+  const logs=playerLogs(num,'スパイク');
+  const positions=['1','2','3','4','5','6'];
+  const rows=positions.map(pos=>{
+    const a=logs.filter(x=>String(x.pos)===pos); if(!a.length) return null;
+    const kill=countResult(a,'成功'), miss=countResult(a,'ミス'), blocked=countResult(a,'被ブロック');
+    return [courtPositionLabel(pos),a.length,kill,miss,blocked,`${safePct(kill,a.length)}%`,signedRate(effectRate(a))];
+  }).filter(Boolean);
+  if(logs.some(x=>!positions.includes(String(x.pos)))){
+    const a=logs.filter(x=>!positions.includes(String(x.pos)));
+    rows.push(['位置不明',a.length,countResult(a,'成功'),countResult(a,'ミス'),countResult(a,'被ブロック'),`${safePct(countResult(a,'成功'),a.length)}%`,signedRate(effectRate(a))]);
   }
+  const total=["合計",logs.length,countResult(logs,'成功'),countResult(logs,'ミス'),countResult(logs,'被ブロック'),`${safePct(countResult(logs,'成功'),logs.length)}%`,signedRate(effectRate(logs))];
+  if(logs.length) rows.push(total);
+  return detailTable(['打った位置','打数','得点','ミス','被ブロック','決定率','効果率'],rows,'スパイク記録がありません');
 }
-function setReportRankType(value){
-  reportRankType = value;
-  localStorage.setItem("vollyzeReportRankType", value);
-  refreshPersonalRanking();
+function buildPlayerRotationDetail(num,type){
+  const isReceive=type==='レセプ';
+  const rows=[1,2,3,4,5,6].map(r=>{
+    const a=playerLogs(num,type).filter(x=>x.rot===`S${r}`); if(!a.length) return null;
+    if(isReceive){
+      return [`S${r}`,a.length,countResult(a,'Aパス'),countResult(a,'Bパス'),countResult(a,'Cパス'),countResult(a,['ミス','レセプミス']),signedRate(effectRate(a))];
+    }
+    return [`S${r}`,a.length,countResult(a,'成功'),countResult(a,'継続'),countResult(a,'ミス'),signedRate(effectRate(a))];
+  }).filter(Boolean);
+  const all=playerLogs(num,type);
+  if(all.length){
+    rows.push(isReceive
+      ? ['合計',all.length,countResult(all,'Aパス'),countResult(all,'Bパス'),countResult(all,'Cパス'),countResult(all,['ミス','レセプミス']),signedRate(effectRate(all))]
+      : ['合計',all.length,countResult(all,'成功'),countResult(all,'継続'),countResult(all,'ミス'),signedRate(effectRate(all))]);
+  }
+  return isReceive
+    ? detailTable(['ローテ','本数','A','B','C','ミス','効果率'],rows,'レセプション記録がありません')
+    : detailTable(['ローテ','本数','成功','継続','ミス','効果率'],rows,'ディグ記録がありません');
 }
-function setReportSortType(value){
-  reportSortType = value;
-  localStorage.setItem("vollyzeReportSortType", value);
-  refreshPersonalRanking();
+function buildPlayerServe(num){
+  const logs=playerLogs(num,'サーブ');
+  const success=countResult(logs,'成功'), ace=countResult(logs,'エース'), miss=countResult(logs,'ミス');
+  return detailTable(['総本数','成功','エース','ミス','成功率','エース率','効果率'],logs.length?[[logs.length,success,ace,miss,`${safePct(success+ace,logs.length)}%`,`${safePct(ace,logs.length)}%`,signedRate(effectRate(logs))]]:[],'サーブ記録がありません');
 }
-
-function safePct(part,total){ return total ? Math.round(part/total*100) : 0; }
-function cssClassByPct(pct){ if(pct>=70)return ""; if(pct>=50)return "mid"; return "bad"; }
-function donutStyle(items){
-  const total=items.reduce((a,x)=>a+x.count,0) || 1;
-  let deg=0;
-  const parts=items.map(x=>{const st=deg; deg += x.count/total*360; return `${x.color} ${st}deg ${deg}deg`;});
-  return `conic-gradient(${parts.join(",")})`;
-}
-function legendHtml(items,total){
-  return `<div class="legend">`+items.map(x=>{
-    const pct=safePct(x.count,total);
-    return `<div class="legendRow"><span class="dot" style="background:${x.color}"></span><span>${x.label}</span><span>${pct}% (${x.count})</span></div>`;
-  }).join("")+`</div>`;
-}
-function metricCard(label,value,sub,color,icon,pct){
-  const c=color==='blue'?'#2563eb':color==='red'?'#dc2626':color==='green'?'#16a34a':color==='orange'?'#f97316':'#7c3aed';
-  return `<div class="statCard">
-    <div class="statTop"><span class="statIcon">${icon}</span><span>${label}</span></div>
-    <div class="statValue ${color}">${value}</div>
-    <div class="miniTrack">
-      <div class="miniFill" style="width:${Math.max(0,Math.min(100,pct||0))}%;background:${c}"></div>
-      <div class="barValue">${value}</div>
-    </div>
-    <div class="statSub">${sub}</div>
-  </div>`;
-}
-function rankConfig(type){
-  const map={
-    "スパイク":{title:"スパイク決定率ランキング", success:"決定数", total:"打数", rate:"決定率", note:"決定率 ＝ スパイク成功 ÷ スパイク打数", ok:x=>x.type==="スパイク"&&x.result==="成功", all:x=>x.type==="スパイク"},
-    "サーブ":{title:"サーブ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ サーブ成功＋サービスエース ÷ サーブ総数", ok:x=>x.type==="サーブ"&&(x.result==="成功"||x.result==="エース"), all:x=>x.type==="サーブ"},
-    "レセプ":{title:"レセプション成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ Aパス＋Bパス＋Cパス ÷ レセプ総数", ok:x=>x.type==="レセプ"&&(x.result==="Aパス"||x.result==="Bパス"||x.result==="Cパス"), all:x=>x.type==="レセプ"},
-    "ディグ":{title:"ディグ成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ ディグ成功 ÷ ディグ総数", ok:x=>x.type==="ディグ"&&x.result==="成功", all:x=>x.type==="ディグ"},
-    "ブロック":{title:"ブロック成功率ランキング", success:"成功数", total:"総数", rate:"成功率", note:"成功率 ＝ シャット＋ワンタッチ ÷ ブロック総数", ok:x=>x.type==="ブロック"&&(x.result==="シャット"||x.result==="ワンタッチ"), all:x=>x.type==="ブロック"}
-  };
-  return map[type] || map["スパイク"];
+function buildPlayerBlock(num){
+  const logs=playerLogs(num,'ブロック');
+  const resultOrder=['シャット','ワンタッチ','継続','ブロックミス','ミス'];
+  const rows=resultOrder.map(result=>[result,countResult(logs,result)]).filter(row=>row[1]>0);
+  const extras=[...new Set(logs.map(x=>x.result))].filter(x=>!resultOrder.includes(x));
+  extras.forEach(result=>rows.push([escapeHtml(result),countResult(logs,result)]));
+  if(logs.length) rows.push(['合計',logs.length]);
+  return detailTable(['判定','本数'],rows,'ブロック記録がありません');
 }
 function buildPersonalRanking(){
-  const cfg=rankConfig(reportRankType);
-  const nums=[...new Set(s.nums.concat(s.logs.map(x=>x.num)).filter(n=>n && n!=="-"))].sort((a,b)=>Number(a)-Number(b));
-  let rows=nums.map(n=>{
-    const all=s.logs.filter(x=>String(x.num)===String(n) && cfg.all(x));
-    const ok=all.filter(cfg.ok).length;
-    const pct=safePct(ok,all.length);
-    return {n,name:getPlayerName(n)||`${n}番`, ok,total:all.length,pct};
-  });
-  rows.sort((a,b)=>{
-    if(reportSortType==="success") return b.ok-a.ok || b.pct-a.pct || b.total-a.total || Number(a.n)-Number(b.n);
-    if(reportSortType==="tries") return b.total-a.total || b.pct-a.pct || b.ok-a.ok || Number(a.n)-Number(b.n);
-    return b.pct-a.pct || b.ok-a.ok || b.total-a.total || Number(a.n)-Number(b.n);
-  });
-  const list=rows.map((r,i)=>`
-    <div class="bigBarRow">
-      <div class="bigBarRank">${i+1}</div>
-      <div class="bigBarName">${r.n} ${r.name}</div>
-      <div class="bigBarNum">${r.ok}</div>
-      <div class="bigBarNum">${r.total}</div>
-      <div class="bigBarTrack"><div class="bigBarFill" style="width:${r.pct}%"></div></div>
-      <div class="bigBarBadge ${cssClassByPct(r.pct)}">${r.pct}%</div>
-    </div>`).join("");
-  return `<div class="rankControls">
-    <div><label>表示項目</label><br><select id="rankTypeSelect" onchange="setReportRankType(this.value)" oninput="setReportRankType(this.value)">
-      ${["スパイク","サーブ","レセプ","ディグ","ブロック"].map(t=>`<option value="${t}" ${reportRankType===t?"selected":""}>${rankConfig(t).title}</option>`).join("")}
-    </select></div>
-    <div><label>並び替え</label><br><select id="rankSortSelect" onchange="setReportSortType(this.value)" oninput="setReportSortType(this.value)">
-      <option value="rate" ${reportSortType==="rate"?"selected":""}>成功率順</option>
-      <option value="success" ${reportSortType==="success"?"selected":""}>成功数順</option>
-      <option value="tries" ${reportSortType==="tries"?"selected":""}>試行数順</option>
-    </select></div>
-  </div>
-  <h3>個人成績 <small>（${cfg.title}）</small></h3>
-  <div class="bigBarRow" style="font-size:12px;color:var(--muted);font-weight:1000">
-    <div>順位</div><div>選手</div><div>${cfg.success}</div><div>${cfg.total}</div><div></div><div>${cfg.rate}</div>
-  </div>
-  <div class="bigBars">${list}</div>
-  <div class="rankNote">※ ${cfg.note}</div>`;
+  const nums=reportPlayerNumbers();
+  if(!nums.length) return `<h3>個人成績</h3><div class="playerDetailEmpty">選手のプレー記録がありません</div>`;
+  const num=selectedReportPlayer();
+  const name=getPlayerName(num)||'';
+  const tabs=[['overview','概要'],['spike','スパイク'],['serve','サーブ'],['receive','レセプション'],['dig','ディグ'],['block','ブロック']];
+  const valid=tabs.map(x=>x[0]); if(!valid.includes(reportPlayerTab)) reportPlayerTab='overview';
+  let body='';
+  if(reportPlayerTab==='spike') body=buildPlayerSpike(num);
+  else if(reportPlayerTab==='serve') body=buildPlayerServe(num);
+  else if(reportPlayerTab==='receive') body=buildPlayerRotationDetail(num,'レセプ');
+  else if(reportPlayerTab==='dig') body=buildPlayerRotationDetail(num,'ディグ');
+  else if(reportPlayerTab==='block') body=buildPlayerBlock(num);
+  else body=buildPlayerOverview(num);
+  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><label>選手<select onchange="setReportPlayerNumber(this.value)">${nums.map(n=>`<option value="${escapeAttr(n)}" ${n===num?'selected':''}>No.${escapeHtml(n)} ${escapeHtml(getPlayerName(n)||'')}</option>`).join('')}</select></label></div>
+    <div class="playerIdentity"><b>No.${escapeHtml(num)} ${escapeHtml(name)}</b><small>試合中に記録されたプレーを項目別・ローテーション別に集計</small></div>
+    <div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${reportPlayerTab===key?'active':''}" onclick="setReportPlayerTab('${key}')">${label}</button>`).join('')}</div>
+    <div class="playerAnalysisBody">${body}</div>`;
 }
-
 
 function buildRotationPointAnalysis(){
   const rows=[1,2,3,4,5,6].map(r=>{
