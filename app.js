@@ -1911,9 +1911,24 @@ let reportPlayerOpenNumbers = new Set();
 let reportPlayerTabs = {};
 
 function reportPlayerNumbers(){
-  return [...new Set([...(s.nums||[]), ...(s.logs||[]).map(x=>x.num)]
-    .map(String).filter(n=>n && n!=="-" && !n.includes("→")))]
-    .sort((a,b)=>Number(a)-Number(b));
+  const nums=[];
+  const add=v=>{ const n=String(v??'').trim(); if(n && n!=='-' && !n.includes('→')) nums.push(n); };
+  (s.nums||[]).forEach(add);
+  Object.keys(s.players||{}).forEach(add);
+  (s.logs||[]).forEach(log=>{
+    add(log.num);
+    if(log.type==='交代'){
+      add(log.outNum); add(log.inNum);
+      const m=String(log.num||'').match(/^(.+?)→(.+)$/);
+      if(m){ add(m[1]); add(m[2]); }
+    }
+  });
+  Object.values(s.substitutionCounts||{}).forEach(x=>{ if(x){ add(x.a); add(x.b); } });
+  return [...new Set(nums)].sort((a,b)=>{
+    const an=Number(a), bn=Number(b);
+    if(Number.isFinite(an) && Number.isFinite(bn)) return an-bn;
+    return a.localeCompare(b,'ja');
+  });
 }
 function refreshPersonalAnalysis(){
   const host=document.getElementById("personalRankingHost");
@@ -1935,6 +1950,23 @@ function setReportPlayerAccordionTab(num,value){
   reportPlayerTabs[String(num)]=String(value||"overview");
   refreshPersonalAnalysis();
 }
+function bindReportPlayerAnalysisEvents(){
+  if(window.__reportPlayerAnalysisBound) return;
+  window.__reportPlayerAnalysisBound=true;
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('[data-player-action]');
+    if(!btn) return;
+    const host=btn.closest('#personalRankingHost');
+    if(!host) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const action=btn.dataset.playerAction;
+    if(action==='toggle-all') toggleAllReportPlayers();
+    else if(action==='toggle') toggleReportPlayerAccordion(btn.dataset.playerNum||'');
+    else if(action==='tab') setReportPlayerAccordionTab(btn.dataset.playerNum||'',btn.dataset.playerTab||'overview');
+  },false);
+}
+bindReportPlayerAnalysisEvents();
 function playerLogs(num,type){
   return (s.logs||[]).filter(x=>String(x.num)===String(num) && (!type || x.type===type));
 }
@@ -1960,7 +1992,7 @@ function buildPlayerOverview(num){
   ];
   return `<div class="playerOverviewGrid">${configs.map(([label,type,ok,tab])=>{
     const logs=playerLogs(num,type), success=logs.filter(ok).length;
-    return `<button type="button" class="playerOverviewCard" onclick="setReportPlayerAccordionTab('${escapeAttr(num)}','${tab}')"><span>${label}</span><b>${success}/${logs.length}</b><small>成功率 ${safePct(success,logs.length)}%　効果率 ${signedRate(effectRate(logs))}</small></button>`;
+    return `<button type="button" class="playerOverviewCard" data-player-action="tab" data-player-num="${escapeAttr(num)}" data-player-tab="${tab}"><span>${label}</span><b>${success}/${logs.length}</b><small>成功率 ${safePct(success,logs.length)}%　効果率 ${signedRate(effectRate(logs))}</small></button>`;
   }).join('')}</div>`;
 }
 function buildPlayerSpike(num){
@@ -2021,17 +2053,17 @@ function buildPlayerAccordion(num){
   else if(tab==='block') body=buildPlayerBlock(num);
   else body=buildPlayerOverview(num);
   return `<section class="playerAccordion ${open?'open':''}">
-    <button type="button" class="playerAccordionToggle" onclick="toggleReportPlayerAccordion('${escapeAttr(num)}')">
+    <button type="button" class="playerAccordionToggle" data-player-action="toggle" data-player-num="${escapeAttr(num)}">
       <span><b>No.${escapeHtml(num)}</b>${name?`<small>${escapeHtml(name)}</small>`:''}</span><strong>${open?'▲':'▼'}</strong>
     </button>
-    ${open?`<div class="playerAccordionBody"><div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${tab===key?'active':''}" onclick="setReportPlayerAccordionTab('${escapeAttr(num)}','${key}')">${label}</button>`).join('')}</div><div class="playerAnalysisBody">${body}</div></div>`:''}
+    ${open?`<div class="playerAccordionBody"><div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${tab===key?'active':''}" data-player-action="tab" data-player-num="${escapeAttr(num)}" data-player-tab="${key}">${label}</button>`).join('')}</div><div class="playerAnalysisBody">${body}</div></div>`:''}
   </section>`;
 }
 function buildPersonalRanking(){
   const nums=reportPlayerNumbers();
   if(!nums.length) return `<h3>個人成績</h3><div class="playerDetailEmpty">選手のプレー記録がありません</div>`;
   const allOpen=nums.every(n=>reportPlayerOpenNumbers.has(String(n)));
-  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><button type="button" class="playerAllToggle" onclick="toggleAllReportPlayers()">${allOpen?'全閉じ':'全表示'}</button></div>
+  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><button type="button" class="playerAllToggle" data-player-action="toggle-all">${allOpen?'全閉じ':'全表示'}</button></div>
     <div class="playerAccordionList">${nums.map(buildPlayerAccordion).join('')}</div>`;
 }
 
