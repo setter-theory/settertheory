@@ -3760,6 +3760,46 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   #reportDashboard .teamAnalysisCard .playOverviewRotation{margin-top:14px!important;padding-top:14px!important;border-top:1px solid #e5e7eb!important}
 }
 </style>
+
+<style id="v150-215-coach-board-layout-fix">
+/* V150.215: コーチボードのみ。コートを最大化し、手動操作は即時移動。 */
+.coachBoardShell{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) clamp(210px,22vw,270px)!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+}
+.coachBoardHeader{grid-column:1 / -1;grid-row:1}
+.coachBoardToolbar{
+  grid-column:2;grid-row:2;
+  min-width:0;overflow-y:auto;align-content:start;
+  display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+  justify-content:flex-start!important;align-items:stretch!important;
+  gap:10px!important;padding:10px!important;border-left:1px solid rgba(148,163,184,.25);border-bottom:0!important;
+}
+.coachToolGroup{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%;gap:7px!important}
+.coachToolGroup:nth-child(2){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.coachToolGroup button,.coachToolGroup select{width:100%;min-width:0!important;min-height:42px!important;padding:0 6px!important}
+#coachTemplateSelect{grid-column:1 / -1}
+.coachBoardWorkspace{
+  grid-column:1;grid-row:2;display:flex!important;min-width:0;min-height:0;
+  align-items:stretch;justify-content:center;padding:8px!important;overflow:hidden;
+}
+.coachCourt{
+  width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  margin:auto!important;aspect-ratio:9/14!important;
+}
+.coachBoardHelp{display:none!important}
+.coachPiece{transition:none!important}
+.coachPiece.sceneMoving{transition-property:left,top!important;transition-timing-function:ease-in-out!important}
+@media(max-width:760px){
+  .coachBoardShell{grid-template-columns:minmax(0,1fr) 178px!important;grid-template-rows:auto minmax(0,1fr)!important}
+  .coachBoardToolbar{grid-column:2!important;grid-row:2!important;padding:6px!important}
+  .coachToolGroup,.coachToolGroup:nth-child(2){grid-template-columns:1fr!important}
+  .coachToolGroup button,.coachToolGroup select{min-height:34px!important;font-size:9px!important}
+  .coachBoardWorkspace{grid-column:1!important;grid-row:2!important;padding:5px!important}
+  .coachCourt{height:100%!important;max-height:100%!important;width:auto!important}
+}
+</style>
 <script>/* cache marker: 146-equal-panels-rotation-below-point-1 */</script>
 
 <style id="v146-team-analysis-final-fit">
@@ -5271,12 +5311,12 @@ html.appEntered #home.active{
     const sameSet=existing.size===nextPieces.length&&nextPieces.every(p=>existing.has(p.id));
     state.pieces=nextPieces;
     state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));
-    if(animate&&sameSet){
+    if(animate&&state.playing&&sameSet){
       nextPieces.forEach(p=>{const e=existing.get(p.id);e.textContent=p.label;e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})});
     }else renderPieces();
     renderDrawings();
   }
-  function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p)return;pushHistory();state.drag={id};ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
+  function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();ev.currentTarget.classList.remove('sceneMoving','playing');ev.currentTarget.style.transition='none';const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p)return;pushHistory();state.drag={id};ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
   function canvasDown(ev){if(state.tool==='select')return;ev.preventDefault();pushHistory();const pt=pointFromEvent(ev);state.draw={type:state.tool,points:[pt]};canvas().setPointerCapture(ev.pointerId)}
@@ -5290,11 +5330,11 @@ html.appEntered #home.active{
   window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];renderDrawings();status('線を消しました')};
   window.resetCoachBoard=function(){if(!confirm('選手配置と線を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];state.scenes=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
   window.addCoachScene=function(){if(state.playing)return;state.scenes.push({name:'場面 '+(state.scenes.length+1),pieces:JSON.parse(JSON.stringify(state.pieces)),drawings:JSON.parse(JSON.stringify(state.drawings))});if(state.scenes.length>12)state.scenes.shift();state.currentScene=state.scenes.length-1;updateSceneStatus('場面 '+state.scenes.length+'を記録しました')};
-  window.stopCoachScenes=function(silent=false){if(state.playTimer){clearTimeout(state.playTimer);state.playTimer=null}state.playing=false;const st=document.getElementById('coachBoardStatus');if(st)st.classList.remove('playingNow');const pb=document.getElementById('coachPlayButton');if(pb)pb.textContent='▶ 自動再生';if(!silent)updateSceneStatus('再生を停止しました')};
+  window.stopCoachScenes=function(silent=false){if(state.playTimer){clearTimeout(state.playTimer);state.playTimer=null}state.playing=false;const st=document.getElementById('coachBoardStatus');if(st)st.classList.remove('playingNow');const pb=document.getElementById('coachPlayButton');if(pb)pb.textContent='▶ 自動再生';renderPieces();if(!silent)updateSceneStatus('再生を停止しました')};
   window.clearCoachScenes=function(){if(!state.scenes.length)return;if(!confirm('記録した場面をすべて消しますか？'))return;window.stopCoachScenes(true);state.scenes=[];state.currentScene=-1;updateSceneStatus('記録した場面を消しました')};
   window.showCoachScene=function(index,animate=false){if(!state.scenes.length)return;state.currentScene=(index+state.scenes.length)%state.scenes.length;applyScene(state.scenes[state.currentScene],animate,700);status((state.scenes[state.currentScene].name||('場面 '+(state.currentScene+1)))+'　'+(state.currentScene+1)+' / '+state.scenes.length)};
-  window.showPrevCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<=0?state.scenes.length-1:state.currentScene-1,true)};
-  window.showNextCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<0?0:state.currentScene+1,true)};
+  window.showPrevCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<=0?state.scenes.length-1:state.currentScene-1,false)};
+  window.showNextCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<0?0:state.currentScene+1,false)};
   window.playCoachScenes=function(){
     if(state.scenes.length<2){status('自動再生には2場面以上必要です');return}
     window.stopCoachScenes(true);state.playing=true;state.currentScene=0;

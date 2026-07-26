@@ -1,3 +1,6 @@
-Setter Theory V150.9 PDF MARGIN FIX
-
-PDF生成時の「Invalid margin array.」を修正。html2pdfのmargin指定を配列から数値へ変更。既存のボタンイベント処理は変更していません。
+Setter Theory V150.215
+- コーチボードのコート表示を最大化
+- 左側に大きなコート、右側に操作項目を配置
+- 手動ドラッグ・前後切替は即時移動
+- 滑らかな移動は自動再生中だけ
+- 試合入力・保存・レポート・PDF・CSVは未変更
