@@ -2364,12 +2364,34 @@ function toggleImportedReportRecentSection(){ importedReportRecentLogsOpen=!impo
 function toggleImportedReportRecentLogs(){ importedReportRecentLogsExpanded=!importedReportRecentLogsExpanded; if(importedCsv) renderCsvAnalysis(importedCsv); }
 function toggleReportRecentSection(){ reportRecentLogsOpen=!reportRecentLogsOpen; report(); }
 function toggleReportRecentLogs(){ reportRecentLogsExpanded=!reportRecentLogsExpanded; report(); }
+function scoreFlowPointLogs(){
+  return (s.logs||[]).filter(x=>x && (x.point==="自" || x.point==="相") && /^\d+\s*-\s*\d+$/.test(String(x.score||"")));
+}
+function scoreFlowLabel(x){
+  const type=effectivePlayType(x);
+  const num=String(x.num||"").trim();
+  const player=(num && num!=="-")?`No.${escapeHtml(num)} `:"";
+  let result=String(x.result||"");
+  if(type==="得点") result=result.replace("自チーム得点","得点").replace("相手得点","失点");
+  return `${player}${escapeHtml(type)}${result && result!==type?`・${escapeHtml(result)}`:""}`;
+}
 function buildRecentReportLogs(){
-  const source=reportRecentLogsExpanded?s.logs.slice(-20):s.logs.slice(-5);
-  const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
-  const items=source.map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${effectivePlayType(x)}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join('');
-  const canExpand=s.logs.length>5;
-  return `<div class="timeline">${items}</div>${canExpand?`<button class="recentLogToggle" onclick="toggleReportRecentLogs()">${reportRecentLogsExpanded?'5件表示に戻す':'すべて表示'}</button>`:''}<div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div>`;
+  const all=scoreFlowPointLogs();
+  const source=reportRecentLogsExpanded?all:all.slice(-12);
+  if(!source.length) return `<div class="scoreFlowEmpty">得点履歴がありません</div>`;
+  const items=source.map(x=>{
+    const parts=String(x.score||"0-0").split("-");
+    const my=Number(parts[0])||0, op=Number(parts[1])||0;
+    const mine=x.point==="自";
+    return `<div class="scoreFlowItem ${mine?'myPoint':'opPoint'}">
+      <div class="scoreFlowMy">${my}</div>
+      <div class="scoreFlowLine"><i></i><span>${mine?'▲':'▼'}</span></div>
+      <div class="scoreFlowOp">${op}</div>
+      <div class="scoreFlowPlay">${scoreFlowLabel(x)}</div>
+    </div>`;
+  }).join('');
+  const canExpand=all.length>12;
+  return `<div class="scoreFlowLabels"><span>自チーム</span><span>相手</span></div><div class="scoreFlowScroll"><div class="scoreFlow">${items}</div></div>${canExpand?`<button class="recentLogToggle" onclick="toggleReportRecentLogs()">${reportRecentLogsExpanded?'最新12得点に戻す':'全得点を表示'}</button>`:''}`;
 }
 function buildRotationPointAnalysis(){
   const rows=[1,2,3,4,5,6].map(r=>{
@@ -3031,9 +3053,9 @@ function report(){
         <div class="bottomGrid setterUnifiedBottomGrid">
           <section class="reportPanel reportAccordion ${reportRecentLogsOpen?"isOpen":""}">
             <button class="reportAccordionToggle" type="button" onclick="toggleReportRecentSection()" aria-expanded="${reportRecentLogsOpen}">
-              <span>直近ログ</span><b>${reportRecentLogsOpen?"−":"＋"}</b>
+              <span>試合の流れ</span><b>${reportRecentLogsOpen?"−":"＋"}</b>
             </button>
-            ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">${reportRecentLogsExpanded?"最新20プレー":"最新5プレー"}</div>${buildRecentReportLogs()}</div>`:""}
+            ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">${reportRecentLogsExpanded?"全得点":"最新12得点"}</div>${buildRecentReportLogs()}</div>`:""}
           </section>
         </div>
       </div>
