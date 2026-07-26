@@ -34,7 +34,7 @@ html.booting #launchLandingActions{
   pointer-events:none!important;
 }
 
-/* V150.206: 選手を開いた直後に全プレーを一覧表示 */
+/* V150.207: 選手を開いた直後に全プレーを一覧表示 */
 .playerDashboard{display:grid;gap:10px}
 .playerHeadlineStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .playerHeadlineStats>div{display:grid;grid-template-columns:auto auto auto;align-items:end;justify-content:center;gap:3px;padding:9px 6px;border:1px solid rgba(96,165,250,.22);border-radius:9px;background:rgba(30,41,59,.82);color:#fff}
@@ -49,7 +49,7 @@ html.booting #launchLandingActions{
 @media(max-width:700px){.playerHeadlineStats{grid-template-columns:repeat(4,minmax(0,1fr))}.playerHeadlineStats>div{padding:7px 2px}.playerHeadlineStats b{font-size:18px}.playerPerformanceGrid{grid-template-columns:1fr 1fr;gap:6px}.playerPerformanceCard{padding:7px}.playerPerformanceCard h4{font-size:12px}.playerMiniStats{gap:3px}.playerMiniStats b{font-size:12px}}
 
 
-/* V150.206: 個人成績をチーム分析カードと同じ判定色に統一 */
+/* V150.207: 個人成績をチーム分析カードと同じ判定色に統一 */
 .playerEvaluation{display:grid;gap:5px}
 .playerEvalTrack{display:flex;height:10px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.22)}
 .playerEvalTrack>i{display:block;height:100%;min-width:0}
@@ -4846,7 +4846,7 @@ html.appEntered #home.active{
 </style>
 
 <style id="v150-201-player-rank-advice">
-/* V150.206: 個人成績PDFのPLAYER番号を廃止し、総合ランクとAquila Adviceを追加。 */
+/* V150.207: 個人成績PDFのPLAYER番号を廃止し、総合ランクとAquila Adviceを追加。 */
 #reportDashboard.pdfA4Document>.pdfPlayerPage .pdfPlayerHeader{align-items:stretch!important}
 #reportDashboard.pdfA4Document>.pdfPlayerPage .pdfPlayerRank{min-width:82px!important;display:grid!important;place-items:center!important;align-content:center!important;padding:5px 12px!important;border:1px solid rgba(250,204,21,.65)!important;border-radius:12px!important;background:rgba(15,23,42,.72)!important;text-align:center!important}
 #reportDashboard.pdfA4Document>.pdfPlayerPage .pdfPlayerRank small{font-size:8px!important;font-weight:900!important;letter-spacing:.08em!important;color:#fde68a!important}
@@ -4891,7 +4891,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.206</div>
+    <div class="launchVersion">SETTER THEORY　V150.207</div>
   </div>
 </section>
 
@@ -5585,7 +5585,7 @@ html.appEntered #home.active{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150206"></script>
+<script src="app_v141_setter_split.js?v=150207"></script>
 
 
 
@@ -6124,7 +6124,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.206</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.207</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -8838,6 +8838,32 @@ html.booting body{background:#02040a!important}
 </script>
 
 
+
+<style id="v150207-saved-report-only-fix">
+/* V150.207: 保存した試合→レポート専用。通常レポートには影響させない。 */
+.importedUnifiedReport .scoreFlowLabels{display:grid;grid-template-rows:23px 11px 23px;position:absolute;left:8px;margin-top:3px;width:20px;z-index:2;pointer-events:none}
+.importedUnifiedReport .scoreFlowLabels span{display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:1000;color:#dbeafe;white-space:nowrap}
+.importedUnifiedReport .scoreFlowLabels span+span{grid-row:3}
+.importedUnifiedReport .scoreFlowScroll{overflow:visible;padding:3px 5px 5px 30px;width:100%;box-sizing:border-box}
+.importedUnifiedReport .scoreFlow{display:grid;grid-template-columns:repeat(var(--score-flow-count),minmax(0,1fr));gap:1px;width:100%;align-items:start}
+.importedUnifiedReport .scoreFlowItem{min-width:0;width:auto;display:grid;grid-template-rows:23px 11px 23px minmax(20px,auto);text-align:center}
+.importedUnifiedReport .scoreFlowMy,.importedUnifiedReport .scoreFlowOp{display:flex;align-items:center;justify-content:center;min-width:0;border-radius:3px;font-size:clamp(8px,1.25vw,13px);font-weight:1000;color:#fff;border:1px solid rgba(148,163,184,.28);background:rgba(15,23,42,.72);padding:0}
+.importedUnifiedReport .scoreFlowItem.myPoint .scoreFlowMy{background:rgba(37,99,235,.72);border-color:#60a5fa}
+.importedUnifiedReport .scoreFlowItem.opPoint .scoreFlowOp{background:rgba(220,38,38,.66);border-color:#f87171}
+.importedUnifiedReport .scoreFlowLine{position:relative;display:flex;align-items:center;justify-content:center;color:#93c5fd;font-size:6px;line-height:1;min-width:0}
+.importedUnifiedReport .scoreFlowLine i{position:absolute;top:5px;left:-1px;right:-1px;height:1px;background:rgba(148,163,184,.5)}
+.importedUnifiedReport .scoreFlowLine span{position:relative;background:#102342;padding:0 1px;font-size:6px}
+.importedUnifiedReport .scoreFlowItem.opPoint .scoreFlowLine{color:#fca5a5}
+.importedUnifiedReport .scoreFlowPlay{padding-top:2px;font-size:clamp(5px,.72vw,7px);line-height:1.1;font-weight:800;color:#e2e8f0;overflow-wrap:anywhere;word-break:break-all;min-width:0}
+.importedUnifiedReport .scoreFlowEmpty{padding:18px;text-align:center;color:#94a3b8;font-weight:800}
+.importedUnifiedReport .playerAccordionToggle{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center}
+.importedUnifiedReport .savedPlayerRankBadge{display:flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid rgba(96,165,250,.5);border-radius:9px;background:rgba(37,99,235,.13);color:#fff}
+.importedUnifiedReport .savedPlayerRankBadge small{font-size:8px;color:#bfdbfe}.importedUnifiedReport .savedPlayerRankBadge b{font-size:18px}.importedUnifiedReport .savedPlayerRankBadge em{font-size:9px;color:#cbd5e1;font-style:normal}
+.importedUnifiedReport .savedPlayerAdvice{margin-top:10px;padding:12px;border:1px solid rgba(96,165,250,.38);border-radius:11px;background:#102342;color:#fff}
+.importedUnifiedReport .savedPlayerAdviceTitle{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}.importedUnifiedReport .savedPlayerAdviceTitle b{font-size:14px}.importedUnifiedReport .savedPlayerAdviceTitle small{font-size:9px;color:#93c5fd}
+.importedUnifiedReport .savedPlayerAdviceList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.importedUnifiedReport .savedPlayerAdviceList>div{padding:8px 9px;border-left:4px solid #60a5fa;background:rgba(15,23,42,.58);border-radius:5px}.importedUnifiedReport .savedPlayerAdviceList .continue{border-left-color:#22c55e}.importedUnifiedReport .savedPlayerAdviceList .correction{border-left-color:#f59e0b}.importedUnifiedReport .savedPlayerAdviceList .next{border-left-color:#38bdf8}.importedUnifiedReport .savedPlayerAdviceList strong{display:block;font-size:10px;margin-bottom:3px}.importedUnifiedReport .savedPlayerAdviceList p{margin:0;font-size:9px;line-height:1.5;color:#e2e8f0}
+@media(max-width:800px){.importedUnifiedReport .savedPlayerAdviceList{grid-template-columns:1fr}.importedUnifiedReport .savedPlayerRankBadge small,.importedUnifiedReport .savedPlayerRankBadge em{display:none}}
+</style>
 </body>
 </html>
 
@@ -13597,7 +13623,7 @@ html.booting #launchLanding{
 }
 </style>
 <style id="v150-191-player-accordion-open-fix">
-/* V150.206: 個人成績ボタンを直接クリック実行へ変更 */
+/* V150.207: 個人成績ボタンを直接クリック実行へ変更 */
 #personalRankingHost{overflow:hidden;background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(30,41,59,.96))!important;color:#f8fafc!important}
 .playerAnalysisHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
 .playerAnalysisHead span{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;color:#94a3b8}
@@ -13629,7 +13655,7 @@ html.booting #launchLanding{
 
 
 <style id="v150-198-pdf-player-all-roster">
-/* V150.206: PDFはチーム分析の後に、1選手につき1ページの個人成績を追加。 */
+/* V150.207: PDFはチーム分析の後に、1選手につき1ページの個人成績を追加。 */
 #reportDashboard.pdfA4Document>.pdfPlayerPage{
   display:grid!important;
   grid-template-rows:auto minmax(0,1fr)!important;
