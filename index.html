@@ -4891,7 +4891,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.209</div>
+    <div class="launchVersion">SETTER THEORY　V150.210</div>
   </div>
 </section>
 
@@ -5068,6 +5068,22 @@ html.appEntered #home.active{
         </div>
       </details>
 
+      <details class="homeAccordion coachBoardAccordion" id="coachBoardAccordion">
+        <summary>
+          <span>📋 コーチボード β</span>
+          <span class="savedMatchCount">配置・動きを説明</span>
+        </summary>
+        <div class="homeAccordionBody">
+          <div class="card coachBoardIntroCard">
+            <div>
+              <strong>バレーボールコーチボード</strong>
+              <p>選手を動かし、矢印や線を書いて、ディグ位置や切り返しをその場で説明できます。</p>
+            </div>
+            <button type="button" onclick="openCoachBoard()">コーチボードを開く</button>
+          </div>
+        </div>
+      </details>
+
       <details class="homeAccordion appInfoAccordion">
         <summary>
           <span>ℹ️ アプリ情報</span>
@@ -5095,6 +5111,54 @@ html.appEntered #home.active{
     </footer>
   </div>
 </section>
+
+<div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
+  <section class="coachBoardShell">
+    <header class="coachBoardHeader">
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>β</em></h2></div>
+      <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
+    </header>
+    <div class="coachBoardToolbar">
+      <div class="coachToolGroup" aria-label="操作ツール">
+        <button type="button" data-cb-tool="select" class="active" onclick="setCoachTool('select')">☝ 移動</button>
+        <button type="button" data-cb-tool="arrow" onclick="setCoachTool('arrow')">➜ 矢印</button>
+        <button type="button" data-cb-tool="line" onclick="setCoachTool('line')">／ 線</button>
+        <button type="button" data-cb-tool="free" onclick="setCoachTool('free')">✎ 手書き</button>
+      </div>
+      <div class="coachToolGroup">
+        <select id="coachTemplateSelect" onchange="applyCoachTemplate(this.value)" aria-label="配置テンプレート">
+          <option value="">配置テンプレート</option>
+          <option value="base">基本配置</option>
+          <option value="digLeft">レフト攻撃へのディグ</option>
+          <option value="digRight">ライト攻撃へのディグ</option>
+          <option value="receive">レセプション配置</option>
+        </select>
+        <button type="button" onclick="undoCoachBoard()">↶ 戻す</button>
+        <button type="button" onclick="saveCoachBoard()">保存</button>
+        <button type="button" onclick="clearCoachBoardDrawings()">線を消す</button>
+        <button type="button" class="danger" onclick="resetCoachBoard()">全消去</button>
+      </div>
+    </div>
+    <div class="coachBoardWorkspace">
+      <div id="coachCourt" class="coachCourt" aria-label="バレーボールコート">
+        <div class="coachCourtHalf coachCourtTop"><span>相手コート</span></div>
+        <div class="coachNet"></div>
+        <div class="coachAttackLine top"></div>
+        <div class="coachAttackLine bottom"></div>
+        <div class="coachCourtHalf coachCourtBottom"><span>自チーム</span></div>
+        <canvas id="coachDrawCanvas"></canvas>
+        <div id="coachPiecesLayer" class="coachPiecesLayer"></div>
+      </div>
+      <aside class="coachBoardHelp">
+        <strong>使い方</strong>
+        <p><b>移動</b>：選手・ボールを指で動かします。</p>
+        <p><b>矢印／線／手書き</b>：コート上をなぞります。</p>
+        <p>「保存」はこの端末内に配置を保存します。</p>
+        <div id="coachBoardStatus" class="coachBoardStatus">移動モード</div>
+      </aside>
+    </div>
+  </section>
+</div>
 
 <div id="legalDocumentModal" class="legalDocumentModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="legalDocumentTitle" onclick="closeLegalDocumentFromBackdrop(event)">
   <article class="legalDocumentCard">
@@ -5145,6 +5209,61 @@ html.appEntered #home.active{
     </footer>
   </article>
 </div>
+
+<style id="v150-210-coach-board">
+/* V150.210: 既存機能から独立したコーチボードβを追加。保存キーも専用。 */
+.coachBoardIntroCard{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0!important;padding:15px!important;background:linear-gradient(135deg,rgba(30,58,95,.92),rgba(15,23,42,.96))!important;color:#fff!important}
+.coachBoardIntroCard strong{display:block;font-size:16px;margin-bottom:5px}.coachBoardIntroCard p{margin:0;color:#cbd5e1;font-size:12px;font-weight:750;line-height:1.55}
+.coachBoardIntroCard button{flex:0 0 auto;min-height:42px;padding:0 16px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:1000;cursor:pointer}
+.coachBoardModal{display:none;position:fixed;inset:0;z-index:130000;padding:10px;background:rgba(2,6,23,.94);backdrop-filter:blur(5px)}.coachBoardModal.show{display:flex}
+.coachBoardShell{width:min(1180px,100%);height:min(94dvh,820px);margin:auto;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(148,163,184,.35);border-radius:18px;background:#0f172a;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+.coachBoardHeader{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;background:linear-gradient(135deg,#102342,#1e3a5f);color:#fff}.coachBoardHeader small{display:block;color:#93c5fd;font-size:9px;font-weight:1000;letter-spacing:.13em}.coachBoardHeader h2{margin:2px 0 0;font-size:20px}.coachBoardHeader em{font-size:10px;font-style:normal;color:#fde68a}
+.coachBoardClose{width:38px;height:38px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:25px;cursor:pointer}
+.coachBoardToolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border-bottom:1px solid rgba(148,163,184,.25);background:#172033}.coachToolGroup{display:flex;flex-wrap:wrap;gap:6px}.coachToolGroup button,.coachToolGroup select{min-height:36px;border:1px solid #475569;border-radius:9px;background:#1e293b;color:#e2e8f0;padding:0 10px;font-size:11px;font-weight:900;cursor:pointer}.coachToolGroup button.active{border-color:#60a5fa;background:#1d4ed8;color:#fff}.coachToolGroup button.danger{border-color:#7f1d1d;background:#450a0a;color:#fecaca}
+.coachBoardWorkspace{min-height:0;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:11px;padding:11px}.coachCourt{position:relative;min-height:0;height:100%;max-width:760px;aspect-ratio:9/14;margin:auto;overflow:hidden;border:4px solid #f8fafc;border-radius:8px;background:#d97706;touch-action:none;box-shadow:inset 0 0 0 2px rgba(15,23,42,.25)}
+.coachCourtHalf{position:absolute;left:0;right:0;height:50%;background:linear-gradient(90deg,rgba(234,88,12,.94),rgba(249,115,22,.94))}.coachCourtHalf.top{top:0}.coachCourtHalf.bottom{bottom:0}.coachCourtHalf span{position:absolute;left:8px;color:rgba(255,255,255,.52);font-size:10px;font-weight:1000}.coachCourtTop span{top:7px}.coachCourtBottom span{bottom:7px}.coachNet{position:absolute;z-index:2;left:0;right:0;top:50%;height:5px;transform:translateY(-50%);background:#f8fafc;box-shadow:0 0 0 1px rgba(15,23,42,.3)}.coachAttackLine{position:absolute;z-index:1;left:0;right:0;height:2px;background:rgba(255,255,255,.92)}.coachAttackLine.top{top:28.6%}.coachAttackLine.bottom{bottom:28.6%}
+#coachDrawCanvas,.coachPiecesLayer{position:absolute;inset:0;width:100%;height:100%}#coachDrawCanvas{z-index:4}.coachPiecesLayer{z-index:5;pointer-events:none}.coachPiece{position:absolute;width:42px;height:42px;transform:translate(-50%,-50%);display:grid;place-items:center;border:3px solid #fff;border-radius:50%;box-shadow:0 3px 9px rgba(0,0,0,.42);font-size:13px;font-weight:1000;color:#fff;user-select:none;pointer-events:auto;touch-action:none;cursor:grab}.coachPiece.home{background:#2563eb}.coachPiece.away{background:#dc2626}.coachPiece.ball{width:30px;height:30px;border-width:2px;background:#facc15;color:#111827;font-size:16px}.coachPiece.dragging{cursor:grabbing;filter:brightness(1.15);z-index:10}
+.coachBoardHelp{align-self:stretch;padding:13px;border:1px solid rgba(148,163,184,.25);border-radius:12px;background:#172033;color:#cbd5e1;font-size:11px;line-height:1.55}.coachBoardHelp strong{display:block;color:#fff;font-size:14px;margin-bottom:8px}.coachBoardHelp p{margin:0 0 8px}.coachBoardHelp b{color:#93c5fd}.coachBoardStatus{margin-top:12px;padding:9px;border-radius:9px;background:#0f172a;color:#bfdbfe;font-weight:900;text-align:center}
+@media(max-width:760px){.coachBoardModal{padding:0}.coachBoardShell{height:100dvh;border-radius:0}.coachBoardHeader{padding:8px 11px}.coachBoardToolbar{padding:7px}.coachToolGroup{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.coachToolGroup:nth-child(2){grid-template-columns:1.4fr repeat(4,minmax(0,1fr))}.coachToolGroup button,.coachToolGroup select{min-width:0;padding:0 5px;font-size:9px}.coachBoardWorkspace{display:block;padding:7px}.coachCourt{height:100%;max-height:calc(100dvh - 164px);width:auto;max-width:100%}.coachBoardHelp{display:none}.coachPiece{width:36px;height:36px;font-size:11px}.coachPiece.ball{width:27px;height:27px}.coachBoardIntroCard{align-items:flex-start;flex-direction:column}.coachBoardIntroCard button{width:100%}}
+</style>
+<script>
+(function(){
+  const STORAGE_KEY='setterTheoryCoachBoardV1';
+  const state={tool:'select',pieces:[],drawings:[],history:[],drag:null,draw:null};
+  const basePieces=()=>[
+    ['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],
+    ['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','●',50,52]
+  ].map(([id,team,label,x,y])=>({id,team,label,x,y}));
+  function court(){return document.getElementById('coachCourt')}
+  function canvas(){return document.getElementById('coachDrawCanvas')}
+  function layer(){return document.getElementById('coachPiecesLayer')}
+  function status(msg){const e=document.getElementById('coachBoardStatus');if(e)e.textContent=msg}
+  function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings})}
+  function pushHistory(){state.history.push(snapshot());if(state.history.length>30)state.history.shift()}
+  function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;renderPieces();renderDrawings()}catch(e){}}
+  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team;e.dataset.id=p.id;e.textContent=p.label;e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);l.appendChild(e)})}
+  function resizeCanvas(){const c=canvas(),ct=court();if(!c||!ct)return;const r=ct.getBoundingClientRect(),d=Math.max(1,window.devicePixelRatio||1);c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';renderDrawings()}
+  function ctxSetup(){const c=canvas(),ct=court();if(!c||!ct)return null;const d=Math.max(1,window.devicePixelRatio||1),x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.lineCap='round';x.lineJoin='round';return x}
+  function pointFromEvent(ev){const r=court().getBoundingClientRect();return{x:Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(ev.clientY-r.top)/r.height))}}
+  function drawArrow(x,a,b,w,h){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;const ang=Math.atan2(ey-sy,ex-sx),head=13;x.beginPath();x.moveTo(sx,sy);x.lineTo(ex,ey);x.stroke();x.beginPath();x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang-Math.PI/6),ey-head*Math.sin(ang-Math.PI/6));x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang+Math.PI/6),ey-head*Math.sin(ang+Math.PI/6));x.stroke()}
+  function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);x.strokeStyle='#111827';x.lineWidth=4;x.shadowColor='rgba(255,255,255,.75)';x.shadowBlur=2;const all=preview?state.drawings.concat([preview]):state.drawings;all.forEach(d=>{if(d.type==='arrow')drawArrow(x,d.points[0],d.points[d.points.length-1],r.width,r.height);else{x.beginPath();d.points.forEach((p,i)=>{const px=p.x*r.width,py=p.y*r.height;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}})}
+  function pieceDown(ev){if(state.tool!=='select')return;ev.preventDefault();const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p)return;pushHistory();state.drag={id};ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
+  function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
+  function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
+  function canvasDown(ev){if(state.tool==='select')return;ev.preventDefault();pushHistory();const pt=pointFromEvent(ev);state.draw={type:state.tool,points:[pt]};canvas().setPointerCapture(ev.pointerId)}
+  function canvasMove(ev){if(!state.draw)return;const pt=pointFromEvent(ev);if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
+  function canvasUp(){if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
+  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));status(tool==='select'?'移動モード':tool==='arrow'?'矢印モード':tool==='line'?'線モード':'手書きモード')};
+  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY);saved?restore(saved):(state.pieces=basePieces(),renderPieces())}requestAnimationFrame(()=>{resizeCanvas();renderPieces()})};
+  window.closeCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('この端末に保存しました')};
+  window.undoCoachBoard=function(){const raw=state.history.pop();if(raw)restore(raw);else status('戻せる操作はありません')};
+  window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];renderDrawings();status('線を消しました')};
+  window.resetCoachBoard=function(){if(!confirm('選手配置と線を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  window.applyCoachTemplate=function(name){if(!name)return;pushHistory();state.pieces=basePieces();const by=id=>state.pieces.find(p=>p.id===id);if(name==='digLeft'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:78});Object.assign(by('h4'),{x:18,y:62});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:78,y:58});Object.assign(by('ball'),{x:19,y:30})}else if(name==='digRight'){Object.assign(by('h1'),{x:18,y:78});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:22,y:58});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:82,y:62});Object.assign(by('ball'),{x:81,y:30})}else if(name==='receive'){Object.assign(by('h1'),{x:20,y:85});Object.assign(by('h2'),{x:50,y:77});Object.assign(by('h3'),{x:80,y:85});Object.assign(by('h4'),{x:25,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:75,y:62});Object.assign(by('ball'),{x:50,y:12})}state.drawings=[];renderPieces();renderDrawings();status('テンプレートを表示しました');document.getElementById('coachTemplateSelect').value=''};
+  document.addEventListener('DOMContentLoaded',()=>{const c=canvas();if(c){c.addEventListener('pointerdown',canvasDown);c.addEventListener('pointermove',canvasMove);c.addEventListener('pointerup',canvasUp);c.addEventListener('pointercancel',canvasUp)}window.addEventListener('resize',()=>{if(document.getElementById('coachBoardModal')?.classList.contains('show'))resizeCanvas()})});
+})();
+</script>
 
 <style id="v150-209-legal-documents">
 /* V150.209: ホーム画面に利用規約・プライバシーポリシーを追加。既存機能には触れない。 */
@@ -6231,7 +6350,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.209</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.210</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
