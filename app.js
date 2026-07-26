@@ -2032,6 +2032,25 @@ function buildPersonalRanking(){
     <div class="playerAnalysisBody">${body}</div>`;
 }
 
+let reportRankingsOpen=false;
+let reportRecentLogsOpen=true;
+let reportRecentLogsExpanded=false;
+let importedReportRankingsOpen=false;
+let importedReportRecentLogsOpen=true;
+let importedReportRecentLogsExpanded=false;
+function toggleReportRankings(){ reportRankingsOpen=!reportRankingsOpen; report(); }
+function toggleImportedReportRankings(){ importedReportRankingsOpen=!importedReportRankingsOpen; if(importedCsv) renderCsvAnalysis(importedCsv); }
+function toggleImportedReportRecentSection(){ importedReportRecentLogsOpen=!importedReportRecentLogsOpen; if(importedCsv) renderCsvAnalysis(importedCsv); }
+function toggleImportedReportRecentLogs(){ importedReportRecentLogsExpanded=!importedReportRecentLogsExpanded; if(importedCsv) renderCsvAnalysis(importedCsv); }
+function toggleReportRecentSection(){ reportRecentLogsOpen=!reportRecentLogsOpen; report(); }
+function toggleReportRecentLogs(){ reportRecentLogsExpanded=!reportRecentLogsExpanded; report(); }
+function buildRecentReportLogs(){
+  const source=reportRecentLogsExpanded?s.logs.slice(-20):s.logs.slice(-5);
+  const iconFor=x=>{if(isMissResult(x)) return ["×","tMiss"]; if(x.result==="被ブロック") return ["△","tBlock"]; if(x.result==="継続") return ["−","tCont"]; return ["○","tSuccess"];};
+  const items=source.map(x=>{const [ic,cls]=iconFor(x);return `<div class="timelineItem"><div class="timelineNo">${x.no}</div><div class="timelineIcon ${cls}">${ic}</div><div class="timelineText">${effectivePlayType(x)}${isTossMissLog(x)?"・ミス":""}</div></div>`;}).join('');
+  const canExpand=s.logs.length>5;
+  return `<div class="timeline">${items}</div>${canExpand?`<button class="recentLogToggle" onclick="toggleReportRecentLogs()">${reportRecentLogsExpanded?'5件表示に戻す':'すべて表示'}</button>`:''}<div class="logLegend"><span>🟢 成功系</span><span>🔵 継続</span><span>🔴 ミス</span><span>🟠 被ブロック</span></div>`;
+}
 function buildRotationPointAnalysis(){
   const rows=[1,2,3,4,5,6].map(r=>{
     const key="S"+r;
