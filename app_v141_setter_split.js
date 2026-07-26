@@ -660,17 +660,20 @@ function save(reason="auto"){
     s.lastSavedAt=savedAt;
     validateStateForSave(s);
 
-    // V122: 先に軽量な緊急スナップショットを保存し、その後に完全データを保存する。
-    // iPadでアプリを閉じる瞬間に完全保存が中断されても、最新得点とログを復元できる。
-    const emergency={...s,hist:[]};
+    // V150.205: Undo履歴はメモリ上に保持し、端末保存は直近30件だけに制限する。
+    // 長い試合で履歴スナップショットが膨らみ、localStorage容量超過になるのを防ぐ。
+    const durableState={...s,hist:Array.isArray(s.hist)?s.hist.slice(-30):[]};
+    const emergency={...durableState,hist:[]};
     localStorage.setItem("setterTheoryV2Emergency", JSON.stringify(emergency));
 
-    const serialized=JSON.stringify(s);
+    const serialized=JSON.stringify(durableState);
     localStorage.setItem("setterTheoryV2", serialized);
     localStorage.setItem("setterTheoryV2Backup", serialized);
 
     const verified=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
-    if(!verified || verified.lastSavedAt!==savedAt) throw new Error("autosave verification failed");
+    if(!verified || verified.lastSavedAt!==savedAt || Number(verified.my||0)!==Number(s.my||0) || Number(verified.op||0)!==Number(s.op||0) || (verified.logs||[]).length!==(s.logs||[]).length){
+      throw new Error("autosave verification failed");
+    }
     updateAutosaveIndicator(savedAt);
     return true;
   }catch(e){
@@ -1465,7 +1468,10 @@ function archiveFinishedCurrentMatch(){
       bySet:analysis.bySet, byRot:analysis.byRot, byScore:analysis.byScore, byPass:analysis.byPass,
       terminalCounts:analysis.terminalCounts, usedFallback:analysis.usedFallback
     },
-    liveState:JSON.parse(JSON.stringify({...s,hist:[]})),
+    // V150.205: プレー明細はcsvに保存済みなので、liveStateには名簿・設定だけを残す。
+    // 同じログの二重保存による容量超過を防ぐ。
+    liveState:JSON.parse(JSON.stringify({...s,hist:[],logs:[]})),
+    logCount:(s.logs||[]).length,
     // V150.203: ログの最終行とは別に、試合終了ボタンを押した瞬間の確定スコアを保存する。
     finalScore:{my:Number(s.my||0),op:Number(s.op||0)},
     dataVersion:DATA_SCHEMA_VERSION, schemaVersion:DATA_SCHEMA_VERSION,
@@ -1486,11 +1492,18 @@ function finishMatch(){
   if(!confirm('この試合を保存して終了しますか？\n終了後も保存データは確認できます。')) return;
   try{
     // V122: 終了フラグを立てる前に、現在の試合を「保存した試合」へ確実に複製する。
-    archiveFinishedCurrentMatch();
+    const archived=archiveFinishedCurrentMatch();
+    // V150.205: 保存一覧へ書き込まれた内容を、終了処理前に最終スコア・ログ件数まで照合する。
+    const verifiedMatch=getSavedMatches().find(m=>String(m.matchId||m.id)===String(archived.matchId||archived.id));
+    const verifiedRows=verifiedMatch&&verifiedMatch.csv&&Array.isArray(verifiedMatch.csv.data)?verifiedMatch.csv.data:[];
+    const verifiedScore=verifiedMatch&&verifiedMatch.finalScore;
+    if(!verifiedMatch || verifiedRows.length!==(s.logs||[]).length || Number(verifiedScore&&verifiedScore.my)!==Number(s.my||0) || Number(verifiedScore&&verifiedScore.op)!==Number(s.op||0)){
+      throw new Error('finished match verification failed');
+    }
     s.matchActive=false;
     s.matchEndedAt=new Date().toISOString();
     s.status='completed';
-    save('finish-match');
+    if(!save('finish-match')) throw new Error('finish state save failed');
     renderSavedMatches();
     alert('試合を保存して終了しました。');
     show('home');
@@ -6225,18 +6238,27 @@ function getSavedMatches(){
   }
   return list;
 }
+function compactSavedMatchForStorage(match){
+  const compact={...match};
+  if(compact.liveState && typeof compact.liveState==='object'){
+    compact.liveState={...compact.liveState,hist:[],logs:[]};
+  }
+  if(!compact.logCount) compact.logCount=Number(compact.csv&&Array.isArray(compact.csv.data)?compact.csv.data.length:0);
+  return compact;
+}
 function setSavedMatches(list){
-  const normalized=(list||[]).map(migrateSavedMatchIdentities);
+  // V150.205: 過去の保存試合も書き込み時に軽量化し、容量を回復する。
+  const normalized=(list||[]).map(migrateSavedMatchIdentities).map(compactSavedMatchForStorage);
   const savedAt=new Date().toISOString();
   const serialized=JSON.stringify(normalized);
   const backupSerialized=JSON.stringify({savedAt,list:normalized});
-  // App-internal storage is the main record. The second key is an automatic recovery copy,
-  // so users do not need to export a CSV after every match.
   localStorage.setItem(savedMatchesKey(),serialized);
-  localStorage.setItem(savedMatchesBackupKey(),backupSerialized);
   try{
     const verified=JSON.parse(localStorage.getItem(savedMatchesKey())||'null');
     if(!Array.isArray(verified) || verified.length!==normalized.length) throw new Error('saved match verification failed');
+    // バックアップは主保存の検証後に更新する。容量不足時も主保存を失わない。
+    try{ localStorage.setItem(savedMatchesBackupKey(),backupSerialized); }
+    catch(backupError){ console.warn('saved match backup skipped',backupError); }
   }catch(error){
     console.error('saved match verification failed',error);
     throw error;
