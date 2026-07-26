@@ -4822,7 +4822,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.186</div>
+    <div class="launchVersion">SETTER THEORY　V150.187</div>
   </div>
 </section>
 
@@ -5516,7 +5516,7 @@ html.appEntered #home.active{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150186"></script>
+<script src="app_v141_setter_split.js?v=150187"></script>
 
 
 
@@ -6055,7 +6055,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.186</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.187</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -13527,24 +13527,28 @@ html.booting #launchLanding{
   background:#000!important;
 }
 </style>
-<style id="v150-186-player-analysis-fix">
-/* V150.186: ランキングを選手別詳細分析へ変更 */
-#personalRankingHost{overflow:hidden}
-.playerAnalysisHead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:10px}
-.playerAnalysisHead span{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;opacity:.65}
-.playerAnalysisHead h3{margin:2px 0 0!important}
-.playerAnalysisHead label{font-size:11px;font-weight:800;display:flex;align-items:center;gap:7px}
-.playerAnalysisHead select{min-width:170px;max-width:260px;padding:8px 10px;border-radius:9px;border:1px solid rgba(148,163,184,.45);background:#fff;color:#0f172a;font-weight:800}
-.playerIdentity{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,.07);margin-bottom:9px}
-.playerIdentity b{font-size:15px}.playerIdentity small{font-size:10px;opacity:.72;text-align:right}
-.playerAnalysisTabs{display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
-.playerAnalysisTabs button{white-space:nowrap;border:1px solid rgba(148,163,184,.45);background:rgba(255,255,255,.8);color:#334155;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900}
-.playerAnalysisTabs button.active{background:#0f172a;color:#fff;border-color:#0f172a}
+<style id="v150-187-player-accordion">
+/* V150.187: 個人成績を選手別アコーディオンへ変更 */
+#personalRankingHost{overflow:hidden;background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(30,41,59,.96))!important;color:#f8fafc!important}
+.playerAnalysisHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.playerAnalysisHead span{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;color:#94a3b8}
+.playerAnalysisHead h3{margin:2px 0 0!important;color:#fff!important}
+.playerAllToggle{border:1px solid rgba(96,165,250,.65);background:rgba(37,99,235,.22);color:#dbeafe;border-radius:9px;padding:8px 14px;font-size:11px;font-weight:900}
+.playerAccordionList{display:grid;gap:8px}
+.playerAccordion{border:1px solid rgba(148,163,184,.25);border-radius:11px;overflow:hidden;background:rgba(15,23,42,.58)}
+.playerAccordion.open{border-color:rgba(96,165,250,.55);box-shadow:0 0 0 1px rgba(37,99,235,.12) inset}
+.playerAccordionToggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;background:rgba(30,41,59,.82);color:#fff;padding:11px 13px;text-align:left}
+.playerAccordionToggle span{display:flex;align-items:center;gap:10px}.playerAccordionToggle b{font-size:14px}.playerAccordionToggle small{font-size:11px;color:#cbd5e1}.playerAccordionToggle strong{font-size:12px;color:#93c5fd}
+.playerAccordionBody{padding:10px;background:rgba(2,6,23,.36)}
+.playerAnalysisTabs{display:flex;gap:5px;overflow-x:auto;padding-bottom:7px;margin-bottom:7px}
+.playerAnalysisTabs button{white-space:nowrap;border:1px solid rgba(148,163,184,.35);background:rgba(30,41,59,.9);color:#cbd5e1;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900}
+.playerAnalysisTabs button.active{background:#2563eb;color:#fff;border-color:#60a5fa}
 .playerOverviewGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
-.playerOverviewCard{border:1px solid rgba(148,163,184,.35);border-radius:10px;background:rgba(255,255,255,.78);padding:10px 7px;text-align:left;color:#0f172a}
-.playerOverviewCard span,.playerOverviewCard small{display:block}.playerOverviewCard span{font-size:10px;font-weight:900}.playerOverviewCard b{display:block;font-size:20px;margin:4px 0}.playerOverviewCard small{font-size:9px;line-height:1.35}
-.playerDetailTableWrap{overflow-x:auto}.playerDetailTable{width:100%;border-collapse:collapse;font-size:11px}.playerDetailTable th,.playerDetailTable td{padding:8px 7px;border-bottom:1px solid rgba(148,163,184,.28);text-align:center;white-space:nowrap}.playerDetailTable thead th{font-size:10px;opacity:.72}.playerDetailTable tbody th{text-align:left}.playerDetailTable tbody tr:last-child{font-weight:900;background:rgba(37,99,235,.07)}
-.playerDetailEmpty{padding:22px;text-align:center;font-size:12px;opacity:.68}
-@media(max-width:900px){.playerOverviewGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.playerAnalysisHead{align-items:stretch;flex-direction:column}.playerAnalysisHead label{justify-content:space-between}.playerAnalysisHead select{flex:1}.playerIdentity{align-items:flex-start;flex-direction:column}.playerIdentity small{text-align:left}}
+.playerOverviewCard{border:1px solid rgba(148,163,184,.28);border-radius:10px;background:rgba(30,41,59,.9);padding:10px 7px;text-align:left;color:#f8fafc}
+.playerOverviewCard span,.playerOverviewCard small{display:block}.playerOverviewCard span{font-size:10px;font-weight:900;color:#bfdbfe}.playerOverviewCard b{display:block;font-size:20px;margin:4px 0;color:#fff}.playerOverviewCard small{font-size:9px;line-height:1.35;color:#cbd5e1}
+.playerDetailTableWrap{overflow-x:auto;border:1px solid rgba(148,163,184,.22);border-radius:9px;background:rgba(15,23,42,.72)}
+.playerDetailTable{width:100%;border-collapse:collapse;font-size:11px;color:#f8fafc}.playerDetailTable th,.playerDetailTable td{padding:8px 7px;border-bottom:1px solid rgba(148,163,184,.2);text-align:center;white-space:nowrap}.playerDetailTable thead th{font-size:10px;color:#93c5fd}.playerDetailTable tbody th{text-align:left;color:#e2e8f0}.playerDetailTable tbody tr:last-child{font-weight:900;background:rgba(37,99,235,.2)}
+.playerDetailEmpty{padding:22px;text-align:center;font-size:12px;color:#94a3b8;background:rgba(15,23,42,.55);border-radius:9px}
+@media(max-width:900px){.playerOverviewGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.playerAnalysisHead{align-items:center}.playerAccordionToggle{padding:12px 11px}}
 </style>
-<script>/* cache marker: 150-186-player-analysis-fix */</script>
+<script>/* cache marker: 150-187-player-accordion */</script>

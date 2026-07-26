@@ -1907,33 +1907,33 @@ function metricCard(label,value,sub,color,icon,pct){
   </div>`;
 }
 
-let reportPlayerNumber = localStorage.getItem("setterTheoryReportPlayerNumber") || "";
-let reportPlayerTab = localStorage.getItem("setterTheoryReportPlayerTab") || "overview";
+let reportPlayerOpenNumbers = new Set();
+let reportPlayerTabs = {};
 
 function reportPlayerNumbers(){
   return [...new Set([...(s.nums||[]), ...(s.logs||[]).map(x=>x.num)]
     .map(String).filter(n=>n && n!=="-" && !n.includes("→")))]
     .sort((a,b)=>Number(a)-Number(b));
 }
-function selectedReportPlayer(){
-  const nums=reportPlayerNumbers();
-  if(!nums.length) return "";
-  if(!nums.includes(String(reportPlayerNumber))) reportPlayerNumber=nums[0];
-  return String(reportPlayerNumber);
-}
-function setReportPlayerNumber(value){
-  reportPlayerNumber=String(value||"");
-  localStorage.setItem("setterTheoryReportPlayerNumber",reportPlayerNumber);
-  refreshPersonalAnalysis();
-}
-function setReportPlayerTab(value){
-  reportPlayerTab=String(value||"overview");
-  localStorage.setItem("setterTheoryReportPlayerTab",reportPlayerTab);
-  refreshPersonalAnalysis();
-}
 function refreshPersonalAnalysis(){
   const host=document.getElementById("personalRankingHost");
   if(host) host.innerHTML=buildPersonalRanking(); else report();
+}
+function toggleReportPlayerAccordion(num){
+  num=String(num);
+  if(reportPlayerOpenNumbers.has(num)) reportPlayerOpenNumbers.delete(num);
+  else reportPlayerOpenNumbers.add(num);
+  refreshPersonalAnalysis();
+}
+function toggleAllReportPlayers(){
+  const nums=reportPlayerNumbers();
+  const allOpen=nums.length && nums.every(n=>reportPlayerOpenNumbers.has(String(n)));
+  reportPlayerOpenNumbers = allOpen ? new Set() : new Set(nums.map(String));
+  refreshPersonalAnalysis();
+}
+function setReportPlayerAccordionTab(num,value){
+  reportPlayerTabs[String(num)]=String(value||"overview");
+  refreshPersonalAnalysis();
 }
 function playerLogs(num,type){
   return (s.logs||[]).filter(x=>String(x.num)===String(num) && (!type || x.type===type));
@@ -1952,15 +1952,15 @@ function courtPositionLabel(pos){
 }
 function buildPlayerOverview(num){
   const configs=[
-    ['スパイク','スパイク',x=>x.result==='成功'],
-    ['サーブ','サーブ',x=>x.result==='成功'||x.result==='エース'],
-    ['レセプション','レセプ',x=>['Aパス','Bパス','Cパス'].includes(x.result)],
-    ['ディグ','ディグ',x=>x.result==='成功'],
-    ['ブロック','ブロック',x=>x.result==='シャット'||x.result==='ワンタッチ']
+    ['スパイク','スパイク',x=>x.result==='成功','spike'],
+    ['サーブ','サーブ',x=>x.result==='成功'||x.result==='エース','serve'],
+    ['レセプション','レセプ',x=>['Aパス','Bパス','Cパス'].includes(x.result),'receive'],
+    ['ディグ','ディグ',x=>x.result==='成功','dig'],
+    ['ブロック','ブロック',x=>x.result==='シャット'||x.result==='ワンタッチ','block']
   ];
-  return `<div class="playerOverviewGrid">${configs.map(([label,type,ok])=>{
+  return `<div class="playerOverviewGrid">${configs.map(([label,type,ok,tab])=>{
     const logs=playerLogs(num,type), success=logs.filter(ok).length;
-    return `<button type="button" class="playerOverviewCard" onclick="setReportPlayerTab('${type==='レセプ'?'receive':type==='スパイク'?'spike':type==='サーブ'?'serve':type==='ディグ'?'dig':'block'}')"><span>${label}</span><b>${success}/${logs.length}</b><small>成功率 ${safePct(success,logs.length)}%　効果率 ${signedRate(effectRate(logs))}</small></button>`;
+    return `<button type="button" class="playerOverviewCard" onclick="setReportPlayerAccordionTab('${escapeAttr(num)}','${tab}')"><span>${label}</span><b>${success}/${logs.length}</b><small>成功率 ${safePct(success,logs.length)}%　効果率 ${signedRate(effectRate(logs))}</small></button>`;
   }).join('')}</div>`;
 }
 function buildPlayerSpike(num){
@@ -1975,25 +1975,20 @@ function buildPlayerSpike(num){
     const a=logs.filter(x=>!positions.includes(String(x.pos)));
     rows.push(['位置不明',a.length,countResult(a,'成功'),countResult(a,'ミス'),countResult(a,'被ブロック'),`${safePct(countResult(a,'成功'),a.length)}%`,signedRate(effectRate(a))]);
   }
-  const total=["合計",logs.length,countResult(logs,'成功'),countResult(logs,'ミス'),countResult(logs,'被ブロック'),`${safePct(countResult(logs,'成功'),logs.length)}%`,signedRate(effectRate(logs))];
-  if(logs.length) rows.push(total);
+  if(logs.length) rows.push(["合計",logs.length,countResult(logs,'成功'),countResult(logs,'ミス'),countResult(logs,'被ブロック'),`${safePct(countResult(logs,'成功'),logs.length)}%`,signedRate(effectRate(logs))]);
   return detailTable(['打った位置','打数','得点','ミス','被ブロック','決定率','効果率'],rows,'スパイク記録がありません');
 }
 function buildPlayerRotationDetail(num,type){
   const isReceive=type==='レセプ';
   const rows=[1,2,3,4,5,6].map(r=>{
     const a=playerLogs(num,type).filter(x=>x.rot===`S${r}`); if(!a.length) return null;
-    if(isReceive){
-      return [`S${r}`,a.length,countResult(a,'Aパス'),countResult(a,'Bパス'),countResult(a,'Cパス'),countResult(a,['ミス','レセプミス']),signedRate(effectRate(a))];
-    }
+    if(isReceive) return [`S${r}`,a.length,countResult(a,'Aパス'),countResult(a,'Bパス'),countResult(a,'Cパス'),countResult(a,['ミス','レセプミス']),signedRate(effectRate(a))];
     return [`S${r}`,a.length,countResult(a,'成功'),countResult(a,'継続'),countResult(a,'ミス'),signedRate(effectRate(a))];
   }).filter(Boolean);
   const all=playerLogs(num,type);
-  if(all.length){
-    rows.push(isReceive
-      ? ['合計',all.length,countResult(all,'Aパス'),countResult(all,'Bパス'),countResult(all,'Cパス'),countResult(all,['ミス','レセプミス']),signedRate(effectRate(all))]
-      : ['合計',all.length,countResult(all,'成功'),countResult(all,'継続'),countResult(all,'ミス'),signedRate(effectRate(all))]);
-  }
+  if(all.length) rows.push(isReceive
+    ? ['合計',all.length,countResult(all,'Aパス'),countResult(all,'Bパス'),countResult(all,'Cパス'),countResult(all,['ミス','レセプミス']),signedRate(effectRate(all))]
+    : ['合計',all.length,countResult(all,'成功'),countResult(all,'継続'),countResult(all,'ミス'),signedRate(effectRate(all))]);
   return isReceive
     ? detailTable(['ローテ','本数','A','B','C','ミス','効果率'],rows,'レセプション記録がありません')
     : detailTable(['ローテ','本数','成功','継続','ミス','効果率'],rows,'ディグ記録がありません');
@@ -2012,24 +2007,32 @@ function buildPlayerBlock(num){
   if(logs.length) rows.push(['合計',logs.length]);
   return detailTable(['判定','本数'],rows,'ブロック記録がありません');
 }
+function buildPlayerAccordion(num){
+  num=String(num);
+  const open=reportPlayerOpenNumbers.has(num);
+  const name=getPlayerName(num)||'';
+  const tabs=[['overview','概要'],['spike','スパイク'],['serve','サーブ'],['receive','レセプション'],['dig','ディグ'],['block','ブロック']];
+  const tab=tabs.some(x=>x[0]===reportPlayerTabs[num])?reportPlayerTabs[num]:'overview';
+  let body='';
+  if(tab==='spike') body=buildPlayerSpike(num);
+  else if(tab==='serve') body=buildPlayerServe(num);
+  else if(tab==='receive') body=buildPlayerRotationDetail(num,'レセプ');
+  else if(tab==='dig') body=buildPlayerRotationDetail(num,'ディグ');
+  else if(tab==='block') body=buildPlayerBlock(num);
+  else body=buildPlayerOverview(num);
+  return `<section class="playerAccordion ${open?'open':''}">
+    <button type="button" class="playerAccordionToggle" onclick="toggleReportPlayerAccordion('${escapeAttr(num)}')">
+      <span><b>No.${escapeHtml(num)}</b>${name?`<small>${escapeHtml(name)}</small>`:''}</span><strong>${open?'▲':'▼'}</strong>
+    </button>
+    ${open?`<div class="playerAccordionBody"><div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${tab===key?'active':''}" onclick="setReportPlayerAccordionTab('${escapeAttr(num)}','${key}')">${label}</button>`).join('')}</div><div class="playerAnalysisBody">${body}</div></div>`:''}
+  </section>`;
+}
 function buildPersonalRanking(){
   const nums=reportPlayerNumbers();
   if(!nums.length) return `<h3>個人成績</h3><div class="playerDetailEmpty">選手のプレー記録がありません</div>`;
-  const num=selectedReportPlayer();
-  const name=getPlayerName(num)||'';
-  const tabs=[['overview','概要'],['spike','スパイク'],['serve','サーブ'],['receive','レセプション'],['dig','ディグ'],['block','ブロック']];
-  const valid=tabs.map(x=>x[0]); if(!valid.includes(reportPlayerTab)) reportPlayerTab='overview';
-  let body='';
-  if(reportPlayerTab==='spike') body=buildPlayerSpike(num);
-  else if(reportPlayerTab==='serve') body=buildPlayerServe(num);
-  else if(reportPlayerTab==='receive') body=buildPlayerRotationDetail(num,'レセプ');
-  else if(reportPlayerTab==='dig') body=buildPlayerRotationDetail(num,'ディグ');
-  else if(reportPlayerTab==='block') body=buildPlayerBlock(num);
-  else body=buildPlayerOverview(num);
-  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><label>選手<select onchange="setReportPlayerNumber(this.value)">${nums.map(n=>`<option value="${escapeAttr(n)}" ${n===num?'selected':''}>No.${escapeHtml(n)} ${escapeHtml(getPlayerName(n)||'')}</option>`).join('')}</select></label></div>
-    <div class="playerIdentity"><b>No.${escapeHtml(num)} ${escapeHtml(name)}</b><small>試合中に記録されたプレーを項目別・ローテーション別に集計</small></div>
-    <div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${reportPlayerTab===key?'active':''}" onclick="setReportPlayerTab('${key}')">${label}</button>`).join('')}</div>
-    <div class="playerAnalysisBody">${body}</div>`;
+  const allOpen=nums.every(n=>reportPlayerOpenNumbers.has(String(n)));
+  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><button type="button" class="playerAllToggle" onclick="toggleAllReportPlayers()">${allOpen?'全閉じ':'全表示'}</button></div>
+    <div class="playerAccordionList">${nums.map(buildPlayerAccordion).join('')}</div>`;
 }
 
 let reportRankingsOpen=false;
