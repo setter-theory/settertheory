@@ -3491,7 +3491,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.197</div>
+    <div class="pdfCoverVersion">V150.198</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3507,17 +3507,18 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // V150.197: 5ページ目以降は、1選手につき1ページの個人成績レポート。
+  // V150.198: 5ページ目以降は、1選手につき1ページの個人成績レポート。
   // 試合レポート画面と同じダッシュボード生成関数を使い、評価色・本数・割合を統一する。
-  const pdfPlayerNumbers=[...new Set(
-    s.nums.concat(s.logs.map(x=>x.num))
-      .map(n=>String(n||'').trim())
-      .filter(n=>n && n!=='-')
-  )].sort((a,b)=>{
-    const na=Number(a), nb=Number(b);
-    if(Number.isFinite(na)&&Number.isFinite(nb)) return na-nb;
-    return a.localeCompare(b,'ja');
-  });
+  // V150.198: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
+  // 「5→4」のような交代表記を選手番号として拾わず、背番号順に全登録選手を出力する。
+  const registeredPlayerNumbers=Object.keys(s.players||{})
+    .map(n=>String(n||'').trim())
+    .filter(n=>/^\d+$/.test(n));
+  const starterPlayerNumbers=(s.nums||[])
+    .map(n=>String(n||'').trim())
+    .filter(n=>/^\d+$/.test(n));
+  const pdfPlayerNumbers=[...new Set(registeredPlayerNumbers.concat(starterPlayerNumbers))]
+    .sort((a,b)=>Number(a)-Number(b));
 
   pdfPlayerNumbers.forEach((num,index)=>{
     const page=makePage('pdfPlayerPage');
