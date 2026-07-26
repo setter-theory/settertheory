@@ -1961,8 +1961,7 @@ function bindReportPlayerAnalysisEvents(){
   document.addEventListener('click',function(e){
     const btn=e.target.closest('[data-player-action]');
     if(!btn) return;
-    const host=btn.closest('#personalRankingHost');
-    if(!host) return;
+    if(!btn.closest('.playerAccordionList, .playerAnalysisHead')) return;
     e.preventDefault();
     e.stopPropagation();
     const action=btn.dataset.playerAction;
@@ -2058,17 +2057,17 @@ function buildPlayerAccordion(num){
   else if(tab==='block') body=buildPlayerBlock(num);
   else body=buildPlayerOverview(num);
   return `<section class="playerAccordion ${open?'open':''}">
-    <button type="button" class="playerAccordionToggle" data-player-action="toggle" data-player-num="${escapeAttr(num)}">
+    <button type="button" class="playerAccordionToggle" data-player-action="toggle" data-player-num="${escapeAttr(num)}" onclick="toggleReportPlayerAccordion('${escapeAttr(num)}'); return false;">
       <span><b>No.${escapeHtml(num)}</b>${name?`<small>${escapeHtml(name)}</small>`:''}</span><strong>${open?'▲':'▼'}</strong>
     </button>
-    ${open?`<div class="playerAccordionBody"><div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${tab===key?'active':''}" data-player-action="tab" data-player-num="${escapeAttr(num)}" data-player-tab="${key}">${label}</button>`).join('')}</div><div class="playerAnalysisBody">${body}</div></div>`:''}
+    ${open?`<div class="playerAccordionBody"><div class="playerAnalysisTabs">${tabs.map(([key,label])=>`<button type="button" class="${tab===key?'active':''}" data-player-action="tab" data-player-num="${escapeAttr(num)}" data-player-tab="${key}" onclick="setReportPlayerAccordionTab('${escapeAttr(num)}','${key}'); return false;">${label}</button>`).join('')}</div><div class="playerAnalysisBody">${body}</div></div>`:''}
   </section>`;
 }
 function buildPersonalRanking(){
   const nums=reportPlayerNumbers();
   if(!nums.length) return `<h3>個人成績</h3><div class="playerDetailEmpty">選手のプレー記録がありません</div>`;
   const allOpen=nums.every(n=>reportPlayerOpenNumbers.has(String(n)));
-  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><button type="button" class="playerAllToggle" data-player-action="toggle-all">${allOpen?'全閉じ':'全表示'}</button></div>
+  return `<div class="playerAnalysisHead"><div><span>PLAYER ANALYSIS</span><h3>個人成績</h3></div><button type="button" class="playerAllToggle" data-player-action="toggle-all" onclick="toggleAllReportPlayers(); return false;">${allOpen?'全閉じ':'全表示'}</button></div>
     <div class="playerAccordionList">${nums.map(buildPlayerAccordion).join('')}</div>`;
 }
 
