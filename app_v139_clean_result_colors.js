@@ -3169,19 +3169,42 @@ function showRestoredFullReport(payload,title='試合レポート') {
   }
 }
 
+function savedMatchScoreFromRows(match){
+  try{
+    const parsed=recoveryNormalizePayload(match&& (match.csv||match.parsed||match.data||match),match&& (match.fileName||match.title)||'保存試合');
+    const rows=Array.isArray(parsed.data)?parsed.data:[];
+    let best=null;
+    rows.forEach(row=>{
+      const raw=recoveryCell(row,['Score','スコア','得点']);
+      const m=String(raw||'').match(/(\d+)\s*[-―ー－]\s*(\d+)/);
+      if(!m) return;
+      const score={my:Number(m[1]),op:Number(m[2])};
+      if(!best || (score.my+score.op)>(best.my+best.op)) best=score;
+    });
+    return best;
+  }catch(_){ return null; }
+}
 function savedMatchFinalScore(match){
   if(!match || typeof match!=='object') return null;
+  const candidates=[];
   const direct=match.finalScore;
-  if(direct && Number.isFinite(Number(direct.my)) && Number.isFinite(Number(direct.op))){
-    return {my:Number(direct.my),op:Number(direct.op)};
-  }
+  if(direct && Number.isFinite(Number(direct.my)) && Number.isFinite(Number(direct.op))) candidates.push({my:Number(direct.my),op:Number(direct.op)});
   const live=match.liveState;
-  if(live && Number.isFinite(Number(live.my)) && Number.isFinite(Number(live.op))){
-    return {my:Number(live.my),op:Number(live.op)};
-  }
+  if(live && Number.isFinite(Number(live.my)) && Number.isFinite(Number(live.op))) candidates.push({my:Number(live.my),op:Number(live.op)});
+  const rowScore=savedMatchScoreFromRows(match);
+  if(rowScore) candidates.push(rowScore);
   const title=String(match.title||'');
   const m=title.match(/(\d+)\s*[-―ー－]\s*(\d+)\s*$/);
-  return m?{my:Number(m[1]),op:Number(m[2])}:null;
+  if(m) candidates.push({my:Number(m[1]),op:Number(m[2])});
+  if(!candidates.length) return null;
+  return candidates.sort((a,b)=>(b.my+b.op)-(a.my+a.op))[0];
+}
+function savedMatchDisplayTitle(match){
+  const raw=String(match&&match.title||'無題の試合');
+  const score=savedMatchFinalScore(match);
+  if(!score) return raw;
+  const base=raw.replace(/\s+\d+\s*[-―ー－]\s*\d+\s*$/,'').trim();
+  return `${base} ${score.my}-${score.op}`;
 }
 function savedMatchReportPayload(match){
   const parsed=recoveryNormalizePayload(match.csv||match.parsed||match.data||match,match.fileName||match.title||'保存試合');
@@ -3300,7 +3323,7 @@ function renderSavedMatches(){
     const total=(m.summary && m.summary.total) ? m.summary.total : 0;
     return `<div class="savedMatchItem">
       <div>
-        <div class="savedMatchTitle">${escapeHtml(m.title||'無題の試合')}</div>
+        <div class="savedMatchTitle">${escapeHtml(savedMatchDisplayTitle(m))}</div>
         <div class="savedMatchMeta">${escapeHtml(date)}　${escapeHtml(m.fileName||'CSV')}　トス${total}本</div>
       </div>
       <div class="savedMatchActions">
@@ -3319,7 +3342,7 @@ function matchOptionLabel(m){
   const d=m.savedAt ? new Date(m.savedAt) : new Date();
   const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
   const iq=(m.summary && m.summary.setterIq) ? m.summary.setterIq : '-';
-  return `${date}｜${m.title || m.fileName || '無題'}｜IQ ${iq}`;
+  return `${date}｜${savedMatchDisplayTitle(m) || m.fileName || '無題'}｜IQ ${iq}`;
 }
 function renderCompareSelectors(){
   const from=document.getElementById('compareFrom');

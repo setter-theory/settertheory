@@ -1,5 +1,5 @@
-const CACHE_NAME = 'settertheory-v150-203-player-rank-advice';
-const ASSETS=['./','./index.html','./app_v141_setter_split.js?v=150203','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
+const CACHE_NAME = 'settertheory-v150-204-player-rank-advice';
+const ASSETS=['./','./index.html','./app_v141_setter_split.js?v=150204','./manifest.json','./icons/aquila-192.png','./icons/aquila-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)));await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
