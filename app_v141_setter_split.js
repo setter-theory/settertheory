@@ -2377,9 +2377,8 @@ function scoreFlowLabel(x){
 }
 function buildRecentReportLogs(){
   const all=scoreFlowPointLogs();
-  const source=reportRecentLogsExpanded?all:all.slice(-12);
-  if(!source.length) return `<div class="scoreFlowEmpty">得点履歴がありません</div>`;
-  const items=source.map(x=>{
+  if(!all.length) return `<div class="scoreFlowEmpty">得点履歴がありません</div>`;
+  const items=all.map(x=>{
     const parts=String(x.score||"0-0").split("-");
     const my=Number(parts[0])||0, op=Number(parts[1])||0;
     const mine=x.point==="自";
@@ -2390,8 +2389,7 @@ function buildRecentReportLogs(){
       <div class="scoreFlowPlay">${scoreFlowLabel(x)}</div>
     </div>`;
   }).join('');
-  const canExpand=all.length>12;
-  return `<div class="scoreFlowLabels"><span>自チーム</span><span>相手</span></div><div class="scoreFlowScroll"><div class="scoreFlow">${items}</div></div>${canExpand?`<button class="recentLogToggle" onclick="toggleReportRecentLogs()">${reportRecentLogsExpanded?'最新12得点に戻す':'全得点を表示'}</button>`:''}`;
+  return `<div class="scoreFlowLabels"><span>自</span><span>相</span></div><div class="scoreFlowScroll"><div class="scoreFlow" style="--score-flow-count:${Math.max(all.length,1)}">${items}</div></div>`;
 }
 function buildRotationPointAnalysis(){
   const rows=[1,2,3,4,5,6].map(r=>{
@@ -3055,7 +3053,7 @@ function report(){
             <button class="reportAccordionToggle" type="button" onclick="toggleReportRecentSection()" aria-expanded="${reportRecentLogsOpen}">
               <span>試合の流れ</span><b>${reportRecentLogsOpen?"−":"＋"}</b>
             </button>
-            ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">${reportRecentLogsExpanded?"全得点":"最新12得点"}</div>${buildRecentReportLogs()}</div>`:""}
+            ${reportRecentLogsOpen?`<div class="reportAccordionBody"><div class="reportAccordionSubhead">全得点</div>${buildRecentReportLogs()}</div>`:""}
           </section>
         </div>
       </div>
