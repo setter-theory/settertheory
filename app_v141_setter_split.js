@@ -3491,7 +3491,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.196</div>
+    <div class="pdfCoverVersion">V150.197</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3507,7 +3507,7 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // V150.196: 5ページ目以降は、1選手につき1ページの個人成績レポート。
+  // V150.197: 5ページ目以降は、1選手につき1ページの個人成績レポート。
   // 試合レポート画面と同じダッシュボード生成関数を使い、評価色・本数・割合を統一する。
   const pdfPlayerNumbers=[...new Set(
     s.nums.concat(s.logs.map(x=>x.num))
@@ -3517,7 +3517,7 @@ function printMatchPdfReport(){
     const na=Number(a), nb=Number(b);
     if(Number.isFinite(na)&&Number.isFinite(nb)) return na-nb;
     return a.localeCompare(b,'ja');
-  }).filter(num=>s.logs.some(x=>String(x.num)===String(num)));
+  });
 
   pdfPlayerNumbers.forEach((num,index)=>{
     const page=makePage('pdfPlayerPage');
