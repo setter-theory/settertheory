@@ -1270,6 +1270,7 @@ function archiveFinishedCurrentMatch(){
       terminalCounts:analysis.terminalCounts, usedFallback:analysis.usedFallback
     },
     liveState:JSON.parse(JSON.stringify({...s,hist:[]})),
+    finalScore:{my:Number(s.my||0),op:Number(s.op||0)},
     dataVersion:DATA_SCHEMA_VERSION, schemaVersion:DATA_SCHEMA_VERSION,
     userId:s.userId, teamId:s.teamId, matchId:s.matchId, setId:s.setId,
     playerIdentities:{...(s.playerIdentities||{})}
@@ -3168,6 +3169,36 @@ function showRestoredFullReport(payload,title='試合レポート') {
   }
 }
 
+function savedMatchFinalScore(match){
+  if(!match || typeof match!=='object') return null;
+  const direct=match.finalScore;
+  if(direct && Number.isFinite(Number(direct.my)) && Number.isFinite(Number(direct.op))){
+    return {my:Number(direct.my),op:Number(direct.op)};
+  }
+  const live=match.liveState;
+  if(live && Number.isFinite(Number(live.my)) && Number.isFinite(Number(live.op))){
+    return {my:Number(live.my),op:Number(live.op)};
+  }
+  const title=String(match.title||'');
+  const m=title.match(/(\d+)\s*[-―ー－]\s*(\d+)\s*$/);
+  return m?{my:Number(m[1]),op:Number(m[2])}:null;
+}
+function savedMatchReportPayload(match){
+  const parsed=recoveryNormalizePayload(match.csv||match.parsed||match.data||match,match.fileName||match.title||'保存試合');
+  const finalScore=savedMatchFinalScore(match);
+  if(!finalScore || !Array.isArray(parsed.data)) return parsed;
+  const data=parsed.data.map(row=>({...row}));
+  if(data.length){
+    let target=-1;
+    for(let i=data.length-1;i>=0;i--){
+      const row=data[i]||{};
+      const no=String(row.No??row.no??'').trim();
+      if(no!=='SetterSummary' && no!=='SecondBallSummary'){ target=i; break; }
+    }
+    if(target>=0) data[target].Score=`${finalScore.my}-${finalScore.op}`;
+  }
+  return {...parsed,data,finalScore};
+}
 function loadSavedMatch(id){
   try{
     const m=getSavedMatches().find(x=>String(x.id)===String(id));
@@ -3178,8 +3209,7 @@ function loadSavedMatch(id){
     const dataManagement=document.getElementById('dataManagementCard');
     if(dataManagement) dataManagement.open=true;
 
-    const source=m.csv||m.parsed||m.data||m;
-    importedCsv=recoveryNormalizePayload(source,m.fileName||m.title||'保存済みデータ');
+    importedCsv=savedMatchReportPayload(m);
     try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(importedCsv)); }catch(_){}
     renderCsvPreview(importedCsv,importedCsv.fileName||m.title||'保存済みデータ');
     const shown=showRestoredFullReport(importedCsv,m.title||'保存試合レポート');
@@ -3224,7 +3254,7 @@ function printSavedMatchPdf(id){
   try{
     const match=getSavedMatches().find(x=>String(x.id)===String(id));
     if(!match){ alert('保存データが見つかりません。'); return; }
-    const parsed=recoveryNormalizePayload(match.csv||match,match.fileName||match.title||'保存試合');
+    const parsed=savedMatchReportPayload(match);
     importedCsv=parsed;
     try{ localStorage.setItem('vollyzeImportedCsv',JSON.stringify(parsed)); }catch(_){}
     printCsvReport();
