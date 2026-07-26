@@ -3302,7 +3302,7 @@ function v46BuildSubstitutionRows(){
   return v46PrintableRows(rows);
 }
 
-// V150.200: PDF個人成績用の総合ランクとAquila Advice。
+// V150.201: PDF個人成績用の総合ランクとAquila Advice。
 // 各判定を100点換算し、プレー本数ではなくプレー内容の平均で評価する。
 function buildPdfPlayerEvaluation(num){
   const configs=[
@@ -3551,7 +3551,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.200</div>
+    <div class="pdfCoverVersion">V150.201</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3567,9 +3567,9 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // V150.200: 5ページ目以降は、1選手につき1ページの個人成績レポート。
+  // V150.201: 5ページ目以降は、1選手につき1ページの個人成績レポート。
   // 試合レポート画面と同じダッシュボード生成関数を使い、評価色・本数・割合を統一する。
-  // V150.200: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
+  // V150.201: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
   // 「5→4」のような交代表記を選手番号として拾わず、背番号順に全登録選手を出力する。
   const registeredPlayerNumbers=Object.keys(s.players||{})
     .map(n=>String(n||'').trim())
@@ -6459,6 +6459,21 @@ function enrichParsedWithSavedSetterMetadata(parsed,match){
     parsed.setterNumbers=parsed.savedSetterMeta.map(item=>item.num);
   }
   parsed.teamId=String(parsed.teamId||match.teamId||match?.csv?.teamId||'');
+
+  // V150.201: 保存試合の個人成績は、その試合に保存された名簿だけを使用する。
+  // 現在選択中の別チームの s.players / s.nums を復元時に混ぜない。
+  const savedState=(match.liveState&&typeof match.liveState==='object')?match.liveState:null;
+  const savedPlayers=(savedState?.players&&typeof savedState.players==='object'&&!Array.isArray(savedState.players))
+    ? savedState.players
+    : ((match.players&&typeof match.players==='object'&&!Array.isArray(match.players))?match.players:{});
+  const savedNums=Array.isArray(savedState?.nums)
+    ? savedState.nums
+    : (Array.isArray(match.nums)?match.nums:[]);
+  parsed.savedPlayers=Object.fromEntries(Object.entries(savedPlayers).map(([num,name])=>[String(num),String(name||'')]));
+  parsed.savedPlayerNumbers=[...new Set([
+    ...savedNums.map(num=>String(num||'').trim()),
+    ...Object.keys(parsed.savedPlayers).map(num=>String(num||'').trim())
+  ].filter(num=>/^\d+$/.test(num)))];
   return parsed;
 }
 
@@ -7471,7 +7486,12 @@ function importedCsvToMatchState(parsed){
   const last=logs[logs.length-1]||{};
   const score=scoreParts(last.score||'');
   const rotMatch=String(last.rot||'S1').match(/(\d+)/);
-  const restoredNums=nums.length?nums:s.nums.slice();
+  // V150.201: 保存試合に埋め込まれた登録順を最優先し、無い旧データだけログ番号を使う。
+  // 現在開いているチームの s.nums はフォールバックにしない。
+  const savedNums=Array.isArray(parsed?.savedPlayerNumbers)
+    ? parsed.savedPlayerNumbers.map(n=>String(n||'').trim()).filter(n=>/^\d+$/.test(n))
+    : [];
+  const restoredNums=[...new Set((savedNums.length?savedNums:nums).concat(setterNums))];
   // V150.163: 保存試合は保存データから復元したセッターだけを使用する。
   // 現在進行中・直前の試合のセッター設定を流用すると、
   // セッター分析①に別選手が表示されるためフォールバックを廃止。
@@ -7481,7 +7501,8 @@ function importedCsvToMatchState(parsed){
     team:'自チーム', oppTeam:'相手',
     setNo:String(last.set||'1').replace(/^S/i,'') || '1',
     nums:restoredNums,
-    players:{...s.players,...players},
+    // V150.201: 現在のチーム名簿を合成せず、保存試合自身の名簿＋CSV内の名前だけで復元する。
+    players:{...(parsed?.savedPlayers||{}),...players},
     setterNums:restoredSetters,
     setterIndex:Math.max(0,restoredNums.indexOf(String(restoredSetters[0]||''))),
     rot:rotMatch?Math.max(1,Math.min(6,Number(rotMatch[1]))):1,
