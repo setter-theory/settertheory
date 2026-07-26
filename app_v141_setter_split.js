@@ -3301,6 +3301,68 @@ function v46BuildSubstitutionRows(){
   ]);
   return v46PrintableRows(rows);
 }
+
+// V150.200: PDF個人成績用の総合ランクとAquila Advice。
+// 各判定を100点換算し、プレー本数ではなくプレー内容の平均で評価する。
+function buildPdfPlayerEvaluation(num){
+  const configs=[
+    {label:'スパイク',type:'スパイク',weights:{'成功':100,'継続':55,'被ブロック':25,'ミス':0}},
+    {label:'サーブ',type:'サーブ',weights:{'エース':100,'成功':65,'ミス':0}},
+    {label:'レセプション',type:'レセプ',weights:{'Aパス':100,'Bパス':75,'Cパス':40,'ミス':0,'レセプミス':0}},
+    {label:'ディグ',type:'ディグ',weights:{'成功':100,'ミス':0}},
+    {label:'ブロック',type:'ブロック',weights:{'シャット':100,'ワンタッチ':70,'ブロックミス':0,'ミス':0}}
+  ];
+  const categories=configs.map(cfg=>{
+    const logs=playerLogs(num,cfg.type);
+    const points=logs.reduce((sum,log)=>sum+(Object.prototype.hasOwnProperty.call(cfg.weights,log.result)?cfg.weights[log.result]:50),0);
+    return {label:cfg.label,total:logs.length,score:logs.length?Math.round(points/logs.length):null};
+  });
+  const allCategories=categories.filter(x=>x.total>0);
+  const total=allCategories.reduce((sum,x)=>sum+x.total,0);
+  const score=total?Math.round(allCategories.reduce((sum,x)=>sum+x.score*x.total,0)/total):null;
+  let rank='―';
+  if(score!==null){
+    if(score>=90) rank='S+';
+    else if(score>=80) rank='S';
+    else if(score>=70) rank='A';
+    else if(score>=60) rank='B';
+    else if(score>=45) rank='C';
+    else rank='D';
+  }
+  if(!allCategories.length){
+    return {score:null,rank,items:[
+      {kind:'continue',title:'今回の評価',text:'プレー記録がないため、総合ランクはまだ算出していません。'},
+      {kind:'correction',title:'確認したいこと',text:'出場したプレーを入力すると、得意な項目と改善項目が自動で表示されます。'},
+      {kind:'next',title:'次の目標',text:'まずは1本ずつ正確に記録し、自分の基準となるデータを作りましょう。'}
+    ]};
+  }
+  const sorted=allCategories.slice().sort((a,b)=>b.score-a.score||b.total-a.total);
+  const best=sorted[0];
+  const worst=sorted[sorted.length-1];
+  const all=[...playerLogs(num,'スパイク'),...playerLogs(num,'サーブ'),...playerLogs(num,'レセプ'),...playerLogs(num,'ディグ'),...playerLogs(num,'ブロック')];
+  const errors=all.filter(x=>['ミス','レセプミス','ブロックミス'].includes(x.result)).length;
+  const errorRate=all.length?Math.round(errors/all.length*100):0;
+  const strength=best.score>=80
+    ? `${best.label}が${best.score}点で、この試合の大きな強みになっています。良い判断と再現性を継続しましょう。`
+    : `${best.label}が最も安定した項目です。成功した場面の準備と判断を次の試合でも再現しましょう。`;
+  const correction=worst.score<60
+    ? `${worst.label}が${worst.score}点です。結果だけでなく、構え・移動・判断のどこで崩れたかを映像で確認しましょう。`
+    : `全体の大きな崩れは少なめです。ミス率${errorRate}%をさらに下げると、総合評価が一段上がります。`;
+  const next=total<5
+    ? '記録本数がまだ少ないため、次は5本以上のデータを集めて評価の精度を高めましょう。'
+    : worst.label===best.label
+      ? `${best.label}の質を保ちながら、他のプレー項目にも良い流れを広げましょう。`
+      : `${worst.label}を1段階改善し、現在の強みである${best.label}と両立させることが次の目標です。`;
+  return {score,rank,items:[
+    {kind:'continue',title:'良かった点',text:strength},
+    {kind:'correction',title:'改善ポイント',text:correction},
+    {kind:'next',title:'次の目標',text:next}
+  ]};
+}
+function buildPdfPlayerAdviceHtml(evaluation){
+  return `<section class="pdfPlayerAdvice"><div class="pdfPlayerAdviceTitle"><b>Aquila Advice</b><small>この試合の個人評価</small></div><div class="pdfPlayerAdviceList">${evaluation.items.map(item=>`<div class="${item.kind}"><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.text)}</p></div>`).join('')}</div></section>`;
+}
+
 function printMatchPdfReport(){
   // V147: 試合レポート画面を基準にした統一PDFプレビュー。
   // 画面とPDFを別々に組み立てず、完成済みのレポートDOMを複製して印刷用に最適化する。
@@ -3489,7 +3551,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.199</div>
+    <div class="pdfCoverVersion">V150.200</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3505,9 +3567,9 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // V150.199: 5ページ目以降は、1選手につき1ページの個人成績レポート。
+  // V150.200: 5ページ目以降は、1選手につき1ページの個人成績レポート。
   // 試合レポート画面と同じダッシュボード生成関数を使い、評価色・本数・割合を統一する。
-  // V150.199: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
+  // V150.200: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
   // 「5→4」のような交代表記を選手番号として拾わず、背番号順に全登録選手を出力する。
   const registeredPlayerNumbers=Object.keys(s.players||{})
     .map(n=>String(n||'').trim())
@@ -3523,10 +3585,11 @@ function printMatchPdfReport(){
     page.dataset.playerNumber=String(num);
     const header=document.createElement('header');
     header.className='pdfPlayerHeader';
-    header.innerHTML=`<div><span>PLAYER ANALYSIS</span><h2>${escapeHtml(num)}番 ${escapeHtml(getPlayerName(num)||'選手')}</h2></div><div class="pdfPlayerPageNo">PLAYER ${index+1}</div>`;
+    const evaluation=buildPdfPlayerEvaluation(num);
+    header.innerHTML=`<div><span>PLAYER ANALYSIS</span><h2>${escapeHtml(num)}番 ${escapeHtml(getPlayerName(num)||'選手')}</h2></div><div class="pdfPlayerRank"><small>総合ランク</small><b>${escapeHtml(evaluation.rank)}</b>${evaluation.score===null?'':`<em>${evaluation.score}点</em>`}</div>`;
     const body=document.createElement('div');
     body.className='pdfPlayerBody';
-    body.innerHTML=buildPlayerDashboard(num);
+    body.innerHTML=buildPdfPlayerAdviceHtml(evaluation)+buildPlayerDashboard(num);
     body.querySelectorAll('button,[onclick],[onchange],[oninput]').forEach(el=>{
       if(el.tagName==='BUTTON') el.remove();
       else{ el.removeAttribute('onclick'); el.removeAttribute('onchange'); el.removeAttribute('oninput'); }
