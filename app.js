@@ -1931,8 +1931,13 @@ function reportPlayerNumbers(){
   });
 }
 function refreshPersonalAnalysis(){
-  const host=document.getElementById("personalRankingHost");
-  if(host) host.innerHTML=buildPersonalRanking(); else report();
+  const hosts=[...document.querySelectorAll('#personalRankingHost')];
+  if(hosts.length){
+    const html=buildPersonalRanking();
+    hosts.forEach(host=>{ host.innerHTML=html; });
+  }else{
+    report();
+  }
 }
 function toggleReportPlayerAccordion(num){
   num=String(num);
