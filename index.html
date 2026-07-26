@@ -3800,7 +3800,19 @@ button,.btn,.menuBtn,.modeBtn,.displayModeBtn{
   .coachCourt{height:100%!important;max-height:100%!important;width:auto!important}
 }
 </style>
-<script>/* cache marker: 146-equal-panels-rotation-below-point-1 */</script>
+
+<style id="v150-216-coach-cad-tools">
+.coachPiece.ball{background:#fff!important;border:2px solid #111827!important;overflow:hidden;color:transparent!important;box-shadow:0 3px 9px rgba(0,0,0,.42),inset 0 0 0 2px #f8fafc!important}
+.coachPiece.ball:before,.coachPiece.ball:after{content:"";position:absolute;inset:3px;border-radius:50%}
+.coachPiece.ball:before{background:conic-gradient(from 18deg,#f8fafc 0 14%,#2563eb 14% 28%,#facc15 28% 42%,#f8fafc 42% 56%,#2563eb 56% 70%,#facc15 70% 84%,#f8fafc 84% 100%)}
+.coachPiece.ball:after{inset:7px;border:2px solid rgba(15,23,42,.75);border-left-color:transparent;border-bottom-color:transparent;transform:rotate(25deg)}
+.coachMiniLabel,.coachCheckLabel{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:42px;padding:0 7px;border:1px solid #475569;border-radius:9px;background:#1e293b;color:#e2e8f0;font-size:10px;font-weight:900}
+.coachMiniLabel input[type=color]{width:34px;height:28px;padding:0;border:0;background:transparent}.coachMiniLabel select{min-height:30px!important;padding:0 4px!important}.coachCheckLabel input{width:18px;height:18px}
+.coachNumberPicker{position:absolute;z-index:140000;left:50%;top:50%;transform:translate(-50%,-50%);width:min(330px,88vw);padding:15px;border:1px solid #64748b;border-radius:16px;background:#0f172a;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.65);text-align:center}.coachNumberPicker strong{display:block;margin-bottom:12px}.coachNumberPicker>div{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.coachNumberPicker button{min-height:40px;border:1px solid #475569;border-radius:9px;background:#1e293b;color:#fff;font-weight:900}.coachNumberPicker .cancel{width:100%;margin-top:10px;background:#334155}
+.coachPrimaryTools{grid-template-columns:repeat(2,minmax(0,1fr))!important}.coachStyleTools{grid-template-columns:repeat(2,minmax(0,1fr))!important}.coachSceneTools{grid-template-columns:repeat(2,minmax(0,1fr))!important}.coachSceneTools select:first-child,.coachSceneTools #coachFavoriteSelect{grid-column:1/-1}
+@media(max-width:760px){.coachPrimaryTools,.coachStyleTools,.coachSceneTools{grid-template-columns:1fr!important}.coachMiniLabel,.coachCheckLabel{min-height:34px;font-size:9px}.coachNumberPicker>div{grid-template-columns:repeat(6,1fr)}}
+</style>
+<script>/* cache marker: 150-216-coach-cad-tools */</script>
 
 <style id="v146-team-analysis-final-fit">
 /* V146: 試合指標・結果割合・得点失点を同じ表示枠に統一し、カード内へ収める */
@@ -4931,7 +4943,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.211</div>
+    <div class="launchVersion">SETTER THEORY　V150.216</div>
   </div>
 </section>
 
@@ -5159,36 +5171,34 @@ html.appEntered #home.active{
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
-      <div class="coachToolGroup" aria-label="操作ツール">
+      <div class="coachToolGroup coachPrimaryTools" aria-label="操作ツール">
         <button type="button" data-cb-tool="select" class="active" onclick="setCoachTool('select')">☝ 移動</button>
+        <button type="button" data-cb-tool="number" onclick="setCoachTool('number')"># 番号</button>
         <button type="button" data-cb-tool="arrow" onclick="setCoachTool('arrow')">➜ 矢印</button>
         <button type="button" data-cb-tool="line" onclick="setCoachTool('line')">／ 線</button>
         <button type="button" data-cb-tool="free" onclick="setCoachTool('free')">✎ 手書き</button>
-        <button type="button" data-cb-tool="number" onclick="setCoachTool('number')"># 番号</button>
+        <button type="button" data-cb-tool="circle" onclick="setCoachTool('circle')">○ 円</button>
+        <button type="button" data-cb-tool="rect" onclick="setCoachTool('rect')">□ 四角</button>
+        <button type="button" data-cb-tool="text" onclick="setCoachTool('text')">T 文字</button>
+        <button type="button" data-cb-tool="eraser" onclick="setCoachTool('eraser')">消しゴム</button>
       </div>
-      <div class="coachToolGroup">
+      <div class="coachToolGroup coachStyleTools" aria-label="描画設定">
+        <label class="coachMiniLabel">色<input id="coachLineColor" type="color" value="#111827" onchange="setCoachDrawStyle()"></label>
+        <label class="coachMiniLabel">太さ<select id="coachLineWidth" onchange="setCoachDrawStyle()"><option value="2">細</option><option value="4" selected>中</option><option value="7">太</option></select></label>
+        <label class="coachMiniLabel">線<select id="coachLineDash" onchange="setCoachDrawStyle()"><option value="solid">実線</option><option value="dashed">破線</option><option value="dotted">点線</option></select></label>
+        <label class="coachCheckLabel"><input id="coachShapeFill" type="checkbox" onchange="setCoachDrawStyle()">塗り</label>
+      </div>
+      <div class="coachToolGroup coachSceneTools">
         <select id="coachTemplateSelect" onchange="applyCoachTemplate(this.value)" aria-label="配置テンプレート">
-          <option value="">配置テンプレート</option>
-          <option value="base">基本配置</option>
-          <option value="digLeft">レフト攻撃へのディグ</option>
-          <option value="digRight">ライト攻撃へのディグ</option>
-          <option value="receive">レセプション配置</option>
+          <option value="">配置テンプレート</option><option value="base">基本配置</option><option value="digLeft">レフト攻撃へのディグ</option><option value="digRight">ライト攻撃へのディグ</option><option value="receive">レセプション配置</option><option value="freeball">フリーボール</option><option value="blockCover">ブロックフォロー</option><option value="backAttack">バックアタック</option>
         </select>
-        <button type="button" onclick="undoCoachBoard()">↶ 戻す</button>
-        <button type="button" onclick="saveCoachBoard()">保存</button>
-        <button type="button" onclick="addCoachScene()">＋ 場面</button>
-        <button type="button" onclick="showPrevCoachScene()">◀ 前</button>
-        <button type="button" id="coachPlayButton" onclick="playCoachScenes()">▶ 自動再生</button>
-        <button type="button" onclick="stopCoachScenes()">■ 停止</button>
-        <button type="button" onclick="showNextCoachScene()">次 ▶</button>
-        <select id="coachPlaySpeed" aria-label="場面の再生速度">
-          <option value="1200">速い</option>
-          <option value="2000" selected>標準</option>
-          <option value="3000">ゆっくり</option>
-        </select>
-        <button type="button" onclick="clearCoachScenes()">場面消去</button>
-        <button type="button" onclick="clearCoachBoardDrawings()">線を消す</button>
-        <button type="button" class="danger" onclick="resetCoachBoard()">全消去</button>
+        <button type="button" onclick="undoCoachBoard()">↶ 戻す</button><button type="button" onclick="redoCoachBoard()">↷ やり直し</button>
+        <button type="button" onclick="saveCoachBoard()">保存</button><button type="button" onclick="saveCoachFavorite()">★ お気に入り</button>
+        <select id="coachFavoriteSelect" onchange="loadCoachFavorite(this.value)" aria-label="お気に入り"><option value="">お気に入りを呼出</option></select>
+        <button type="button" onclick="addCoachScene()">＋ 場面</button><button type="button" onclick="showPrevCoachScene()">◀ 前</button>
+        <button type="button" id="coachPlayButton" onclick="playCoachScenes()">▶ 自動再生</button><button type="button" onclick="stopCoachScenes()">■ 停止</button><button type="button" onclick="showNextCoachScene()">次 ▶</button>
+        <select id="coachPlaySpeed" aria-label="場面の再生速度"><option value="1200">速い</option><option value="2000" selected>標準</option><option value="3000">ゆっくり</option></select>
+        <button type="button" onclick="clearCoachScenes()">場面消去</button><button type="button" onclick="clearCoachBoardDrawings()">描画消去</button><button type="button" class="danger" onclick="resetCoachBoard()">全消去</button>
       </div>
     </div>
     <div class="coachBoardWorkspace">
@@ -5283,78 +5293,54 @@ html.appEntered #home.active{
 </style>
 <script>
 (function(){
-  const STORAGE_KEY='setterTheoryCoachBoardV1';
-  const state={tool:'select',pieces:[],drawings:[],history:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1};
-  const basePieces=()=>[
-    ['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],
-    ['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','●',50,52]
-  ].map(([id,team,label,x,y])=>({id,team,label,x,y}));
-  function court(){return document.getElementById('coachCourt')}
-  function canvas(){return document.getElementById('coachDrawCanvas')}
-  function layer(){return document.getElementById('coachPiecesLayer')}
+  const STORAGE_KEY='setterTheoryCoachBoardV2', FAVORITES_KEY='setterTheoryCoachFavoritesV1';
+  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false}};
+  const basePieces=()=>[['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','',50,52]].map(([id,team,label,x,y])=>({id,team,label,x,y}));
+  const court=()=>document.getElementById('coachCourt'),canvas=()=>document.getElementById('coachDrawCanvas'),layer=()=>document.getElementById('coachPiecesLayer');
   function status(msg){const e=document.getElementById('coachBoardStatus');if(e)e.textContent=msg}
   function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings,scenes:state.scenes})}
-  function pushHistory(){state.history.push(snapshot());if(state.history.length>30)state.history.shift()}
+  function pushHistory(){state.history.push(snapshot());if(state.history.length>50)state.history.shift();state.future=[]}
   function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;if(Array.isArray(d.scenes))state.scenes=d.scenes;renderPieces();renderDrawings();updateSceneStatus()}catch(e){}}
-  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team+(state.playing?' playing':'');e.dataset.id=p.id;e.textContent=p.label;e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);e.addEventListener('click',pieceClick);l.appendChild(e)})}
+  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team;e.dataset.id=p.id;e.textContent=p.team==='ball'?'':p.label;e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);e.addEventListener('click',pieceClick);l.appendChild(e)})}
   function resizeCanvas(){const c=canvas(),ct=court();if(!c||!ct)return;const r=ct.getBoundingClientRect(),d=Math.max(1,window.devicePixelRatio||1);c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';renderDrawings()}
-  function ctxSetup(){const c=canvas(),ct=court();if(!c||!ct)return null;const d=Math.max(1,window.devicePixelRatio||1),x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.lineCap='round';x.lineJoin='round';return x}
+  function ctxSetup(){const c=canvas();if(!c)return null;const d=Math.max(1,window.devicePixelRatio||1),x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.lineCap='round';x.lineJoin='round';return x}
   function pointFromEvent(ev){const r=court().getBoundingClientRect();return{x:Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(ev.clientY-r.top)/r.height))}}
-  function drawArrow(x,a,b,w,h){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;const ang=Math.atan2(ey-sy,ex-sx),head=13;x.beginPath();x.moveTo(sx,sy);x.lineTo(ex,ey);x.stroke();x.beginPath();x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang-Math.PI/6),ey-head*Math.sin(ang-Math.PI/6));x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang+Math.PI/6),ey-head*Math.sin(ang+Math.PI/6));x.stroke()}
-  function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);x.strokeStyle='#111827';x.lineWidth=4;x.shadowColor='rgba(255,255,255,.75)';x.shadowBlur=2;const all=preview?state.drawings.concat([preview]):state.drawings;all.forEach(d=>{if(d.type==='arrow')drawArrow(x,d.points[0],d.points[d.points.length-1],r.width,r.height);else{x.beginPath();d.points.forEach((p,i)=>{const px=p.x*r.width,py=p.y*r.height;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}})}
+  function applyStroke(x,d){x.strokeStyle=d.color||'#111827';x.lineWidth=d.width||4;x.setLineDash(d.dash==='dashed'?[14,9]:d.dash==='dotted'?[2,8]:[]);x.shadowColor='rgba(255,255,255,.65)';x.shadowBlur=1}
+  function drawArrow(x,a,b,w,h){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h,ang=Math.atan2(ey-sy,ex-sx),head=12+(x.lineWidth||4);x.beginPath();x.moveTo(sx,sy);x.lineTo(ex,ey);x.stroke();x.beginPath();x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang-Math.PI/6),ey-head*Math.sin(ang-Math.PI/6));x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang+Math.PI/6),ey-head*Math.sin(ang+Math.PI/6));x.stroke()}
+  function drawOne(x,d,w,h){applyStroke(x,d);const a=d.points[0],b=d.points[d.points.length-1];if(!a||!b)return;if(d.type==='arrow')return drawArrow(x,a,b,w,h);if(d.type==='circle'||d.type==='rect'){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;x.beginPath();if(d.type==='circle'){x.ellipse((sx+ex)/2,(sy+ey)/2,Math.abs(ex-sx)/2,Math.abs(ey-sy)/2,0,0,Math.PI*2)}else{x.rect(Math.min(sx,ex),Math.min(sy,ey),Math.abs(ex-sx),Math.abs(ey-sy))}if(d.fill){x.save();x.globalAlpha=.22;x.fillStyle=d.color;x.fill();x.restore()}x.stroke();return}if(d.type==='text'){x.setLineDash([]);x.shadowBlur=2;x.fillStyle=d.color;x.font='bold '+Math.max(14,(d.width||4)*5)+'px sans-serif';x.fillText(d.text||'',a.x*w,a.y*h);return}x.beginPath();d.points.forEach((p,i)=>{const px=p.x*w,py=p.y*h;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}
+  function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);[...state.drawings,...(preview?[preview]:[])].forEach(d=>drawOne(x,d,r.width,r.height))}
   function updateSceneStatus(extra){const n=state.scenes.length;status(extra||('場面 '+n+'件'+(n>1?'（▶自動再生できます）':'')))}
-  function pieceClick(ev){if(state.tool!=='number'||state.playing)return;ev.preventDefault();const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p||p.team==='ball')return;const next=prompt('選手番号を1〜18で入力してください',p.label);if(next===null)return;const num=String(next).trim();if(!/^(?:[1-9]|1[0-8])$/.test(num)){status('番号は1〜18で入力してください');return}pushHistory();p.label=num;renderPieces();status('No.'+num+'に変更しました')}
-  function applyScene(scene,animate,duration=750){
-    if(!scene||!Array.isArray(scene.pieces))return;
-    const nextPieces=JSON.parse(JSON.stringify(scene.pieces));
-    const existing=new Map(Array.from(layer()?.querySelectorAll('.coachPiece')||[]).map(e=>[e.dataset.id,e]));
-    const sameSet=existing.size===nextPieces.length&&nextPieces.every(p=>existing.has(p.id));
-    state.pieces=nextPieces;
-    state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));
-    if(animate&&state.playing&&sameSet){
-      nextPieces.forEach(p=>{const e=existing.get(p.id);e.textContent=p.label;e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})});
-    }else renderPieces();
-    renderDrawings();
-  }
-  function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();ev.currentTarget.classList.remove('sceneMoving','playing');ev.currentTarget.style.transition='none';const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p)return;pushHistory();state.drag={id};ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
+  function openNumberPicker(p){let old=document.getElementById('coachNumberPicker');if(old)old.remove();const box=document.createElement('div');box.id='coachNumberPicker';box.className='coachNumberPicker';box.innerHTML='<strong>番号を選択</strong><div>'+Array.from({length:18},(_,i)=>'<button type="button" data-n="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button type="button" class="cancel">閉じる</button>';document.getElementById('coachBoardModal').appendChild(box);box.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{pushHistory();p.label=b.dataset.n;renderPieces();box.remove();status('No.'+p.label+'に変更しました')}));box.querySelector('.cancel').addEventListener('click',()=>box.remove())}
+  function pieceClick(ev){if(state.tool!=='number'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p)}
+  function applyScene(scene,animate,duration=750){if(!scene||!Array.isArray(scene.pieces))return;const next=JSON.parse(JSON.stringify(scene.pieces)),existing=new Map(Array.from(layer()?.querySelectorAll('.coachPiece')||[]).map(e=>[e.dataset.id,e]));state.pieces=next;state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));if(animate&&state.playing&&existing.size===next.length){next.forEach(p=>{const e=existing.get(p.id);if(!e)return;e.textContent=p.team==='ball'?'':p.label;e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})})}else renderPieces();renderDrawings()}
+  function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
-  function canvasDown(ev){if(state.tool==='select')return;ev.preventDefault();pushHistory();const pt=pointFromEvent(ev);state.draw={type:state.tool,points:[pt]};canvas().setPointerCapture(ev.pointerId)}
+  function distanceToDrawing(pt,d){const a=d.points?.[0],b=d.points?.[d.points.length-1];if(!a||!b)return 9;const vx=b.x-a.x,vy=b.y-a.y,wx=pt.x-a.x,wy=pt.y-a.y,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=Math.max(0,Math.min(1,c2?c1/c2:0));return Math.hypot(pt.x-(a.x+t*vx),pt.y-(a.y+t*vy))}
+  function canvasDown(ev){if(state.tool==='select'||state.tool==='number')return;ev.preventDefault();const pt=pointFromEvent(ev);if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=0,best=99;state.drawings.forEach((d,i)=>{const z=distanceToDrawing(pt,d);if(z<best){best=z;idx=i}});if(best<.12){pushHistory();state.drawings.splice(idx,1);renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
   function canvasMove(ev){if(!state.draw)return;const pt=pointFromEvent(ev);if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
   function canvasUp(){if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
-  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));status(tool==='select'?'移動モード':tool==='arrow'?'矢印モード':tool==='line'?'線モード':tool==='free'?'手書きモード':'番号変更モード')};
-  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY);saved?restore(saved):(state.pieces=basePieces(),renderPieces())}requestAnimationFrame(()=>{resizeCanvas();renderPieces()})};
-  window.closeCoachBoard=function(){window.stopCoachScenes();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
-  window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・線・場面をこの端末に保存しました')};
-  window.undoCoachBoard=function(){const raw=state.history.pop();if(raw)restore(raw);else status('戻せる操作はありません')};
-  window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];renderDrawings();status('線を消しました')};
-  window.resetCoachBoard=function(){if(!confirm('選手配置と線を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];state.scenes=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  window.setCoachDrawStyle=function(){state.style.color=document.getElementById('coachLineColor')?.value||'#111827';state.style.width=Number(document.getElementById('coachLineWidth')?.value)||4;state.style.dash=document.getElementById('coachLineDash')?.value||'solid';state.style.fill=!!document.getElementById('coachShapeFill')?.checked};
+  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));const names={select:'移動',number:'番号変更',arrow:'矢印',line:'線',free:'手書き',circle:'円',rect:'四角',text:'文字',eraser:'消しゴム'};status((names[tool]||tool)+'モード')};
+  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('setterTheoryCoachBoardV1');saved?restore(saved):(state.pieces=basePieces(),renderPieces())}refreshFavorites();requestAnimationFrame(()=>{resizeCanvas();renderPieces()})};
+  window.closeCoachBoard=function(){window.stopCoachScenes();document.getElementById('coachNumberPicker')?.remove();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・描画・場面をこの端末に保存しました')};
+  window.undoCoachBoard=function(){const raw=state.history.pop();if(!raw)return status('戻せる操作はありません');state.future.push(snapshot());restore(raw)};
+  window.redoCoachBoard=function(){const raw=state.future.pop();if(!raw)return status('やり直せる操作はありません');state.history.push(snapshot());restore(raw)};
+  window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];renderDrawings();status('描画を消しました')};
+  window.resetCoachBoard=function(){if(!confirm('選手配置と描画を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];state.scenes=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  function getFavorites(){try{return JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]')}catch(e){return[]}}
+  function refreshFavorites(){const el=document.getElementById('coachFavoriteSelect');if(!el)return;el.innerHTML='<option value="">お気に入りを呼出</option>'+getFavorites().map((f,i)=>'<option value="'+i+'">'+String(f.name).replace(/[<>]/g,'')+'</option>').join('')}
+  window.saveCoachFavorite=function(){const name=prompt('お気に入り名を入力してください');if(!name)return;const a=getFavorites();a.push({name,pieces:JSON.parse(JSON.stringify(state.pieces)),drawings:JSON.parse(JSON.stringify(state.drawings))});localStorage.setItem(FAVORITES_KEY,JSON.stringify(a.slice(-20)));refreshFavorites();status('お気に入り「'+name+'」を保存しました')};
+  window.loadCoachFavorite=function(v){if(v==='')return;const f=getFavorites()[Number(v)];if(!f)return;pushHistory();state.pieces=JSON.parse(JSON.stringify(f.pieces));state.drawings=JSON.parse(JSON.stringify(f.drawings));renderPieces();renderDrawings();status('お気に入りを表示しました');document.getElementById('coachFavoriteSelect').value=''};
   window.addCoachScene=function(){if(state.playing)return;state.scenes.push({name:'場面 '+(state.scenes.length+1),pieces:JSON.parse(JSON.stringify(state.pieces)),drawings:JSON.parse(JSON.stringify(state.drawings))});if(state.scenes.length>12)state.scenes.shift();state.currentScene=state.scenes.length-1;updateSceneStatus('場面 '+state.scenes.length+'を記録しました')};
-  window.stopCoachScenes=function(silent=false){if(state.playTimer){clearTimeout(state.playTimer);state.playTimer=null}state.playing=false;const st=document.getElementById('coachBoardStatus');if(st)st.classList.remove('playingNow');const pb=document.getElementById('coachPlayButton');if(pb)pb.textContent='▶ 自動再生';renderPieces();if(!silent)updateSceneStatus('再生を停止しました')};
+  window.stopCoachScenes=function(silent=false){if(state.playTimer){clearTimeout(state.playTimer);state.playTimer=null}state.playing=false;document.getElementById('coachBoardStatus')?.classList.remove('playingNow');const pb=document.getElementById('coachPlayButton');if(pb)pb.textContent='▶ 自動再生';renderPieces();if(!silent)updateSceneStatus('再生を停止しました')};
   window.clearCoachScenes=function(){if(!state.scenes.length)return;if(!confirm('記録した場面をすべて消しますか？'))return;window.stopCoachScenes(true);state.scenes=[];state.currentScene=-1;updateSceneStatus('記録した場面を消しました')};
-  window.showCoachScene=function(index,animate=false){if(!state.scenes.length)return;state.currentScene=(index+state.scenes.length)%state.scenes.length;applyScene(state.scenes[state.currentScene],animate,700);status((state.scenes[state.currentScene].name||('場面 '+(state.currentScene+1)))+'　'+(state.currentScene+1)+' / '+state.scenes.length)};
+  window.showCoachScene=function(index,animate=false){if(!state.scenes.length)return;state.currentScene=(index+state.scenes.length)%state.scenes.length;applyScene(state.scenes[state.currentScene],animate,700);status('場面 '+(state.currentScene+1)+' / '+state.scenes.length)};
   window.showPrevCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<=0?state.scenes.length-1:state.currentScene-1,false)};
   window.showNextCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<0?0:state.currentScene+1,false)};
-  window.playCoachScenes=function(){
-    if(state.scenes.length<2){status('自動再生には2場面以上必要です');return}
-    window.stopCoachScenes(true);state.playing=true;state.currentScene=0;
-    const speed=Math.max(900,Number(document.getElementById('coachPlaySpeed')?.value)||2000);
-    const st=document.getElementById('coachBoardStatus');if(st)st.classList.add('playingNow');
-    const pb=document.getElementById('coachPlayButton');if(pb)pb.textContent='再生中…';
-    applyScene(state.scenes[0],false,speed);
-    status('自動再生中　1 / '+state.scenes.length);
-    let i=1;
-    const step=()=>{
-      if(!state.playing)return;
-      state.currentScene=i;applyScene(state.scenes[i],true,speed);
-      status('自動再生中　'+(i+1)+' / '+state.scenes.length);
-      i++;
-      if(i<state.scenes.length)state.playTimer=setTimeout(step,speed);
-      else state.playTimer=setTimeout(()=>{state.playing=false;if(st)st.classList.remove('playingNow');if(pb)pb.textContent='▶ 自動再生';updateSceneStatus('自動再生が終わりました')},speed);
-    };
-    state.playTimer=setTimeout(step,700);
-  };
-  window.applyCoachTemplate=function(name){if(!name)return;pushHistory();state.pieces=basePieces();const by=id=>state.pieces.find(p=>p.id===id);if(name==='digLeft'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:78});Object.assign(by('h4'),{x:18,y:62});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:78,y:58});Object.assign(by('ball'),{x:19,y:30})}else if(name==='digRight'){Object.assign(by('h1'),{x:18,y:78});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:22,y:58});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:82,y:62});Object.assign(by('ball'),{x:81,y:30})}else if(name==='receive'){Object.assign(by('h1'),{x:20,y:85});Object.assign(by('h2'),{x:50,y:77});Object.assign(by('h3'),{x:80,y:85});Object.assign(by('h4'),{x:25,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:75,y:62});Object.assign(by('ball'),{x:50,y:12})}state.drawings=[];renderPieces();renderDrawings();status('テンプレートを表示しました');document.getElementById('coachTemplateSelect').value=''};
+  window.playCoachScenes=function(){if(state.scenes.length<2)return status('自動再生には2場面以上必要です');window.stopCoachScenes(true);state.playing=true;state.currentScene=0;const speed=Math.max(900,Number(document.getElementById('coachPlaySpeed')?.value)||2000),st=document.getElementById('coachBoardStatus'),pb=document.getElementById('coachPlayButton');st?.classList.add('playingNow');if(pb)pb.textContent='再生中…';applyScene(state.scenes[0],false,speed);status('自動再生中　1 / '+state.scenes.length);let i=1;const step=()=>{if(!state.playing)return;state.currentScene=i;applyScene(state.scenes[i],true,speed);status('自動再生中　'+(i+1)+' / '+state.scenes.length);i++;if(i<state.scenes.length)state.playTimer=setTimeout(step,speed);else state.playTimer=setTimeout(()=>{state.playing=false;st?.classList.remove('playingNow');if(pb)pb.textContent='▶ 自動再生';updateSceneStatus('自動再生が終わりました');renderPieces()},speed)};state.playTimer=setTimeout(step,700)};
+  window.applyCoachTemplate=function(name){if(!name)return;pushHistory();state.pieces=basePieces();const by=id=>state.pieces.find(p=>p.id===id);if(name==='digLeft'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:78});Object.assign(by('h4'),{x:18,y:62});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:78,y:58});Object.assign(by('ball'),{x:19,y:30})}else if(name==='digRight'){Object.assign(by('h1'),{x:18,y:78});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:22,y:58});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:82,y:62});Object.assign(by('ball'),{x:81,y:30})}else if(name==='receive'){Object.assign(by('h1'),{x:20,y:85});Object.assign(by('h2'),{x:50,y:77});Object.assign(by('h3'),{x:80,y:85});Object.assign(by('h4'),{x:25,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:75,y:62});Object.assign(by('ball'),{x:50,y:12})}else if(name==='freeball'){Object.assign(by('h1'),{x:18,y:84});Object.assign(by('h2'),{x:50,y:86});Object.assign(by('h3'),{x:82,y:84});Object.assign(by('h4'),{x:24,y:64});Object.assign(by('h5'),{x:50,y:59});Object.assign(by('h6'),{x:76,y:64});Object.assign(by('ball'),{x:50,y:25})}else if(name==='blockCover'){Object.assign(by('h1'),{x:28,y:78});Object.assign(by('h2'),{x:50,y:84});Object.assign(by('h3'),{x:72,y:78});Object.assign(by('h4'),{x:34,y:60});Object.assign(by('h5'),{x:50,y:64});Object.assign(by('h6'),{x:66,y:60});Object.assign(by('ball'),{x:28,y:47})}else if(name==='backAttack'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:82});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:26,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:74,y:70});Object.assign(by('ball'),{x:50,y:51})}state.drawings=[];renderPieces();renderDrawings();status('テンプレートを表示しました');document.getElementById('coachTemplateSelect').value=''};
   document.addEventListener('DOMContentLoaded',()=>{const c=canvas();if(c){c.addEventListener('pointerdown',canvasDown);c.addEventListener('pointermove',canvasMove);c.addEventListener('pointerup',canvasUp);c.addEventListener('pointercancel',canvasUp)}window.addEventListener('resize',()=>{if(document.getElementById('coachBoardModal')?.classList.contains('show'))resizeCanvas()})});
 })();
 </script>
@@ -6444,7 +6430,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.211</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.216</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
