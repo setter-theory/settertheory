@@ -46,16 +46,20 @@ html.booting #launchLandingActions{
 .playerRateTrack{height:8px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.22)}.playerRateTrack i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2563eb,#60a5fa)}.playerRateRow>small{font-size:9px;color:#94a3b8;text-align:right}
 .playerMiniStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(52px,1fr));gap:5px;margin-top:7px}.playerMiniStats>div{padding:5px 3px;border-radius:7px;background:rgba(30,41,59,.86);text-align:center}.playerMiniStats span{display:block;font-size:8px;color:#94a3b8}.playerMiniStats b{display:block;margin-top:2px;font-size:13px;color:#f8fafc}
 .playerDetailChips{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}.playerDetailChips span{padding:3px 5px;border-radius:999px;background:rgba(37,99,235,.18);border:1px solid rgba(96,165,250,.22);font-size:8px;color:#bfdbfe}
-
-/* V150.195: プレー評価色（チーム分析カード共通） */
-.playerEvaluationBar{display:flex;height:10px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.22);margin-top:5px}
-.playerEvaluationBar i{display:block;height:100%;min-width:0}
-.playerEvaluationBar .evalA,.playerMiniStats .evalA{background:#22c55e}.playerEvaluationBar .evalB,.playerMiniStats .evalB{background:#2563eb}.playerEvaluationBar .evalC,.playerMiniStats .evalC{background:#f97316}.playerEvaluationBar .evalMiss,.playerMiniStats .evalMiss{background:#ef4444}
-.playerEvaluationLegend{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;font-size:8px;color:#cbd5e1}.playerEvaluationLegend span{display:inline-flex;align-items:center;gap:3px}.playerEvaluationLegend i{width:7px;height:7px;border-radius:2px}.playerEvaluationLegend .evalA{background:#22c55e}.playerEvaluationLegend .evalB{background:#2563eb}.playerEvaluationLegend .evalC{background:#f97316}.playerEvaluationLegend .evalMiss{background:#ef4444}
-.playerMiniStats>div.evalA,.playerMiniStats>div.evalB,.playerMiniStats>div.evalC,.playerMiniStats>div.evalMiss{border:1px solid rgba(255,255,255,.2)}
-.playerMiniStats>div.evalA span,.playerMiniStats>div.evalB span,.playerMiniStats>div.evalC span,.playerMiniStats>div.evalMiss span,.playerMiniStats>div.evalA b,.playerMiniStats>div.evalB b,.playerMiniStats>div.evalC b,.playerMiniStats>div.evalMiss b{color:#fff}
 @media(max-width:700px){.playerHeadlineStats{grid-template-columns:repeat(4,minmax(0,1fr))}.playerHeadlineStats>div{padding:7px 2px}.playerHeadlineStats b{font-size:18px}.playerPerformanceGrid{grid-template-columns:1fr 1fr;gap:6px}.playerPerformanceCard{padding:7px}.playerPerformanceCard h4{font-size:12px}.playerMiniStats{gap:3px}.playerMiniStats b{font-size:12px}}
 
+
+/* V150.195: 個人成績をチーム分析カードと同じ判定色に統一 */
+.playerEvaluation{display:grid;gap:5px}
+.playerEvalTrack{display:flex;height:10px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.22)}
+.playerEvalTrack>i{display:block;height:100%;min-width:0}
+.playerEvalLegend{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:4px}
+.playerEvalLegendItem{display:grid;grid-template-columns:7px 1fr auto;align-items:center;gap:3px;padding:3px 4px;border-radius:6px;background:rgba(30,41,59,.82);font-size:8px;color:#cbd5e1}
+.playerEvalLegendItem>i{width:7px;height:7px;border-radius:50%}
+.playerEvalLegendItem>b{font-size:11px;color:#fff}.playerEvalLegendItem>small{grid-column:2/4;text-align:right;font-size:7px;color:#94a3b8}
+.playerEvalSub{font-size:9px;color:#94a3b8;text-align:right}
+.playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
+.playerMiniStats>div[style] b{color:var(--player-stat-color)}
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -5557,7 +5561,7 @@ html.appEntered #home.active{
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150194"></script>
+<script src="app_v141_setter_split.js?v=150195"></script>
 
 
 

@@ -2052,13 +2052,7 @@ function playerRateBar(label,value,sub){
   return `<div class="playerRateRow"><div class="playerRateLabel"><span>${label}</span><b>${Math.round(value)}%</b></div><div class="playerRateTrack"><i style="width:${v}%"></i></div>${sub?`<small>${sub}</small>`:''}</div>`;
 }
 function playerMiniStats(items){
-  return `<div class="playerMiniStats">${items.map(([label,value,colorClass])=>`<div class="${colorClass||''}"><span>${label}</span><b>${value}</b></div>`).join('')}</div>`;
-}
-function playerEvaluationBar(items){
-  const total=items.reduce((sum,item)=>sum+(Number(item.value)||0),0);
-  const bars=items.map(item=>`<i class="${item.colorClass}" style="width:${total?((item.value/total)*100):0}%"></i>`).join('');
-  const legend=items.map(item=>`<span><i class="${item.colorClass}"></i>${item.label} ${item.value}</span>`).join('');
-  return `<div class="playerEvaluationBar">${bars}</div><div class="playerEvaluationLegend">${legend}</div>`;
+  return `<div class="playerMiniStats">${items.map(([label,value])=>`<div><span>${label}</span><b>${value}</b></div>`).join('')}</div>`;
 }
 function playerPositionSummary(num){
   const logs=playerLogs(num,'スパイク');
@@ -2130,35 +2124,30 @@ function buildPlayerDashboard(num){
       <section class="playerPerformanceCard">
         <h4>スパイク</h4>
         ${playerRateBar('決定率',spikeRate,`効果率 ${signedRate(effectRate(spike))}`)}
-        ${playerEvaluationBar([{label:'決定',value:spikeKills,colorClass:'evalA'},{label:'継続',value:countResult(spike,'継続'),colorClass:'evalB'},{label:'被ブロック',value:spikeBlocked,colorClass:'evalC'},{label:'ミス',value:spikeMiss,colorClass:'evalMiss'}])}
-        ${playerMiniStats([['打数',spike.length],['決定',spikeKills,'evalA'],['継続',countResult(spike,'継続'),'evalB'],['被ブロック',spikeBlocked,'evalC'],['ミス',spikeMiss,'evalMiss']])}
+        ${playerMiniStats([['打数',spike.length],['得点',spikeKills],['ミス',spikeMiss],['被ブロック',spikeBlocked]])}
         ${playerPositionSummary(num)}
       </section>
       <section class="playerPerformanceCard">
         <h4>サーブ</h4>
         ${playerRateBar('成功率',serveRate,`効果率 ${signedRate(effectRate(serve))}`)}
-        ${playerEvaluationBar([{label:'エース',value:serveAce,colorClass:'evalA'},{label:'成功',value:countResult(serve,'成功'),colorClass:'evalB'},{label:'イン',value:countResult(serve,'継続'),colorClass:'evalC'},{label:'ミス',value:serveMiss,colorClass:'evalMiss'}])}
-        ${playerMiniStats([['本数',serve.length],['エース',serveAce,'evalA'],['成功',countResult(serve,'成功'),'evalB'],['イン',countResult(serve,'継続'),'evalC'],['ミス',serveMiss,'evalMiss']])}
+        ${playerMiniStats([['本数',serve.length],['エース',serveAce],['成功',countResult(serve,'成功')],['ミス',serveMiss]])}
       </section>
       <section class="playerPerformanceCard">
         <h4>レセプション</h4>
         ${playerRateBar('A・B率',receiveRate,`効果率 ${signedRate(effectRate(receive))}`)}
-        ${playerEvaluationBar([{label:'Aパス',value:recA,colorClass:'evalA'},{label:'Bパス',value:recB,colorClass:'evalB'},{label:'Cパス',value:recC,colorClass:'evalC'},{label:'ミス',value:recMiss,colorClass:'evalMiss'}])}
-        ${playerMiniStats([['本数',receive.length],['Aパス',recA,'evalA'],['Bパス',recB,'evalB'],['Cパス',recC,'evalC'],['ミス',recMiss,'evalMiss']])}
+        ${playerMiniStats([['本数',receive.length],['A',recA],['B',recB],['C',recC],['ミス',recMiss]])}
         ${playerRotationSummary(num,'レセプ')}
       </section>
       <section class="playerPerformanceCard">
         <h4>ディグ</h4>
         ${playerRateBar('返球率',digRate,`効果率 ${signedRate(effectRate(dig))}`)}
-        ${playerEvaluationBar([{label:'成功',value:digSuccess,colorClass:'evalA'},{label:'継続',value:digContinue,colorClass:'evalB'},{label:'ミス',value:digMiss,colorClass:'evalMiss'}])}
-        ${playerMiniStats([['本数',dig.length],['成功',digSuccess,'evalA'],['継続',digContinue,'evalB'],['ミス',digMiss,'evalMiss']])}
+        ${playerMiniStats([['本数',dig.length],['成功',digSuccess],['継続',digContinue],['ミス',digMiss]])}
         ${playerRotationSummary(num,'ディグ')}
       </section>
       <section class="playerPerformanceCard playerPerformanceCardWide">
         <h4>ブロック</h4>
         ${playerRateBar('得点・ワンタッチ率',blockRate,`効果率 ${signedRate(effectRate(block))}`)}
-        ${playerEvaluationBar([{label:'得点',value:blockPoint,colorClass:'evalA'},{label:'ワンタッチ',value:blockTouch,colorClass:'evalB'},{label:'継続',value:blockContinue,colorClass:'evalC'},{label:'ミス',value:blockMiss,colorClass:'evalMiss'}])}
-        ${playerMiniStats([['本数',block.length],['得点',blockPoint,'evalA'],['ワンタッチ',blockTouch,'evalB'],['継続',blockContinue,'evalC'],['ミス',blockMiss,'evalMiss']])}
+        ${playerMiniStats([['本数',block.length],['得点',blockPoint],['ワンタッチ',blockTouch],['継続',blockContinue],['ミス',blockMiss]])}
       </section>
     </div>
   </div>`;

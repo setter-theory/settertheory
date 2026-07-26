@@ -2328,12 +2328,32 @@ function clampPlayerRate(v){
   const n=Number(v)||0;
   return Math.max(0,Math.min(100,n));
 }
-function playerRateBar(label,value,sub){
-  const v=clampPlayerRate(value);
-  return `<div class="playerRateRow"><div class="playerRateLabel"><span>${label}</span><b>${Math.round(value)}%</b></div><div class="playerRateTrack"><i style="width:${v}%"></i></div>${sub?`<small>${sub}</small>`:''}</div>`;
+const PLAYER_EVAL_COLORS={green:'#22c55e',blue:'#3b82f6',orange:'#f59e0b',red:'#ef4444',gray:'#64748b'};
+function playerEvaluationBar(items,total,sub){
+  const safeTotal=Math.max(0,Number(total)||0);
+  const normalized=items.map(item=>({
+    ...item,
+    count:Math.max(0,Number(item.count)||0),
+    color:item.color||PLAYER_EVAL_COLORS.gray
+  }));
+  const classified=normalized.reduce((sum,item)=>sum+item.count,0);
+  if(classified<safeTotal) normalized.push({label:'その他',count:safeTotal-classified,color:PLAYER_EVAL_COLORS.gray});
+  const segments=normalized.filter(item=>item.count>0).map(item=>{
+    const pct=safeTotal ? item.count/safeTotal*100 : 0;
+    return `<i title="${escapeHtml(item.label)} ${item.count}本（${Math.round(pct)}%）" style="width:${pct}%;background:${item.color}"></i>`;
+  }).join('');
+  const legend=normalized.map(item=>{
+    const pct=safeTotal ? Math.round(item.count/safeTotal*100) : 0;
+    return `<div class="playerEvalLegendItem"><i style="background:${item.color}"></i><span>${escapeHtml(item.label)}</span><b>${item.count}</b><small>${pct}%</small></div>`;
+  }).join('');
+  return `<div class="playerEvaluation"><div class="playerEvalTrack">${segments||'<i style="width:100%;background:rgba(148,163,184,.22)"></i>'}</div><div class="playerEvalLegend">${legend}</div>${sub?`<small class="playerEvalSub">${sub}</small>`:''}</div>`;
 }
 function playerMiniStats(items){
-  return `<div class="playerMiniStats">${items.map(([label,value])=>`<div><span>${label}</span><b>${value}</b></div>`).join('')}</div>`;
+  return `<div class="playerMiniStats">${items.map(item=>{
+    const [label,value,color]=item;
+    const style=color?` style="--player-stat-color:${color}"`:'';
+    return `<div${style}><span>${label}</span><b>${value}</b></div>`;
+  }).join('')}</div>`;
 }
 function playerPositionSummary(num){
   const logs=playerLogs(num,'スパイク');
@@ -2404,31 +2424,31 @@ function buildPlayerDashboard(num){
     <div class="playerPerformanceGrid">
       <section class="playerPerformanceCard">
         <h4>スパイク</h4>
-        ${playerRateBar('決定率',spikeRate,`効果率 ${signedRate(effectRate(spike))}`)}
-        ${playerMiniStats([['打数',spike.length],['得点',spikeKills],['ミス',spikeMiss],['被ブロック',spikeBlocked]])}
+        ${playerEvaluationBar([{label:'決定',count:spikeKills,color:PLAYER_EVAL_COLORS.green},{label:'継続',count:countResult(spike,'継続'),color:PLAYER_EVAL_COLORS.blue},{label:'被ブロック',count:spikeBlocked,color:PLAYER_EVAL_COLORS.orange},{label:'ミス',count:spikeMiss,color:PLAYER_EVAL_COLORS.red}],spike.length,`決定率 ${Math.round(spikeRate)}%　効果率 ${signedRate(effectRate(spike))}`)}
+        ${playerMiniStats([['打数',spike.length],['決定',spikeKills,PLAYER_EVAL_COLORS.green],['継続',countResult(spike,'継続'),PLAYER_EVAL_COLORS.blue],['被ブロック',spikeBlocked,PLAYER_EVAL_COLORS.orange],['ミス',spikeMiss,PLAYER_EVAL_COLORS.red]])}
         ${playerPositionSummary(num)}
       </section>
       <section class="playerPerformanceCard">
         <h4>サーブ</h4>
-        ${playerRateBar('成功率',serveRate,`効果率 ${signedRate(effectRate(serve))}`)}
-        ${playerMiniStats([['本数',serve.length],['エース',serveAce],['成功',countResult(serve,'成功')],['ミス',serveMiss]])}
+        ${playerEvaluationBar([{label:'エース',count:serveAce,color:PLAYER_EVAL_COLORS.green},{label:'成功',count:countResult(serve,'成功'),color:PLAYER_EVAL_COLORS.blue},{label:'ミス',count:serveMiss,color:PLAYER_EVAL_COLORS.red}],serve.length,`成功率 ${Math.round(serveRate)}%　効果率 ${signedRate(effectRate(serve))}`)}
+        ${playerMiniStats([['本数',serve.length],['エース',serveAce,PLAYER_EVAL_COLORS.green],['成功',countResult(serve,'成功'),PLAYER_EVAL_COLORS.blue],['ミス',serveMiss,PLAYER_EVAL_COLORS.red]])}
       </section>
       <section class="playerPerformanceCard">
         <h4>レセプション</h4>
-        ${playerRateBar('A・B率',receiveRate,`効果率 ${signedRate(effectRate(receive))}`)}
-        ${playerMiniStats([['本数',receive.length],['A',recA],['B',recB],['C',recC],['ミス',recMiss]])}
+        ${playerEvaluationBar([{label:'A',count:recA,color:PLAYER_EVAL_COLORS.green},{label:'B',count:recB,color:PLAYER_EVAL_COLORS.blue},{label:'C',count:recC,color:PLAYER_EVAL_COLORS.orange},{label:'ミス',count:recMiss,color:PLAYER_EVAL_COLORS.red}],receive.length,`A・B率 ${Math.round(receiveRate)}%　効果率 ${signedRate(effectRate(receive))}`)}
+        ${playerMiniStats([['本数',receive.length],['A',recA,PLAYER_EVAL_COLORS.green],['B',recB,PLAYER_EVAL_COLORS.blue],['C',recC,PLAYER_EVAL_COLORS.orange],['ミス',recMiss,PLAYER_EVAL_COLORS.red]])}
         ${playerRotationSummary(num,'レセプ')}
       </section>
       <section class="playerPerformanceCard">
         <h4>ディグ</h4>
-        ${playerRateBar('返球率',digRate,`効果率 ${signedRate(effectRate(dig))}`)}
-        ${playerMiniStats([['本数',dig.length],['成功',digSuccess],['継続',digContinue],['ミス',digMiss]])}
+        ${playerEvaluationBar([{label:'成功',count:digSuccess,color:PLAYER_EVAL_COLORS.green},{label:'継続',count:digContinue,color:PLAYER_EVAL_COLORS.blue},{label:'ミス',count:digMiss,color:PLAYER_EVAL_COLORS.red}],dig.length,`返球率 ${Math.round(digRate)}%　効果率 ${signedRate(effectRate(dig))}`)}
+        ${playerMiniStats([['本数',dig.length],['成功',digSuccess,PLAYER_EVAL_COLORS.green],['継続',digContinue,PLAYER_EVAL_COLORS.blue],['ミス',digMiss,PLAYER_EVAL_COLORS.red]])}
         ${playerRotationSummary(num,'ディグ')}
       </section>
       <section class="playerPerformanceCard playerPerformanceCardWide">
         <h4>ブロック</h4>
-        ${playerRateBar('得点・ワンタッチ率',blockRate,`効果率 ${signedRate(effectRate(block))}`)}
-        ${playerMiniStats([['本数',block.length],['得点',blockPoint],['ワンタッチ',blockTouch],['継続',blockContinue],['ミス',blockMiss]])}
+        ${playerEvaluationBar([{label:'シャット',count:blockPoint,color:PLAYER_EVAL_COLORS.green},{label:'ワンタッチ',count:blockTouch,color:PLAYER_EVAL_COLORS.blue},{label:'継続',count:blockContinue,color:PLAYER_EVAL_COLORS.orange},{label:'ミス',count:blockMiss,color:PLAYER_EVAL_COLORS.red}],block.length,`得点・ワンタッチ率 ${Math.round(blockRate)}%　効果率 ${signedRate(effectRate(block))}`)}
+        ${playerMiniStats([['本数',block.length],['シャット',blockPoint,PLAYER_EVAL_COLORS.green],['ワンタッチ',blockTouch,PLAYER_EVAL_COLORS.blue],['継続',blockContinue,PLAYER_EVAL_COLORS.orange],['ミス',blockMiss,PLAYER_EVAL_COLORS.red]])}
       </section>
     </div>
   </div>`;
