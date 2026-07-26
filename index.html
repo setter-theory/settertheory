@@ -4891,7 +4891,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.208</div>
+    <div class="launchVersion">SETTER THEORY　V150.209</div>
   </div>
 </section>
 
@@ -5083,8 +5083,115 @@ html.appEntered #home.active{
         </div>
       </details>
     </div>
+
+    <footer class="homeLegalFooter" aria-label="利用条件と著作権表示">
+      <div class="homeLegalLinks">
+        <button type="button" onclick="openLegalDocument('terms')">利用規約</button>
+        <span aria-hidden="true">｜</span>
+        <button type="button" onclick="openLegalDocument('privacy')">プライバシーポリシー</button>
+      </div>
+      <div>© 2026 Setter Theory</div>
+      <div>Developed by 鹿野 裕太</div>
+    </footer>
   </div>
 </section>
+
+<div id="legalDocumentModal" class="legalDocumentModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="legalDocumentTitle" onclick="closeLegalDocumentFromBackdrop(event)">
+  <article class="legalDocumentCard">
+    <header class="legalDocumentHeader">
+      <div>
+        <small>SETTER THEORY</small>
+        <h2 id="legalDocumentTitle">利用規約</h2>
+      </div>
+      <button type="button" class="legalDocumentClose" onclick="closeLegalDocument()" aria-label="閉じる">×</button>
+    </header>
+
+    <div id="legalTermsContent" class="legalDocumentContent">
+      <p class="legalUpdated">最終更新日：2026年7月26日</p>
+      <h3>第1条（目的）</h3>
+      <p>本アプリ「Setter Theory」（以下「本アプリ」）は、バレーボールにおける試合データの記録・分析・振り返りを目的とした分析支援ツールです。</p>
+      <h3>第2条（利用について）</h3>
+      <p>本アプリは指導・分析の補助を目的として提供しています。試合結果や分析結果について、その正確性や完全性を保証するものではありません。</p>
+      <h3>第3条（データについて）</h3>
+      <p>入力された試合データは、利用者自身の責任で管理してください。利用者が誤ってデータを削除・変更した場合について、開発者は責任を負いません。</p>
+      <h3>第4条（禁止事項）</h3>
+      <p>本アプリの不正利用、法令または公序良俗に反する利用、他人への迷惑行為、本アプリを開発者の許可なく改変して再配布する行為を禁止します。</p>
+      <h3>第5条（免責事項）</h3>
+      <p>本アプリの利用によって生じた損害について、開発者は責任を負いません。</p>
+      <h3>第6条（著作権）</h3>
+      <p>本アプリに含まれる独自のプログラム、デザイン、ロゴおよび文章等の権利は、開発者または正当な権利者に帰属します。許可のない転載・複製・再配布を禁止します。</p>
+      <h3>第7条（変更）</h3>
+      <p>本利用規約は、必要に応じて変更される場合があります。</p>
+    </div>
+
+    <div id="legalPrivacyContent" class="legalDocumentContent" hidden>
+      <p class="legalUpdated">最終更新日：2026年7月26日</p>
+      <h3>1. 取得する情報</h3>
+      <p>本アプリでは、チーム名、選手名、試合データおよび分析に必要な情報を利用者が入力できます。</p>
+      <h3>2. データの保存</h3>
+      <p>現在の本アプリでは、入力された試合データを利用端末のブラウザ内に保存します。試合データを開発者の外部サーバーへ自動送信する機能はありません。</p>
+      <h3>3. 第三者提供</h3>
+      <p>開発者は、利用者から提供を受けていない端末内の試合データを取得または第三者へ提供しません。ただし、法令に基づく場合を除きます。</p>
+      <h3>4. データ管理</h3>
+      <p>端末の変更、ブラウザデータの削除、ホーム画面アプリの削除などにより、保存データが失われる場合があります。必要なデータはCSV等で利用者自身が保管してください。</p>
+      <h3>5. セキュリティ</h3>
+      <p>利用者は、端末の画面ロックなどを利用し、入力した選手名や試合データを適切に管理してください。</p>
+      <h3>6. 改定</h3>
+      <p>本ポリシーは、機能追加や運用変更に応じて改定される場合があります。</p>
+    </div>
+
+    <footer class="legalDocumentActions">
+      <button type="button" onclick="closeLegalDocument()">戻る</button>
+    </footer>
+  </article>
+</div>
+
+<style id="v150-209-legal-documents">
+/* V150.209: ホーム画面に利用規約・プライバシーポリシーを追加。既存機能には触れない。 */
+.homeLegalFooter{margin:18px 0 8px;padding:14px 10px 4px;text-align:center;color:#94a3b8;font-size:10px;font-weight:800;line-height:1.7}
+.homeLegalLinks{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:5px}
+.homeLegalLinks button{appearance:none;border:0;background:transparent;color:#bfdbfe;font:inherit;font-size:11px;font-weight:900;padding:4px 2px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.legalDocumentModal{display:none;position:fixed;inset:0;z-index:120000;align-items:center;justify-content:center;padding:14px;background:rgba(2,6,23,.82);backdrop-filter:blur(4px)}
+.legalDocumentModal.show{display:flex}
+.legalDocumentCard{width:min(760px,96vw);max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(148,163,184,.35);border-radius:18px;background:#f8fafc;box-shadow:0 28px 80px rgba(0,0,0,.48);color:#0f172a;text-align:left}
+.legalDocumentHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;border-bottom:1px solid #cbd5e1;background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff}
+.legalDocumentHeader small{display:block;color:#93c5fd;font-size:9px;font-weight:1000;letter-spacing:.12em}
+.legalDocumentHeader h2{margin:2px 0 0;font-size:20px;color:#fff}
+.legalDocumentClose{flex:0 0 36px;width:36px;height:36px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.legalDocumentContent{overflow:auto;padding:16px 18px 8px;font-size:13px;line-height:1.75}
+.legalDocumentContent h3{margin:16px 0 5px;font-size:14px;color:#0f172a}
+.legalDocumentContent p{margin:0;color:#334155;font-weight:650}
+.legalDocumentContent .legalUpdated{margin-bottom:12px;color:#64748b;font-size:11px;font-weight:800}
+.legalDocumentActions{padding:11px 16px 14px;border-top:1px solid #e2e8f0;background:#fff;text-align:center}
+.legalDocumentActions button{min-width:160px;min-height:40px;border:0;border-radius:11px;background:#1d4ed8;color:#fff;font-size:13px;font-weight:1000;cursor:pointer}
+@media(max-width:560px){.legalDocumentModal{padding:8px}.legalDocumentCard{max-height:96dvh;border-radius:14px}.legalDocumentContent{padding:13px 14px 6px;font-size:12px}.legalDocumentHeader{padding:12px 14px}.legalDocumentHeader h2{font-size:18px}}
+</style>
+<script>
+function openLegalDocument(type){
+  const modal=document.getElementById('legalDocumentModal');
+  const terms=document.getElementById('legalTermsContent');
+  const privacy=document.getElementById('legalPrivacyContent');
+  const title=document.getElementById('legalDocumentTitle');
+  if(!modal||!terms||!privacy||!title)return;
+  const showPrivacy=type==='privacy';
+  terms.hidden=showPrivacy;
+  privacy.hidden=!showPrivacy;
+  title.textContent=showPrivacy?'プライバシーポリシー':'利用規約';
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function closeLegalDocument(){
+  const modal=document.getElementById('legalDocumentModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+function closeLegalDocumentFromBackdrop(event){if(event&&event.target===event.currentTarget)closeLegalDocument();}
+document.addEventListener('keydown',function(event){if(event.key==='Escape')closeLegalDocument();});
+</script>
+
 <style id="v150-157-home-accordion-layout">
 /* V150.157: ホームの主要操作を上部へ固定し、各管理カードをアコーディオンへ統一 */
 .homePrimaryActions{margin:14px 0 16px!important}
@@ -6124,7 +6231,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.208</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.209</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
