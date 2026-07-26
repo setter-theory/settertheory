@@ -4891,7 +4891,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.210</div>
+    <div class="launchVersion">SETTER THEORY　V150.211</div>
   </div>
 </section>
 
@@ -5124,6 +5124,7 @@ html.appEntered #home.active{
         <button type="button" data-cb-tool="arrow" onclick="setCoachTool('arrow')">➜ 矢印</button>
         <button type="button" data-cb-tool="line" onclick="setCoachTool('line')">／ 線</button>
         <button type="button" data-cb-tool="free" onclick="setCoachTool('free')">✎ 手書き</button>
+        <button type="button" data-cb-tool="number" onclick="setCoachTool('number')"># 番号</button>
       </div>
       <div class="coachToolGroup">
         <select id="coachTemplateSelect" onchange="applyCoachTemplate(this.value)" aria-label="配置テンプレート">
@@ -5135,6 +5136,10 @@ html.appEntered #home.active{
         </select>
         <button type="button" onclick="undoCoachBoard()">↶ 戻す</button>
         <button type="button" onclick="saveCoachBoard()">保存</button>
+        <button type="button" onclick="addCoachScene()">＋ 場面</button>
+        <button type="button" onclick="playCoachScenes()">▶ 再生</button>
+        <button type="button" onclick="stopCoachScenes()">■ 停止</button>
+        <button type="button" onclick="clearCoachScenes()">場面消去</button>
         <button type="button" onclick="clearCoachBoardDrawings()">線を消す</button>
         <button type="button" class="danger" onclick="resetCoachBoard()">全消去</button>
       </div>
@@ -5153,6 +5158,8 @@ html.appEntered #home.active{
         <strong>使い方</strong>
         <p><b>移動</b>：選手・ボールを指で動かします。</p>
         <p><b>矢印／線／手書き</b>：コート上をなぞります。</p>
+        <p><b>番号</b>：選手を押して1〜18番へ変更します。</p>
+        <p><b>＋場面</b>：現在の配置を記録し、「再生」で順番に動かします。</p>
         <p>「保存」はこの端末内に配置を保存します。</p>
         <div id="coachBoardStatus" class="coachBoardStatus">移動モード</div>
       </aside>
@@ -5210,8 +5217,8 @@ html.appEntered #home.active{
   </article>
 </div>
 
-<style id="v150-210-coach-board">
-/* V150.210: 既存機能から独立したコーチボードβを追加。保存キーも専用。 */
+<style id="v150-211-coach-board">
+/* V150.211: コーチボード内だけに番号変更・場面記録・再生を追加。 */
 .coachBoardIntroCard{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0!important;padding:15px!important;background:linear-gradient(135deg,rgba(30,58,95,.92),rgba(15,23,42,.96))!important;color:#fff!important}
 .coachBoardIntroCard strong{display:block;font-size:16px;margin-bottom:5px}.coachBoardIntroCard p{margin:0;color:#cbd5e1;font-size:12px;font-weight:750;line-height:1.55}
 .coachBoardIntroCard button{flex:0 0 auto;min-height:42px;padding:0 16px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:1000;cursor:pointer}
@@ -5223,13 +5230,13 @@ html.appEntered #home.active{
 .coachBoardWorkspace{min-height:0;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:11px;padding:11px}.coachCourt{position:relative;min-height:0;height:100%;max-width:760px;aspect-ratio:9/14;margin:auto;overflow:hidden;border:4px solid #f8fafc;border-radius:8px;background:#d97706;touch-action:none;box-shadow:inset 0 0 0 2px rgba(15,23,42,.25)}
 .coachCourtHalf{position:absolute;left:0;right:0;height:50%;background:linear-gradient(90deg,rgba(234,88,12,.94),rgba(249,115,22,.94))}.coachCourtHalf.top{top:0}.coachCourtHalf.bottom{bottom:0}.coachCourtHalf span{position:absolute;left:8px;color:rgba(255,255,255,.52);font-size:10px;font-weight:1000}.coachCourtTop span{top:7px}.coachCourtBottom span{bottom:7px}.coachNet{position:absolute;z-index:2;left:0;right:0;top:50%;height:5px;transform:translateY(-50%);background:#f8fafc;box-shadow:0 0 0 1px rgba(15,23,42,.3)}.coachAttackLine{position:absolute;z-index:1;left:0;right:0;height:2px;background:rgba(255,255,255,.92)}.coachAttackLine.top{top:28.6%}.coachAttackLine.bottom{bottom:28.6%}
 #coachDrawCanvas,.coachPiecesLayer{position:absolute;inset:0;width:100%;height:100%}#coachDrawCanvas{z-index:4}.coachPiecesLayer{z-index:5;pointer-events:none}.coachPiece{position:absolute;width:42px;height:42px;transform:translate(-50%,-50%);display:grid;place-items:center;border:3px solid #fff;border-radius:50%;box-shadow:0 3px 9px rgba(0,0,0,.42);font-size:13px;font-weight:1000;color:#fff;user-select:none;pointer-events:auto;touch-action:none;cursor:grab}.coachPiece.home{background:#2563eb}.coachPiece.away{background:#dc2626}.coachPiece.ball{width:30px;height:30px;border-width:2px;background:#facc15;color:#111827;font-size:16px}.coachPiece.dragging{cursor:grabbing;filter:brightness(1.15);z-index:10}
-.coachBoardHelp{align-self:stretch;padding:13px;border:1px solid rgba(148,163,184,.25);border-radius:12px;background:#172033;color:#cbd5e1;font-size:11px;line-height:1.55}.coachBoardHelp strong{display:block;color:#fff;font-size:14px;margin-bottom:8px}.coachBoardHelp p{margin:0 0 8px}.coachBoardHelp b{color:#93c5fd}.coachBoardStatus{margin-top:12px;padding:9px;border-radius:9px;background:#0f172a;color:#bfdbfe;font-weight:900;text-align:center}
+.coachBoardHelp{align-self:stretch;padding:13px;border:1px solid rgba(148,163,184,.25);border-radius:12px;background:#172033;color:#cbd5e1;font-size:11px;line-height:1.55}.coachBoardHelp strong{display:block;color:#fff;font-size:14px;margin-bottom:8px}.coachBoardHelp p{margin:0 0 8px}.coachBoardHelp b{color:#93c5fd}.coachBoardStatus{margin-top:12px;padding:9px;border-radius:9px;background:#0f172a;color:#bfdbfe;font-weight:900;text-align:center}.coachPiece.playing{transition:left .75s ease-in-out,top .75s ease-in-out}.coachSceneCount{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:5px;border-radius:999px;background:#2563eb;color:#fff;font-size:10px;font-weight:1000}
 @media(max-width:760px){.coachBoardModal{padding:0}.coachBoardShell{height:100dvh;border-radius:0}.coachBoardHeader{padding:8px 11px}.coachBoardToolbar{padding:7px}.coachToolGroup{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.coachToolGroup:nth-child(2){grid-template-columns:1.4fr repeat(4,minmax(0,1fr))}.coachToolGroup button,.coachToolGroup select{min-width:0;padding:0 5px;font-size:9px}.coachBoardWorkspace{display:block;padding:7px}.coachCourt{height:100%;max-height:calc(100dvh - 164px);width:auto;max-width:100%}.coachBoardHelp{display:none}.coachPiece{width:36px;height:36px;font-size:11px}.coachPiece.ball{width:27px;height:27px}.coachBoardIntroCard{align-items:flex-start;flex-direction:column}.coachBoardIntroCard button{width:100%}}
 </style>
 <script>
 (function(){
   const STORAGE_KEY='setterTheoryCoachBoardV1';
-  const state={tool:'select',pieces:[],drawings:[],history:[],drag:null,draw:null};
+  const state={tool:'select',pieces:[],drawings:[],history:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null};
   const basePieces=()=>[
     ['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],
     ['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','●',50,52]
@@ -5238,28 +5245,35 @@ html.appEntered #home.active{
   function canvas(){return document.getElementById('coachDrawCanvas')}
   function layer(){return document.getElementById('coachPiecesLayer')}
   function status(msg){const e=document.getElementById('coachBoardStatus');if(e)e.textContent=msg}
-  function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings})}
+  function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings,scenes:state.scenes})}
   function pushHistory(){state.history.push(snapshot());if(state.history.length>30)state.history.shift()}
-  function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;renderPieces();renderDrawings()}catch(e){}}
-  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team;e.dataset.id=p.id;e.textContent=p.label;e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);l.appendChild(e)})}
+  function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;if(Array.isArray(d.scenes))state.scenes=d.scenes;renderPieces();renderDrawings();updateSceneStatus()}catch(e){}}
+  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team+(state.playing?' playing':'');e.dataset.id=p.id;e.textContent=p.label;e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);e.addEventListener('click',pieceClick);l.appendChild(e)})}
   function resizeCanvas(){const c=canvas(),ct=court();if(!c||!ct)return;const r=ct.getBoundingClientRect(),d=Math.max(1,window.devicePixelRatio||1);c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';renderDrawings()}
   function ctxSetup(){const c=canvas(),ct=court();if(!c||!ct)return null;const d=Math.max(1,window.devicePixelRatio||1),x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.lineCap='round';x.lineJoin='round';return x}
   function pointFromEvent(ev){const r=court().getBoundingClientRect();return{x:Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(ev.clientY-r.top)/r.height))}}
   function drawArrow(x,a,b,w,h){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;const ang=Math.atan2(ey-sy,ex-sx),head=13;x.beginPath();x.moveTo(sx,sy);x.lineTo(ex,ey);x.stroke();x.beginPath();x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang-Math.PI/6),ey-head*Math.sin(ang-Math.PI/6));x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang+Math.PI/6),ey-head*Math.sin(ang+Math.PI/6));x.stroke()}
   function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);x.strokeStyle='#111827';x.lineWidth=4;x.shadowColor='rgba(255,255,255,.75)';x.shadowBlur=2;const all=preview?state.drawings.concat([preview]):state.drawings;all.forEach(d=>{if(d.type==='arrow')drawArrow(x,d.points[0],d.points[d.points.length-1],r.width,r.height);else{x.beginPath();d.points.forEach((p,i)=>{const px=p.x*r.width,py=p.y*r.height;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}})}
-  function pieceDown(ev){if(state.tool!=='select')return;ev.preventDefault();const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p)return;pushHistory();state.drag={id};ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
+  function updateSceneStatus(extra){const n=state.scenes.length;status(extra||('場面 '+n+'件'+(n?'（▶再生できます）':'')))}
+  function pieceClick(ev){if(state.tool!=='number'||state.playing)return;ev.preventDefault();const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p||p.team==='ball')return;const next=prompt('選手番号を1〜18で入力してください',p.label);if(next===null)return;const num=String(next).trim();if(!/^(?:[1-9]|1[0-8])$/.test(num)){status('番号は1〜18で入力してください');return}pushHistory();p.label=num;renderPieces();status('No.'+num+'に変更しました')}
+  function applyScene(scene,animate){if(!scene||!Array.isArray(scene.pieces))return;state.pieces=JSON.parse(JSON.stringify(scene.pieces));state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));state.playing=!!animate;renderPieces();renderDrawings()}
+  function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();const id=ev.currentTarget.dataset.id,p=state.pieces.find(v=>v.id===id);if(!p)return;pushHistory();state.drag={id};ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
   function canvasDown(ev){if(state.tool==='select')return;ev.preventDefault();pushHistory();const pt=pointFromEvent(ev);state.draw={type:state.tool,points:[pt]};canvas().setPointerCapture(ev.pointerId)}
   function canvasMove(ev){if(!state.draw)return;const pt=pointFromEvent(ev);if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
   function canvasUp(){if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
-  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));status(tool==='select'?'移動モード':tool==='arrow'?'矢印モード':tool==='line'?'線モード':'手書きモード')};
+  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));status(tool==='select'?'移動モード':tool==='arrow'?'矢印モード':tool==='line'?'線モード':tool==='free'?'手書きモード':'番号変更モード')};
   window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY);saved?restore(saved):(state.pieces=basePieces(),renderPieces())}requestAnimationFrame(()=>{resizeCanvas();renderPieces()})};
-  window.closeCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
-  window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('この端末に保存しました')};
+  window.closeCoachBoard=function(){window.stopCoachScenes();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・線・場面をこの端末に保存しました')};
   window.undoCoachBoard=function(){const raw=state.history.pop();if(raw)restore(raw);else status('戻せる操作はありません')};
   window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];renderDrawings();status('線を消しました')};
-  window.resetCoachBoard=function(){if(!confirm('選手配置と線を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  window.resetCoachBoard=function(){if(!confirm('選手配置と線を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];state.scenes=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  window.addCoachScene=function(){if(state.playing)return;state.scenes.push({pieces:JSON.parse(JSON.stringify(state.pieces)),drawings:JSON.parse(JSON.stringify(state.drawings))});if(state.scenes.length>12)state.scenes.shift();updateSceneStatus('場面 '+state.scenes.length+'を記録しました')};
+  window.stopCoachScenes=function(){if(state.playTimer){clearTimeout(state.playTimer);state.playTimer=null}state.playing=false;renderPieces();updateSceneStatus('再生を停止しました')};
+  window.clearCoachScenes=function(){if(!state.scenes.length)return;if(!confirm('記録した場面をすべて消しますか？'))return;window.stopCoachScenes();state.scenes=[];updateSceneStatus('記録した場面を消しました')};
+  window.playCoachScenes=function(){if(state.scenes.length<2){status('再生には2場面以上必要です');return}window.stopCoachScenes();state.playing=true;let i=0;const step=()=>{if(!state.playing)return;applyScene(state.scenes[i],i>0);status('再生中 '+(i+1)+' / '+state.scenes.length);i++;if(i<state.scenes.length)state.playTimer=setTimeout(step,1050);else state.playTimer=setTimeout(()=>{state.playing=false;renderPieces();updateSceneStatus('再生が終わりました')},900)};step()};
   window.applyCoachTemplate=function(name){if(!name)return;pushHistory();state.pieces=basePieces();const by=id=>state.pieces.find(p=>p.id===id);if(name==='digLeft'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:78});Object.assign(by('h4'),{x:18,y:62});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:78,y:58});Object.assign(by('ball'),{x:19,y:30})}else if(name==='digRight'){Object.assign(by('h1'),{x:18,y:78});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:22,y:58});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:82,y:62});Object.assign(by('ball'),{x:81,y:30})}else if(name==='receive'){Object.assign(by('h1'),{x:20,y:85});Object.assign(by('h2'),{x:50,y:77});Object.assign(by('h3'),{x:80,y:85});Object.assign(by('h4'),{x:25,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:75,y:62});Object.assign(by('ball'),{x:50,y:12})}state.drawings=[];renderPieces();renderDrawings();status('テンプレートを表示しました');document.getElementById('coachTemplateSelect').value=''};
   document.addEventListener('DOMContentLoaded',()=>{const c=canvas();if(c){c.addEventListener('pointerdown',canvasDown);c.addEventListener('pointermove',canvasMove);c.addEventListener('pointerup',canvasUp);c.addEventListener('pointercancel',canvasUp)}window.addEventListener('resize',()=>{if(document.getElementById('coachBoardModal')?.classList.contains('show'))resizeCanvas()})});
 })();
@@ -6350,7 +6364,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.210</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.211</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
