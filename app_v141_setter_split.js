@@ -2300,15 +2300,15 @@ function buildPlayerRotationDetail(num,type){
   const rows=[1,2,3,4,5,6].map(r=>{
     const a=playerLogs(num,type).filter(x=>x.rot===`S${r}`); if(!a.length) return null;
     if(isReceive) return [`S${r}`,a.length,countResult(a,'Aパス'),countResult(a,'Bパス'),countResult(a,'Cパス'),countResult(a,['ミス','レセプミス']),signedRate(effectRate(a))];
-    return [`S${r}`,a.length,countResult(a,'成功'),countResult(a,'継続'),countResult(a,'ミス'),signedRate(effectRate(a))];
+    return [`S${r}`,a.length,countResult(a,'成功'),countResult(a,'ミス'),signedRate(effectRate(a))];
   }).filter(Boolean);
   const all=playerLogs(num,type);
   if(all.length) rows.push(isReceive
     ? ['合計',all.length,countResult(all,'Aパス'),countResult(all,'Bパス'),countResult(all,'Cパス'),countResult(all,['ミス','レセプミス']),signedRate(effectRate(all))]
-    : ['合計',all.length,countResult(all,'成功'),countResult(all,'継続'),countResult(all,'ミス'),signedRate(effectRate(all))]);
+    : ['合計',all.length,countResult(all,'成功'),countResult(all,'ミス'),signedRate(effectRate(all))]);
   return isReceive
     ? detailTable(['ローテ','本数','A','B','C','ミス','効果率'],rows,'レセプション記録がありません')
-    : detailTable(['ローテ','本数','成功','継続','ミス','効果率'],rows,'ディグ記録がありません');
+    : detailTable(['ローテ','本数','成功','ミス','効果率'],rows,'ディグ記録がありません');
 }
 function buildPlayerServe(num){
   const logs=playerLogs(num,'サーブ');
@@ -2317,7 +2317,7 @@ function buildPlayerServe(num){
 }
 function buildPlayerBlock(num){
   const logs=playerLogs(num,'ブロック');
-  const resultOrder=['シャット','ワンタッチ','継続','ブロックミス','ミス'];
+  const resultOrder=['シャット','ワンタッチ','ブロックミス','ミス'];
   const rows=resultOrder.map(result=>[result,countResult(logs,result)]).filter(row=>row[1]>0);
   const extras=[...new Set(logs.map(x=>x.result))].filter(x=>!resultOrder.includes(x));
   extras.forEach(result=>rows.push([escapeHtml(result),countResult(logs,result)]));
@@ -2371,7 +2371,7 @@ function playerRotationSummary(num,type){
     if(!a.length) return '';
     let good=0;
     if(type==='レセプ') good=countResult(a,['Aパス','Bパス']);
-    else good=countResult(a,['成功','継続']);
+    else good=countResult(a,'成功');
     return `<span>S${r} ${good}/${a.length}</span>`;
   }).filter(Boolean);
   return chips.length?`<div class="playerDetailChips">${chips.join('')}</div>`:'';
@@ -2395,20 +2395,18 @@ function buildPlayerDashboard(num){
   const recC=countResult(receive,'Cパス');
   const recMiss=countResult(receive,['ミス','レセプミス']);
   const digSuccess=countResult(dig,'成功');
-  const digContinue=countResult(dig,'継続');
   const digMiss=countResult(dig,'ミス');
   const blockPoint=countResult(block,'シャット');
   const blockTouch=countResult(block,'ワンタッチ');
-  const blockContinue=countResult(block,'継続');
   const blockMiss=countResult(block,['ブロックミス','ミス']);
 
   const points=spikeKills+serveAce+blockPoint;
-  const positives=spikeKills+serveGood+recA+recB+recC+digSuccess+digContinue+blockPoint+blockTouch+blockContinue;
+  const positives=spikeKills+serveGood+recA+recB+recC+digSuccess+blockPoint+blockTouch;
   const errors=spikeMiss+serveMiss+recMiss+digMiss+blockMiss;
   const spikeRate=safePct(spikeKills,spike.length);
   const serveRate=safePct(serveGood,serve.length);
   const receiveRate=safePct(recA+recB,receive.length);
-  const digRate=safePct(digSuccess+digContinue,dig.length);
+  const digRate=safePct(digSuccess,dig.length);
   const blockRate=safePct(blockPoint+blockTouch,block.length);
 
   const hasAny=all.length>0;
@@ -2441,14 +2439,14 @@ function buildPlayerDashboard(num){
       </section>
       <section class="playerPerformanceCard">
         <h4>ディグ</h4>
-        ${playerEvaluationBar([{label:'成功',count:digSuccess,color:PLAYER_EVAL_COLORS.green},{label:'継続',count:digContinue,color:PLAYER_EVAL_COLORS.blue},{label:'ミス',count:digMiss,color:PLAYER_EVAL_COLORS.red}],dig.length,`返球率 ${Math.round(digRate)}%　効果率 ${signedRate(effectRate(dig))}`)}
-        ${playerMiniStats([['本数',dig.length],['成功',digSuccess,PLAYER_EVAL_COLORS.green],['継続',digContinue,PLAYER_EVAL_COLORS.blue],['ミス',digMiss,PLAYER_EVAL_COLORS.red]])}
+        ${playerEvaluationBar([{label:'成功',count:digSuccess,color:PLAYER_EVAL_COLORS.green},{label:'ミス',count:digMiss,color:PLAYER_EVAL_COLORS.red}],dig.length,`返球率 ${Math.round(digRate)}%　効果率 ${signedRate(effectRate(dig))}`)}
+        ${playerMiniStats([['本数',dig.length],['成功',digSuccess,PLAYER_EVAL_COLORS.green],['ミス',digMiss,PLAYER_EVAL_COLORS.red]])}
         ${playerRotationSummary(num,'ディグ')}
       </section>
       <section class="playerPerformanceCard playerPerformanceCardWide">
         <h4>ブロック</h4>
-        ${playerEvaluationBar([{label:'シャット',count:blockPoint,color:PLAYER_EVAL_COLORS.green},{label:'ワンタッチ',count:blockTouch,color:PLAYER_EVAL_COLORS.blue},{label:'継続',count:blockContinue,color:PLAYER_EVAL_COLORS.orange},{label:'ミス',count:blockMiss,color:PLAYER_EVAL_COLORS.red}],block.length,`得点・ワンタッチ率 ${Math.round(blockRate)}%　効果率 ${signedRate(effectRate(block))}`)}
-        ${playerMiniStats([['本数',block.length],['シャット',blockPoint,PLAYER_EVAL_COLORS.green],['ワンタッチ',blockTouch,PLAYER_EVAL_COLORS.blue],['継続',blockContinue,PLAYER_EVAL_COLORS.orange],['ミス',blockMiss,PLAYER_EVAL_COLORS.red]])}
+        ${playerEvaluationBar([{label:'シャット',count:blockPoint,color:PLAYER_EVAL_COLORS.green},{label:'ワンタッチ',count:blockTouch,color:PLAYER_EVAL_COLORS.blue},{label:'ミス',count:blockMiss,color:PLAYER_EVAL_COLORS.red}],block.length,`得点・ワンタッチ率 ${Math.round(blockRate)}%　効果率 ${signedRate(effectRate(block))}`)}
+        ${playerMiniStats([['本数',block.length],['シャット',blockPoint,PLAYER_EVAL_COLORS.green],['ワンタッチ',blockTouch,PLAYER_EVAL_COLORS.blue],['ミス',blockMiss,PLAYER_EVAL_COLORS.red]])}
       </section>
     </div>
   </div>`;
@@ -3491,7 +3489,7 @@ function printMatchPdfReport(){
     <div class="pdfCoverSubtitle">試合分析レポート</div>
     <div class="pdfCoverMeta">${(document.getElementById('reportSub')?.textContent||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}</div>
     <div class="pdfCoverSummary"></div>
-    <div class="pdfCoverVersion">V150.198</div>
+    <div class="pdfCoverVersion">V150.199</div>
   </div>`;
   const coverSummary=cover.querySelector('.pdfCoverSummary');
   if(brand && coverSummary){
@@ -3507,9 +3505,9 @@ function printMatchPdfReport(){
   if(setterCards[1]) appendPage(setterCards[1],'pdfSetterPage pdfSetterPageTwo');
   // 4ページ目：チーム分析。
   appendPage(clone.querySelector('.teamAnalysisCard'),'pdfTeamPage');
-  // V150.198: 5ページ目以降は、1選手につき1ページの個人成績レポート。
+  // V150.199: 5ページ目以降は、1選手につき1ページの個人成績レポート。
   // 試合レポート画面と同じダッシュボード生成関数を使い、評価色・本数・割合を統一する。
-  // V150.198: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
+  // V150.199: PDFの個人成績は交代ログではなく、登録選手一覧を正とする。
   // 「5→4」のような交代表記を選手番号として拾わず、背番号順に全登録選手を出力する。
   const registeredPlayerNumbers=Object.keys(s.players||{})
     .map(n=>String(n||'').trim())
