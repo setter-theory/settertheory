@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.232</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.233</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9409,6 +9409,19 @@ html.booting body{background:#02040a!important}
 })();
 </script>
 <script>/* cache marker: 150-232-coach-width-80-no-callout */</script>
+
+<style id="v150-233-coach-uniform-court-lines">
+/* V150.233: coach board only — make every official court line the same 3px solid width. */
+#coachCourt .coachCourtSurface{border-width:3px!important;border-style:solid!important}
+#coachCourt .coachNet,
+#coachCourt .coachAttackLine{
+  height:3px!important;min-height:3px!important;max-height:3px!important;
+  border:0!important;background:var(--court-line)!important;box-shadow:none!important;
+}
+#coachCourt .coachNet{transform:translateY(-50%)!important}
+#coachCourt .coachAttackLine{transform:translateY(-50%)!important}
+</style>
+<script>/* cache marker: 150-233-coach-uniform-court-lines */</script>
 </body>
 </html>
 

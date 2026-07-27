@@ -1327,5 +1327,18 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 }
 </style>
 <script>/* cache marker: 150-154-saved-report-ranking-two-column-layout */</script>
+
+<style id="v150-233-coach-uniform-court-lines">
+/* V150.233: coach board only — make every official court line the same 3px solid width. */
+#coachCourt .coachCourtSurface{border-width:3px!important;border-style:solid!important}
+#coachCourt .coachNet,
+#coachCourt .coachAttackLine{
+  height:3px!important;min-height:3px!important;max-height:3px!important;
+  border:0!important;background:var(--court-line)!important;box-shadow:none!important;
+}
+#coachCourt .coachNet{transform:translateY(-50%)!important}
+#coachCourt .coachAttackLine{transform:translateY(-50%)!important}
+</style>
+<script>/* cache marker: 150-233-coach-uniform-court-lines */</script>
 </body>
 </html>
