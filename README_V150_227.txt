@@ -1,15 +1,12 @@
 Setter Theory V150.227
 
-修正対象: コーチボードのみ
+Coach board only:
+- Outer free zone ratio: 24m x 15m
+- Inner playing court ratio: 18m x 9m
+- Horizontal full-court layout
+- Net centered
+- Both attack lines use identical thickness and are placed 3m from the net
+- International theme: orange playing area / blue free zone
+- Service worker cache bumped to V150.227
 
-・内側コートを18m×9m（縦18：横9）の正しい比率に修正
-・フリーゾーンを四方3mとして、外枠を24m×15m相当で表示
-・ネットをコート中央へ配置
-・上下アタックラインをネットから3mの位置へ配置
-・上下アタックラインの太さを3pxで統一
-・国際大会テーマを内側オレンジ、外側ブルーへ修正
-・V200W風バレーボール表示を維持
-・選手、ボール、線、矢印、図形、文字の移動機能を維持
-・全オブジェクトをフリーゾーンまで移動可能な既存仕様を維持
-
-試合入力・保存・集計・PDF・CSVは変更していません。
+Match input, save, aggregation, PDF and CSV code were not changed.

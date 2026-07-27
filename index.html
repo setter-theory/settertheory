@@ -9274,7 +9274,7 @@ html.booting body{background:#02040a!important}
 
 
 <style id="v150-225-coach-court-ratio-fix">
-/* V150.227: official 18m x 9m court ratio with 3m free zone, centered net and equal attack lines. */
+/* V150.226: wider coach court and uniform attack-line thickness. */
 #coachBoardModal .coachBoardWorkspace{
   min-width:0!important;min-height:0!important;overflow:hidden!important;
   grid-template-columns:minmax(0,1fr) 178px!important;align-items:stretch!important;
@@ -9282,28 +9282,28 @@ html.booting body{background:#02040a!important}
 #coachCourt.coachCourt{
   --free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff;
   position:relative!important;display:block!important;flex:none!important;
-  width:375px;height:600px;min-width:250px!important;min-height:400px!important;
+  width:520px;height:680px;min-width:260px!important;min-height:340px!important;
   max-width:none!important;max-height:none!important;aspect-ratio:auto!important;
   margin:auto!important;overflow:hidden!important;box-sizing:border-box!important;
   background:var(--free-zone)!important;border:2px solid var(--court-line)!important;
 }
 #coachCourt .coachCourtSurface{
   display:block!important;position:absolute!important;z-index:1!important;
-  left:20%!important;right:20%!important;top:12.5%!important;bottom:12.5%!important;
+  left:8%!important;right:8%!important;top:5%!important;bottom:5%!important;
   background:var(--play-zone)!important;border:3px solid var(--court-line)!important;
   box-sizing:border-box!important;pointer-events:none!important;
 }
 #coachCourt .coachCourtHalf{display:none!important}
 #coachCourt .coachNet,#coachCourt .coachAttackLine{
   display:block!important;position:absolute!important;visibility:visible!important;opacity:1!important;
-  left:20%!important;right:20%!important;background:var(--court-line)!important;z-index:2!important;
+  left:8%!important;right:8%!important;background:var(--court-line)!important;z-index:2!important;
 }
 #coachCourt .coachNet{top:50%!important;height:4px!important;transform:translateY(-50%)!important}
-#coachCourt .coachAttackLine{height:3px!important;min-height:3px!important;max-height:3px!important;box-shadow:none!important;transform:translateY(-50%)!important}
-#coachCourt .coachAttackLine.top{top:37.5%!important;bottom:auto!important}
-#coachCourt .coachAttackLine.bottom{top:62.5%!important;bottom:auto!important}
+#coachCourt .coachAttackLine{height:2px!important;min-height:2px!important;max-height:2px!important;box-shadow:none!important;transform:translateY(-50%)!important}
+#coachCourt .coachAttackLine.top{top:35%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.bottom{top:65%!important;bottom:auto!important}
 #coachCourt.theme-gym{--free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff}
-#coachCourt.theme-international{--free-zone:#1f86b7;--play-zone:#ef7f32;--court-line:#fff}
+#coachCourt.theme-international{--free-zone:#2385a8;--play-zone:#ef873d;--court-line:#fff}
 #coachCourt.theme-green{--free-zone:#245f4d;--play-zone:#3f8f68;--court-line:#fff}
 #coachCourt.theme-red{--free-zone:#7f1d1d;--play-zone:#b91c1c;--court-line:#fff}
 #coachCourt.theme-dark{--free-zone:#111827;--play-zone:#334155;--court-line:#fff}
@@ -9331,15 +9331,15 @@ html.booting body{background:#02040a!important}
     var aside=workspace.querySelector('.coachBoardHelp');
     var gap=parseFloat(style.columnGap)||parseFloat(style.gap)||0;
     var asideW=(aside&&getComputedStyle(aside).display!=='none')?aside.getBoundingClientRect().width+gap:0;
-    var availableW=Math.max(250,workspace.clientWidth-padX-asideW);
-    var availableH=Math.max(400,workspace.clientHeight-padY);
-    /* 9m x 18m playing court plus a 3m free zone on all four sides = 15m x 24m. */
-    var ratio=15/24; /* outer board width / height; inner court is exactly 9/18 */
+    var availableW=Math.max(260,workspace.clientWidth-padX-asideW);
+    var availableH=Math.max(340,workspace.clientHeight-padY);
+    /* Outer board is intentionally wider than the previous 9:14 box. */
+    var ratio=0.94; /* width / height: wider board while keeping the full court visible */
     var w=availableW;
     var h=w/ratio;
     if(h>availableH){h=availableH;w=h*ratio}
-    court.style.width=Math.max(250,Math.floor(w))+'px';
-    court.style.height=Math.max(400,Math.floor(h))+'px';
+    court.style.width=Math.max(300,Math.floor(w))+'px';
+    court.style.height=Math.max(320,Math.floor(h))+'px';
     if(typeof resizeCanvas==='function')resizeCanvas();
   }
   var oldOpen=window.openCoachBoard;
@@ -9355,7 +9355,89 @@ html.booting body{background:#02040a!important}
   });
 })();
 </script>
-<script>/* cache marker: 150-227-coach-official-ratio-centered-net */</script>
+<script>/* cache marker: 150-226-coach-court-width-uniform-attack-lines */</script>
+
+<style id="v150-227-coach-court-landscape-official-ratio">
+/* V150.227: Coach board only. Outer free zone 24m x 15m; inner court 18m x 9m. */
+#coachBoardModal .coachBoardWorkspace{
+  min-width:0!important;min-height:0!important;overflow:hidden!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:6px!important;
+}
+#coachCourt.coachCourt{
+  position:relative!important;display:block!important;flex:none!important;
+  width:100%!important;height:auto!important;max-width:100%!important;max-height:100%!important;
+  aspect-ratio:24 / 15!important;
+  min-width:0!important;min-height:0!important;margin:auto!important;
+  background:var(--free-zone,#2385a8)!important;
+  border:2px solid var(--court-line,#fff)!important;
+  box-sizing:border-box!important;overflow:hidden!important;
+}
+#coachCourt .coachCourtSurface{
+  position:absolute!important;display:block!important;z-index:1!important;
+  left:12.5%!important;right:12.5%!important;top:20%!important;bottom:20%!important;
+  background:var(--play-zone,#ef873d)!important;
+  border:3px solid var(--court-line,#fff)!important;
+  box-sizing:border-box!important;pointer-events:none!important;
+}
+#coachCourt .coachCourtHalf{display:none!important}
+#coachCourt .coachNet,#coachCourt .coachAttackLine{
+  position:absolute!important;display:block!important;visibility:visible!important;opacity:1!important;
+  left:12.5%!important;right:12.5%!important;z-index:2!important;
+  background:var(--court-line,#fff)!important;box-shadow:none!important;
+}
+#coachCourt .coachNet{
+  top:50%!important;height:4px!important;transform:translateY(-50%)!important;
+}
+#coachCourt .coachAttackLine{
+  height:3px!important;min-height:3px!important;max-height:3px!important;
+  transform:translateY(-50%)!important;
+}
+#coachCourt .coachAttackLine.top{top:30%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.bottom{top:70%!important;bottom:auto!important}
+#coachCourt.theme-international{
+  --free-zone:#2385a8!important;--play-zone:#ef873d!important;--court-line:#fff!important;
+}
+#coachCourt #coachDrawCanvas{z-index:4!important}
+#coachCourt #coachPiecesLayer{z-index:5!important}
+@media(max-width:1024px){
+  #coachBoardModal .coachBoardShell{
+    grid-template-columns:minmax(0,1fr) 172px!important;
+  }
+  #coachBoardModal .coachBoardWorkspace{padding:5px!important}
+}
+</style>
+<script id="v150-227-coach-court-fit-script">
+(function(){
+  function fitCoachCourt227(){
+    var modal=document.getElementById('coachBoardModal');
+    var workspace=document.querySelector('#coachBoardModal .coachBoardWorkspace');
+    var court=document.getElementById('coachCourt');
+    if(!modal||!workspace||!court||!modal.classList.contains('show'))return;
+    var cs=getComputedStyle(workspace);
+    var aw=Math.max(240,workspace.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0));
+    var ah=Math.max(180,workspace.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0));
+    var ratio=24/15;
+    var w=aw,h=w/ratio;
+    if(h>ah){h=ah;w=h*ratio}
+    court.style.setProperty('width',Math.floor(w)+'px','important');
+    court.style.setProperty('height',Math.floor(h)+'px','important');
+    if(typeof resizeCanvas==='function')resizeCanvas();
+  }
+  var previousOpen=window.openCoachBoard;
+  window.openCoachBoard=function(){
+    if(typeof previousOpen==='function')previousOpen();
+    requestAnimationFrame(function(){fitCoachCourt227();requestAnimationFrame(fitCoachCourt227)});
+  };
+  window.addEventListener('resize',fitCoachCourt227);
+  window.addEventListener('orientationchange',function(){setTimeout(fitCoachCourt227,180)});
+  document.addEventListener('DOMContentLoaded',function(){
+    var modal=document.getElementById('coachBoardModal');
+    if(modal)new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(fitCoachCourt227)}).observe(modal,{attributes:true,attributeFilter:['class']});
+  });
+})();
+</script>
+<script>/* cache marker: 150-227-coach-landscape-18x9 */</script>
 </body>
 </html>
 
