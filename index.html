@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.235</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.236</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
 
@@ -5332,7 +5332,7 @@ html.appEntered #home.active{
   function openNumberPicker(p){let old=document.getElementById('coachNumberPicker');if(old)old.remove();const box=document.createElement('div');box.id='coachNumberPicker';box.className='coachNumberPicker';box.innerHTML='<strong>番号を選択</strong><div>'+Array.from({length:18},(_,i)=>'<button type="button" data-n="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button type="button" class="cancel">閉じる</button>';document.getElementById('coachBoardModal').appendChild(box);box.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{pushHistory();p.label=b.dataset.n;renderPieces();box.remove();status('No.'+p.label+'に変更しました')}));box.querySelector('.cancel').addEventListener('click',()=>box.remove())}
   function pieceClick(ev){if(state.tool!=='number'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p)}
   function applyScene(scene,animate,duration=750){if(!scene||!Array.isArray(scene.pieces))return;const next=JSON.parse(JSON.stringify(scene.pieces)),existing=new Map(Array.from(layer()?.querySelectorAll('.coachPiece')||[]).map(e=>[e.dataset.id,e]));state.pieces=next;state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));if(animate&&state.playing&&existing.size===next.length){next.forEach(p=>{const e=existing.get(p.id);if(!e)return;setPieceVisual(e,p);e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})})}else renderPieces();renderDrawings()}
-  function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
+  function pieceDown(ev){if(state.playing)return;if(state.tool==='number'){ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p);return}if(state.tool!=='select')return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
   function distanceToDrawing(pt,d){const a=d.points?.[0],b=d.points?.[d.points.length-1];if(!a||!b)return 9;const vx=b.x-a.x,vy=b.y-a.y,wx=pt.x-a.x,wy=pt.y-a.y,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=Math.max(0,Math.min(1,c2?c1/c2:0));return Math.hypot(pt.x-(a.x+t*vx),pt.y-(a.y+t*vy))}
@@ -9437,6 +9437,7 @@ html.booting body{background:#02040a!important}
 @media(max-width:900px){#coachBoardModal .coachBoardShell{grid-template-columns:150px minmax(0,1fr) 150px!important}#coachBoardModal .coachBoardToolbar{padding:5px!important;gap:4px!important}#coachBoardModal .coachToolbarTitle{font-size:9px!important;padding:3px!important}#coachBoardModal .coachToolGroup{gap:3px!important}#coachBoardModal .coachToolGroup button,#coachBoardModal .coachToolGroup select{min-height:27px!important;height:27px!important;font-size:8px!important}#coachBoardModal .coachMiniLabel,#coachBoardModal .coachCheckLabel{min-height:27px!important;height:27px!important;font-size:8px!important}}
 </style>
 <script>/* cache marker: 150-235-coach-balanced-side-tools */</script>
+<script>/* cache marker: 150-236-coach-number-pointer-fix */</script>
 </body>
 </html>
 

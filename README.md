@@ -1,4 +1,3 @@
-V150.233
-- Coach board only
-- Unified court boundary, net, and both attack lines to 3px solid
-- Other app functions unchanged
+V150.236
+- コーチボードの番号モードで、選手をタップすると番号選択が開くよう修正。
+- その他の画面・機能は変更していません。
