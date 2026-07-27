@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.219</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.220</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -5305,7 +5305,13 @@ html.appEntered #home.active{
   function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings,scenes:state.scenes,theme:state.theme})}
   function pushHistory(){state.history.push(snapshot());if(state.history.length>50)state.history.shift();state.future=[]}
   function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;if(Array.isArray(d.scenes))state.scenes=d.scenes;if(d.theme)state.theme=d.theme;applyCourtTheme();renderPieces();renderDrawings();updateSceneStatus()}catch(e){}}
-  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team;e.dataset.id=p.id;e.textContent=p.team==='ball'?'':p.label;e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);e.addEventListener('click',pieceClick);l.appendChild(e)})}
+  function setPieceVisual(e,p){
+    if(p.team!=='ball'){e.textContent=p.label;return}
+    e.textContent='';
+    e.setAttribute('aria-label','バレーボール');
+    e.innerHTML='<svg class="coachVolleyballSvg" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="coachBallClip"><circle cx="50" cy="50" r="47"/></clipPath></defs><g clip-path="url(#coachBallClip)"><rect width="100" height="100" fill="#ffffff"/><path d="M50 50C30 39 18 21 19-2L43-8C40 14 45 30 58 43Z" fill="#1769c2"/><path d="M50 50C61 30 79 18 102 19L108 43C86 40 70 45 57 58Z" fill="#ffd21f"/><path d="M50 50C70 61 82 79 81 102L57 108C60 86 55 70 42 57Z" fill="#1769c2"/><path d="M50 50C39 70 21 82-2 81L-8 57C14 60 30 55 43 42Z" fill="#ffd21f"/><path d="M43 42C48 45 53 48 58 43" fill="none" stroke="#172033" stroke-width="2.8"/><path d="M57 58C52 55 47 52 42 57" fill="none" stroke="#172033" stroke-width="2.8"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#172033" stroke-width="3"/></svg>';
+  }
+  function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team;e.dataset.id=p.id;setPieceVisual(e,p);e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);e.addEventListener('click',pieceClick);l.appendChild(e)})}
   function resizeCanvas(){const c=canvas(),ct=court();if(!c||!ct)return;const r=ct.getBoundingClientRect(),d=Math.max(1,window.devicePixelRatio||1);c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';renderDrawings()}
   function ctxSetup(){const c=canvas();if(!c)return null;const d=Math.max(1,window.devicePixelRatio||1),x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.lineCap='round';x.lineJoin='round';return x}
   function pointFromEvent(ev){const r=court().getBoundingClientRect();return{x:Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(ev.clientY-r.top)/r.height))}}
@@ -5316,7 +5322,7 @@ html.appEntered #home.active{
   function updateSceneStatus(extra){const n=state.scenes.length;status(extra||('場面 '+n+'件'+(n>1?'（▶自動再生できます）':'')))}
   function openNumberPicker(p){let old=document.getElementById('coachNumberPicker');if(old)old.remove();const box=document.createElement('div');box.id='coachNumberPicker';box.className='coachNumberPicker';box.innerHTML='<strong>番号を選択</strong><div>'+Array.from({length:18},(_,i)=>'<button type="button" data-n="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button type="button" class="cancel">閉じる</button>';document.getElementById('coachBoardModal').appendChild(box);box.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{pushHistory();p.label=b.dataset.n;renderPieces();box.remove();status('No.'+p.label+'に変更しました')}));box.querySelector('.cancel').addEventListener('click',()=>box.remove())}
   function pieceClick(ev){if(state.tool!=='number'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p)}
-  function applyScene(scene,animate,duration=750){if(!scene||!Array.isArray(scene.pieces))return;const next=JSON.parse(JSON.stringify(scene.pieces)),existing=new Map(Array.from(layer()?.querySelectorAll('.coachPiece')||[]).map(e=>[e.dataset.id,e]));state.pieces=next;state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));if(animate&&state.playing&&existing.size===next.length){next.forEach(p=>{const e=existing.get(p.id);if(!e)return;e.textContent=p.team==='ball'?'':p.label;e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})})}else renderPieces();renderDrawings()}
+  function applyScene(scene,animate,duration=750){if(!scene||!Array.isArray(scene.pieces))return;const next=JSON.parse(JSON.stringify(scene.pieces)),existing=new Map(Array.from(layer()?.querySelectorAll('.coachPiece')||[]).map(e=>[e.dataset.id,e]));state.pieces=next;state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));if(animate&&state.playing&&existing.size===next.length){next.forEach(p=>{const e=existing.get(p.id);if(!e)return;setPieceVisual(e,p);e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})})}else renderPieces();renderDrawings()}
   function pieceDown(ev){if(state.tool!=='select'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
@@ -9208,6 +9214,49 @@ html.booting body{background:#02040a!important}
 @media(max-width:760px){.coachPiece.ball{width:32px!important;height:32px!important}}
 </style>
 <script>/* cache marker: 150-219-coach-full-court-no-callout-volleyball */</script>
+
+<style id="v150-220-coach-court-ball-fix">
+/* V150.220: full free-zone court, stable sizing, true panel volleyball. */
+.coachBoardWorkspace{overflow:hidden!important;min-height:0!important;align-items:stretch!important}
+.coachCourt{
+  --court-left:12%!important;--court-right:12%!important;
+  --court-top:8%!important;--court-bottom:8%!important;
+  width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  aspect-ratio:9 / 14!important;box-sizing:border-box!important;overflow:hidden!important;
+  flex:0 1 auto!important;contain:layout paint!important;
+}
+.coachCourtHalf{height:auto!important;box-sizing:border-box!important}
+.coachCourtHalf.coachCourtTop{top:var(--court-top)!important;bottom:50%!important}
+.coachCourtHalf.coachCourtBottom{top:50%!important;bottom:var(--court-bottom)!important}
+.coachNet{top:50%!important}
+.coachAttackLine.top{top:32.5%!important}.coachAttackLine.bottom{bottom:32.5%!important}
+.coachPiece.ball{
+  width:40px!important;height:40px!important;background:#fff!important;border:2px solid #fff!important;
+  overflow:hidden!important;padding:0!important;display:grid!important;place-items:center!important;
+}
+.coachPiece.ball::before,.coachPiece.ball::after{display:none!important;content:none!important}
+.coachVolleyballSvg{display:block!important;width:100%!important;height:100%!important;pointer-events:none!important}
+@media(max-width:760px){
+ .coachBoardWorkspace{padding:4px!important}
+ .coachCourt{height:100%!important;width:auto!important;max-height:100%!important;max-width:100%!important}
+ .coachPiece.ball{width:34px!important;height:34px!important}
+}
+</style>
+<script>
+(function(){
+  const modal=document.getElementById('coachBoardModal');
+  if(!modal)return;
+  const block=function(ev){
+    const t=ev.target;
+    if(t&&t.closest&&t.closest('input,select,textarea'))return;
+    ev.preventDefault();
+  };
+  modal.addEventListener('contextmenu',block,{capture:true});
+  modal.addEventListener('selectstart',block,{capture:true});
+  modal.addEventListener('dragstart',block,{capture:true});
+})();
+</script>
+<script>/* cache marker: 150-220-coach-stable-full-court-real-volleyball */</script>
 
 </body>
 </html>
