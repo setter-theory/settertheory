@@ -5248,7 +5248,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.238</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.239</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -9511,7 +9511,7 @@ html.booting body{background:#02040a!important}
     var modal=document.getElementById('coachBoardModal');
     if(!modal||!modal.classList.contains('show')||!modal.contains(ev.target))return;
     var t=ev.target;
-    if(t&&t.closest&&t.closest('input,select,textarea,option,button'))return;
+    if(t&&t.closest&&t.closest('input,select,textarea,option,button,summary,details'))return;
     if(ev.touches&&ev.touches.length===1)ev.preventDefault();
   },{capture:true,passive:false});
   removeLegacyWhiteBand();
@@ -9562,6 +9562,12 @@ html.booting body{background:#02040a!important}
 </style>
 <script>/* cache marker: 150-235-coach-balanced-side-tools */</script>
 <script>/* cache marker: 150-238-coach-accordion-actions */</script>
+<script>
+/* V150.239: allow native details/summary taps inside coach board.
+   The long-press selection guard previously prevented touchstart on summary,
+   so accordion headers could not open on iPad/iPhone. */
+</script>
+<script>/* cache marker: 150-239-coach-accordion-open-fix */</script>
 </body>
 </html>
 
