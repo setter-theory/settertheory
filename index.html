@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.218</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.219</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -5206,11 +5206,11 @@ html.appEntered #home.active{
     </div>
     <div class="coachBoardWorkspace">
       <div id="coachCourt" class="coachCourt" aria-label="バレーボールコート">
-        <div class="coachCourtHalf coachCourtTop"></div>
+        <div class="coachCourtHalf coachCourtTop top"></div>
         <div class="coachNet"></div>
         <div class="coachAttackLine top"></div>
         <div class="coachAttackLine bottom"></div>
-        <div class="coachCourtHalf coachCourtBottom"></div>
+        <div class="coachCourtHalf coachCourtBottom bottom"></div>
         <canvas id="coachDrawCanvas"></canvas>
         <div id="coachPiecesLayer" class="coachPiecesLayer"></div>
       </div>
@@ -9176,6 +9176,39 @@ html.booting body{background:#02040a!important}
 .importedUnifiedReport .savedPlayerAdviceList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.importedUnifiedReport .savedPlayerAdviceList>div{padding:8px 9px;border-left:4px solid #60a5fa;background:rgba(15,23,42,.58);border-radius:5px}.importedUnifiedReport .savedPlayerAdviceList .continue{border-left-color:#22c55e}.importedUnifiedReport .savedPlayerAdviceList .correction{border-left-color:#f59e0b}.importedUnifiedReport .savedPlayerAdviceList .next{border-left-color:#38bdf8}.importedUnifiedReport .savedPlayerAdviceList strong{display:block;font-size:10px;margin-bottom:3px}.importedUnifiedReport .savedPlayerAdviceList p{margin:0;font-size:9px;line-height:1.5;color:#e2e8f0}
 @media(max-width:800px){.importedUnifiedReport .savedPlayerAdviceList{grid-template-columns:1fr}.importedUnifiedReport .savedPlayerRankBadge small,.importedUnifiedReport .savedPlayerRankBadge em{display:none}}
 </style>
+
+<style id="v150-219-coach-fixes">
+/* V150.219: full court rendering, iPad selection-menu suppression, recognizable volleyball. */
+#coachBoardModal,#coachBoardModal *{
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+  -webkit-tap-highlight-color:transparent;
+}
+#coachBoardModal input,#coachBoardModal select,#coachBoardModal textarea{
+  -webkit-user-select:auto!important;
+  user-select:auto!important;
+}
+.coachCourtHalf.coachCourtTop{top:var(--court-top)!important;bottom:auto!important;border-top:3px solid #fff!important}
+.coachCourtHalf.coachCourtBottom{bottom:var(--court-bottom)!important;top:auto!important;border-bottom:3px solid #fff!important}
+.coachPiece.ball{
+  width:38px!important;
+  height:38px!important;
+  padding:0!important;
+  border:2px solid rgba(255,255,255,.95)!important;
+  border-radius:50%!important;
+  background-color:#fff!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CclipPath id='c'%3E%3Ccircle cx='50' cy='50' r='48'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='100' height='100' fill='%23fff'/%3E%3Cpath d='M49 49C31 31 27 13 31-5L5 7C8 29 21 45 42 57Z' fill='%231e5bb8'/%3E%3Cpath d='M49 49C68 31 86 27 105 31L93 5C71 8 55 21 43 42Z' fill='%23f6c515'/%3E%3Cpath d='M51 51C69 69 73 87 69 105L95 93C92 71 79 55 58 43Z' fill='%231e5bb8'/%3E%3Cpath d='M51 51C32 69 14 73-5 69L7 95C29 92 45 79 57 58Z' fill='%23f6c515'/%3E%3Cpath d='M43 42C48 46 52 50 58 57' fill='none' stroke='%23111827' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M42 57C47 54 51 52 57 58' fill='none' stroke='%23111827' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='47' fill='none' stroke='%23111827' stroke-width='3'/%3E%3C/svg%3E")!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  box-shadow:0 3px 9px rgba(0,0,0,.42)!important;
+}
+.coachPiece.ball::before,.coachPiece.ball::after{content:none!important;display:none!important}
+@media(max-width:760px){.coachPiece.ball{width:32px!important;height:32px!important}}
+</style>
+<script>/* cache marker: 150-219-coach-full-court-no-callout-volleyball */</script>
+
 </body>
 </html>
 
