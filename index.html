@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.231</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.232</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9273,8 +9273,8 @@ html.booting body{background:#02040a!important}
 
 
 
-<style id="v150-231-coach-width-double-no-callout">
-/* V150.231: keep current height, double the visible width ratio, no horizontal scroll. */
+<style id="v150-232-coach-width-80-no-callout">
+/* V150.232: keep current height and reduce current width to 80%, no horizontal scroll. */
 #coachBoardModal,#coachBoardModal *{
   -webkit-user-select:none!important;user-select:none!important;
   -webkit-touch-callout:none!important;-webkit-user-callout:none!important;
@@ -9333,7 +9333,7 @@ html.booting body{background:#02040a!important}
   #coachCourt .coachPiece.ball{width:36px!important;height:36px!important}
 }
 </style>
-<script id="v150-231-coach-width-double-script">
+<script id="v150-232-coach-width-80-script">
 (function(){
   function fitCoachCourt231(){
     var modal=document.getElementById('coachBoardModal');
@@ -9351,7 +9351,7 @@ html.booting body{background:#02040a!important}
     /* Keep the current height. Change only the width ratio to exactly twice the previous 1:2 appearance. */
     var size=Math.floor(Math.min(availableH,availableW));
     court.style.setProperty('height',size+'px','important');
-    court.style.setProperty('width',size+'px','important');
+    court.style.setProperty('width',Math.round(size*0.8)+'px','important');
     if(typeof resizeCanvas==='function')resizeCanvas();
   }
   function removeLegacyWhiteBand(){
@@ -9408,7 +9408,7 @@ html.booting body{background:#02040a!important}
   });
 })();
 </script>
-<script>/* cache marker: 150-231-coach-width-ratio-x2-no-callout */</script>
+<script>/* cache marker: 150-232-coach-width-80-no-callout */</script>
 </body>
 </html>
 
