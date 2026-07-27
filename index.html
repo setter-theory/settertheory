@@ -5248,7 +5248,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.241</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.242</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5522,10 +5522,31 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.showNextCoachScene=function(){if(state.playing)window.stopCoachScenes(true);window.showCoachScene(state.currentScene<0?0:state.currentScene+1,false)};
   window.playCoachScenes=function(){if(state.scenes.length<2)return status('自動再生には2場面以上必要です');window.stopCoachScenes(true);state.playing=true;state.currentScene=0;const speed=Math.max(900,Number(document.getElementById('coachPlaySpeed')?.value)||2000),st=document.getElementById('coachBoardStatus'),pb=document.getElementById('coachPlayButton');st?.classList.add('playingNow');if(pb)pb.textContent='再生中…';applyScene(state.scenes[0],false,speed);status('自動再生中　1 / '+state.scenes.length);let i=1;const step=()=>{if(!state.playing)return;state.currentScene=i;applyScene(state.scenes[i],true,speed);status('自動再生中　'+(i+1)+' / '+state.scenes.length);i++;if(i<state.scenes.length)state.playTimer=setTimeout(step,speed);else state.playTimer=setTimeout(()=>{state.playing=false;st?.classList.remove('playingNow');if(pb)pb.textContent='▶ 自動再生';updateSceneStatus('自動再生が終わりました');renderPieces()},speed)};state.playTimer=setTimeout(step,700)};
   window.applyCoachTemplate=function(name){if(!name)return;pushHistory();state.pieces=basePieces();const by=id=>state.pieces.find(p=>p.id===id);if(name==='digLeft'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:78});Object.assign(by('h4'),{x:18,y:62});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:78,y:58});Object.assign(by('ball'),{x:19,y:30})}else if(name==='digRight'){Object.assign(by('h1'),{x:18,y:78});Object.assign(by('h2'),{x:50,y:83});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:22,y:58});Object.assign(by('h5'),{x:50,y:68});Object.assign(by('h6'),{x:82,y:62});Object.assign(by('ball'),{x:81,y:30})}else if(name==='receive'){Object.assign(by('h1'),{x:20,y:85});Object.assign(by('h2'),{x:50,y:77});Object.assign(by('h3'),{x:80,y:85});Object.assign(by('h4'),{x:25,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:75,y:62});Object.assign(by('ball'),{x:50,y:12})}else if(name==='freeball'){Object.assign(by('h1'),{x:18,y:84});Object.assign(by('h2'),{x:50,y:86});Object.assign(by('h3'),{x:82,y:84});Object.assign(by('h4'),{x:24,y:64});Object.assign(by('h5'),{x:50,y:59});Object.assign(by('h6'),{x:76,y:64});Object.assign(by('ball'),{x:50,y:25})}else if(name==='blockCover'){Object.assign(by('h1'),{x:28,y:78});Object.assign(by('h2'),{x:50,y:84});Object.assign(by('h3'),{x:72,y:78});Object.assign(by('h4'),{x:34,y:60});Object.assign(by('h5'),{x:50,y:64});Object.assign(by('h6'),{x:66,y:60});Object.assign(by('ball'),{x:28,y:47})}else if(name==='backAttack'){Object.assign(by('h1'),{x:18,y:86});Object.assign(by('h2'),{x:50,y:82});Object.assign(by('h3'),{x:82,y:86});Object.assign(by('h4'),{x:26,y:62});Object.assign(by('h5'),{x:50,y:58});Object.assign(by('h6'),{x:74,y:70});Object.assign(by('ball'),{x:50,y:51})}state.drawings=[];renderPieces();renderDrawings();status('テンプレートを表示しました');document.getElementById('coachTemplateSelect').value=''};
-  function pinchStart(ev){if(ev.touches.length!==2)return;ev.preventDefault();state.draw=null;state.drag=null;const r=court().getBoundingClientRect(),a=ev.touches[0],b=ev.touches[1],cx=(a.clientX+b.clientX)/2-r.left,cy=(a.clientY+b.clientY)/2-r.top,dist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),v=state.viewport;state.pinch={dist,startScale:v.scale,localX:(cx-v.x)/v.scale,localY:(cy-v.y)/v.scale};status('二本指で拡大・縮小／移動中')}
-  function pinchMove(ev){if(!state.pinch||ev.touches.length!==2)return;ev.preventDefault();const r=court().getBoundingClientRect(),a=ev.touches[0],b=ev.touches[1],cx=(a.clientX+b.clientX)/2-r.left,cy=(a.clientY+b.clientY)/2-r.top,dist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),scale=Math.max(1,Math.min(3,state.pinch.startScale*(dist/state.pinch.dist)));state.viewport.scale=scale;state.viewport.x=cx-state.pinch.localX*scale;state.viewport.y=cy-state.pinch.localY*scale;applyViewport()}
-  function pinchEnd(ev){if(!state.pinch)return;if(ev.touches.length<2){state.pinch=null;applyViewport();status('表示 '+Math.round(state.viewport.scale*100)+'%')}}
-  document.addEventListener('DOMContentLoaded',()=>{const c=canvas(),ct=court();if(c){c.addEventListener('pointerdown',canvasDown);c.addEventListener('pointermove',canvasMove);c.addEventListener('pointerup',canvasUp);c.addEventListener('pointercancel',canvasUp)}if(ct){ct.addEventListener('touchstart',pinchStart,{passive:false});ct.addEventListener('touchmove',pinchMove,{passive:false});ct.addEventListener('touchend',pinchEnd,{passive:false});ct.addEventListener('touchcancel',pinchEnd,{passive:false});let lastTap=0;ct.addEventListener('dblclick',ev=>{if(ev.target===ct||ev.target.closest('#coachViewport'))resetViewport()})}window.addEventListener('resize',()=>{if(document.getElementById('coachBoardModal')?.classList.contains('show')){resizeCanvas();applyViewport()}})});
+  function touchPoint(t,r){return{x:Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(t.clientY-r.top)/r.height))}}
+  function drawingCenter(d){const pts=d.points||[];if(!pts.length)return{x:.5,y:.5};let minX=1,maxX=0,minY=1,maxY=0;pts.forEach(p=>{minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y)});return{x:(minX+maxX)/2,y:(minY+maxY)/2}}
+  function maxScaleForPoints(points,c){let max=4;points.forEach(p=>{const dx=p.x-c.x,dy=p.y-c.y;if(dx>0)max=Math.min(max,(1-c.x)/dx);else if(dx<0)max=Math.min(max,(0-c.x)/dx);if(dy>0)max=Math.min(max,(1-c.y)/dy);else if(dy<0)max=Math.min(max,(0-c.y)/dy)});return Math.max(.2,max)}
+  function pinchStart(ev){
+    if(ev.touches.length!==2||state.tool!=='select')return;
+    const ct=court();if(!ct||!state.drawings.length)return;
+    const r=ct.getBoundingClientRect(),a=ev.touches[0],b=ev.touches[1];
+    const mid={x:((a.clientX+b.clientX)/2-r.left)/r.width,y:((a.clientY+b.clientY)/2-r.top)/r.height};
+    let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(mid,d,r.width,r.height);if(z<=best){best=z;idx=i}});
+    if(idx<0||!Number.isFinite(best))return;
+    ev.preventDefault();state.draw=null;state.drag=null;pushHistory();
+    const d=state.drawings[idx],points=JSON.parse(JSON.stringify(d.points||[])),center=drawingCenter(d);
+    state.pinch={drawing:idx,dist:Math.max(1,Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)),points,center,width:Number(d.width)||4,maxScale:maxScaleForPoints(points,center)};
+    status('選択した描画を二本指で拡大・縮小中');
+  }
+  function pinchMove(ev){
+    if(!state.pinch||ev.touches.length!==2)return;
+    ev.preventDefault();const a=ev.touches[0],b=ev.touches[1],p=state.pinch,d=state.drawings[p.drawing];if(!d)return;
+    const raw=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/p.dist,scale=Math.max(.2,Math.min(p.maxScale,raw));
+    d.points=p.points.map(pt=>({x:p.center.x+(pt.x-p.center.x)*scale,y:p.center.y+(pt.y-p.center.y)*scale}));
+    d.width=Math.max(1,Math.min(30,p.width*scale));
+    renderDrawings();
+  }
+  function pinchEnd(ev){if(!state.pinch)return;if(ev.touches.length<2){state.pinch=null;renderDrawings();status('描画の大きさを変更しました')}}
+  document.addEventListener('DOMContentLoaded',()=>{const c=canvas(),ct=court();if(c){c.addEventListener('pointerdown',canvasDown);c.addEventListener('pointermove',canvasMove);c.addEventListener('pointerup',canvasUp);c.addEventListener('pointercancel',canvasUp)}if(ct){ct.addEventListener('touchstart',pinchStart,{passive:false});ct.addEventListener('touchmove',pinchMove,{passive:false});ct.addEventListener('touchend',pinchEnd,{passive:false});ct.addEventListener('touchcancel',pinchEnd,{passive:false})}window.addEventListener('resize',()=>{if(document.getElementById('coachBoardModal')?.classList.contains('show'))resizeCanvas()})});
 })();
 </script>
 

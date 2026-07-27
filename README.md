@@ -1,7 +1,7 @@
-Setter Theory V150.241
+Setter Theory V150.242
 
-- コーチボード全体を二本指のピンチ操作で100%〜300%まで拡大・縮小
-- 二本指のまま移動すると拡大表示位置を移動
-- ダブルタップで100%表示へ復帰
-- 1本指の描画・選択・移動機能は維持
-- 変更範囲はコーチボードのみ
+Coach Board only:
+- The court remains fixed.
+- In Select mode, place two fingers on an existing drawing and pinch to resize only that drawing.
+- Supports lines, arrows, rectangles, circles, freehand drawings, and text.
+- Existing one-finger selection, movement, drawing, accordion layout, and number editing are preserved.
