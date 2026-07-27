@@ -5164,7 +5164,7 @@ html.appEntered #home.active{
   </div>
 </section>
 
-<style id="v150-237-coach-accordion-tools">
+<style id="v150-238-coach-accordion-actions">
 /* V150.237: コーチボードの左右ツールを項目別アコーディオンに整理。 */
 .coachBoardShell{grid-template-columns:clamp(170px,18vw,220px) minmax(0,1fr) clamp(170px,18vw,220px)!important;grid-template-rows:auto minmax(0,1fr)!important}
 .coachBoardHeader{grid-column:1/-1!important;grid-row:1!important}
@@ -5210,53 +5210,85 @@ document.addEventListener('DOMContentLoaded',()=>{
       });
     });
   });
+
+  const modal=document.getElementById('coachBoardModal');
+  if(!modal)return;
+  const invoke=(name,...args)=>{
+    const fn=window[name];
+    if(typeof fn==='function')fn(...args);
+  };
+  const actions={
+    close:'closeCoachBoard',undo:'undoCoachBoard',redo:'redoCoachBoard',
+    'clear-drawings':'clearCoachBoardDrawings',reset:'resetCoachBoard',
+    'add-scene':'addCoachScene','prev-scene':'showPrevCoachScene',
+    'next-scene':'showNextCoachScene','clear-scenes':'clearCoachScenes',
+    play:'playCoachScenes',stop:'stopCoachScenes',save:'saveCoachBoard',
+    'save-favorite':'saveCoachFavorite'
+  };
+  modal.addEventListener('click',event=>{
+    const button=event.target.closest('button');
+    if(!button||!modal.contains(button))return;
+    const tool=button.dataset.cbToolAction;
+    if(tool){event.preventDefault();invoke('setCoachTool',tool);return;}
+    const action=button.dataset.cbAction;
+    if(action&&actions[action]){event.preventDefault();invoke(actions[action]);}
+  });
+  modal.addEventListener('change',event=>{
+    const control=event.target.closest('[data-cb-change]');
+    if(!control||!modal.contains(control))return;
+    const action=control.dataset.cbChange;
+    if(action==='draw-style')invoke('setCoachDrawStyle');
+    else if(action==='court-theme')invoke('setCoachCourtTheme',control.value);
+    else if(action==='template')invoke('applyCoachTemplate',control.value);
+    else if(action==='favorite')invoke('loadCoachFavorite',control.value);
+  });
 });
 </script>
 
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.237</em></h2></div>
-      <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.238</em></h2></div>
+      <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
     <div class="coachBoardToolbar coachBoardToolbarLeft" aria-label="描画・編集ツール">
       <div class="coachToolbarTitle">描画・編集</div>
       <div class="coachAlwaysTools" aria-label="常時表示ツール">
-        <button type="button" data-cb-tool="select" class="active" onclick="setCoachTool('select')">☝ 選択</button>
-        <button type="button" onclick="undoCoachBoard()">↶ 戻す</button>
-        <button type="button" onclick="redoCoachBoard()">↷ やり直し</button>
+        <button type="button" data-cb-tool="select" class="active" data-cb-tool-action="select">☝ 選択</button>
+        <button type="button" data-cb-action="undo">↶ 戻す</button>
+        <button type="button" data-cb-action="redo">↷ やり直し</button>
       </div>
 
       <details class="coachAccordion" open>
         <summary>描画</summary>
         <div class="coachToolGroup coachPrimaryTools" aria-label="描画ツール">
-          <button type="button" data-cb-tool="number" onclick="setCoachTool('number')"># 番号</button>
-          <button type="button" data-cb-tool="arrow" onclick="setCoachTool('arrow')">➜ 矢印</button>
-          <button type="button" data-cb-tool="line" onclick="setCoachTool('line')">／ 線</button>
-          <button type="button" data-cb-tool="free" onclick="setCoachTool('free')">✎ 手書き</button>
-          <button type="button" data-cb-tool="circle" onclick="setCoachTool('circle')">○ 円</button>
-          <button type="button" data-cb-tool="rect" onclick="setCoachTool('rect')">□ 四角</button>
-          <button type="button" data-cb-tool="text" onclick="setCoachTool('text')">T 文字</button>
-          <button type="button" data-cb-tool="eraser" onclick="setCoachTool('eraser')">消しゴム</button>
+          <button type="button" data-cb-tool="number" data-cb-tool-action="number"># 番号</button>
+          <button type="button" data-cb-tool="arrow" data-cb-tool-action="arrow">➜ 矢印</button>
+          <button type="button" data-cb-tool="line" data-cb-tool-action="line">／ 線</button>
+          <button type="button" data-cb-tool="free" data-cb-tool-action="free">✎ 手書き</button>
+          <button type="button" data-cb-tool="circle" data-cb-tool-action="circle">○ 円</button>
+          <button type="button" data-cb-tool="rect" data-cb-tool-action="rect">□ 四角</button>
+          <button type="button" data-cb-tool="text" data-cb-tool-action="text">T 文字</button>
+          <button type="button" data-cb-tool="eraser" data-cb-tool-action="eraser">消しゴム</button>
         </div>
       </details>
 
       <details class="coachAccordion">
         <summary>描画設定</summary>
         <div class="coachToolGroup coachStyleTools" aria-label="描画設定">
-          <label class="coachMiniLabel">色<input id="coachLineColor" type="color" value="#111827" onchange="setCoachDrawStyle()"></label>
-          <label class="coachMiniLabel">太さ<select id="coachLineWidth" onchange="setCoachDrawStyle()"><option value="2">細</option><option value="4" selected>中</option><option value="7">太</option></select></label>
-          <label class="coachMiniLabel">線<select id="coachLineDash" onchange="setCoachDrawStyle()"><option value="solid">実線</option><option value="dashed">破線</option><option value="dotted">点線</option></select></label>
-          <label class="coachCheckLabel"><input id="coachShapeFill" type="checkbox" onchange="setCoachDrawStyle()">塗り</label>
+          <label class="coachMiniLabel">色<input id="coachLineColor" type="color" value="#111827" data-cb-change="draw-style"></label>
+          <label class="coachMiniLabel">太さ<select id="coachLineWidth" data-cb-change="draw-style"><option value="2">細</option><option value="4" selected>中</option><option value="7">太</option></select></label>
+          <label class="coachMiniLabel">線<select id="coachLineDash" data-cb-change="draw-style"><option value="solid">実線</option><option value="dashed">破線</option><option value="dotted">点線</option></select></label>
+          <label class="coachCheckLabel"><input id="coachShapeFill" type="checkbox" data-cb-change="draw-style">塗り</label>
         </div>
       </details>
 
       <details class="coachAccordion">
         <summary>消去</summary>
         <div class="coachToolGroup">
-          <button type="button" onclick="clearCoachBoardDrawings()">描画消去</button>
-          <button type="button" class="danger" onclick="resetCoachBoard()">全消去</button>
+          <button type="button" data-cb-action="clear-drawings">描画消去</button>
+          <button type="button" class="danger" data-cb-action="reset">全消去</button>
         </div>
       </details>
     </div>
@@ -5281,26 +5313,26 @@ document.addEventListener('DOMContentLoaded',()=>{
       <details class="coachAccordion" open>
         <summary>コート</summary>
         <div class="coachToolGroup coachThemeTools" aria-label="コートテーマ">
-          <label class="coachMiniLabel">コート<select id="coachCourtTheme" onchange="setCoachCourtTheme(this.value)"><option value="gym">学校体育館</option><option value="international" selected>国際大会</option><option value="green">グリーン</option><option value="red">レッド</option><option value="dark">ダーク</option><option value="white">ホワイトボード</option></select></label>
+          <label class="coachMiniLabel">コート<select id="coachCourtTheme" data-cb-change="court-theme"><option value="gym">学校体育館</option><option value="international" selected>国際大会</option><option value="green">グリーン</option><option value="red">レッド</option><option value="dark">ダーク</option><option value="white">ホワイトボード</option></select></label>
         </div>
       </details>
 
       <details class="coachAccordion">
         <summary>配置</summary>
         <div class="coachToolGroup coachSceneTools">
-          <select id="coachTemplateSelect" onchange="applyCoachTemplate(this.value)" aria-label="配置テンプレート"><option value="">配置テンプレート</option><option value="base">基本配置</option><option value="digLeft">レフト攻撃へのディグ</option><option value="digRight">ライト攻撃へのディグ</option><option value="receive">レセプション配置</option><option value="freeball">フリーボール</option><option value="blockCover">ブロックフォロー</option><option value="backAttack">バックアタック</option></select>
-          <button type="button" onclick="addCoachScene()">＋ 場面</button>
-          <button type="button" onclick="showPrevCoachScene()">◀ 前</button>
-          <button type="button" onclick="showNextCoachScene()">次 ▶</button>
-          <button type="button" onclick="clearCoachScenes()">場面消去</button>
+          <select id="coachTemplateSelect" data-cb-change="template" aria-label="配置テンプレート"><option value="">配置テンプレート</option><option value="base">基本配置</option><option value="digLeft">レフト攻撃へのディグ</option><option value="digRight">ライト攻撃へのディグ</option><option value="receive">レセプション配置</option><option value="freeball">フリーボール</option><option value="blockCover">ブロックフォロー</option><option value="backAttack">バックアタック</option></select>
+          <button type="button" data-cb-action="add-scene">＋ 場面</button>
+          <button type="button" data-cb-action="prev-scene">◀ 前</button>
+          <button type="button" data-cb-action="next-scene">次 ▶</button>
+          <button type="button" data-cb-action="clear-scenes">場面消去</button>
         </div>
       </details>
 
       <details class="coachAccordion">
         <summary>アニメーション</summary>
         <div class="coachToolGroup coachSceneTools">
-          <button type="button" id="coachPlayButton" onclick="playCoachScenes()">▶ 自動再生</button>
-          <button type="button" onclick="stopCoachScenes()">■ 停止</button>
+          <button type="button" id="coachPlayButton" data-cb-action="play">▶ 自動再生</button>
+          <button type="button" data-cb-action="stop">■ 停止</button>
           <select id="coachPlaySpeed" aria-label="場面の再生速度"><option value="1200">速い</option><option value="2000" selected>標準</option><option value="3000">ゆっくり</option></select>
         </div>
       </details>
@@ -5308,9 +5340,9 @@ document.addEventListener('DOMContentLoaded',()=>{
       <details class="coachAccordion">
         <summary>保存</summary>
         <div class="coachToolGroup coachSceneTools">
-          <button type="button" onclick="saveCoachBoard()">保存</button>
-          <button type="button" onclick="saveCoachFavorite()">★ お気に入り</button>
-          <select id="coachFavoriteSelect" onchange="loadCoachFavorite(this.value)" aria-label="お気に入り"><option value="">お気に入りを呼出</option></select>
+          <button type="button" data-cb-action="save">保存</button>
+          <button type="button" data-cb-action="save-favorite">★ お気に入り</button>
+          <select id="coachFavoriteSelect" data-cb-change="favorite" aria-label="お気に入り"><option value="">お気に入りを呼出</option></select>
         </div>
       </details>
     </div>
@@ -9529,7 +9561,7 @@ html.booting body{background:#02040a!important}
 @media(max-width:900px){#coachBoardModal .coachBoardShell{grid-template-columns:150px minmax(0,1fr) 150px!important}#coachBoardModal .coachBoardToolbar{padding:5px!important;gap:4px!important}#coachBoardModal .coachToolbarTitle{font-size:9px!important;padding:3px!important}#coachBoardModal .coachToolGroup{gap:3px!important}#coachBoardModal .coachToolGroup button,#coachBoardModal .coachToolGroup select{min-height:27px!important;height:27px!important;font-size:8px!important}#coachBoardModal .coachMiniLabel,#coachBoardModal .coachCheckLabel{min-height:27px!important;height:27px!important;font-size:8px!important}}
 </style>
 <script>/* cache marker: 150-235-coach-balanced-side-tools */</script>
-<script>/* cache marker: 150-237-coach-accordion-tools */</script>
+<script>/* cache marker: 150-238-coach-accordion-actions */</script>
 </body>
 </html>
 
