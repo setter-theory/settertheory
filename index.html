@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.222</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.223</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9410,6 +9410,48 @@ html.booting body{background:#02040a!important}
 })();
 </script>
 <script>/* cache marker: 150-222-coach-open-fix */</script>
+
+<style id="v150-223-coach-court-surface-fix">
+/* V150.223: rebuild the entire visible court as one stable surface. */
+#coachCourt.coachCourt{
+  --free-zone:#2385a8;
+  --play-zone:#ef873d;
+  --court-line:#ffffff;
+  background:var(--free-zone)!important;
+  border:2px solid var(--court-line)!important;
+  isolation:isolate!important;
+}
+#coachCourt.coachCourt::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  z-index:0!important;
+  left:var(--court-left)!important;
+  right:var(--court-right)!important;
+  top:var(--court-top)!important;
+  bottom:var(--court-bottom)!important;
+  box-sizing:border-box!important;
+  background:var(--play-zone)!important;
+  border:3px solid var(--court-line)!important;
+  pointer-events:none!important;
+}
+#coachCourt .coachCourtHalf{display:none!important}
+#coachCourt .coachNet,
+#coachCourt .coachAttackLine{display:block!important;visibility:visible!important;opacity:1!important;background:var(--court-line)!important;z-index:2!important}
+#coachCourt .coachNet{height:4px!important;transform:translateY(-50%)!important}
+#coachCourt .coachAttackLine{height:3px!important}
+#coachCourt .coachAttackLine.top{top:32.6%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.bottom{top:67.4%!important;bottom:auto!important}
+#coachCourt.theme-gym{--free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff}
+#coachCourt.theme-international{--free-zone:#2385a8;--play-zone:#ef873d;--court-line:#fff}
+#coachCourt.theme-green{--free-zone:#245f4d;--play-zone:#3f8f68;--court-line:#fff}
+#coachCourt.theme-red{--free-zone:#7f1d1d;--play-zone:#b91c1c;--court-line:#fff}
+#coachCourt.theme-dark{--free-zone:#111827;--play-zone:#334155;--court-line:#fff}
+#coachCourt.theme-white{--free-zone:#e5e7eb;--play-zone:#fff;--court-line:#111827}
+#coachCourt #coachDrawCanvas,
+#coachCourt #coachPiecesLayer{z-index:4!important}
+</style>
+<script>/* cache marker: 150-223-coach-court-surface-fix */</script>
 </body>
 </html>
 
