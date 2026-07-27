@@ -1,7 +1,9 @@
-Setter Theory V150.242
+Setter Theory V150.243
 
 Coach Board only:
-- The court remains fixed.
-- In Select mode, place two fingers on an existing drawing and pinch to resize only that drawing.
-- Supports lines, arrows, rectangles, circles, freehand drawings, and text.
-- Existing one-finger selection, movement, drawing, accordion layout, and number editing are preserved.
+- Added editing controls for the selected drawing.
+- Rotate left/right in 15-degree steps.
+- Flip horizontally or vertically.
+- Duplicate or delete the selected drawing.
+- Move the selected drawing to the front or back.
+- Court, players, ball, match data, reports, PDF, CSV, and saving logic outside Coach Board are unchanged.

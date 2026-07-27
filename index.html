@@ -5223,7 +5223,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     'add-scene':'addCoachScene','prev-scene':'showPrevCoachScene',
     'next-scene':'showNextCoachScene','clear-scenes':'clearCoachScenes',
     play:'playCoachScenes',stop:'stopCoachScenes',save:'saveCoachBoard',
-    'save-favorite':'saveCoachFavorite'
+    'save-favorite':'saveCoachFavorite',
+    'rotate-left':'rotateCoachDrawingLeft','rotate-right':'rotateCoachDrawingRight',
+    'flip-horizontal':'flipCoachDrawingHorizontal','flip-vertical':'flipCoachDrawingVertical',
+    'duplicate-drawing':'duplicateCoachDrawing','delete-drawing':'deleteCoachDrawing',
+    'bring-front':'bringCoachDrawingFront','send-back':'sendCoachDrawingBack'
   };
   modal.addEventListener('click',event=>{
     const button=event.target.closest('button');
@@ -5248,7 +5252,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.242</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.243</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5281,6 +5285,20 @@ document.addEventListener('DOMContentLoaded',()=>{
           <label class="coachMiniLabel">太さ<select id="coachLineWidth" data-cb-change="draw-style"><option value="2">細</option><option value="4" selected>中</option><option value="7">太</option></select></label>
           <label class="coachMiniLabel">線<select id="coachLineDash" data-cb-change="draw-style"><option value="solid">実線</option><option value="dashed">破線</option><option value="dotted">点線</option></select></label>
           <label class="coachCheckLabel"><input id="coachShapeFill" type="checkbox" data-cb-change="draw-style">塗り</label>
+        </div>
+      </details>
+
+      <details class="coachAccordion">
+        <summary>選択中の描画を編集</summary>
+        <div class="coachToolGroup coachEditTools" aria-label="選択中の描画編集">
+          <button type="button" data-cb-action="rotate-left">↶ 左15°</button>
+          <button type="button" data-cb-action="rotate-right">↷ 右15°</button>
+          <button type="button" data-cb-action="flip-horizontal">↔ 横反転</button>
+          <button type="button" data-cb-action="flip-vertical">↕ 縦反転</button>
+          <button type="button" data-cb-action="duplicate-drawing">⧉ 複製</button>
+          <button type="button" data-cb-action="delete-drawing" class="danger">削除</button>
+          <button type="button" data-cb-action="bring-front">最前面</button>
+          <button type="button" data-cb-action="send-back">最背面</button>
         </div>
       </details>
 
@@ -5422,7 +5440,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script>
 (function(){
   const STORAGE_KEY='setterTheoryCoachBoardV2', FAVORITES_KEY='setterTheoryCoachFavoritesV1';
-  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false},theme:'international',viewport:{scale:1,x:0,y:0},pinch:null};
+  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false},theme:'international',viewport:{scale:1,x:0,y:0},pinch:null,selectedDrawing:-1};
   const basePieces=()=>[['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','',50,52]].map(([id,team,label,x,y])=>({id,team,label,x,y}));
   const court=()=>document.getElementById('coachCourt'),canvas=()=>document.getElementById('coachDrawCanvas'),layer=()=>document.getElementById('coachPiecesLayer');
   const viewport=()=>document.getElementById('coachViewport');
@@ -5456,7 +5474,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   function pointFromEvent(ev){const r=court().getBoundingClientRect(),v=state.viewport;return{x:Math.max(0,Math.min(1,((ev.clientX-r.left-v.x)/v.scale)/r.width)),y:Math.max(0,Math.min(1,((ev.clientY-r.top-v.y)/v.scale)/r.height))}}
   function applyStroke(x,d){x.strokeStyle=d.color||'#111827';x.lineWidth=d.width||4;x.setLineDash(d.dash==='dashed'?[14,9]:d.dash==='dotted'?[2,8]:[]);x.shadowColor='rgba(255,255,255,.65)';x.shadowBlur=1}
   function drawArrow(x,a,b,w,h){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h,ang=Math.atan2(ey-sy,ex-sx),head=12+(x.lineWidth||4);x.beginPath();x.moveTo(sx,sy);x.lineTo(ex,ey);x.stroke();x.beginPath();x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang-Math.PI/6),ey-head*Math.sin(ang-Math.PI/6));x.moveTo(ex,ey);x.lineTo(ex-head*Math.cos(ang+Math.PI/6),ey-head*Math.sin(ang+Math.PI/6));x.stroke()}
-  function drawOne(x,d,w,h){applyStroke(x,d);const a=d.points[0],b=d.points[d.points.length-1];if(!a||!b)return;if(d.type==='arrow')return drawArrow(x,a,b,w,h);if(d.type==='circle'||d.type==='rect'){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;x.beginPath();if(d.type==='circle'){x.ellipse((sx+ex)/2,(sy+ey)/2,Math.abs(ex-sx)/2,Math.abs(ey-sy)/2,0,0,Math.PI*2)}else{x.rect(Math.min(sx,ex),Math.min(sy,ey),Math.abs(ex-sx),Math.abs(ey-sy))}if(d.fill){x.save();x.globalAlpha=.22;x.fillStyle=d.color;x.fill();x.restore()}x.stroke();return}if(d.type==='text'){x.setLineDash([]);x.shadowBlur=2;x.fillStyle=d.color;x.font='bold '+Math.max(14,(d.width||4)*5)+'px sans-serif';x.fillText(d.text||'',a.x*w,a.y*h);return}x.beginPath();d.points.forEach((p,i)=>{const px=p.x*w,py=p.y*h;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}
+  function drawingTransformCenter(d,w,h){
+    if(d.type==='text'){
+      const a=d.points?.[0]||{x:.5,y:.5};
+      const fontSize=Math.max(14,(d.width||4)*5);
+      const m=ctxSetup();
+      if(m){m.font='bold '+fontSize+'px sans-serif';const tw=m.measureText(d.text||'').width;return{x:a.x*w+tw/2,y:a.y*h-fontSize*.35}}
+    }
+    const c=drawingCenter(d);return{x:c.x*w,y:c.y*h};
+  }
+  function withDrawingTransform(x,d,w,h,fn){
+    const c=drawingTransformCenter(d,w,h);x.save();x.translate(c.x,c.y);x.rotate((Number(d.rotation)||0)*Math.PI/180);x.scale(d.flipX?-1:1,d.flipY?-1:1);x.translate(-c.x,-c.y);fn();x.restore();
+  }
+  function drawOne(x,d,w,h){applyStroke(x,d);const a=d.points[0],b=d.points[d.points.length-1];if(!a||!b)return;withDrawingTransform(x,d,w,h,()=>{if(d.type==='arrow')return drawArrow(x,a,b,w,h);if(d.type==='circle'||d.type==='rect'){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;x.beginPath();if(d.type==='circle'){x.ellipse((sx+ex)/2,(sy+ey)/2,Math.abs(ex-sx)/2,Math.abs(ey-sy)/2,0,0,Math.PI*2)}else{x.rect(Math.min(sx,ex),Math.min(sy,ey),Math.abs(ex-sx),Math.abs(ey-sy))}if(d.fill){x.save();x.globalAlpha=.22;x.fillStyle=d.color;x.fill();x.restore()}x.stroke();return}if(d.type==='text'){x.setLineDash([]);x.shadowBlur=2;x.fillStyle=d.color;x.font='bold '+Math.max(14,(d.width||4)*5)+'px sans-serif';x.fillText(d.text||'',a.x*w,a.y*h);return}x.beginPath();d.points.forEach((p,i)=>{const px=p.x*w,py=p.y*h;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()})}
   function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);[...state.drawings,...(preview?[preview]:[])].forEach(d=>drawOne(x,d,r.width,r.height))}
   function updateSceneStatus(extra){const n=state.scenes.length;status(extra||('場面 '+n+'件'+(n>1?'（▶自動再生できます）':'')))}
   function openNumberPicker(p){let old=document.getElementById('coachNumberPicker');if(old)old.remove();const box=document.createElement('div');box.id='coachNumberPicker';box.className='coachNumberPicker';box.innerHTML='<strong>番号を選択</strong><div>'+Array.from({length:18},(_,i)=>'<button type="button" data-n="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button type="button" class="cancel">閉じる</button>';document.getElementById('coachBoardModal').appendChild(box);box.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{pushHistory();p.label=b.dataset.n;renderPieces();box.remove();status('No.'+p.label+'に変更しました')}));box.querySelector('.cancel').addEventListener('click',()=>box.remove())}
@@ -5468,7 +5498,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   function pointSegmentDistancePx(px,py,ax,ay,bx,by){const vx=bx-ax,vy=by-ay,wx=px-ax,wy=py-ay,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=Math.max(0,Math.min(1,c2?c1/c2:0));return Math.hypot(px-(ax+t*vx),py-(ay+t*vy))}
   function drawingHitScore(pt,d,w,h){
     const points=d.points||[],a=points[0],b=points[points.length-1];if(!a||!b)return Infinity;
-    const px=pt.x*w,py=pt.y*h,ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
+    let px=pt.x*w,py=pt.y*h;const tc=drawingTransformCenter(d,w,h),ang=-(Number(d.rotation)||0)*Math.PI/180;let dx=px-tc.x,dy=py-tc.y;const rx=dx*Math.cos(ang)-dy*Math.sin(ang),ry=dx*Math.sin(ang)+dy*Math.cos(ang);px=tc.x+(d.flipX?-rx:rx);py=tc.y+(d.flipY?-ry:ry);
+    const ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
     const tolerance=Math.max(12,(Number(d.width)||4)+8);
     if(d.type==='rect'){
       const left=Math.min(ax,bx),right=Math.max(ax,bx),top=Math.min(ay,by),bottom=Math.max(ay,by);
@@ -5496,7 +5527,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     return best<=tolerance?best:Infinity;
   }
-  function canvasDown(ev){if(state.pinch)return;ev.preventDefault();const pt=pointFromEvent(ev),r=court().getBoundingClientRect();if(state.tool==='number')return;if(state.tool==='select'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drag={drawing:idx,last:pt};canvas().setPointerCapture(ev.pointerId);status('描画を移動中')}return}if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drawings.splice(idx,1);renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
+  function canvasDown(ev){if(state.pinch)return;ev.preventDefault();const pt=pointFromEvent(ev),r=court().getBoundingClientRect();if(state.tool==='number')return;if(state.tool==='select'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){state.selectedDrawing=idx;pushHistory();state.drag={drawing:idx,last:pt};canvas().setPointerCapture(ev.pointerId);status('描画を選択・移動中')}else{state.selectedDrawing=-1;status('描画を選択してください')}return}if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drawings.splice(idx,1);state.selectedDrawing=-1;renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
   function canvasMove(ev){if(state.pinch)return;const pt=pointFromEvent(ev);if(state.drag&&Number.isInteger(state.drag.drawing)){const d=state.drawings[state.drag.drawing],dx=pt.x-state.drag.last.x,dy=pt.y-state.drag.last.y;d.points=d.points.map(p=>({x:Math.max(0,Math.min(1,p.x+dx)),y:Math.max(0,Math.min(1,p.y+dy))}));state.drag.last=pt;renderDrawings();return}if(!state.draw)return;if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
   function canvasUp(){if(state.drag&&Number.isInteger(state.drag.drawing)){state.drag=null;status('描画を移動しました');return}if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
   function applyCourtTheme(){const ct=court();if(!ct)return;ct.classList.remove('theme-gym','theme-international','theme-green','theme-red','theme-dark','theme-white');ct.classList.add('theme-'+(state.theme||'gym'));const sel=document.getElementById('coachCourtTheme');if(sel)sel.value=state.theme||'gym'}
@@ -5508,8 +5539,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・描画・場面をこの端末に保存しました')};
   window.undoCoachBoard=function(){const raw=state.history.pop();if(!raw)return status('戻せる操作はありません');state.future.push(snapshot());restore(raw)};
   window.redoCoachBoard=function(){const raw=state.future.pop();if(!raw)return status('やり直せる操作はありません');state.history.push(snapshot());restore(raw)};
-  window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];renderDrawings();status('描画を消しました')};
-  window.resetCoachBoard=function(){if(!confirm('選手配置と描画を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];state.scenes=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];state.selectedDrawing=-1;renderDrawings();status('描画を消しました')};
+  window.resetCoachBoard=function(){if(!confirm('選手配置と描画を初期状態に戻しますか？'))return;pushHistory();state.pieces=basePieces();state.drawings=[];state.selectedDrawing=-1;state.scenes=[];renderPieces();renderDrawings();status('初期状態に戻しました')};
+  function selectedCoachDrawing(){const i=state.selectedDrawing;return Number.isInteger(i)&&i>=0&&i<state.drawings.length?state.drawings[i]:null}
+  function requireSelectedDrawing(){const d=selectedCoachDrawing();if(!d)status('先に描画を選択してください');return d}
+  function editSelectedDrawing(label,fn){const d=requireSelectedDrawing();if(!d)return;pushHistory();fn(d,state.selectedDrawing);renderDrawings();status(label)}
+  window.rotateCoachDrawingLeft=function(){editSelectedDrawing('選択した描画を左へ15°回転しました',d=>d.rotation=((Number(d.rotation)||0)-15)%360)};
+  window.rotateCoachDrawingRight=function(){editSelectedDrawing('選択した描画を右へ15°回転しました',d=>d.rotation=((Number(d.rotation)||0)+15)%360)};
+  window.flipCoachDrawingHorizontal=function(){editSelectedDrawing('選択した描画を横反転しました',d=>d.flipX=!d.flipX)};
+  window.flipCoachDrawingVertical=function(){editSelectedDrawing('選択した描画を縦反転しました',d=>d.flipY=!d.flipY)};
+  window.duplicateCoachDrawing=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();const copy=JSON.parse(JSON.stringify(d));copy.points=(copy.points||[]).map(p=>({x:Math.max(0,Math.min(1,p.x+.025)),y:Math.max(0,Math.min(1,p.y+.025))}));state.drawings.push(copy);state.selectedDrawing=state.drawings.length-1;renderDrawings();status('選択した描画を複製しました')};
+  window.deleteCoachDrawing=function(){if(!requireSelectedDrawing())return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.selectedDrawing=-1;renderDrawings();status('選択した描画を削除しました')};
+  window.bringCoachDrawingFront=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.drawings.push(d);state.selectedDrawing=state.drawings.length-1;renderDrawings();status('選択した描画を最前面へ移動しました')};
+  window.sendCoachDrawingBack=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.drawings.unshift(d);state.selectedDrawing=0;renderDrawings();status('選択した描画を最背面へ移動しました')};
   function getFavorites(){try{return JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]')}catch(e){return[]}}
   function refreshFavorites(){const el=document.getElementById('coachFavoriteSelect');if(!el)return;el.innerHTML='<option value="">お気に入りを呼出</option>'+getFavorites().map((f,i)=>'<option value="'+i+'">'+String(f.name).replace(/[<>]/g,'')+'</option>').join('')}
   window.saveCoachFavorite=function(){const name=prompt('お気に入り名を入力してください');if(!name)return;const a=getFavorites();a.push({name,pieces:JSON.parse(JSON.stringify(state.pieces)),drawings:JSON.parse(JSON.stringify(state.drawings))});localStorage.setItem(FAVORITES_KEY,JSON.stringify(a.slice(-20)));refreshFavorites();status('お気に入り「'+name+'」を保存しました')};
@@ -5533,7 +5575,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(mid,d,r.width,r.height);if(z<=best){best=z;idx=i}});
     if(idx<0||!Number.isFinite(best))return;
     ev.preventDefault();state.draw=null;state.drag=null;pushHistory();
-    const d=state.drawings[idx],points=JSON.parse(JSON.stringify(d.points||[])),center=drawingCenter(d);
+    state.selectedDrawing=idx;const d=state.drawings[idx],points=JSON.parse(JSON.stringify(d.points||[])),center=drawingCenter(d);
     state.pinch={drawing:idx,dist:Math.max(1,Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)),points,center,width:Number(d.width)||4,maxScale:maxScaleForPoints(points,center)};
     status('選択した描画を二本指で拡大・縮小中');
   }
