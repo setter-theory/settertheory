@@ -5252,7 +5252,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.244</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.245</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5546,18 +5546,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   function editSelectedDrawing(label,fn){const d=requireSelectedDrawing();if(!d)return;pushHistory();fn(d,state.selectedDrawing);renderDrawings();status(label)}
   window.rotateCoachDrawingLeft=function(){editSelectedDrawing('選択した描画を左へ15°回転しました',d=>d.rotation=((Number(d.rotation)||0)-15)%360)};
   window.rotateCoachDrawingRight=function(){editSelectedDrawing('選択した描画を右へ15°回転しました',d=>d.rotation=((Number(d.rotation)||0)+15)%360)};
-  function reflectCoachDrawingPoints(d,axis){
-    const pts=d.points||[];if(!pts.length)return;
-    if(d.type==='text'){
-      if(axis==='x')d.flipX=!d.flipX;else d.flipY=!d.flipY;
-      return;
-    }
-    const c=drawingCenter(d);
-    d.points=pts.map(p=>axis==='x'?{x:c.x-(p.x-c.x),y:p.y}:{x:p.x,y:c.y-(p.y-c.y)});
-    d.flipX=false;d.flipY=false;
+  function mirrorCoachDrawing(d,axis){
+    /* 画面基準の鏡映。回転済み図形も傾きが反対になるよう、回転角と反転軸を同時に更新する。 */
+    const angle=Number(d.rotation)||0;
+    d.rotation=(((-angle)%360)+360)%360;
+    if(axis==='x')d.flipX=!d.flipX;
+    else d.flipY=!d.flipY;
   }
-  window.flipCoachDrawingHorizontal=function(){editSelectedDrawing('選択した描画を横反転しました',d=>reflectCoachDrawingPoints(d,'x'))};
-  window.flipCoachDrawingVertical=function(){editSelectedDrawing('選択した描画を縦反転しました',d=>reflectCoachDrawingPoints(d,'y'))};
+  window.flipCoachDrawingHorizontal=function(){editSelectedDrawing('選択した描画を左右に鏡像反転しました',d=>mirrorCoachDrawing(d,'x'))};
+  window.flipCoachDrawingVertical=function(){editSelectedDrawing('選択した描画を上下に鏡像反転しました',d=>mirrorCoachDrawing(d,'y'))};
   window.duplicateCoachDrawing=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();const copy=JSON.parse(JSON.stringify(d));copy.points=(copy.points||[]).map(p=>({x:Math.max(0,Math.min(1,p.x+.025)),y:Math.max(0,Math.min(1,p.y+.025))}));state.drawings.push(copy);state.selectedDrawing=state.drawings.length-1;renderDrawings();status('選択した描画を複製しました')};
   window.deleteCoachDrawing=function(){if(!requireSelectedDrawing())return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.selectedDrawing=-1;renderDrawings();status('選択した描画を削除しました')};
   window.bringCoachDrawingFront=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.drawings.push(d);state.selectedDrawing=state.drawings.length-1;renderDrawings();status('選択した描画を最前面へ移動しました')};
@@ -5581,13 +5578,21 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(ev.touches.length!==2||state.tool!=='select')return;
     const ct=court();if(!ct||!state.drawings.length)return;
     const r=ct.getBoundingClientRect(),a=ev.touches[0],b=ev.touches[1];
-    const mid={x:((a.clientX+b.clientX)/2-r.left)/r.width,y:((a.clientY+b.clientY)/2-r.top)/r.height};
-    let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(mid,d,r.width,r.height);if(z<=best){best=z;idx=i}});
-    if(idx<0||!Number.isFinite(best))return;
+    const pa=touchPoint(a,r),pb=touchPoint(b,r),mid={x:(pa.x+pb.x)/2,y:(pa.y+pb.y)/2};
+    /* 先に選択済みの描画を優先。指が図形の両側に置かれても即座に開始する。 */
+    let idx=(Number.isInteger(state.selectedDrawing)&&state.selectedDrawing>=0&&state.selectedDrawing<state.drawings.length)?state.selectedDrawing:-1;
+    if(idx<0){
+      let best=Infinity;
+      state.drawings.forEach((d,i)=>{
+        const z=Math.min(drawingHitScore(pa,d,r.width,r.height),drawingHitScore(pb,d,r.width,r.height),drawingHitScore(mid,d,r.width,r.height));
+        if(z<=best){best=z;idx=i}
+      });
+      if(idx<0||!Number.isFinite(best))return;
+    }
     ev.preventDefault();state.draw=null;state.drag=null;pushHistory();
     state.selectedDrawing=idx;const d=state.drawings[idx],points=JSON.parse(JSON.stringify(d.points||[])),center=drawingCenter(d);
     state.pinch={drawing:idx,dist:Math.max(1,Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)),points,center,width:Number(d.width)||4,maxScale:maxScaleForPoints(points,center)};
-    status('選択した描画を二本指で拡大・縮小中');
+    status('二本指で描画の大きさを変更中');
   }
   function pinchMove(ev){
     if(!state.pinch||ev.touches.length!==2)return;

@@ -1,7 +1,8 @@
-Setter Theory V150.244
+# Setter Theory V150.245
 
-Coach Board only:
-- Fixed horizontal and vertical flip for lines, arrows, freehand drawings, and text.
-- Flip now reflects the full drawing around its center instead of relying only on an arrow-specific visual change.
-- Rectangles and circles also use the same center-based flip logic; because they are symmetrical, their appearance may remain unchanged.
-- Court, players, ball, match data, reports, PDF, CSV, and saving logic outside Coach Board are unchanged.
+コーチボードのみ修正。
+
+- 回転した四角・円・線・矢印・手書き・文字を、画面基準で正しく鏡像反転
+- 横反転時は左下がり／右下がりの傾きが反対になる
+- 二本指操作は選択中の描画を優先し、図形の両側に指を置いても開始しやすく改善
+- コート・選手・ボールは拡大縮小および反転の対象外
