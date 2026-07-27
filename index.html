@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.229</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.230</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9274,9 +9274,9 @@ html.booting body{background:#02040a!important}
 
 
 <style id="v150-228-coach-court-final-layout">
-/* V150.229: coach-board width doubled; height and non-coach features unchanged. */
+/* V150.230: keep V150.228 height, fill available width, no horizontal scrolling. */
 #coachBoardModal .coachBoardWorkspace{
-  min-width:0!important;min-height:0!important;overflow-x:auto!important;overflow-y:hidden!important;
+  min-width:0!important;min-height:0!important;overflow:hidden!important;
   grid-template-columns:minmax(0,1fr) 178px!important;align-items:stretch!important;
 }
 #coachCourt.coachCourt{
@@ -9290,14 +9290,14 @@ html.booting body{background:#02040a!important}
 }
 #coachCourt .coachCourtSurface{
   display:block!important;position:absolute!important;z-index:1!important;
-  left:17%!important;right:17%!important;top:10%!important;bottom:10%!important;
+  left:7%!important;right:7%!important;top:10%!important;bottom:10%!important;
   background:var(--play-zone)!important;border:3px solid var(--court-line)!important;
   box-sizing:border-box!important;pointer-events:none!important;
 }
 #coachCourt .coachCourtHalf{display:none!important}
 #coachCourt .coachNet,#coachCourt .coachAttackLine{
   display:block!important;position:absolute!important;visibility:visible!important;opacity:1!important;
-  left:17%!important;right:17%!important;background:var(--court-line)!important;z-index:2!important;
+  left:7%!important;right:7%!important;background:var(--court-line)!important;z-index:2!important;
   box-sizing:border-box!important;
 }
 #coachCourt .coachNet{top:50%!important;height:3px!important;min-height:3px!important;max-height:3px!important;transform:translateY(-50%)!important;box-shadow:none!important}
@@ -9339,12 +9339,13 @@ html.booting body{background:#02040a!important}
     var asideW=(aside&&getComputedStyle(aside).display!=='none')?aside.getBoundingClientRect().width+gap:0;
     var availableW=Math.max(300,workspace.clientWidth-padX-asideW);
     var availableH=Math.max(300,workspace.clientHeight-padY);
-    var ratio=1.45; /* broad board matching the approved visual */
-    var baseW=availableW,baseH=baseW/ratio;
-    if(baseH>availableH){baseH=availableH;baseW=baseH*ratio}
-    var w=baseW*2; /* V150.229: horizontal width only, exactly twice the previous fitted width */
-    var h=baseH;
-    court.style.width=Math.max(600,Math.floor(w))+'px';
+    var ratio=1.45; /* V150.228 height reference */
+    var referenceW=availableW,referenceH=referenceW/ratio;
+    if(referenceH>availableH){referenceH=availableH;referenceW=referenceH*ratio}
+    /* V150.230: preserve the V150.228 height but use all width available beside the unchanged tool panel. */
+    var w=availableW;
+    var h=referenceH;
+    court.style.width=Math.max(300,Math.floor(w))+'px';
     court.style.height=Math.max(300,Math.floor(h))+'px';
     if(typeof resizeCanvas==='function')resizeCanvas();
   }
@@ -9385,7 +9386,7 @@ html.booting body{background:#02040a!important}
   });
 })();
 </script>
-<script>/* cache marker: 150-229-coach-width-x2 */</script>
+<script>/* cache marker: 150-230-coach-full-available-width-no-scroll */</script>
 </body>
 </html>
 
