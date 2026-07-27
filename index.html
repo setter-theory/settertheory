@@ -5252,7 +5252,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.243</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.244</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5546,8 +5546,18 @@ document.addEventListener('DOMContentLoaded',()=>{
   function editSelectedDrawing(label,fn){const d=requireSelectedDrawing();if(!d)return;pushHistory();fn(d,state.selectedDrawing);renderDrawings();status(label)}
   window.rotateCoachDrawingLeft=function(){editSelectedDrawing('選択した描画を左へ15°回転しました',d=>d.rotation=((Number(d.rotation)||0)-15)%360)};
   window.rotateCoachDrawingRight=function(){editSelectedDrawing('選択した描画を右へ15°回転しました',d=>d.rotation=((Number(d.rotation)||0)+15)%360)};
-  window.flipCoachDrawingHorizontal=function(){editSelectedDrawing('選択した描画を横反転しました',d=>d.flipX=!d.flipX)};
-  window.flipCoachDrawingVertical=function(){editSelectedDrawing('選択した描画を縦反転しました',d=>d.flipY=!d.flipY)};
+  function reflectCoachDrawingPoints(d,axis){
+    const pts=d.points||[];if(!pts.length)return;
+    if(d.type==='text'){
+      if(axis==='x')d.flipX=!d.flipX;else d.flipY=!d.flipY;
+      return;
+    }
+    const c=drawingCenter(d);
+    d.points=pts.map(p=>axis==='x'?{x:c.x-(p.x-c.x),y:p.y}:{x:p.x,y:c.y-(p.y-c.y)});
+    d.flipX=false;d.flipY=false;
+  }
+  window.flipCoachDrawingHorizontal=function(){editSelectedDrawing('選択した描画を横反転しました',d=>reflectCoachDrawingPoints(d,'x'))};
+  window.flipCoachDrawingVertical=function(){editSelectedDrawing('選択した描画を縦反転しました',d=>reflectCoachDrawingPoints(d,'y'))};
   window.duplicateCoachDrawing=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();const copy=JSON.parse(JSON.stringify(d));copy.points=(copy.points||[]).map(p=>({x:Math.max(0,Math.min(1,p.x+.025)),y:Math.max(0,Math.min(1,p.y+.025))}));state.drawings.push(copy);state.selectedDrawing=state.drawings.length-1;renderDrawings();status('選択した描画を複製しました')};
   window.deleteCoachDrawing=function(){if(!requireSelectedDrawing())return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.selectedDrawing=-1;renderDrawings();status('選択した描画を削除しました')};
   window.bringCoachDrawingFront=function(){const d=requireSelectedDrawing();if(!d)return;pushHistory();state.drawings.splice(state.selectedDrawing,1);state.drawings.push(d);state.selectedDrawing=state.drawings.length-1;renderDrawings();status('選択した描画を最前面へ移動しました')};
