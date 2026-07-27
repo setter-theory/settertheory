@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.224</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.225</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9273,8 +9273,8 @@ html.booting body{background:#02040a!important}
 
 
 
-<style id="v150-224-coach-court-stable">
-/* V150.224: stable full-court surface. No pseudo-element and no mutation observer. */
+<style id="v150-225-coach-court-ratio-fix">
+/* V150.225: wide stable portrait court with full free zone. */
 #coachBoardModal .coachBoardWorkspace{
   min-width:0!important;min-height:0!important;overflow:hidden!important;
   grid-template-columns:minmax(0,1fr) 178px!important;align-items:stretch!important;
@@ -9282,26 +9282,26 @@ html.booting body{background:#02040a!important}
 #coachCourt.coachCourt{
   --free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff;
   position:relative!important;display:block!important;flex:none!important;
-  width:360px;height:560px;min-width:120px!important;min-height:180px!important;
+  width:520px;height:680px;min-width:260px!important;min-height:340px!important;
   max-width:none!important;max-height:none!important;aspect-ratio:auto!important;
   margin:auto!important;overflow:hidden!important;box-sizing:border-box!important;
   background:var(--free-zone)!important;border:2px solid var(--court-line)!important;
 }
 #coachCourt .coachCourtSurface{
   display:block!important;position:absolute!important;z-index:1!important;
-  left:11%!important;right:11%!important;top:7%!important;bottom:7%!important;
+  left:14%!important;right:14%!important;top:5%!important;bottom:5%!important;
   background:var(--play-zone)!important;border:3px solid var(--court-line)!important;
   box-sizing:border-box!important;pointer-events:none!important;
 }
 #coachCourt .coachCourtHalf{display:none!important}
 #coachCourt .coachNet,#coachCourt .coachAttackLine{
   display:block!important;position:absolute!important;visibility:visible!important;opacity:1!important;
-  left:11%!important;right:11%!important;background:var(--court-line)!important;z-index:2!important;
+  left:14%!important;right:14%!important;background:var(--court-line)!important;z-index:2!important;
 }
 #coachCourt .coachNet{top:50%!important;height:4px!important;transform:translateY(-50%)!important}
 #coachCourt .coachAttackLine{height:3px!important}
-#coachCourt .coachAttackLine.top{top:32.8%!important;bottom:auto!important}
-#coachCourt .coachAttackLine.bottom{top:67.2%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.top{top:35%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.bottom{top:65%!important;bottom:auto!important}
 #coachCourt.theme-gym{--free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff}
 #coachCourt.theme-international{--free-zone:#2385a8;--play-zone:#ef873d;--court-line:#fff}
 #coachCourt.theme-green{--free-zone:#245f4d;--play-zone:#3f8f68;--court-line:#fff}
@@ -9318,9 +9318,9 @@ html.booting body{background:#02040a!important}
   #coachCourt .coachPiece.ball{width:36px!important;height:36px!important}
 }
 </style>
-<script id="v150-224-coach-court-stable-script">
+<script id="v150-225-coach-court-ratio-script">
 (function(){
-  function fitCoachCourt224(){
+  function fitCoachCourt225(){
     var modal=document.getElementById('coachBoardModal');
     var workspace=document.querySelector('#coachBoardModal .coachBoardWorkspace');
     var court=document.getElementById('coachCourt');
@@ -9331,28 +9331,31 @@ html.booting body{background:#02040a!important}
     var aside=workspace.querySelector('.coachBoardHelp');
     var gap=parseFloat(style.columnGap)||parseFloat(style.gap)||0;
     var asideW=(aside&&getComputedStyle(aside).display!=='none')?aside.getBoundingClientRect().width+gap:0;
-    var availableW=Math.max(120,workspace.clientWidth-padX-asideW);
-    var availableH=Math.max(180,workspace.clientHeight-padY);
-    var ratio=9/14,w=availableW,h=w/ratio;
+    var availableW=Math.max(260,workspace.clientWidth-padX-asideW);
+    var availableH=Math.max(340,workspace.clientHeight-padY);
+    /* Outer board is intentionally wider than the previous 9:14 box. */
+    var ratio=0.76; /* width / height */
+    var w=availableW;
+    var h=w/ratio;
     if(h>availableH){h=availableH;w=h*ratio}
-    court.style.width=Math.max(120,Math.floor(w))+'px';
-    court.style.height=Math.max(180,Math.floor(h))+'px';
+    court.style.width=Math.max(260,Math.floor(w))+'px';
+    court.style.height=Math.max(340,Math.floor(h))+'px';
     if(typeof resizeCanvas==='function')resizeCanvas();
   }
   var oldOpen=window.openCoachBoard;
   window.openCoachBoard=function(){
     if(typeof oldOpen==='function')oldOpen();
-    requestAnimationFrame(function(){fitCoachCourt224();requestAnimationFrame(fitCoachCourt224)});
+    requestAnimationFrame(function(){fitCoachCourt225();requestAnimationFrame(fitCoachCourt225)});
   };
-  window.addEventListener('resize',fitCoachCourt224);
-  window.addEventListener('orientationchange',function(){setTimeout(fitCoachCourt224,150)});
+  window.addEventListener('resize',fitCoachCourt225);
+  window.addEventListener('orientationchange',function(){setTimeout(fitCoachCourt225,150)});
   document.addEventListener('DOMContentLoaded',function(){
     var modal=document.getElementById('coachBoardModal');
-    if(modal)new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(fitCoachCourt224)}).observe(modal,{attributes:true,attributeFilter:['class']});
+    if(modal)new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(fitCoachCourt225)}).observe(modal,{attributes:true,attributeFilter:['class']});
   });
 })();
 </script>
-<script>/* cache marker: 150-224-coach-stable-court */</script>
+<script>/* cache marker: 150-225-coach-court-ratio-fix */</script>
 </body>
 </html>
 
