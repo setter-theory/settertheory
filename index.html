@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.228</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.229</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9274,9 +9274,9 @@ html.booting body{background:#02040a!important}
 
 
 <style id="v150-228-coach-court-final-layout">
-/* V150.228: target coach-board layout only. No match/report/storage logic changed. */
+/* V150.229: coach-board width doubled; height and non-coach features unchanged. */
 #coachBoardModal .coachBoardWorkspace{
-  min-width:0!important;min-height:0!important;overflow:hidden!important;
+  min-width:0!important;min-height:0!important;overflow-x:auto!important;overflow-y:hidden!important;
   grid-template-columns:minmax(0,1fr) 178px!important;align-items:stretch!important;
 }
 #coachCourt.coachCourt{
@@ -9340,9 +9340,11 @@ html.booting body{background:#02040a!important}
     var availableW=Math.max(300,workspace.clientWidth-padX-asideW);
     var availableH=Math.max(300,workspace.clientHeight-padY);
     var ratio=1.45; /* broad board matching the approved visual */
-    var w=availableW,h=w/ratio;
-    if(h>availableH){h=availableH;w=h*ratio}
-    court.style.width=Math.max(300,Math.floor(w))+'px';
+    var baseW=availableW,baseH=baseW/ratio;
+    if(baseH>availableH){baseH=availableH;baseW=baseH*ratio}
+    var w=baseW*2; /* V150.229: horizontal width only, exactly twice the previous fitted width */
+    var h=baseH;
+    court.style.width=Math.max(600,Math.floor(w))+'px';
     court.style.height=Math.max(300,Math.floor(h))+'px';
     if(typeof resizeCanvas==='function')resizeCanvas();
   }
@@ -9383,7 +9385,7 @@ html.booting body{background:#02040a!important}
   });
 })();
 </script>
-<script>/* cache marker: 150-228-coach-final-layout-remove-legacy-band */</script>
+<script>/* cache marker: 150-229-coach-width-x2 */</script>
 </body>
 </html>
 
