@@ -5248,7 +5248,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.239</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.240</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5459,8 +5459,38 @@ document.addEventListener('DOMContentLoaded',()=>{
   function pieceDown(ev){if(state.playing)return;if(state.tool==='number'){ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p);return}if(state.tool!=='select')return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
-  function distanceToDrawing(pt,d){const a=d.points?.[0],b=d.points?.[d.points.length-1];if(!a||!b)return 9;const vx=b.x-a.x,vy=b.y-a.y,wx=pt.x-a.x,wy=pt.y-a.y,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=Math.max(0,Math.min(1,c2?c1/c2:0));return Math.hypot(pt.x-(a.x+t*vx),pt.y-(a.y+t*vy))}
-  function canvasDown(ev){ev.preventDefault();const pt=pointFromEvent(ev);if(state.tool==='number')return;if(state.tool==='select'){if(!state.drawings.length)return;let idx=-1,best=.09;state.drawings.forEach((d,i)=>{let z;if(d.type==='text'){const a=d.points?.[0];z=a?Math.hypot(pt.x-a.x,pt.y-a.y):9}else z=distanceToDrawing(pt,d);if(z<best){best=z;idx=i}});if(idx>=0){pushHistory();state.drag={drawing:idx,last:pt};canvas().setPointerCapture(ev.pointerId);status('描画を移動中')}return}if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=0,best=99;state.drawings.forEach((d,i)=>{const z=distanceToDrawing(pt,d);if(z<best){best=z;idx=i}});if(best<.12){pushHistory();state.drawings.splice(idx,1);renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
+  function pointSegmentDistancePx(px,py,ax,ay,bx,by){const vx=bx-ax,vy=by-ay,wx=px-ax,wy=py-ay,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=Math.max(0,Math.min(1,c2?c1/c2:0));return Math.hypot(px-(ax+t*vx),py-(ay+t*vy))}
+  function drawingHitScore(pt,d,w,h){
+    const points=d.points||[],a=points[0],b=points[points.length-1];if(!a||!b)return Infinity;
+    const px=pt.x*w,py=pt.y*h,ax=a.x*w,ay=a.y*h,bx=b.x*w,by=b.y*h;
+    const tolerance=Math.max(12,(Number(d.width)||4)+8);
+    if(d.type==='rect'){
+      const left=Math.min(ax,bx),right=Math.max(ax,bx),top=Math.min(ay,by),bottom=Math.max(ay,by);
+      if(px>=left-tolerance&&px<=right+tolerance&&py>=top-tolerance&&py<=bottom+tolerance)return 0;
+      return Infinity;
+    }
+    if(d.type==='circle'){
+      const cx=(ax+bx)/2,cy=(ay+by)/2,rx=Math.abs(bx-ax)/2,ry=Math.abs(by-ay)/2;
+      if(rx<1||ry<1)return Math.hypot(px-cx,py-cy)<=tolerance?0:Infinity;
+      const nx=(px-cx)/(rx+tolerance),ny=(py-cy)/(ry+tolerance);
+      return nx*nx+ny*ny<=1?0:Infinity;
+    }
+    if(d.type==='text'){
+      const x=ctxSetup(),fontSize=Math.max(14,(d.width||4)*5);if(!x)return Infinity;
+      x.font='bold '+fontSize+'px sans-serif';const m=x.measureText(d.text||'');
+      const left=ax-tolerance,right=ax+m.width+tolerance;
+      const top=ay-(m.actualBoundingBoxAscent||fontSize)-tolerance;
+      const bottom=ay+(m.actualBoundingBoxDescent||fontSize*.25)+tolerance;
+      return px>=left&&px<=right&&py>=top&&py<=bottom?0:Infinity;
+    }
+    let best=Infinity;
+    for(let i=1;i<points.length;i++){
+      const p0=points[i-1],p1=points[i];
+      best=Math.min(best,pointSegmentDistancePx(px,py,p0.x*w,p0.y*h,p1.x*w,p1.y*h));
+    }
+    return best<=tolerance?best:Infinity;
+  }
+  function canvasDown(ev){ev.preventDefault();const pt=pointFromEvent(ev),r=court().getBoundingClientRect();if(state.tool==='number')return;if(state.tool==='select'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drag={drawing:idx,last:pt};canvas().setPointerCapture(ev.pointerId);status('描画を移動中')}return}if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drawings.splice(idx,1);renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
   function canvasMove(ev){const pt=pointFromEvent(ev);if(state.drag&&Number.isInteger(state.drag.drawing)){const d=state.drawings[state.drag.drawing],dx=pt.x-state.drag.last.x,dy=pt.y-state.drag.last.y;d.points=d.points.map(p=>({x:Math.max(0,Math.min(1,p.x+dx)),y:Math.max(0,Math.min(1,p.y+dy))}));state.drag.last=pt;renderDrawings();return}if(!state.draw)return;if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
   function canvasUp(){if(state.drag&&Number.isInteger(state.drag.drawing)){state.drag=null;status('描画を移動しました');return}if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
   function applyCourtTheme(){const ct=court();if(!ct)return;ct.classList.remove('theme-gym','theme-international','theme-green','theme-red','theme-dark','theme-white');ct.classList.add('theme-'+(state.theme||'gym'));const sel=document.getElementById('coachCourtTheme');if(sel)sel.value=state.theme||'gym'}
