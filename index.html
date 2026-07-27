@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.221</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.222</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9260,7 +9260,7 @@ html.booting body{background:#02040a!important}
 
 
 <style id="v150-221-coach-engine-fix">
-/* V150.221: court fit engine + unmistakable volleyball. */
+/* V150.222: court fit engine + unmistakable volleyball. */
 .coachBoardWorkspace{
   position:relative!important;
   overflow:hidden!important;
@@ -9329,7 +9329,7 @@ html.booting body{background:#02040a!important}
   .coachPiece.ball{width:40px!important;height:40px!important}
 }
 </style>
-<script id="v150-221-coach-engine-script">
+<script id="v150-222-coach-open-fix-script">
 (function(){
   function fitCourt(){
     const modal=document.getElementById('coachBoardModal');
@@ -9355,46 +9355,61 @@ html.booting body{background:#02040a!important}
       c.style.width=Math.floor(w)+'px';
       c.style.height=Math.floor(h)+'px';
     }
-    window.dispatchEvent(new Event('coachCourtFitted'));
   }
-  function replaceBallSvg(){
-    document.querySelectorAll('#coachPiecesLayer .coachPiece.ball').forEach(function(el){
-      el.textContent='';
+  function replaceBallSvg(root){
+    const scope=root&&root.querySelectorAll?root:document;
+    scope.querySelectorAll('#coachPiecesLayer .coachPiece.ball, .coachPiece.ball').forEach(function(el){
+      if(el.querySelector('.coachVolleyballSvg[data-version="150.222"]'))return;
       el.setAttribute('aria-label','バレーボール');
-      el.innerHTML='<svg class="coachVolleyballSvg" viewBox="0 0 120 120" aria-hidden="true">'
-        +'<defs><clipPath id="vbClip"><circle cx="60" cy="60" r="56"/></clipPath></defs>'
-        +'<g clip-path="url(#vbClip)">'
+      el.innerHTML='<svg class="coachVolleyballSvg" data-version="150.222" viewBox="0 0 120 120" aria-hidden="true">'
+        +'<defs><clipPath id="vbClip222"><circle cx="60" cy="60" r="56"/></clipPath></defs>'
+        +'<g clip-path="url(#vbClip222)">'
         +'<rect width="120" height="120" fill="#ffffff"/>'
         +'<path d="M59 60C35 53 20 35 17 10C30 3 43 0 56 2C50 22 51 42 59 60Z" fill="#165db6"/>'
         +'<path d="M60 59C67 35 85 20 110 17C117 30 120 43 118 56C98 50 78 51 60 59Z" fill="#ffd323"/>'
         +'<path d="M61 60C85 67 100 85 103 110C90 117 77 120 64 118C70 98 69 78 61 60Z" fill="#165db6"/>'
         +'<path d="M60 61C53 85 35 100 10 103C3 90 0 77 2 64C22 70 42 69 60 61Z" fill="#ffd323"/>'
-        +'<path d="M56 2C73 9 88 21 98 37C83 38 70 44 60 58C53 43 51 24 56 2Z" fill="#ffffff"/>'
-        +'<path d="M118 56C111 73 99 88 83 98C82 83 76 70 62 60C77 53 96 51 118 56Z" fill="#ffffff"/>'
-        +'<path d="M64 118C47 111 32 99 22 83C37 82 50 76 60 62C67 77 69 96 64 118Z" fill="#ffffff"/>'
-        +'<path d="M2 64C9 47 21 32 37 22C38 37 44 50 58 60C43 67 24 69 2 64Z" fill="#ffffff"/>'
-        +'<path d="M58 60C59 58 60 58 62 60C61 62 60 62 58 60Z" fill="#111827"/>'
+        +'<path d="M56 2C73 9 88 21 98 37C83 38 70 44 60 58C53 43 51 24 56 2Z" fill="#fff"/>'
+        +'<path d="M118 56C111 73 99 88 83 98C82 83 76 70 62 60C77 53 96 51 118 56Z" fill="#fff"/>'
+        +'<path d="M64 118C47 111 32 99 22 83C37 82 50 76 60 62C67 77 69 96 64 118Z" fill="#fff"/>'
+        +'<path d="M2 64C9 47 21 32 37 22C38 37 44 50 58 60C43 67 24 69 2 64Z" fill="#fff"/>'
         +'</g><circle cx="60" cy="60" r="56" fill="none" stroke="#111827" stroke-width="4"/>'
         +'</svg>';
     });
   }
-  const observer=new MutationObserver(function(){replaceBallSvg()});
-  document.addEventListener('DOMContentLoaded',function(){
+  function initCoachFix(){
     const layer=document.getElementById('coachPiecesLayer');
-    if(layer)observer.observe(layer,{childList:true,subtree:true});
-    replaceBallSvg();
+    if(layer){
+      const observer=new MutationObserver(function(records){
+        records.forEach(function(record){
+          record.addedNodes.forEach(function(node){
+            if(node.nodeType===1)replaceBallSvg(node);
+          });
+        });
+      });
+      observer.observe(layer,{childList:true});
+    }
+    replaceBallSvg(document);
     fitCourt();
-  });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCoachFix,{once:true});
+  else initCoachFix();
   window.addEventListener('resize',fitCourt);
   window.addEventListener('orientationchange',function(){setTimeout(fitCourt,120)});
   document.addEventListener('click',function(ev){
-    if(ev.target&&ev.target.closest&&ev.target.closest('.coachBoardIntroCard button'))setTimeout(function(){fitCourt();replaceBallSvg()},50);
+    if(ev.target&&ev.target.closest&&ev.target.closest('.coachBoardIntroCard button')){
+      setTimeout(function(){fitCourt();replaceBallSvg(document)},50);
+    }
   },true);
   const modal=document.getElementById('coachBoardModal');
-  if(modal){new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(function(){fitCourt();replaceBallSvg()})}).observe(modal,{attributes:true,attributeFilter:['class']})}
+  if(modal){
+    new MutationObserver(function(){
+      if(modal.classList.contains('show'))requestAnimationFrame(function(){fitCourt();replaceBallSvg(document)});
+    }).observe(modal,{attributes:true,attributeFilter:['class']});
+  }
 })();
 </script>
-<script>/* cache marker: 150-221-coach-court-fit-real-panel-volleyball */</script>
+<script>/* cache marker: 150-222-coach-open-fix */</script>
 </body>
 </html>
 
