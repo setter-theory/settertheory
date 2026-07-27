@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.223</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.224</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -5206,6 +5206,7 @@ html.appEntered #home.active{
     </div>
     <div class="coachBoardWorkspace">
       <div id="coachCourt" class="coachCourt" aria-label="バレーボールコート">
+        <div class="coachCourtSurface" aria-hidden="true"></div>
         <div class="coachCourtHalf coachCourtTop top"></div>
         <div class="coachNet"></div>
         <div class="coachAttackLine top"></div>
@@ -5309,7 +5310,18 @@ html.appEntered #home.active{
     if(p.team!=='ball'){e.textContent=p.label;return}
     e.textContent='';
     e.setAttribute('aria-label','バレーボール');
-    e.innerHTML='<svg class="coachVolleyballSvg" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="coachBallClip"><circle cx="50" cy="50" r="47"/></clipPath></defs><g clip-path="url(#coachBallClip)"><rect width="100" height="100" fill="#ffffff"/><path d="M50 50C30 39 18 21 19-2L43-8C40 14 45 30 58 43Z" fill="#1769c2"/><path d="M50 50C61 30 79 18 102 19L108 43C86 40 70 45 57 58Z" fill="#ffd21f"/><path d="M50 50C70 61 82 79 81 102L57 108C60 86 55 70 42 57Z" fill="#1769c2"/><path d="M50 50C39 70 21 82-2 81L-8 57C14 60 30 55 43 42Z" fill="#ffd21f"/><path d="M43 42C48 45 53 48 58 43" fill="none" stroke="#172033" stroke-width="2.8"/><path d="M57 58C52 55 47 52 42 57" fill="none" stroke="#172033" stroke-width="2.8"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#172033" stroke-width="3"/></svg>';
+    e.innerHTML='<svg class="coachVolleyballSvg" viewBox="0 0 120 120" aria-hidden="true">'
+      +'<defs><clipPath id="coachBallClip"><circle cx="60" cy="60" r="55"/></clipPath></defs>'
+      +'<g clip-path="url(#coachBallClip)"><rect width="120" height="120" fill="#fff"/>'
+      +'<path d="M60 60C38 51 23 34 20 10C31 4 43 1 55 2C50 22 51 42 60 60Z" fill="#1767bd"/>'
+      +'<path d="M60 60C69 38 86 23 110 20C116 31 119 43 118 55C98 50 78 51 60 60Z" fill="#ffd321"/>'
+      +'<path d="M60 60C82 69 97 86 100 110C89 116 77 119 65 118C70 98 69 78 60 60Z" fill="#1767bd"/>'
+      +'<path d="M60 60C51 82 34 97 10 100C4 89 1 77 2 65C22 70 42 69 60 60Z" fill="#ffd321"/>'
+      +'<path d="M55 2C73 8 89 20 100 37C84 39 70 46 60 59C53 44 51 24 55 2Z" fill="#fff" stroke="#172033" stroke-width="1.8"/>'
+      +'<path d="M118 55C112 73 100 89 83 100C81 84 74 70 61 60C76 53 96 51 118 55Z" fill="#fff" stroke="#172033" stroke-width="1.8"/>'
+      +'<path d="M65 118C47 112 31 100 20 83C36 81 50 74 60 61C67 76 69 96 65 118Z" fill="#fff" stroke="#172033" stroke-width="1.8"/>'
+      +'<path d="M2 65C8 47 20 31 37 20C39 36 46 50 59 60C44 67 24 69 2 65Z" fill="#fff" stroke="#172033" stroke-width="1.8"/>'
+      +'</g><circle cx="60" cy="60" r="55" fill="none" stroke="#172033" stroke-width="4"/></svg>';
   }
   function renderPieces(){const l=layer();if(!l)return;l.innerHTML='';state.pieces.forEach(p=>{const e=document.createElement('div');e.className='coachPiece '+p.team;e.dataset.id=p.id;setPieceVisual(e,p);e.style.left=p.x+'%';e.style.top=p.y+'%';e.addEventListener('pointerdown',pieceDown);e.addEventListener('click',pieceClick);l.appendChild(e)})}
   function resizeCanvas(){const c=canvas(),ct=court();if(!c||!ct)return;const r=ct.getBoundingClientRect(),d=Math.max(1,window.devicePixelRatio||1);c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';renderDrawings()}
@@ -9259,199 +9271,88 @@ html.booting body{background:#02040a!important}
 <script>/* cache marker: 150-220-coach-stable-full-court-real-volleyball */</script>
 
 
-<style id="v150-221-coach-engine-fix">
-/* V150.222: court fit engine + unmistakable volleyball. */
-.coachBoardWorkspace{
-  position:relative!important;
-  overflow:hidden!important;
-  min-width:0!important;
-  min-height:0!important;
-}
-.coachCourt{
-  position:relative!important;
-  flex:none!important;
-  width:360px;
-  height:560px;
-  min-width:0!important;
-  min-height:0!important;
-  max-width:none!important;
-  max-height:none!important;
-  aspect-ratio:auto!important;
-  margin:auto!important;
-  overflow:hidden!important;
-  box-sizing:border-box!important;
-  contain:layout paint!important;
-}
-.coachCourtHalf{
-  position:absolute!important;
-  left:var(--court-left)!important;
-  right:var(--court-right)!important;
-  height:42%!important;
-  min-height:0!important;
-  box-sizing:border-box!important;
-  display:block!important;
-  opacity:1!important;
-  visibility:visible!important;
-}
-.coachCourtHalf.coachCourtTop,
-.coachCourtHalf.top{
-  top:var(--court-top)!important;
-  bottom:auto!important;
-  height:42%!important;
-  border-top:3px solid #fff!important;
-}
-.coachCourtHalf.coachCourtBottom,
-.coachCourtHalf.bottom{
-  top:50%!important;
-  bottom:auto!important;
-  height:42%!important;
-  border-bottom:3px solid #fff!important;
-}
-.coachNet{top:50%!important;left:var(--court-left)!important;right:var(--court-right)!important}
-.coachAttackLine.top{top:32.5%!important}
-.coachAttackLine.bottom{top:67.5%!important;bottom:auto!important}
-.coachPiece.ball{
-  width:46px!important;
-  height:46px!important;
-  border:0!important;
-  background:transparent!important;
-  box-shadow:0 3px 9px rgba(0,0,0,.46)!important;
-  overflow:visible!important;
-}
-.coachPiece.ball .coachVolleyballSvg{
-  display:block!important;
-  width:100%!important;
-  height:100%!important;
-  overflow:visible!important;
-  filter:drop-shadow(0 1px 1px rgba(0,0,0,.25));
-}
-@media(max-width:760px){
-  .coachPiece.ball{width:40px!important;height:40px!important}
-}
-</style>
-<script id="v150-222-coach-open-fix-script">
-(function(){
-  function fitCourt(){
-    const modal=document.getElementById('coachBoardModal');
-    const workspace=document.querySelector('#coachBoardModal .coachBoardWorkspace');
-    const court=document.getElementById('coachCourt');
-    if(!modal||!workspace||!court||!modal.classList.contains('show'))return;
-    const cs=getComputedStyle(workspace);
-    const padX=(parseFloat(cs.paddingLeft)||0)+(parseFloat(cs.paddingRight)||0);
-    const padY=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0);
-    const availableW=Math.max(120,workspace.clientWidth-padX);
-    const availableH=Math.max(180,workspace.clientHeight-padY);
-    const ratio=9/14;
-    let h=availableH;
-    let w=h*ratio;
-    if(w>availableW){w=availableW;h=w/ratio}
-    court.style.width=Math.floor(w)+'px';
-    court.style.height=Math.floor(h)+'px';
-    const c=document.getElementById('coachDrawCanvas');
-    if(c){
-      const d=Math.max(1,window.devicePixelRatio||1);
-      c.width=Math.max(1,Math.round(w*d));
-      c.height=Math.max(1,Math.round(h*d));
-      c.style.width=Math.floor(w)+'px';
-      c.style.height=Math.floor(h)+'px';
-    }
-  }
-  function replaceBallSvg(root){
-    const scope=root&&root.querySelectorAll?root:document;
-    scope.querySelectorAll('#coachPiecesLayer .coachPiece.ball, .coachPiece.ball').forEach(function(el){
-      if(el.querySelector('.coachVolleyballSvg[data-version="150.222"]'))return;
-      el.setAttribute('aria-label','バレーボール');
-      el.innerHTML='<svg class="coachVolleyballSvg" data-version="150.222" viewBox="0 0 120 120" aria-hidden="true">'
-        +'<defs><clipPath id="vbClip222"><circle cx="60" cy="60" r="56"/></clipPath></defs>'
-        +'<g clip-path="url(#vbClip222)">'
-        +'<rect width="120" height="120" fill="#ffffff"/>'
-        +'<path d="M59 60C35 53 20 35 17 10C30 3 43 0 56 2C50 22 51 42 59 60Z" fill="#165db6"/>'
-        +'<path d="M60 59C67 35 85 20 110 17C117 30 120 43 118 56C98 50 78 51 60 59Z" fill="#ffd323"/>'
-        +'<path d="M61 60C85 67 100 85 103 110C90 117 77 120 64 118C70 98 69 78 61 60Z" fill="#165db6"/>'
-        +'<path d="M60 61C53 85 35 100 10 103C3 90 0 77 2 64C22 70 42 69 60 61Z" fill="#ffd323"/>'
-        +'<path d="M56 2C73 9 88 21 98 37C83 38 70 44 60 58C53 43 51 24 56 2Z" fill="#fff"/>'
-        +'<path d="M118 56C111 73 99 88 83 98C82 83 76 70 62 60C77 53 96 51 118 56Z" fill="#fff"/>'
-        +'<path d="M64 118C47 111 32 99 22 83C37 82 50 76 60 62C67 77 69 96 64 118Z" fill="#fff"/>'
-        +'<path d="M2 64C9 47 21 32 37 22C38 37 44 50 58 60C43 67 24 69 2 64Z" fill="#fff"/>'
-        +'</g><circle cx="60" cy="60" r="56" fill="none" stroke="#111827" stroke-width="4"/>'
-        +'</svg>';
-    });
-  }
-  function initCoachFix(){
-    const layer=document.getElementById('coachPiecesLayer');
-    if(layer){
-      const observer=new MutationObserver(function(records){
-        records.forEach(function(record){
-          record.addedNodes.forEach(function(node){
-            if(node.nodeType===1)replaceBallSvg(node);
-          });
-        });
-      });
-      observer.observe(layer,{childList:true});
-    }
-    replaceBallSvg(document);
-    fitCourt();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initCoachFix,{once:true});
-  else initCoachFix();
-  window.addEventListener('resize',fitCourt);
-  window.addEventListener('orientationchange',function(){setTimeout(fitCourt,120)});
-  document.addEventListener('click',function(ev){
-    if(ev.target&&ev.target.closest&&ev.target.closest('.coachBoardIntroCard button')){
-      setTimeout(function(){fitCourt();replaceBallSvg(document)},50);
-    }
-  },true);
-  const modal=document.getElementById('coachBoardModal');
-  if(modal){
-    new MutationObserver(function(){
-      if(modal.classList.contains('show'))requestAnimationFrame(function(){fitCourt();replaceBallSvg(document)});
-    }).observe(modal,{attributes:true,attributeFilter:['class']});
-  }
-})();
-</script>
-<script>/* cache marker: 150-222-coach-open-fix */</script>
 
-<style id="v150-223-coach-court-surface-fix">
-/* V150.223: rebuild the entire visible court as one stable surface. */
-#coachCourt.coachCourt{
-  --free-zone:#2385a8;
-  --play-zone:#ef873d;
-  --court-line:#ffffff;
-  background:var(--free-zone)!important;
-  border:2px solid var(--court-line)!important;
-  isolation:isolate!important;
+
+<style id="v150-224-coach-court-stable">
+/* V150.224: stable full-court surface. No pseudo-element and no mutation observer. */
+#coachBoardModal .coachBoardWorkspace{
+  min-width:0!important;min-height:0!important;overflow:hidden!important;
+  grid-template-columns:minmax(0,1fr) 178px!important;align-items:stretch!important;
 }
-#coachCourt.coachCourt::before{
-  content:""!important;
-  display:block!important;
-  position:absolute!important;
-  z-index:0!important;
-  left:var(--court-left)!important;
-  right:var(--court-right)!important;
-  top:var(--court-top)!important;
-  bottom:var(--court-bottom)!important;
-  box-sizing:border-box!important;
-  background:var(--play-zone)!important;
-  border:3px solid var(--court-line)!important;
-  pointer-events:none!important;
+#coachCourt.coachCourt{
+  --free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff;
+  position:relative!important;display:block!important;flex:none!important;
+  width:360px;height:560px;min-width:120px!important;min-height:180px!important;
+  max-width:none!important;max-height:none!important;aspect-ratio:auto!important;
+  margin:auto!important;overflow:hidden!important;box-sizing:border-box!important;
+  background:var(--free-zone)!important;border:2px solid var(--court-line)!important;
+}
+#coachCourt .coachCourtSurface{
+  display:block!important;position:absolute!important;z-index:1!important;
+  left:11%!important;right:11%!important;top:7%!important;bottom:7%!important;
+  background:var(--play-zone)!important;border:3px solid var(--court-line)!important;
+  box-sizing:border-box!important;pointer-events:none!important;
 }
 #coachCourt .coachCourtHalf{display:none!important}
-#coachCourt .coachNet,
-#coachCourt .coachAttackLine{display:block!important;visibility:visible!important;opacity:1!important;background:var(--court-line)!important;z-index:2!important}
-#coachCourt .coachNet{height:4px!important;transform:translateY(-50%)!important}
+#coachCourt .coachNet,#coachCourt .coachAttackLine{
+  display:block!important;position:absolute!important;visibility:visible!important;opacity:1!important;
+  left:11%!important;right:11%!important;background:var(--court-line)!important;z-index:2!important;
+}
+#coachCourt .coachNet{top:50%!important;height:4px!important;transform:translateY(-50%)!important}
 #coachCourt .coachAttackLine{height:3px!important}
-#coachCourt .coachAttackLine.top{top:32.6%!important;bottom:auto!important}
-#coachCourt .coachAttackLine.bottom{top:67.4%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.top{top:32.8%!important;bottom:auto!important}
+#coachCourt .coachAttackLine.bottom{top:67.2%!important;bottom:auto!important}
 #coachCourt.theme-gym{--free-zone:#9b6b3f;--play-zone:#d5a264;--court-line:#fff}
 #coachCourt.theme-international{--free-zone:#2385a8;--play-zone:#ef873d;--court-line:#fff}
 #coachCourt.theme-green{--free-zone:#245f4d;--play-zone:#3f8f68;--court-line:#fff}
 #coachCourt.theme-red{--free-zone:#7f1d1d;--play-zone:#b91c1c;--court-line:#fff}
 #coachCourt.theme-dark{--free-zone:#111827;--play-zone:#334155;--court-line:#fff}
 #coachCourt.theme-white{--free-zone:#e5e7eb;--play-zone:#fff;--court-line:#111827}
-#coachCourt #coachDrawCanvas,
-#coachCourt #coachPiecesLayer{z-index:4!important}
+#coachCourt #coachDrawCanvas{z-index:4!important;background:transparent!important}
+#coachCourt #coachPiecesLayer{z-index:5!important}
+#coachCourt .coachPiece.ball{width:42px!important;height:42px!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible!important}
+#coachCourt .coachPiece.ball::before,#coachCourt .coachPiece.ball::after{display:none!important;content:none!important}
+#coachCourt .coachVolleyballSvg{display:block!important;width:100%!important;height:100%!important;overflow:visible!important;pointer-events:none!important;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+@media(max-width:760px){
+  #coachBoardModal .coachBoardWorkspace{display:block!important;padding:5px!important}
+  #coachCourt .coachPiece.ball{width:36px!important;height:36px!important}
+}
 </style>
-<script>/* cache marker: 150-223-coach-court-surface-fix */</script>
+<script id="v150-224-coach-court-stable-script">
+(function(){
+  function fitCoachCourt224(){
+    var modal=document.getElementById('coachBoardModal');
+    var workspace=document.querySelector('#coachBoardModal .coachBoardWorkspace');
+    var court=document.getElementById('coachCourt');
+    if(!modal||!workspace||!court||!modal.classList.contains('show'))return;
+    var style=getComputedStyle(workspace);
+    var padX=(parseFloat(style.paddingLeft)||0)+(parseFloat(style.paddingRight)||0);
+    var padY=(parseFloat(style.paddingTop)||0)+(parseFloat(style.paddingBottom)||0);
+    var aside=workspace.querySelector('.coachBoardHelp');
+    var gap=parseFloat(style.columnGap)||parseFloat(style.gap)||0;
+    var asideW=(aside&&getComputedStyle(aside).display!=='none')?aside.getBoundingClientRect().width+gap:0;
+    var availableW=Math.max(120,workspace.clientWidth-padX-asideW);
+    var availableH=Math.max(180,workspace.clientHeight-padY);
+    var ratio=9/14,w=availableW,h=w/ratio;
+    if(h>availableH){h=availableH;w=h*ratio}
+    court.style.width=Math.max(120,Math.floor(w))+'px';
+    court.style.height=Math.max(180,Math.floor(h))+'px';
+    if(typeof resizeCanvas==='function')resizeCanvas();
+  }
+  var oldOpen=window.openCoachBoard;
+  window.openCoachBoard=function(){
+    if(typeof oldOpen==='function')oldOpen();
+    requestAnimationFrame(function(){fitCoachCourt224();requestAnimationFrame(fitCoachCourt224)});
+  };
+  window.addEventListener('resize',fitCoachCourt224);
+  window.addEventListener('orientationchange',function(){setTimeout(fitCoachCourt224,150)});
+  document.addEventListener('DOMContentLoaded',function(){
+    var modal=document.getElementById('coachBoardModal');
+    if(modal)new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(fitCoachCourt224)}).observe(modal,{attributes:true,attributeFilter:['class']});
+  });
+})();
+</script>
+<script>/* cache marker: 150-224-coach-stable-court */</script>
 </body>
 </html>
 
