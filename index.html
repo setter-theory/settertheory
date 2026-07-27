@@ -5167,7 +5167,7 @@ html.appEntered #home.active{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.230</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.231</em></h2></div>
       <button type="button" class="coachBoardClose" onclick="closeCoachBoard()" aria-label="閉じる">×</button>
     </header>
     <div class="coachBoardToolbar">
@@ -9273,8 +9273,15 @@ html.booting body{background:#02040a!important}
 
 
 
-<style id="v150-228-coach-court-final-layout">
-/* V150.230: keep V150.228 height, fill available width, no horizontal scrolling. */
+<style id="v150-231-coach-width-double-no-callout">
+/* V150.231: keep current height, double the visible width ratio, no horizontal scroll. */
+#coachBoardModal,#coachBoardModal *{
+  -webkit-user-select:none!important;user-select:none!important;
+  -webkit-touch-callout:none!important;-webkit-user-callout:none!important;
+}
+#coachBoardModal input,#coachBoardModal select,#coachBoardModal textarea{
+  -webkit-user-select:auto!important;user-select:auto!important;
+}
 #coachBoardModal .coachBoardWorkspace{
   min-width:0!important;min-height:0!important;overflow:hidden!important;
   grid-template-columns:minmax(0,1fr) 178px!important;align-items:stretch!important;
@@ -9282,11 +9289,12 @@ html.booting body{background:#02040a!important}
 #coachCourt.coachCourt{
   --free-zone:#2789ad;--play-zone:#f18437;--court-line:#fff;
   position:relative!important;display:block!important;flex:none!important;
-  width:900px;height:620px;min-width:300px!important;min-height:300px!important;
-  max-width:none!important;max-height:none!important;aspect-ratio:auto!important;
+  width:760px!important;height:760px!important;
+  min-width:300px!important;min-height:300px!important;
+  max-width:100%!important;max-height:100%!important;aspect-ratio:1/1!important;
   margin:auto!important;overflow:hidden!important;box-sizing:border-box!important;
   background:var(--free-zone)!important;border:2px solid var(--court-line)!important;
-  border-radius:10px!important;
+  border-radius:10px!important;touch-action:none!important;
 }
 #coachCourt .coachCourtSurface{
   display:block!important;position:absolute!important;z-index:1!important;
@@ -9314,8 +9322,9 @@ html.booting body{background:#02040a!important}
 #coachCourt.theme-red{--free-zone:#7f1d1d;--play-zone:#b91c1c;--court-line:#fff}
 #coachCourt.theme-dark{--free-zone:#111827;--play-zone:#334155;--court-line:#fff}
 #coachCourt.theme-white{--free-zone:#e5e7eb;--play-zone:#fff;--court-line:#111827}
-#coachCourt #coachDrawCanvas{z-index:4!important;background:transparent!important}
-#coachCourt #coachPiecesLayer{z-index:5!important}
+#coachCourt #coachDrawCanvas{z-index:4!important;background:transparent!important;touch-action:none!important}
+#coachCourt #coachPiecesLayer{z-index:5!important;touch-action:none!important}
+#coachCourt .coachPiece{touch-action:none!important}
 #coachCourt .coachPiece.ball{width:42px!important;height:42px!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible!important}
 #coachCourt .coachPiece.ball::before,#coachCourt .coachPiece.ball::after{display:none!important;content:none!important}
 #coachCourt .coachVolleyballSvg{display:block!important;width:100%!important;height:100%!important;overflow:visible!important;pointer-events:none!important;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
@@ -9324,9 +9333,9 @@ html.booting body{background:#02040a!important}
   #coachCourt .coachPiece.ball{width:36px!important;height:36px!important}
 }
 </style>
-<script id="v150-228-coach-court-final-script">
+<script id="v150-231-coach-width-double-script">
 (function(){
-  function fitCoachCourt228(){
+  function fitCoachCourt231(){
     var modal=document.getElementById('coachBoardModal');
     var workspace=document.querySelector('#coachBoardModal .coachBoardWorkspace');
     var court=document.getElementById('coachCourt');
@@ -9339,14 +9348,10 @@ html.booting body{background:#02040a!important}
     var asideW=(aside&&getComputedStyle(aside).display!=='none')?aside.getBoundingClientRect().width+gap:0;
     var availableW=Math.max(300,workspace.clientWidth-padX-asideW);
     var availableH=Math.max(300,workspace.clientHeight-padY);
-    var ratio=1.45; /* V150.228 height reference */
-    var referenceW=availableW,referenceH=referenceW/ratio;
-    if(referenceH>availableH){referenceH=availableH;referenceW=referenceH*ratio}
-    /* V150.230: preserve the V150.228 height but use all width available beside the unchanged tool panel. */
-    var w=availableW;
-    var h=referenceH;
-    court.style.width=Math.max(300,Math.floor(w))+'px';
-    court.style.height=Math.max(300,Math.floor(h))+'px';
+    /* Keep the current height. Change only the width ratio to exactly twice the previous 1:2 appearance. */
+    var size=Math.floor(Math.min(availableH,availableW));
+    court.style.setProperty('height',size+'px','important');
+    court.style.setProperty('width',size+'px','important');
     if(typeof resizeCanvas==='function')resizeCanvas();
   }
   function removeLegacyWhiteBand(){
@@ -9354,7 +9359,7 @@ html.booting body{background:#02040a!important}
       var key='setterTheoryCoachBoardV2';
       var raw=localStorage.getItem(key);
       if(!raw)return;
-      var data=JSON.parse(raw), changed=false;
+      var data=JSON.parse(raw),changed=false;
       if(Array.isArray(data.drawings)){
         data.drawings=data.drawings.filter(function(d){
           if(!d||d.type!=='rect'||!d.fill||!Array.isArray(d.points)||d.points.length<2)return true;
@@ -9362,31 +9367,48 @@ html.booting body{background:#02040a!important}
           var width=Math.abs((b.x||0)-(a.x||0));
           var height=Math.abs((b.y||0)-(a.y||0));
           var color=String(d.color||'').toLowerCase();
-          var isWhite=(color==='#fff'||color==='#ffffff'||color==='white'||color==='rgb(255,255,255)');
-          var legacyBand=isWhite&&width>.45&&height>.035&&height<.18;
-          if(legacyBand)changed=true;
-          return !legacyBand;
+          var white=(color==='#fff'||color==='#ffffff'||color==='white'||color==='rgb(255,255,255)');
+          var band=white&&width>.45&&height>.035&&height<.18;
+          if(band)changed=true;
+          return !band;
         });
       }
       if(changed)localStorage.setItem(key,JSON.stringify(data));
     }catch(e){}
   }
+  function blockSelection(ev){
+    var modal=document.getElementById('coachBoardModal');
+    if(!modal||!modal.classList.contains('show'))return;
+    var t=ev.target;
+    if(t&&t.closest&&t.closest('input,select,textarea,option'))return;
+    ev.preventDefault();
+  }
+  ['contextmenu','selectstart','dragstart'].forEach(function(type){
+    document.addEventListener(type,blockSelection,true);
+  });
+  document.addEventListener('touchstart',function(ev){
+    var modal=document.getElementById('coachBoardModal');
+    if(!modal||!modal.classList.contains('show')||!modal.contains(ev.target))return;
+    var t=ev.target;
+    if(t&&t.closest&&t.closest('input,select,textarea,option,button'))return;
+    if(ev.touches&&ev.touches.length===1)ev.preventDefault();
+  },{capture:true,passive:false});
   removeLegacyWhiteBand();
   var oldOpen=window.openCoachBoard;
   window.openCoachBoard=function(){
     removeLegacyWhiteBand();
     if(typeof oldOpen==='function')oldOpen();
-    requestAnimationFrame(function(){fitCoachCourt228();requestAnimationFrame(fitCoachCourt228)});
+    requestAnimationFrame(function(){fitCoachCourt231();requestAnimationFrame(fitCoachCourt231)});
   };
-  window.addEventListener('resize',fitCoachCourt228);
-  window.addEventListener('orientationchange',function(){setTimeout(fitCoachCourt228,150)});
+  window.addEventListener('resize',fitCoachCourt231);
+  window.addEventListener('orientationchange',function(){setTimeout(fitCoachCourt231,150)});
   document.addEventListener('DOMContentLoaded',function(){
     var modal=document.getElementById('coachBoardModal');
-    if(modal)new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(fitCoachCourt228)}).observe(modal,{attributes:true,attributeFilter:['class']});
+    if(modal)new MutationObserver(function(){if(modal.classList.contains('show'))requestAnimationFrame(fitCoachCourt231)}).observe(modal,{attributes:true,attributeFilter:['class']});
   });
 })();
 </script>
-<script>/* cache marker: 150-230-coach-full-available-width-no-scroll */</script>
+<script>/* cache marker: 150-231-coach-width-ratio-x2-no-callout */</script>
 </body>
 </html>
 
