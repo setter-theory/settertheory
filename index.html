@@ -5227,7 +5227,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     'rotate-left':'rotateCoachDrawingLeft','rotate-right':'rotateCoachDrawingRight',
     'flip-horizontal':'flipCoachDrawingHorizontal','flip-vertical':'flipCoachDrawingVertical',
     'duplicate-drawing':'duplicateCoachDrawing','delete-drawing':'deleteCoachDrawing',
-    'bring-front':'bringCoachDrawingFront','send-back':'sendCoachDrawingBack'
+    'bring-front':'bringCoachDrawingFront','send-back':'sendCoachDrawingBack',
+    'display-number':'setCoachPlayerDisplayNumber','display-name':'setCoachPlayerDisplayName',
+    'display-both':'setCoachPlayerDisplayBoth','edit-player-names':'openCoachPlayerNameEditor'
   };
   modal.addEventListener('click',event=>{
     const button=event.target.closest('button');
@@ -5252,7 +5254,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.245</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.246</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5334,6 +5336,16 @@ document.addEventListener('DOMContentLoaded',()=>{
         <summary>コート</summary>
         <div class="coachToolGroup coachThemeTools" aria-label="コートテーマ">
           <label class="coachMiniLabel">コート<select id="coachCourtTheme" data-cb-change="court-theme"><option value="gym">学校体育館</option><option value="international" selected>国際大会</option><option value="green">グリーン</option><option value="red">レッド</option><option value="dark">ダーク</option><option value="white">ホワイトボード</option></select></label>
+        </div>
+      </details>
+
+      <details class="coachAccordion">
+        <summary>選手表示</summary>
+        <div class="coachToolGroup coachPlayerDisplayTools">
+          <button type="button" data-cb-action="display-number" id="coachDisplayNumber">番号のみ</button>
+          <button type="button" data-cb-action="display-name" id="coachDisplayName">名前のみ</button>
+          <button type="button" data-cb-action="display-both" id="coachDisplayBoth">番号＋名前</button>
+          <button type="button" data-cb-action="edit-player-names">選手名設定</button>
         </div>
       </details>
 
@@ -5440,7 +5452,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script>
 (function(){
   const STORAGE_KEY='setterTheoryCoachBoardV2', FAVORITES_KEY='setterTheoryCoachFavoritesV1';
-  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false},theme:'international',viewport:{scale:1,x:0,y:0},pinch:null,selectedDrawing:-1};
+  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false},theme:'international',playerDisplay:'number',viewport:{scale:1,x:0,y:0},pinch:null,selectedDrawing:-1};
   const basePieces=()=>[['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','',50,52]].map(([id,team,label,x,y])=>({id,team,label,x,y}));
   const court=()=>document.getElementById('coachCourt'),canvas=()=>document.getElementById('coachDrawCanvas'),layer=()=>document.getElementById('coachPiecesLayer');
   const viewport=()=>document.getElementById('coachViewport');
@@ -5448,11 +5460,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   function applyViewport(){clampViewport();const vp=viewport();if(vp)vp.style.transform='translate('+state.viewport.x+'px,'+state.viewport.y+'px) scale('+state.viewport.scale+')'}
   function resetViewport(){state.viewport={scale:1,x:0,y:0};applyViewport();status('表示を100%に戻しました')}
   function status(msg){const e=document.getElementById('coachBoardStatus');if(e)e.textContent=msg}
-  function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings,scenes:state.scenes,theme:state.theme})}
+  function snapshot(){return JSON.stringify({pieces:state.pieces,drawings:state.drawings,scenes:state.scenes,theme:state.theme,playerDisplay:state.playerDisplay})}
   function pushHistory(){state.history.push(snapshot());if(state.history.length>50)state.history.shift();state.future=[]}
-  function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;if(Array.isArray(d.scenes))state.scenes=d.scenes;if(d.theme)state.theme=d.theme;applyCourtTheme();renderPieces();renderDrawings();updateSceneStatus()}catch(e){}}
+  function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;if(Array.isArray(d.scenes))state.scenes=d.scenes;if(d.theme)state.theme=d.theme;if(d.playerDisplay)state.playerDisplay=d.playerDisplay;applyCourtTheme();updatePlayerDisplayButtons();renderPieces();renderDrawings();updateSceneStatus()}catch(e){}}
   function setPieceVisual(e,p){
-    if(p.team!=='ball'){e.textContent=p.label;return}
+    if(p.team!=='ball'){const number=String(p.label||'');const name=String(p.name||'').trim();e.classList.remove('display-name','display-both');if(state.playerDisplay==='name'){e.classList.add('display-name');e.textContent=name||number;e.title=name||('No.'+number)}else if(state.playerDisplay==='both'){e.classList.add('display-both');e.textContent=name?(number+' '+name):number;e.title=name?('No.'+number+' '+name):('No.'+number)}else{e.textContent=number;e.title='No.'+number}return}
     e.textContent='';
     e.setAttribute('aria-label','バレーボール');
     e.innerHTML='<svg class="coachVolleyballSvg" viewBox="0 0 120 120" aria-hidden="true">'
@@ -5533,9 +5545,25 @@ document.addEventListener('DOMContentLoaded',()=>{
   function applyCourtTheme(){const ct=court();if(!ct)return;ct.classList.remove('theme-gym','theme-international','theme-green','theme-red','theme-dark','theme-white');ct.classList.add('theme-'+(state.theme||'gym'));const sel=document.getElementById('coachCourtTheme');if(sel)sel.value=state.theme||'gym'}
   window.setCoachCourtTheme=function(theme){pushHistory();state.theme=theme||'gym';applyCourtTheme();status('コートテーマを変更しました')};
   window.setCoachDrawStyle=function(){state.style.color=document.getElementById('coachLineColor')?.value||'#111827';state.style.width=Number(document.getElementById('coachLineWidth')?.value)||4;state.style.dash=document.getElementById('coachLineDash')?.value||'solid';state.style.fill=!!document.getElementById('coachShapeFill')?.checked};
+  function updatePlayerDisplayButtons(){
+    [['coachDisplayNumber','number'],['coachDisplayName','name'],['coachDisplayBoth','both']].forEach(([id,mode])=>document.getElementById(id)?.classList.toggle('active',state.playerDisplay===mode));
+  }
+  function setPlayerDisplay(mode,label){state.playerDisplay=mode;updatePlayerDisplayButtons();renderPieces();status(label+'に切り替えました')}
+  window.setCoachPlayerDisplayNumber=function(){setPlayerDisplay('number','番号のみ')};
+  window.setCoachPlayerDisplayName=function(){setPlayerDisplay('name','名前のみ')};
+  window.setCoachPlayerDisplayBoth=function(){setPlayerDisplay('both','番号＋名前')};
+  window.openCoachPlayerNameEditor=function(){
+    document.getElementById('coachPlayerNameEditor')?.remove();
+    const players=state.pieces.filter(p=>p.team!=='ball');
+    const box=document.createElement('div');box.id='coachPlayerNameEditor';box.className='coachPlayerNameEditor';
+    box.innerHTML='<section><header><div><small>選手名設定</small><strong>番号ごとに名前を入力</strong></div><button type="button" class="coachNameClose">×</button></header><div class="coachNameGrid">'+players.map(p=>'<label><span class="teamDot '+p.team+'"></span><b>No.'+String(p.label||'')+'</b><input type="text" maxlength="12" data-player-id="'+p.id+'" value="'+String(p.name||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')+'" placeholder="名前"></label>').join('')+'</div><footer><button type="button" class="coachNameCancel">閉じる</button><button type="button" class="coachNameSave">保存</button></footer></section>';
+    document.getElementById('coachBoardModal').appendChild(box);
+    const close=()=>box.remove();box.querySelector('.coachNameClose').onclick=close;box.querySelector('.coachNameCancel').onclick=close;
+    box.querySelector('.coachNameSave').onclick=()=>{pushHistory();box.querySelectorAll('[data-player-id]').forEach(input=>{const p=state.pieces.find(v=>v.id===input.dataset.playerId);if(p)p.name=input.value.trim()});renderPieces();box.remove();status('選手名を保存しました')};
+  };
   window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));const names={select:'移動',number:'番号変更',arrow:'矢印',line:'線',free:'手書き',circle:'円',rect:'四角',text:'文字',eraser:'消しゴム'};status((names[tool]||tool)+'モード')};
-  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('setterTheoryCoachBoardV1');saved?restore(saved):(state.pieces=basePieces(),renderPieces())}refreshFavorites();applyCourtTheme();requestAnimationFrame(()=>{resizeCanvas();renderPieces();applyViewport()})};
-  window.closeCoachBoard=function(){window.stopCoachScenes();document.getElementById('coachNumberPicker')?.remove();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('setterTheoryCoachBoardV1');saved?restore(saved):(state.pieces=basePieces(),renderPieces())}refreshFavorites();applyCourtTheme();updatePlayerDisplayButtons();requestAnimationFrame(()=>{resizeCanvas();renderPieces();applyViewport()})};
+  window.closeCoachBoard=function(){window.stopCoachScenes();document.getElementById('coachNumberPicker')?.remove();document.getElementById('coachPlayerNameEditor')?.remove();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
   window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・描画・場面をこの端末に保存しました')};
   window.undoCoachBoard=function(){const raw=state.history.pop();if(!raw)return status('戻せる操作はありません');state.future.push(snapshot());restore(raw)};
   window.redoCoachBoard=function(){const raw=state.future.pop();if(!raw)return status('やり直せる操作はありません');state.history.push(snapshot());restore(raw)};
@@ -5607,6 +5635,18 @@ document.addEventListener('DOMContentLoaded',()=>{
 })();
 </script>
 
+
+<style id="v150-246-coach-player-names">
+#coachBoardModal .coachPiece.display-name,#coachBoardModal .coachPiece.display-both{width:auto!important;min-width:42px;max-width:112px;padding:0 8px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;line-height:1}
+#coachBoardModal .coachPiece.display-both{max-width:130px;font-size:10px}
+#coachBoardModal .coachPlayerDisplayTools button.active{border-color:#60a5fa!important;background:#1d4ed8!important;color:#fff!important}
+.coachPlayerNameEditor{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.78);backdrop-filter:blur(3px)}
+.coachPlayerNameEditor>section{width:min(620px,96%);max-height:88%;overflow:auto;border:1px solid #475569;border-radius:16px;background:#0f172a;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.coachPlayerNameEditor header,.coachPlayerNameEditor footer{position:sticky;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#172033}.coachPlayerNameEditor header{top:0}.coachPlayerNameEditor footer{bottom:0;justify-content:flex-end}
+.coachPlayerNameEditor header small{display:block;color:#93c5fd;font-size:10px;font-weight:900}.coachPlayerNameEditor header strong{font-size:16px}.coachPlayerNameEditor button{min-height:36px;padding:0 14px;border:1px solid #475569;border-radius:9px;background:#1e293b;color:#fff;font-weight:900}.coachPlayerNameEditor .coachNameSave{background:#2563eb;border-color:#60a5fa}.coachPlayerNameEditor .coachNameClose{width:36px;padding:0;font-size:22px}
+.coachNameGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px}.coachNameGrid label{display:grid;grid-template-columns:14px 48px minmax(0,1fr);align-items:center;gap:7px;padding:7px;border:1px solid #334155;border-radius:10px;background:#111827}.coachNameGrid input{min-width:0;height:34px;padding:0 9px;border:1px solid #475569;border-radius:8px;background:#fff;color:#111827;font-size:13px}.teamDot{width:12px;height:12px;border-radius:50%}.teamDot.home{background:#2563eb}.teamDot.away{background:#dc2626}
+@media(max-width:700px){.coachNameGrid{grid-template-columns:1fr}.coachPlayerNameEditor{padding:7px}}
+</style>
 <style id="v150-209-legal-documents">
 /* V150.209: ホーム画面に利用規約・プライバシーポリシーを追加。既存機能には触れない。 */
 .homeLegalFooter{margin:18px 0 8px;padding:14px 10px 4px;text-align:center;color:#94a3b8;font-size:10px;font-weight:800;line-height:1.7}
