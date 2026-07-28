@@ -5254,7 +5254,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.246</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.247</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5499,7 +5499,40 @@ document.addEventListener('DOMContentLoaded',()=>{
     const c=drawingTransformCenter(d,w,h);x.save();x.translate(c.x,c.y);x.rotate((Number(d.rotation)||0)*Math.PI/180);x.scale(d.flipX?-1:1,d.flipY?-1:1);x.translate(-c.x,-c.y);fn();x.restore();
   }
   function drawOne(x,d,w,h){applyStroke(x,d);const a=d.points[0],b=d.points[d.points.length-1];if(!a||!b)return;withDrawingTransform(x,d,w,h,()=>{if(d.type==='arrow')return drawArrow(x,a,b,w,h);if(d.type==='circle'||d.type==='rect'){const sx=a.x*w,sy=a.y*h,ex=b.x*w,ey=b.y*h;x.beginPath();if(d.type==='circle'){x.ellipse((sx+ex)/2,(sy+ey)/2,Math.abs(ex-sx)/2,Math.abs(ey-sy)/2,0,0,Math.PI*2)}else{x.rect(Math.min(sx,ex),Math.min(sy,ey),Math.abs(ex-sx),Math.abs(ey-sy))}if(d.fill){x.save();x.globalAlpha=.22;x.fillStyle=d.color;x.fill();x.restore()}x.stroke();return}if(d.type==='text'){x.setLineDash([]);x.shadowBlur=2;x.fillStyle=d.color;x.font='bold '+Math.max(14,(d.width||4)*5)+'px sans-serif';x.fillText(d.text||'',a.x*w,a.y*h);return}x.beginPath();d.points.forEach((p,i)=>{const px=p.x*w,py=p.y*h;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()})}
-  function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);[...state.drawings,...(preview?[preview]:[])].forEach(d=>drawOne(x,d,r.width,r.height))}
+  function transformDrawingPointPx(px,py,d,w,h){
+    const c=drawingTransformCenter(d,w,h),ang=(Number(d.rotation)||0)*Math.PI/180;
+    let dx=px-c.x,dy=py-c.y;dx*=d.flipX?-1:1;dy*=d.flipY?-1:1;
+    return{x:c.x+dx*Math.cos(ang)-dy*Math.sin(ang),y:c.y+dx*Math.sin(ang)+dy*Math.cos(ang)};
+  }
+  function drawingSelectionGeometry(d,w,h){
+    const pts=d.points||[];if(!pts.length)return null;
+    let local=[];
+    if(d.type==='text'){
+      const a=pts[0],fontSize=Math.max(14,(d.width||4)*5),m=ctxSetup();
+      if(!m)return null;m.font='bold '+fontSize+'px sans-serif';const tw=Math.max(20,m.measureText(d.text||'').width);
+      local=[{x:a.x*w,y:a.y*h-fontSize},{x:a.x*w+tw,y:a.y*h-fontSize},{x:a.x*w+tw,y:a.y*h+fontSize*.25},{x:a.x*w,y:a.y*h+fontSize*.25}];
+    }else{
+      let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+      pts.forEach(q=>{minX=Math.min(minX,q.x*w);maxX=Math.max(maxX,q.x*w);minY=Math.min(minY,q.y*h);maxY=Math.max(maxY,q.y*h)});
+      const pad=Math.max(7,(Number(d.width)||4)+3);
+      local=[{x:minX-pad,y:minY-pad},{x:maxX+pad,y:minY-pad},{x:maxX+pad,y:maxY+pad},{x:minX-pad,y:maxY+pad}];
+    }
+    const corners=local.map(q=>transformDrawingPointPx(q.x,q.y,d,w,h));
+    const center=drawingTransformCenter(d,w,h);
+    const topMid={x:(corners[0].x+corners[1].x)/2,y:(corners[0].y+corners[1].y)/2};
+    let vx=topMid.x-center.x,vy=topMid.y-center.y,len=Math.hypot(vx,vy)||1;
+    const handle={x:topMid.x+vx/len*30,y:topMid.y+vy/len*30};
+    return{corners,center,topMid,handle};
+  }
+  function drawSelectionOverlay(x,d,w,h){
+    const g=drawingSelectionGeometry(d,w,h);if(!g)return;
+    x.save();x.setLineDash([6,4]);x.lineWidth=1.5;x.strokeStyle='#38bdf8';x.shadowBlur=0;
+    x.beginPath();g.corners.forEach((q,i)=>i?x.lineTo(q.x,q.y):x.moveTo(q.x,q.y));x.closePath();x.stroke();
+    x.setLineDash([]);x.beginPath();x.moveTo(g.topMid.x,g.topMid.y);x.lineTo(g.handle.x,g.handle.y);x.stroke();
+    x.fillStyle='#fff';x.strokeStyle='#0284c7';x.lineWidth=3;x.beginPath();x.arc(g.handle.x,g.handle.y,9,0,Math.PI*2);x.fill();x.stroke();
+    x.fillStyle='#0284c7';x.font='bold 13px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('↻',g.handle.x,g.handle.y+.5);x.restore();
+  }
+  function renderDrawings(preview){const c=canvas(),ct=court(),x=ctxSetup();if(!c||!ct||!x)return;const r=ct.getBoundingClientRect();x.clearRect(0,0,r.width,r.height);[...state.drawings,...(preview?[preview]:[])].forEach(d=>drawOne(x,d,r.width,r.height));if(!preview&&state.tool==='select'&&Number.isInteger(state.selectedDrawing)&&state.drawings[state.selectedDrawing])drawSelectionOverlay(x,state.drawings[state.selectedDrawing],r.width,r.height)}
   function updateSceneStatus(extra){const n=state.scenes.length;status(extra||('場面 '+n+'件'+(n>1?'（▶自動再生できます）':'')))}
   function openNumberPicker(p){let old=document.getElementById('coachNumberPicker');if(old)old.remove();const box=document.createElement('div');box.id='coachNumberPicker';box.className='coachNumberPicker';box.innerHTML='<strong>番号を選択</strong><div>'+Array.from({length:18},(_,i)=>'<button type="button" data-n="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button type="button" class="cancel">閉じる</button>';document.getElementById('coachBoardModal').appendChild(box);box.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{pushHistory();p.label=b.dataset.n;renderPieces();box.remove();status('No.'+p.label+'に変更しました')}));box.querySelector('.cancel').addEventListener('click',()=>box.remove())}
   function pieceClick(ev){if(state.tool!=='number'||state.playing)return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p)}
@@ -5539,9 +5572,22 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     return best<=tolerance?best:Infinity;
   }
-  function canvasDown(ev){if(state.pinch)return;ev.preventDefault();const pt=pointFromEvent(ev),r=court().getBoundingClientRect();if(state.tool==='number')return;if(state.tool==='select'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){state.selectedDrawing=idx;pushHistory();state.drag={drawing:idx,last:pt};canvas().setPointerCapture(ev.pointerId);status('描画を選択・移動中')}else{state.selectedDrawing=-1;status('描画を選択してください')}return}if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drawings.splice(idx,1);state.selectedDrawing=-1;renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
-  function canvasMove(ev){if(state.pinch)return;const pt=pointFromEvent(ev);if(state.drag&&Number.isInteger(state.drag.drawing)){const d=state.drawings[state.drag.drawing],dx=pt.x-state.drag.last.x,dy=pt.y-state.drag.last.y;d.points=d.points.map(p=>({x:Math.max(0,Math.min(1,p.x+dx)),y:Math.max(0,Math.min(1,p.y+dy))}));state.drag.last=pt;renderDrawings();return}if(!state.draw)return;if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
-  function canvasUp(){if(state.drag&&Number.isInteger(state.drag.drawing)){state.drag=null;status('描画を移動しました');return}if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
+  function canvasDown(ev){if(state.pinch)return;ev.preventDefault();const pt=pointFromEvent(ev),r=court().getBoundingClientRect();if(state.tool==='number')return;if(state.tool==='select'){
+    if(Number.isInteger(state.selectedDrawing)&&state.drawings[state.selectedDrawing]){
+      const g=drawingSelectionGeometry(state.drawings[state.selectedDrawing],r.width,r.height),px=pt.x*r.width,py=pt.y*r.height;
+      if(g&&Math.hypot(px-g.handle.x,py-g.handle.y)<=20){
+        pushHistory();const startAngle=Math.atan2(py-g.center.y,px-g.center.x)*180/Math.PI;
+        state.drag={rotationDrawing:state.selectedDrawing,center:g.center,startAngle,startRotation:Number(state.drawings[state.selectedDrawing].rotation)||0};
+        canvas().setPointerCapture(ev.pointerId);status('回転ハンドルで角度を調整中');return;
+      }
+    }
+    if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){state.selectedDrawing=idx;pushHistory();state.drag={drawing:idx,last:pt};canvas().setPointerCapture(ev.pointerId);renderDrawings();status('描画を選択・移動中')}else{state.selectedDrawing=-1;renderDrawings();status('描画を選択してください')}return}if(state.tool==='eraser'){if(!state.drawings.length)return;let idx=-1,best=Infinity;state.drawings.forEach((d,i)=>{const z=drawingHitScore(pt,d,r.width,r.height);if(z<=best){best=z;idx=i}});if(idx>=0&&Number.isFinite(best)){pushHistory();state.drawings.splice(idx,1);state.selectedDrawing=-1;renderDrawings();status('描画を1つ消しました')}return}pushHistory();if(state.tool==='text'){const text=prompt('表示する文字を入力してください');if(text){state.drawings.push({type:'text',points:[pt],text,...state.style});renderDrawings()}return}state.draw={type:state.tool,points:[pt],...state.style};canvas().setPointerCapture(ev.pointerId)}
+  function canvasMove(ev){if(state.pinch)return;const pt=pointFromEvent(ev);if(state.drag&&Number.isInteger(state.drag.rotationDrawing)){
+    const r=court().getBoundingClientRect(),d=state.drawings[state.drag.rotationDrawing];if(!d)return;
+    const angle=Math.atan2(pt.y*r.height-state.drag.center.y,pt.x*r.width-state.drag.center.x)*180/Math.PI;
+    d.rotation=state.drag.startRotation+(angle-state.drag.startAngle);renderDrawings();return;
+  }if(state.drag&&Number.isInteger(state.drag.drawing)){const d=state.drawings[state.drag.drawing],dx=pt.x-state.drag.last.x,dy=pt.y-state.drag.last.y;d.points=d.points.map(p=>({x:Math.max(0,Math.min(1,p.x+dx)),y:Math.max(0,Math.min(1,p.y+dy))}));state.drag.last=pt;renderDrawings();return}if(!state.draw)return;if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
+  function canvasUp(){if(state.drag&&Number.isInteger(state.drag.rotationDrawing)){state.drag=null;renderDrawings();status('描画を回転しました');return}if(state.drag&&Number.isInteger(state.drag.drawing)){state.drag=null;renderDrawings();status('描画を移動しました');return}if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
   function applyCourtTheme(){const ct=court();if(!ct)return;ct.classList.remove('theme-gym','theme-international','theme-green','theme-red','theme-dark','theme-white');ct.classList.add('theme-'+(state.theme||'gym'));const sel=document.getElementById('coachCourtTheme');if(sel)sel.value=state.theme||'gym'}
   window.setCoachCourtTheme=function(theme){pushHistory();state.theme=theme||'gym';applyCourtTheme();status('コートテーマを変更しました')};
   window.setCoachDrawStyle=function(){state.style.color=document.getElementById('coachLineColor')?.value||'#111827';state.style.width=Number(document.getElementById('coachLineWidth')?.value)||4;state.style.dash=document.getElementById('coachLineDash')?.value||'solid';state.style.fill=!!document.getElementById('coachShapeFill')?.checked};
@@ -5561,7 +5607,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const close=()=>box.remove();box.querySelector('.coachNameClose').onclick=close;box.querySelector('.coachNameCancel').onclick=close;
     box.querySelector('.coachNameSave').onclick=()=>{pushHistory();box.querySelectorAll('[data-player-id]').forEach(input=>{const p=state.pieces.find(v=>v.id===input.dataset.playerId);if(p)p.name=input.value.trim()});renderPieces();box.remove();status('選手名を保存しました')};
   };
-  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));const names={select:'移動',number:'番号変更',arrow:'矢印',line:'線',free:'手書き',circle:'円',rect:'四角',text:'文字',eraser:'消しゴム'};status((names[tool]||tool)+'モード')};
+  window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));const names={select:'移動',number:'番号変更',arrow:'矢印',line:'線',free:'手書き',circle:'円',rect:'四角',text:'文字',eraser:'消しゴム'};renderDrawings();status((names[tool]||tool)+'モード')};
   window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('setterTheoryCoachBoardV1');saved?restore(saved):(state.pieces=basePieces(),renderPieces())}refreshFavorites();applyCourtTheme();updatePlayerDisplayButtons();requestAnimationFrame(()=>{resizeCanvas();renderPieces();applyViewport()})};
   window.closeCoachBoard=function(){window.stopCoachScenes();document.getElementById('coachNumberPicker')?.remove();document.getElementById('coachPlayerNameEditor')?.remove();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
   window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・描画・場面をこの端末に保存しました')};
