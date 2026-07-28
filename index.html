@@ -5235,6 +5235,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   modal.addEventListener('click',event=>{
     const button=event.target.closest('button');
     if(!button||!modal.contains(button))return;
+    const theme=button.dataset.cbTheme;
+    if(theme){event.preventDefault();invoke('setCoachCourtTheme',theme);return;}
     const tool=button.dataset.cbToolAction;
     if(tool){event.preventDefault();invoke('setCoachTool',tool);return;}
     const action=button.dataset.cbAction;
@@ -5252,10 +5254,16 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
+
+<style id="v150-249-coach-direct-court-list">
+#coachBoardModal .coachThemeList{grid-template-columns:1fr!important}
+#coachBoardModal .coachThemeList button{width:100%!important;text-align:left!important;padding-left:10px!important}
+#coachBoardModal .coachThemeList button.active{border-color:#60a5fa!important;background:#1d4ed8!important;color:#fff!important}
+</style>
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.248</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.249</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5335,8 +5343,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 
       <details class="coachAccordion" open>
         <summary>コート</summary>
-        <div class="coachToolGroup coachThemeTools" aria-label="コートテーマ">
-          <label class="coachMiniLabel">コート<select id="coachCourtTheme" data-cb-change="court-theme"><option value="gym">学校体育館</option><option value="international" selected>国際大会</option><option value="green">グリーン</option><option value="red">レッド</option><option value="dark">ダーク</option><option value="white">ホワイトボード</option></select></label>
+        <div class="coachToolGroup coachThemeTools coachThemeList" aria-label="コートテーマ一覧">
+          <button type="button" data-cb-theme="gym">学校体育館</button>
+          <button type="button" data-cb-theme="international">国際大会</button>
+          <button type="button" data-cb-theme="green">グリーン</button>
+          <button type="button" data-cb-theme="red">レッド</button>
+          <button type="button" data-cb-theme="dark">ダーク</button>
+          <button type="button" data-cb-theme="white">ホワイトボード</button>
         </div>
       </details>
 
@@ -5589,7 +5602,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     d.rotation=state.drag.startRotation+(angle-state.drag.startAngle);renderDrawings();return;
   }if(state.drag&&Number.isInteger(state.drag.drawing)){const d=state.drawings[state.drag.drawing],dx=pt.x-state.drag.last.x,dy=pt.y-state.drag.last.y;d.points=d.points.map(p=>({x:Math.max(0,Math.min(1,p.x+dx)),y:Math.max(0,Math.min(1,p.y+dy))}));state.drag.last=pt;renderDrawings();return}if(!state.draw)return;if(state.draw.type==='free')state.draw.points.push(pt);else state.draw.points=[state.draw.points[0],pt];renderDrawings(state.draw)}
   function canvasUp(){if(state.drag&&Number.isInteger(state.drag.rotationDrawing)){state.drag=null;renderDrawings();status('描画を回転しました');return}if(state.drag&&Number.isInteger(state.drag.drawing)){state.drag=null;renderDrawings();status('描画を移動しました');return}if(!state.draw)return;if(state.draw.points.length>1)state.drawings.push(state.draw);state.draw=null;renderDrawings()}
-  function applyCourtTheme(){const ct=court();if(!ct)return;ct.classList.remove('theme-gym','theme-international','theme-green','theme-red','theme-dark','theme-white');ct.classList.add('theme-'+(state.theme||'gym'));const sel=document.getElementById('coachCourtTheme');if(sel)sel.value=state.theme||'gym'}
+  function applyCourtTheme(){const ct=court();if(!ct)return;ct.classList.remove('theme-gym','theme-international','theme-green','theme-red','theme-dark','theme-white');ct.classList.add('theme-'+(state.theme||'gym'));document.querySelectorAll('#coachBoardModal [data-cb-theme]').forEach(button=>button.classList.toggle('active',button.dataset.cbTheme===(state.theme||'gym')))}
   window.setCoachCourtTheme=function(theme){pushHistory();state.theme=theme||'gym';applyCourtTheme();status('コートテーマを変更しました')};
   window.setCoachDrawStyle=function(){state.style.color=document.getElementById('coachLineColor')?.value||'#111827';state.style.width=Number(document.getElementById('coachLineWidth')?.value)||4;state.style.dash=document.getElementById('coachLineDash')?.value||'solid';state.style.fill=!!document.getElementById('coachShapeFill')?.checked};
   function updatePlayerDisplayButtons(){
