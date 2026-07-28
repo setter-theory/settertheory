@@ -4986,13 +4986,19 @@ html.appEntered #home.active{
       </div>
     </div>
 
-    <div class="homeMatchActions homePrimaryActions">
-      <button id="newMatchBtn" class="big" type="button" onclick="startNewMatchSetup()">🏐 試合を始める</button>
-      <button id="resumeMatchBtn" class="big resumeMatchBtn" type="button" onclick="resumeMatch()" style="display:none">▶ 試合を再開</button>
-      <div id="resumeMatchNote" class="resumeMatchNote" style="display:none"></div>
-    </div>
-
     <div class="homeAccordionStack">
+      <details class="homeAccordion homeMainGroup matchAnalysisGroup" id="matchAnalysisGroup" open>
+        <summary>
+          <span>▶ 試合分析</span>
+          <span class="savedMatchCount">試合入力・保存・比較</span>
+        </summary>
+        <div class="homeAccordionBody homeMainGroupBody">
+          <div class="homeMatchActions homePrimaryActions">
+            <button id="newMatchBtn" class="big" type="button" onclick="startNewMatchSetup()">🏐 試合を始める</button>
+            <button id="resumeMatchBtn" class="big resumeMatchBtn" type="button" onclick="resumeMatch()" style="display:none">▶ 試合を再開</button>
+            <div id="resumeMatchNote" class="resumeMatchNote" style="display:none"></div>
+          </div>
+          <div class="homeSubAccordionStack">
       <details class="homeAccordion savedMatchAccordion" id="savedMatchesAccordion">
         <summary>
           <span>💾 保存した試合</span>
@@ -5048,6 +5054,26 @@ html.appEntered #home.active{
             <div id="growthDashboardBody" class="growthDashboardBody">
               保存した試合が2件以上あると、Setter IQや配球傾向の推移を表示できます。
             </div>
+          </div>
+        </div>
+      </details>
+          </div>
+        </div>
+      </details>
+
+      <details class="homeAccordion homeMainGroup practiceAnalysisGroup" id="practiceAnalysisGroup">
+        <summary>
+          <span>🏐 練習分析</span>
+          <span class="savedMatchCount">6項目</span>
+        </summary>
+        <div class="homeAccordionBody homeMainGroupBody">
+          <div class="practiceAnalysisMenu">
+            <button type="button" onclick="openPracticeAnalysis('サーブ')"><span>🎯 サーブ</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('レセプション')"><span>👐 レセプション</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('ディグ')"><span>🛡️ ディグ</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('トス')"><span>🏐 トス</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('スパイク')"><span>💥 スパイク</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('ブロック')"><span>🚧 ブロック</span><small>今後追加予定</small></button>
           </div>
         </div>
       </details>
@@ -5132,7 +5158,7 @@ html.appEntered #home.active{
 
       <details class="homeAccordion dataManagementCard" id="dataManagementCard">
         <summary>
-          <span>⚙️ データ管理</span>
+          <span>📋 データ管理</span>
           <span class="savedMatchCount">📥 試合データを取り込む</span>
         </summary>
         <div class="homeAccordionBody dataManagementBody">
@@ -5155,7 +5181,7 @@ html.appEntered #home.active{
 
       <details class="homeAccordion coachBoardAccordion" id="coachBoardAccordion">
         <summary>
-          <span>📋 コーチボード β</span>
+          <span>📝 コーチボード β</span>
           <span class="savedMatchCount">配置・動きを説明</span>
         </summary>
         <div class="homeAccordionBody">
@@ -5811,6 +5837,17 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape')clos
 .homeAccordion>summary>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .homeAccordion>summary .savedMatchCount{margin-left:auto;white-space:nowrap}
 .homeAccordionBody{padding:12px}
+.homeMainGroup{border-color:rgba(96,165,250,.42)!important}
+.homeMainGroup>summary{padding:17px 16px;font-size:17px;background:linear-gradient(135deg,rgba(30,64,175,.88),rgba(15,23,42,.98))}
+.homeMainGroupBody{display:grid;gap:10px}
+.homeSubAccordionStack{display:grid;gap:10px}
+.homeSubAccordionStack>.homeAccordion{background:rgba(15,23,42,.62)!important}
+.practiceAnalysisMenu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.practiceAnalysisMenu button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:58px;padding:13px 14px;border:1px solid rgba(148,163,184,.28);border-radius:14px;background:rgba(30,41,59,.82);color:#fff;text-align:left;font-weight:900;cursor:pointer}
+.practiceAnalysisMenu button span{font-size:15px}
+.practiceAnalysisMenu button small{color:#94a3b8;font-size:10px;white-space:nowrap}
+.practiceAnalysisMenu button:active{transform:translateY(1px)}
+@media(max-width:560px){.practiceAnalysisMenu{grid-template-columns:1fr}.homeMainGroup>summary{font-size:16px}}
 .homeAccordionBody>.savedMatchCard,
 .homeAccordionBody>.compareCard,
 .homeAccordionBody>.growthCard,
@@ -9832,6 +9869,11 @@ html.booting body{background:#02040a!important}
    so accordion headers could not open on iPad/iPhone. */
 </script>
 <script>/* cache marker: 150-239-coach-accordion-open-fix */</script>
+<script>
+window.openPracticeAnalysis=function(name){
+  alert(name + '練習の分析機能は今後追加予定です。');
+};
+</script>
 </body>
 </html>
 
