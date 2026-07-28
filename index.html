@@ -5223,6 +5223,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     'add-scene':'addCoachScene','prev-scene':'showPrevCoachScene',
     'next-scene':'showNextCoachScene','clear-scenes':'clearCoachScenes',
     play:'playCoachScenes',stop:'stopCoachScenes',save:'saveCoachBoard',
+    'save-as':'saveCoachBoardAs','open-saves':'openCoachSaveManager',
     'save-favorite':'saveCoachFavorite',
     'rotate-left':'rotateCoachDrawingLeft','rotate-right':'rotateCoachDrawingRight',
     'flip-horizontal':'flipCoachDrawingHorizontal','flip-vertical':'flipCoachDrawingVertical',
@@ -5254,7 +5255,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.247</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.248</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5372,9 +5373,9 @@ document.addEventListener('DOMContentLoaded',()=>{
       <details class="coachAccordion">
         <summary>保存</summary>
         <div class="coachToolGroup coachSceneTools">
-          <button type="button" data-cb-action="save">保存</button>
-          <button type="button" data-cb-action="save-favorite">★ お気に入り</button>
-          <select id="coachFavoriteSelect" data-cb-change="favorite" aria-label="お気に入り"><option value="">お気に入りを呼出</option></select>
+          <button type="button" data-cb-action="save">💾 上書き保存</button>
+          <button type="button" data-cb-action="save-as">📝 名前を付けて保存</button>
+          <button type="button" data-cb-action="open-saves">📂 保存一覧</button>
         </div>
       </details>
     </div>
@@ -5451,8 +5452,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 </style>
 <script>
 (function(){
-  const STORAGE_KEY='setterTheoryCoachBoardV2', FAVORITES_KEY='setterTheoryCoachFavoritesV1';
-  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false},theme:'international',playerDisplay:'number',viewport:{scale:1,x:0,y:0},pinch:null,selectedDrawing:-1};
+  const STORAGE_KEY='setterTheoryCoachBoardV2', FAVORITES_KEY='setterTheoryCoachFavoritesV1', SAVES_KEY='setterTheoryCoachBoardSavesV1';
+  const state={tool:'select',pieces:[],drawings:[],history:[],future:[],drag:null,draw:null,scenes:[],playing:false,playTimer:null,currentScene:-1,style:{color:'#111827',width:4,dash:'solid',fill:false},theme:'international',playerDisplay:'number',viewport:{scale:1,x:0,y:0},pinch:null,selectedDrawing:-1,currentSaveId:null,currentSaveName:''};
   const basePieces=()=>[['h1','home','1',22,84],['h2','home','2',50,84],['h3','home','3',78,84],['h4','home','4',22,61],['h5','home','5',50,61],['h6','home','6',78,61],['a1','away','1',22,16],['a2','away','2',50,16],['a3','away','3',78,16],['a4','away','4',22,39],['a5','away','5',50,39],['a6','away','6',78,39],['ball','ball','',50,52]].map(([id,team,label,x,y])=>({id,team,label,x,y}));
   const court=()=>document.getElementById('coachCourt'),canvas=()=>document.getElementById('coachDrawCanvas'),layer=()=>document.getElementById('coachPiecesLayer');
   const viewport=()=>document.getElementById('coachViewport');
@@ -5608,9 +5609,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     box.querySelector('.coachNameSave').onclick=()=>{pushHistory();box.querySelectorAll('[data-player-id]').forEach(input=>{const p=state.pieces.find(v=>v.id===input.dataset.playerId);if(p)p.name=input.value.trim()});renderPieces();box.remove();status('選手名を保存しました')};
   };
   window.setCoachTool=function(tool){state.tool=tool;document.querySelectorAll('[data-cb-tool]').forEach(b=>b.classList.toggle('active',b.dataset.cbTool===tool));const names={select:'移動',number:'番号変更',arrow:'矢印',line:'線',free:'手書き',circle:'円',rect:'四角',text:'文字',eraser:'消しゴム'};renderDrawings();status((names[tool]||tool)+'モード')};
-  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!state.pieces.length){const saved=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('setterTheoryCoachBoardV1');saved?restore(saved):(state.pieces=basePieces(),renderPieces())}refreshFavorites();applyCourtTheme();updatePlayerDisplayButtons();requestAnimationFrame(()=>{resizeCanvas();renderPieces();applyViewport()})};
-  window.closeCoachBoard=function(){window.stopCoachScenes();document.getElementById('coachNumberPicker')?.remove();document.getElementById('coachPlayerNameEditor')?.remove();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
-  window.saveCoachBoard=function(){localStorage.setItem(STORAGE_KEY,snapshot());status('配置・描画・場面をこの端末に保存しました')};
+  function newCoachBoardState(){window.stopCoachScenes(true);state.pieces=basePieces();state.drawings=[];state.scenes=[];state.history=[];state.future=[];state.currentScene=-1;state.selectedDrawing=-1;state.currentSaveId=null;state.currentSaveName='';state.playerDisplay='number';state.theme='international';state.viewport={scale:1,x:0,y:0};state.tool='select';applyCourtTheme();updatePlayerDisplayButtons();renderPieces();renderDrawings();applyViewport();status('新規コーチボード')}
+  window.openCoachBoard=function(){const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';newCoachBoardState();requestAnimationFrame(()=>{resizeCanvas();renderPieces();applyViewport()})};
+  window.closeCoachBoard=function(){window.stopCoachScenes();document.getElementById('coachNumberPicker')?.remove();document.getElementById('coachPlayerNameEditor')?.remove();document.getElementById('coachSaveManager')?.remove();const m=document.getElementById('coachBoardModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  function getCoachSaves(){try{const a=JSON.parse(localStorage.getItem(SAVES_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+  function putCoachSaves(a){localStorage.setItem(SAVES_KEY,JSON.stringify(a.slice(0,50)))}
+  function coachSavePayload(name,id){return{id:id||('cb_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)),name:String(name||'無題').trim()||'無題',updatedAt:new Date().toISOString(),data:JSON.parse(snapshot())}}
+  window.saveCoachBoardAs=function(){const name=prompt('保存名を入力してください',state.currentSaveName||'');if(!name||!name.trim())return;const a=getCoachSaves(),item=coachSavePayload(name.trim());a.unshift(item);putCoachSaves(a);state.currentSaveId=item.id;state.currentSaveName=item.name;status('「'+item.name+'」として保存しました')};
+  window.saveCoachBoard=function(){if(!state.currentSaveId)return window.saveCoachBoardAs();const a=getCoachSaves(),i=a.findIndex(v=>v.id===state.currentSaveId);if(i<0)return window.saveCoachBoardAs();a[i]=coachSavePayload(state.currentSaveName,state.currentSaveId);putCoachSaves(a);status('「'+state.currentSaveName+'」を上書き保存しました')};
+  window.loadCoachBoardSave=function(id){const item=getCoachSaves().find(v=>v.id===id);if(!item)return;restore(item.data);state.currentSaveId=item.id;state.currentSaveName=item.name;state.history=[];state.future=[];document.getElementById('coachSaveManager')?.remove();status('「'+item.name+'」を開きました')};
+  window.deleteCoachBoardSave=function(id){const a=getCoachSaves(),item=a.find(v=>v.id===id);if(!item||!confirm('「'+item.name+'」を削除しますか？'))return;putCoachSaves(a.filter(v=>v.id!==id));if(state.currentSaveId===id){state.currentSaveId=null;state.currentSaveName=''}window.openCoachSaveManager();status('保存データを削除しました')};
+  window.openCoachSaveManager=function(){document.getElementById('coachSaveManager')?.remove();const a=getCoachSaves(),box=document.createElement('div');box.id='coachSaveManager';box.className='coachSaveManager';const rows=a.length?a.map(v=>'<article><button type="button" class="coachSaveOpen" data-open-id="'+v.id+'"><strong>'+String(v.name).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</strong><small>'+new Date(v.updatedAt).toLocaleString('ja-JP')+'</small></button><button type="button" class="coachSaveDelete" data-delete-id="'+v.id+'">削除</button></article>').join(''):'<p class="coachSaveEmpty">保存データはありません</p>';box.innerHTML='<section><header><div><small>保存したコーチボード</small><strong>一覧から開く</strong></div><button type="button" class="coachSaveClose">×</button></header><div class="coachSaveList">'+rows+'</div><footer><button type="button" class="coachSaveNew">＋ 新規ボード</button><button type="button" class="coachSaveCloseBottom">閉じる</button></footer></section>';document.getElementById('coachBoardModal').appendChild(box);const close=()=>box.remove();box.querySelector('.coachSaveClose').onclick=close;box.querySelector('.coachSaveCloseBottom').onclick=close;box.querySelector('.coachSaveNew').onclick=()=>{close();newCoachBoardState()};box.querySelectorAll('[data-open-id]').forEach(b=>b.onclick=()=>window.loadCoachBoardSave(b.dataset.openId));box.querySelectorAll('[data-delete-id]').forEach(b=>b.onclick=()=>window.deleteCoachBoardSave(b.dataset.deleteId))};
   window.undoCoachBoard=function(){const raw=state.history.pop();if(!raw)return status('戻せる操作はありません');state.future.push(snapshot());restore(raw)};
   window.redoCoachBoard=function(){const raw=state.future.pop();if(!raw)return status('やり直せる操作はありません');state.history.push(snapshot());restore(raw)};
   window.clearCoachBoardDrawings=function(){if(!state.drawings.length)return;pushHistory();state.drawings=[];state.selectedDrawing=-1;renderDrawings();status('描画を消しました')};
@@ -5682,6 +5691,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 
+<style id="v150-248-coach-save-manager">
+.coachSaveManager{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(2,6,23,.82);backdrop-filter:blur(4px)}
+.coachSaveManager>section{width:min(620px,96%);max-height:88%;display:flex;flex-direction:column;overflow:hidden;border:1px solid #475569;border-radius:16px;background:#0f172a;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.coachSaveManager header,.coachSaveManager footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#172033}.coachSaveManager header small{display:block;color:#93c5fd;font-size:10px;font-weight:900}.coachSaveManager header strong{font-size:16px}.coachSaveManager button{min-height:36px;border:1px solid #475569;border-radius:9px;background:#1e293b;color:#fff;font-weight:900;padding:0 12px}.coachSaveManager header>button{width:36px;padding:0;font-size:22px}.coachSaveList{padding:10px;overflow:auto}.coachSaveList article{display:grid;grid-template-columns:minmax(0,1fr) 66px;gap:8px;margin-bottom:8px}.coachSaveOpen{text-align:left;padding:8px 11px!important}.coachSaveOpen strong,.coachSaveOpen small{display:block}.coachSaveOpen small{margin-top:3px;color:#94a3b8;font-size:9px}.coachSaveDelete{border-color:#7f1d1d!important;background:#450a0a!important;color:#fecaca!important}.coachSaveEmpty{padding:30px 10px;text-align:center;color:#94a3b8;font-weight:900}.coachSaveManager footer{justify-content:flex-end}.coachSaveNew{margin-right:auto;background:#1d4ed8!important;border-color:#60a5fa!important}
+</style>
 <style id="v150-246-coach-player-names">
 #coachBoardModal .coachPiece.display-name,#coachBoardModal .coachPiece.display-both{width:auto!important;min-width:42px;max-width:112px;padding:0 8px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;line-height:1}
 #coachBoardModal .coachPiece.display-both{max-width:130px;font-size:10px}
