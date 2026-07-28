@@ -4920,6 +4920,22 @@ html.appEntered #home.active{
 </style>
 <script>/* cache marker: 150-201-player-rank-advice */</script>
 
+
+<style id="v150250-main-navigation-fix">
+/* V150.250: ローテーション設定にメイン画面へ戻る導線を追加。試合復帰時は同寸で横並び。 */
+#setup .setupFlowActions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+#setup .setupFlowActions .setupMainBtn,
+#setup .setupFlowActions .returnToMatchBtn{min-height:44px!important;margin:0!important;}
+#setup .setupFlowActions .setupMainBtn{background:linear-gradient(135deg,#475569,#334155)!important;color:#fff!important;border:2px solid rgba(255,255,255,.85)!important;box-shadow:0 10px 24px rgba(15,23,42,.22)!important;}
+#setup .setupFlowActions .startMatchBtn{grid-column:1 / -1!important;}
+#setup .setupFlowActions:has(#returnToMatchBtn[style*="display:none"]) .setupMainBtn,
+#setup .setupFlowActions:has(#returnToMatchBtn[style*="display: none"]) .setupMainBtn{grid-column:1 / -1!important;}
+@media(max-width:699px){
+  #setup .setupFlowActions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #setup .setupFlowActions .setupMainBtn,
+  #setup .setupFlowActions .returnToMatchBtn{font-size:13px!important;padding:8px 6px!important;}
+}
+</style>
 </head>
 <body>
 
@@ -5895,6 +5911,7 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape')clos
     </div>
 
     <div class="setupFlowActions">
+      <button type="button" id="setupMainBtn" class="big setupMainBtn" onclick="menuGo('home')">◀ メイン画面へ戻る</button>
       <button type="button" id="returnToMatchBtn" class="big returnToMatchBtn" onclick="returnToMatch()" style="display:none">↩ 試合に戻る</button>
       <button type="button" id="setupStartMatchBtn" class="big startMatchBtn" onclick="startMatch()">試合開始</button>
     </div>
@@ -6120,7 +6137,7 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape')clos
     <div class="sideEagle"><img src="icons/aquila-192.png" alt="Aquila"></div>
     <div><b>SETTER THEORY</b><span>Official Coach Aquila</span></div>
   </div>
-  <button onclick="menuGo('home')">🏠 ホーム</button>
+  <button onclick="menuGo('home')">🏠 メイン画面</button>
   <button onclick="menuGo('setup')">⚙️ ローテーション設定</button>
   <button onclick="menuGo('match')">🏐 試合入力</button>
   <button onclick="openInputOrderModal()">↕️ 入力項目の並び替え</button>
