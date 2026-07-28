@@ -9871,7 +9871,13 @@ html.booting body{background:#02040a!important}
 <script>/* cache marker: 150-239-coach-accordion-open-fix */</script>
 <script>
 window.openPracticeAnalysis=function(name){
-  alert(name + '練習の分析機能は今後追加予定です。');
+  if(name!=='サーブ'){
+    alert(name+'練習の分析機能は今後追加予定です。');
+    return;
+  }
+  alert(
+'🦅 Aquila\n\n今日はどのレベルで分析する？\n\n😊 簡単\nまずはコースを狙おう！\n\n😎 普通\n高校の基本分析！\n\n🔥 難しい\nサーブの精度を分析！\n\n👑 鬼ムズ\n全国トップレベルの分析！\n\n※V150.257で各難易度の画面へ進みます。'
+  );
 };
 </script>
 </body>
