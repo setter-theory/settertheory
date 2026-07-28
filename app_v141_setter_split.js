@@ -6812,13 +6812,46 @@ function renderSavedMatches(){
 }
 
 function matchOptionLabel(m){
-  const d=m.savedAt ? new Date(m.savedAt) : new Date();
+  const info=compareMatchInfo(m);
+  return `${info.date}｜${info.match}｜${info.setter}｜IQ ${info.iq}`;
+}
+function compareMatchInfo(m){
+  const d=m&&m.savedAt ? new Date(m.savedAt) : new Date();
   const date=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-  const iqItems=savedMatchIqItems(m);
-  const iqText=iqItems.length
-    ? iqItems.map((item,index)=>`${iqItems.length>1?`S${index+1} `:''}${item.iq===null?'--':Math.round(Number(item.iq))}`).join(' / ')
-    : '-';
-  return `${date}｜${m.title || m.fileName || '無題'}｜IQ ${iqText}`;
+  const title=String((m&&(m.title||m.fileName))||'無題の試合').replace(/^\d{4}\/\d{2}\/\d{2}\s*/, '').replace(/\.csv$/i,'').replace(/_/g,' ');
+  const state=(m&&m.liveState)||{};
+  const setterNums=(state.setterNums||[]).map(String).filter(Boolean);
+  const names=setterNums.map(n=>String((state.players||{})[n]||'').trim()).filter(Boolean);
+  let setter=names.length ? `セッター：${names.join('・')}` : 'セッター：記録なし';
+  const iq=(m&&m.summary&&Number.isFinite(Number(m.summary.setterIq))) ? Math.round(Number(m.summary.setterIq)) : '--';
+  const total=(m&&m.summary&&Number(m.summary.total))||0;
+  return {date,match:title,setter,iq,total};
+}
+function compareCardHtml(m){
+  if(!m) return '<span class="compareCardEmpty">試合を選択してください</span>';
+  const info=compareMatchInfo(m);
+  return `<span class="compareCardDate">📅 ${escapeHtml(info.date)}</span><span class="compareCardMatch">🏐 ${escapeHtml(info.match)}</span><span class="compareCardMeta">👤 ${escapeHtml(info.setter)}　・　IQ ${info.iq}　・　トス ${info.total}本</span>`;
+}
+function renderComparePicker(side,list,selectedId){
+  const card=document.getElementById(side==='from'?'compareFromCard':'compareToCard');
+  const panel=document.getElementById(side==='from'?'compareFromList':'compareToList');
+  const selected=list.find(m=>String(m.id)===String(selectedId));
+  if(card) card.innerHTML=compareCardHtml(selected);
+  if(panel) panel.innerHTML=list.map(m=>`<button type="button" class="compareChoice ${String(m.id)===String(selectedId)?'selected':''}" onclick="selectCompareMatch('${side}','${m.id}')">${compareCardHtml(m)}</button>`).join('');
+}
+function toggleComparePicker(side){
+  const panel=document.getElementById(side==='from'?'compareFromList':'compareToList');
+  const other=document.getElementById(side==='from'?'compareToList':'compareFromList');
+  if(other) other.hidden=true;
+  if(panel) panel.hidden=!panel.hidden;
+}
+function selectCompareMatch(side,id){
+  const select=document.getElementById(side==='from'?'compareFrom':'compareTo');
+  if(select) select.value=id;
+  const list=getSavedMatches();
+  renderComparePicker(side,list,id);
+  const panel=document.getElementById(side==='from'?'compareFromList':'compareToList');
+  if(panel) panel.hidden=true;
 }
 function renderCompareSelectors(){
   const from=document.getElementById('compareFrom');
@@ -6828,15 +6861,20 @@ function renderCompareSelectors(){
   if(!from || !to) return;
   const list=getSavedMatches();
   if(count) count.textContent=`保存 ${list.length}件`;
+  const previousFrom=from.value, previousTo=to.value;
   const opts=list.map(m=>`<option value="${m.id}">${escapeHtml(matchOptionLabel(m))}</option>`).join('');
   from.innerHTML=opts;
   to.innerHTML=opts;
   if(list.length>=2){
-    from.value=list[1].id;
-    to.value=list[0].id;
+    from.value=list.some(m=>String(m.id)===String(previousFrom))?previousFrom:list[1].id;
+    to.value=list.some(m=>String(m.id)===String(previousTo))?previousTo:list[0].id;
+    renderComparePicker('from',list,from.value);
+    renderComparePicker('to',list,to.value);
     if(result && (!result.dataset.touched)) compareSavedMatches();
   }else{
-    if(result) result.innerHTML='<div class="csvSmall">保存した試合が2件以上あると比較できます。まずCSV解析後に「この試合を保存」を押してください。</div>';
+    renderComparePicker('from',list,list[0]&&list[0].id);
+    renderComparePicker('to',list,'');
+    if(result) result.innerHTML='<div class="csvSmall">保存した試合が2件以上あると比較できます。</div>';
   }
 }
 function pctFromSummary(summary,label){
