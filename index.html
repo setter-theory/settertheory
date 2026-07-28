@@ -5120,16 +5120,16 @@ html.appEntered #home.active{
         </summary>
         <div class="homeAccordionBody dataManagementBody">
           <div class="card csvImportCard" id="csvImportCard">
-            <h2>📂 Vollyze 📥 試合データを取り込む</h2>
-            <p class="muted">必要なときだけCSVを選択して、内容を読み込みます。</p>
+            <h2>📥 Vollyzeデータを取り込む</h2>
+            <p class="muted">Vollyzeから出力した試合データを取り込みます。</p>
             <div class="csvActions">
               <label class="csvFileBtn">
-                CSVを選択
+                ファイルを選択
                 <input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
               </label>
-              <button id="clearCsvBtn" class="ghostBtn" type="button">読み込み解除</button>
+              <button id="clearCsvBtn" class="ghostBtn" type="button">取り込みを解除</button>
             </div>
-            <div id="csvImportStatus" class="csvImportStatus">未読み込み</div>
+            <div id="csvImportStatus" class="csvImportStatus">データ未選択</div>
             <div id="csvAnalysisBox" class="csvAnalysisBox"></div>
             <div id="csvPreviewBox" class="csvPreviewBox"></div>
           </div>

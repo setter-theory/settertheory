@@ -4377,7 +4377,7 @@ function renderCsvPreview(parsed, fileName){
   const rows = parsed.data || [];
   const headers = parsed.headers || [];
 
-  status.innerHTML = `✅ 読み込み完了：${escapeHtml(fileName)}<div class="csvSmall">列数 ${headers.length} / データ行 ${rows.length}</div>`;
+  status.innerHTML = `✅ ${escapeHtml(fileName)}（選択済み）<div class="csvSmall">列数 ${headers.length} / データ行 ${rows.length}</div>`;
 
   if(!headers.length){
     box.style.display = "block";
@@ -4499,7 +4499,7 @@ function setupCsvImport(){
       importedCsv = null;
       localStorage.removeItem("vollyzeImportedCsv");
       if(input) input.value = "";
-      if(status) status.textContent = "未読み込み";
+      if(status) status.textContent = "データ未選択";
       if(box){ box.style.display = "none"; box.innerHTML = ""; }
       renderCsvAnalysis(null);
     });
