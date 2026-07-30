@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.269: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.270: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.269</div>
+    <div class="launchVersion">SETTER THEORY　V150.270</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.269</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.270</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -9950,6 +9950,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
         </div>
         <div class="servePlayerListCard">
           <div class="servePlayerListTitle">選手配置</div>
+          <label class="serveTeamSelectLabel"><span>登録チーム</span><select id="serveTeamSelect" onchange="changeServeTeam(this.value)"><option value="">登録チームを選択</option></select></label>
           <div id="servePlayerList"></div>
           <button class="serveResetPlayers" type="button" onclick="resetServePlayers()">配置を初期位置に戻す</button>
         </div>
@@ -9972,84 +9973,98 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </style>
 <script>
 (function(){
+  var TEAM_STORAGE_KEY='setterTheoryTeamsV1';
+  var POSITION_META={
+    S:{label:'セッター',color:'#3b82f6'},OH:{label:'アウトサイド',color:'#f97316'},
+    MB:{label:'ミドル',color:'#22c55e'},OP:{label:'オポジット',color:'#a855f7'},
+    L:{label:'リベロ',color:'#eab308'},DS:{label:'レシーバー',color:'#14b8a6'}
+  };
   var defaultPlayers=[
-    {id:1,pos:'S', label:'セッター', color:'#3b82f6',x:16.667,y:50},
-    {id:2,pos:'OH',label:'OH 1', color:'#f97316',x:50,y:50},
-    {id:3,pos:'MB',label:'MB 1', color:'#22c55e',x:83.333,y:50},
-    {id:4,pos:'L', label:'リベロ', color:'#eab308',x:16.667,y:83.333},
-    {id:5,pos:'OH',label:'OH 2', color:'#f97316',x:50,y:83.333},
-    {id:6,pos:'OP',label:'オポジット',color:'#a855f7',x:83.333,y:83.333}
+    {id:1,pos:'S',playerId:'',number:'',name:'選手1',x:16.667,y:50},
+    {id:2,pos:'OH',playerId:'',number:'',name:'選手2',x:50,y:50},
+    {id:3,pos:'MB',playerId:'',number:'',name:'選手3',x:83.333,y:50},
+    {id:4,pos:'L',playerId:'',number:'',name:'選手4',x:16.667,y:83.333},
+    {id:5,pos:'OH',playerId:'',number:'',name:'選手5',x:50,y:83.333},
+    {id:6,pos:'OP',playerId:'',number:'',name:'選手6',x:83.333,y:83.333}
   ];
-  var state={level:'LEVEL 1',points:[],misses:0,history:[],players:clonePlayers()};
-  var dragging=null, moved=false;
+  var state={level:'LEVEL 1',points:[],misses:0,history:[],players:clonePlayers(),teamId:''};
+  var dragging=null,moved=false;
   function clonePlayers(){return defaultPlayers.map(function(p){return Object.assign({},p)})}
   function el(id){return document.getElementById(id)}
+  function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function loadTeams(){try{var a=JSON.parse(localStorage.getItem(TEAM_STORAGE_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+  function activeTeam(){return loadTeams().find(function(t){return t.id===state.teamId})||null}
+  function meta(pos){return POSITION_META[pos]||POSITION_META.OH}
   function renderGrid(){
     var g=el('serveLandingGrid');g.innerHTML='';g.className='';
     g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gridTemplateRows='repeat(2,1fr)';
     for(var i=0;i<6;i++){
       var area=document.createElement('div');area.className='servePlayerArea';
-      if(state.level==='LEVEL 3') area.classList.add('level3');
-      if(state.level==='LEVEL MAX') area.classList.add('levelMax');
-      if(state.level==='LEVEL 3') area.innerHTML='<i class="dirLine d1"></i><i class="dirLine d2"></i>';
-      else if(state.level==='LEVEL MAX') for(var j=0;j<9;j++){var sub=document.createElement('i');sub.className='serveSubCell';area.appendChild(sub)}
+      if(state.level==='LEVEL 3')area.classList.add('level3');
+      if(state.level==='LEVEL MAX')area.classList.add('levelMax');
+      if(state.level==='LEVEL 3')area.innerHTML='<i class="dirLine d1"></i><i class="dirLine d2"></i>';
+      else if(state.level==='LEVEL MAX')for(var j=0;j<9;j++){var sub=document.createElement('i');sub.className='serveSubCell';area.appendChild(sub)}
       g.appendChild(area);
     }
   }
   function playerIcon(p){
-    var n=document.createElement('button');n.type='button';n.className='serveHumanIcon';n.dataset.playerId=p.id;
-    n.style.left=p.x+'%';n.style.top=p.y+'%';n.style.setProperty('--player-color',p.color);n.title=p.label;
-    n.innerHTML='<span class="humanHead"></span><span class="humanBody"></span><b>'+p.pos+'</b>';
+    var m=meta(p.pos),n=document.createElement('button');n.type='button';n.className='serveHumanIcon';n.dataset.playerId=p.id;
+    n.style.left=p.x+'%';n.style.top=p.y+'%';n.style.setProperty('--player-color',m.color);n.title=(p.number?p.number+' ':'')+(p.name||m.label);
+    n.innerHTML='<span class="humanHead"></span><span class="humanBody"></span><b>'+esc(p.number||p.pos)+'</b>';
     n.addEventListener('pointerdown',beginDrag);return n;
   }
+  function fillTeamSelect(){
+    var select=el('serveTeamSelect');if(!select)return;var teams=loadTeams();
+    select.innerHTML='<option value="">登録チームを選択</option>'+teams.map(function(t){return '<option value="'+esc(t.id)+'">'+esc(t.name)+'（'+esc(t.year||'')+'）</option>'}).join('');
+    select.value=state.teamId;
+  }
+  function playerOptions(selected,slotId){
+    var t=activeTeam(),players=t&&Array.isArray(t.players)?t.players:[];
+    var used=state.players.filter(function(p){return p.id!==slotId&&p.playerId}).map(function(p){return p.playerId});
+    return '<option value="">選手を選択</option>'+players.map(function(p){var disabled=used.indexOf(p.id)>=0?' disabled':'';return '<option value="'+esc(p.id)+'"'+(p.id===selected?' selected':'')+disabled+'>'+esc(p.number)+' '+esc(p.name)+'</option>'}).join('');
+  }
+  function positionOptions(selected){return Object.keys(POSITION_META).map(function(k){return '<option value="'+k+'"'+(k===selected?' selected':'')+'>'+k+' '+POSITION_META[k].label+'</option>'}).join('')}
   function renderPlayers(){
     var box=el('servePlayerIcons');box.innerHTML='';state.players.forEach(function(p){box.appendChild(playerIcon(p))});
     var list=el('servePlayerList');list.innerHTML='';state.players.forEach(function(p){
-      var row=document.createElement('div');row.className='servePlayerRow';
-      row.innerHTML='<i style="background:'+p.color+'"></i><b>'+p.pos+'</b><span>'+p.label+'</span>';
+      var m=meta(p.pos),row=document.createElement('div');row.className='servePlayerRow servePlayerEditorRow';
+      row.innerHTML='<i style="background:'+m.color+'"></i><select class="serveRosterSelect" onchange="assignServePlayer('+p.id+',this.value)">'+playerOptions(p.playerId,p.id)+'</select><select class="servePositionSelect" onchange="changeServePosition('+p.id+',this.value)">'+positionOptions(p.pos)+'</select>';
       list.appendChild(row);
     });
   }
   function render(){
-    var box=el('serveLandingMarkers');box.innerHTML='';
-    state.points.forEach(function(p){var m=document.createElement('i');m.className='serveLandingMarker';m.style.left=p.x+'%';m.style.top=p.y+'%';box.appendChild(m)});
+    var box=el('serveLandingMarkers');box.innerHTML='';state.points.forEach(function(p){var m=document.createElement('i');m.className='serveLandingMarker';m.style.left=p.x+'%';m.style.top=p.y+'%';box.appendChild(m)});
     if(el('serveSuccessCount'))el('serveSuccessCount').textContent=state.points.length;
-    el('serveLandingCount')&& (el('serveLandingCount').textContent=state.points.length+state.misses);
-    el('serveMissCount').textContent=state.misses;
-    el('serveLandingUndo').disabled=!state.history.length;
+    if(el('serveMissCount'))el('serveMissCount').textContent=state.misses;
+    if(el('serveLandingUndo'))el('serveLandingUndo').disabled=!state.history.length;
   }
   function beginDrag(e){
-    e.preventDefault();e.stopPropagation();moved=false;
-    var id=Number(e.currentTarget.dataset.playerId),p=state.players.find(function(v){return v.id===id});
+    e.preventDefault();e.stopPropagation();moved=false;var id=Number(e.currentTarget.dataset.playerId),p=state.players.find(function(v){return v.id===id});
     dragging={p:p,node:e.currentTarget,startX:e.clientX,startY:e.clientY,oldX:p.x,oldY:p.y};
-    dragging.node.setPointerCapture(e.pointerId);dragging.node.classList.add('dragging');
-    dragging.node.addEventListener('pointermove',moveDrag);dragging.node.addEventListener('pointerup',endDrag,{once:true});dragging.node.addEventListener('pointercancel',endDrag,{once:true});
+    dragging.node.setPointerCapture(e.pointerId);dragging.node.classList.add('dragging');dragging.node.addEventListener('pointermove',moveDrag);dragging.node.addEventListener('pointerup',endDrag,{once:true});dragging.node.addEventListener('pointercancel',endDrag,{once:true});
   }
   function moveDrag(e){
-    if(!dragging)return;var court=el('serveLandingCourt'),r=court.getBoundingClientRect();
-    if(Math.abs(e.clientX-dragging.startX)>3||Math.abs(e.clientY-dragging.startY)>3)moved=true;
+    if(!dragging)return;var r=el('serveLandingCourt').getBoundingClientRect();if(Math.abs(e.clientX-dragging.startX)>3||Math.abs(e.clientY-dragging.startY)>3)moved=true;
     var x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;
-    dragging.p.x=Math.max(4,Math.min(96,x));dragging.p.y=Math.max(35,Math.min(96,y));
+    dragging.p.x=Math.max(4,Math.min(96,x));dragging.p.y=Math.max(5,Math.min(96,y));
     dragging.node.style.left=dragging.p.x+'%';dragging.node.style.top=dragging.p.y+'%';
   }
-  function endDrag(e){
-    if(!dragging)return;e.stopPropagation();dragging.node.classList.remove('dragging');
-    dragging.node.removeEventListener('pointermove',moveDrag);
-    if(moved)state.history.push({type:'player',id:dragging.p.id,x:dragging.oldX,y:dragging.oldY});
-    dragging=null;setTimeout(function(){moved=false},0);render();
-  }
-  window.openServeLandingAnalysis=function(level){state.level=level||'LEVEL 1';state.points=[];state.misses=0;state.history=[];state.players=clonePlayers();el('serveLandingLevelText').textContent=state.level;renderGrid();renderPlayers();render();el('serveLandingScreen').classList.add('show');el('serveLandingScreen').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  function endDrag(e){if(!dragging)return;e.stopPropagation();dragging.node.classList.remove('dragging');dragging.node.removeEventListener('pointermove',moveDrag);if(moved)state.history.push({type:'player',id:dragging.p.id,x:dragging.oldX,y:dragging.oldY});dragging=null;setTimeout(function(){moved=false},0);render()}
+  window.changeServeTeam=function(teamId){state.teamId=teamId||'';state.players=clonePlayers();var t=activeTeam();if(t&&Array.isArray(t.players)){t.players.slice(0,6).forEach(function(r,i){state.players[i].playerId=r.id;state.players[i].number=String(r.number||'');state.players[i].name=r.name||('選手'+(i+1));if(r.isSetter)state.players[i].pos='S'})}state.history=[];renderPlayers();render()};
+  window.assignServePlayer=function(slotId,playerId){var slot=state.players.find(function(p){return p.id===slotId});if(!slot)return;var t=activeTeam(),r=t&&Array.isArray(t.players)?t.players.find(function(p){return p.id===playerId}):null;slot.playerId=playerId||'';slot.number=r?String(r.number||''):'';slot.name=r?r.name:('選手'+slot.id);if(r&&r.isSetter)slot.pos='S';state.history=[];renderPlayers();render()};
+  window.changeServePosition=function(slotId,pos){var slot=state.players.find(function(p){return p.id===slotId});if(!slot||!POSITION_META[pos])return;slot.pos=pos;renderPlayers();render()};
+  window.openServeLandingAnalysis=function(level){state.level=level||'LEVEL 1';state.points=[];state.misses=0;state.history=[];state.players=clonePlayers();state.teamId='';el('serveLandingLevelText').textContent=state.level;fillTeamSelect();renderGrid();renderPlayers();render();el('serveLandingScreen').classList.add('show');el('serveLandingScreen').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
   window.closeServeLandingAnalysis=function(){el('serveLandingScreen').classList.remove('show');el('serveLandingScreen').setAttribute('aria-hidden','true');document.body.style.overflow='';openPracticeAnalysis('サーブ')};
   window.undoServeLanding=function(){var h=state.history.pop();if(!h)return;if(h.type==='point')state.points.pop();else if(h.type==='miss')state.misses=Math.max(0,state.misses-1);else if(h.type==='player'){var p=state.players.find(function(v){return v.id===h.id});if(p){p.x=h.x;p.y=h.y;renderPlayers()}}render()};
   window.clearServeLanding=function(){state.points=[];state.misses=0;state.history=[];render()};
   window.recordServeMiss=function(){state.misses++;state.history.push({type:'miss'});render()};
-  window.resetServePlayers=function(){state.players=clonePlayers();state.history=[];renderPlayers();render()};
+  window.resetServePlayers=function(){var assignments=state.players.map(function(p){return {playerId:p.playerId,number:p.number,name:p.name,pos:p.pos}});state.players=clonePlayers();state.players.forEach(function(p,i){Object.assign(p,assignments[i]||{})});state.history=[];renderPlayers();render()};
   document.addEventListener('DOMContentLoaded',function(){var court=el('serveLandingCourt');if(!court)return;court.addEventListener('pointerup',function(e){if(dragging||moved||e.target.closest('.serveHumanIcon'))return;if(e.pointerType==='mouse'&&e.button!==0)return;var r=court.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;state.points.push({x:Math.max(1.8,Math.min(98.2,x)),y:Math.max(1.2,Math.min(98.8,y)),level:state.level,createdAt:Date.now()});state.history.push({type:'point'});render()})});
 })();
 </script>
 
 <style id="v150-261-serve-one-screen">
-/* V150.269: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.270: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10084,7 +10099,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.269: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.270: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10099,7 +10114,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.269: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.270: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10112,12 +10127,12 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.269: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.270: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
 
-<style id="v150-269-player-icons-list">
+<style id="v150-270-player-icons-list">
 #servePlayerIcons{position:absolute;inset:0;z-index:5;pointer-events:none}
 .serveHumanIcon{position:absolute;width:38px;height:45px;transform:translate(-50%,-50%);border:0;background:transparent;padding:0;pointer-events:auto;touch-action:none;cursor:grab;filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
 .serveHumanIcon.dragging{cursor:grabbing;transform:translate(-50%,-50%) scale(1.12)}
@@ -10136,7 +10151,18 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 .serveCancelButton{min-height:58px;border:1px solid rgba(96,165,250,.5);border-radius:13px;background:linear-gradient(135deg,#1d4ed8,#1e3a8a);color:#fff;font-size:15px;font-weight:1000}
 @media(max-width:760px){.servePlayerListCard{display:none}.serveLandingSummary{display:contents}.serveLandingActions{grid-column:1/-1!important;grid-template-columns:1fr 1fr 1fr!important}.serveLandingClear{grid-column:auto!important}.serveMissButton,.serveCancelButton,.serveLandingClear{min-height:48px!important;font-size:11px!important;padding:0 6px!important}}
 </style>
-<script>/* cache marker: 150-269-player-icons-list */</script>
+<script>/* cache marker: 150-270-player-icons-list */</script>
+
+<style id="v150-270-serve-registered-player-link">
+.serveTeamSelectLabel{display:grid;gap:4px;margin-bottom:8px;color:#94a3b8;font-size:9px;font-weight:900}
+.serveTeamSelectLabel select,.serveRosterSelect,.servePositionSelect{min-width:0;border:1px solid rgba(148,163,184,.3);border-radius:8px;background:#0b1424;color:#f8fafc;font-weight:800}
+.serveTeamSelectLabel select{width:100%;height:32px;padding:0 8px;font-size:10px}
+.servePlayerEditorRow{grid-template-columns:10px minmax(0,1fr) 82px!important;gap:5px!important}
+.serveRosterSelect,.servePositionSelect{height:29px;padding:0 5px;font-size:9px}
+.servePlayerRow i{align-self:center}
+@media(max-width:760px){.servePlayerListCard{display:none!important}}
+</style>
+<script>/* cache marker: 150-270-serve-registered-player-link */</script>
 </body>
 </html>
 
