@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.270: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.271: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.270</div>
+    <div class="launchVersion">SETTER THEORY　V150.271</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.270</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.271</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10010,7 +10010,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   function playerIcon(p){
     var m=meta(p.pos),n=document.createElement('button');n.type='button';n.className='serveHumanIcon';n.dataset.playerId=p.id;
     n.style.left=p.x+'%';n.style.top=p.y+'%';n.style.setProperty('--player-color',m.color);n.title=(p.number?p.number+' ':'')+(p.name||m.label);
-    n.innerHTML='<span class="humanHead"></span><span class="humanBody"></span><b>'+esc(p.number||p.pos)+'</b>';
+    n.innerHTML='<span class="humanHead"></span><span class="humanBody"></span><b>'+esc(p.pos)+'</b>';
     n.addEventListener('pointerdown',beginDrag);return n;
   }
   function fillTeamSelect(){
@@ -10028,7 +10028,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
     var box=el('servePlayerIcons');box.innerHTML='';state.players.forEach(function(p){box.appendChild(playerIcon(p))});
     var list=el('servePlayerList');list.innerHTML='';state.players.forEach(function(p){
       var m=meta(p.pos),row=document.createElement('div');row.className='servePlayerRow servePlayerEditorRow';
-      row.innerHTML='<i style="background:'+m.color+'"></i><select class="serveRosterSelect" onchange="assignServePlayer('+p.id+',this.value)">'+playerOptions(p.playerId,p.id)+'</select><select class="servePositionSelect" onchange="changeServePosition('+p.id+',this.value)">'+positionOptions(p.pos)+'</select>';
+      row.innerHTML='<i style="background:'+m.color+'"></i><b class="serveFixedPosition">'+esc(p.pos)+'</b><select class="serveRosterSelect" onchange="assignServePlayer('+p.id+',this.value)">'+playerOptions(p.playerId,p.id)+'</select>';
       list.appendChild(row);
     });
   }
@@ -10064,7 +10064,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </script>
 
 <style id="v150-261-serve-one-screen">
-/* V150.270: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.271: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10099,7 +10099,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.270: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.271: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10114,7 +10114,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.270: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.271: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10127,12 +10127,12 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.270: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.271: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
 
-<style id="v150-270-player-icons-list">
+<style id="v150-271-player-icons-list">
 #servePlayerIcons{position:absolute;inset:0;z-index:5;pointer-events:none}
 .serveHumanIcon{position:absolute;width:38px;height:45px;transform:translate(-50%,-50%);border:0;background:transparent;padding:0;pointer-events:auto;touch-action:none;cursor:grab;filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
 .serveHumanIcon.dragging{cursor:grabbing;transform:translate(-50%,-50%) scale(1.12)}
@@ -10153,16 +10153,17 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </style>
 <script>/* cache marker: 150-270-player-icons-list */</script>
 
-<style id="v150-270-serve-registered-player-link">
+<style id="v150-271-serve-fixed-position-order">
 .serveTeamSelectLabel{display:grid;gap:4px;margin-bottom:8px;color:#94a3b8;font-size:9px;font-weight:900}
 .serveTeamSelectLabel select,.serveRosterSelect,.servePositionSelect{min-width:0;border:1px solid rgba(148,163,184,.3);border-radius:8px;background:#0b1424;color:#f8fafc;font-weight:800}
 .serveTeamSelectLabel select{width:100%;height:32px;padding:0 8px;font-size:10px}
-.servePlayerEditorRow{grid-template-columns:10px minmax(0,1fr) 82px!important;gap:5px!important}
+.servePlayerEditorRow{grid-template-columns:10px 38px minmax(0,1fr)!important;gap:7px!important}
+.serveFixedPosition{font-size:11px!important;color:#fff!important;text-align:center;letter-spacing:.02em}
 .serveRosterSelect,.servePositionSelect{height:29px;padding:0 5px;font-size:9px}
 .servePlayerRow i{align-self:center}
 @media(max-width:760px){.servePlayerListCard{display:none!important}}
 </style>
-<script>/* cache marker: 150-270-serve-registered-player-link */</script>
+<script>/* cache marker: 150-271-serve-fixed-position-order */</script>
 </body>
 </html>
 
