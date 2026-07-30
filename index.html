@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.267: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.268: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.267</div>
+    <div class="launchVersion">SETTER THEORY　V150.268</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.267</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.268</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -9945,41 +9945,27 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
       </div>
       <aside class="serveLandingSide">
         <div class="serveLandingCard"><small>記録数</small><strong id="serveLandingCount">0</strong></div>
+        <div class="serveLandingCard"><small>ミス</small><strong id="serveMissCount">0</strong></div>
         <div class="serveLandingCard"><small>選択レベル</small><strong id="serveLandingLevelSide" style="font-size:18px">LEVEL 1</strong></div>
-        <p class="serveLandingGuide">相手コート半面の着地点をタップしてください。分割エリアはアタックラインからエンドラインの間に表示しています。</p>
-        <button class="serveLandingClear" type="button" onclick="clearServeLanding()">入力をすべて消す</button>
+        <p class="serveLandingGuide">コート内に入ったサーブは着地点をタップ。ミスした場合は右の「ミス」を押してください。</p>
+        <div class="serveLandingActions">
+          <button class="serveMissButton" type="button" onclick="recordServeMiss()">ミス</button>
+          <button class="serveLandingClear" type="button" onclick="clearServeLanding()">入力をすべて消す</button>
+        </div>
       </aside>
     </main>
-    <div id="serveResultModal" class="serveResultModal" aria-hidden="true">
-      <div class="serveResultPanel" role="dialog" aria-modal="true" aria-labelledby="serveResultTitle">
-        <div class="serveResultHead">
-          <div><small>着地点を記録</small><b id="serveResultTitle">結果を選択</b></div>
-          <button type="button" class="serveResultCancel" onclick="cancelServeResult()">取消</button>
-        </div>
-        <div class="serveResultButtons">
-          <button type="button" data-result="ace" onclick="saveServeResult('ace')"><b>エース</b><small>直接得点</small></button>
-          <button type="button" data-result="effective" onclick="saveServeResult('effective')"><b>効果</b><small>相手を崩した</small></button>
-          <button type="button" data-result="continue" onclick="saveServeResult('continue')"><b>継続</b><small>ラリー継続</small></button>
-          <button type="button" class="miss" data-result="net" onclick="saveServeResult('net')"><b>ネット</b><small>ミス</small></button>
-          <button type="button" class="miss" data-result="over" onclick="saveServeResult('over')"><b>オーバー</b><small>エンドライン外</small></button>
-          <button type="button" class="miss" data-result="out" onclick="saveServeResult('out')"><b>アウト</b><small>サイドライン外</small></button>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
-<style id="v150-267-serve-result-input">
-.serveResultModal{position:absolute;inset:0;z-index:20;display:none;align-items:flex-end;justify-content:center;background:rgba(2,6,23,.64);padding:14px;backdrop-filter:blur(3px)}
-.serveResultModal.show{display:flex}
-.serveResultPanel{width:min(560px,100%);border:1px solid rgba(148,163,184,.28);border-radius:22px;background:#0f1a2d;padding:16px;box-shadow:0 24px 70px rgba(0,0,0,.55)}
-.serveResultHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.serveResultHead small{display:block;color:#60a5fa;font-size:10px;font-weight:1000;letter-spacing:.12em}.serveResultHead b{display:block;margin-top:2px;font-size:20px}.serveResultCancel{min-height:38px;padding:0 13px;border:1px solid rgba(148,163,184,.35);border-radius:11px;background:#17243a;color:#e2e8f0;font-weight:900}
-.serveResultButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.serveResultButtons button{min-height:74px;border:1px solid rgba(96,165,250,.4);border-radius:14px;background:rgba(30,64,175,.22);color:#f8fafc;padding:9px 6px;font-weight:900}.serveResultButtons button b{display:block;font-size:15px}.serveResultButtons button small{display:block;margin-top:4px;color:#bfdbfe;font-size:9px}.serveResultButtons button.miss{border-color:rgba(248,113,113,.42);background:rgba(127,29,29,.24)}.serveResultButtons button.miss small{color:#fecaca}
-.serveLandingMarker[data-result="ace"]{border-color:#f59e0b}.serveLandingMarker[data-result="effective"]{border-color:#22c55e}.serveLandingMarker[data-result="continue"]{border-color:#2563eb}.serveLandingMarker[data-result="net"],.serveLandingMarker[data-result="over"],.serveLandingMarker[data-result="out"]{border-color:#ef4444}.serveLandingMarker.pending{opacity:.58;animation:servePendingPulse .8s ease-in-out infinite alternate}@keyframes servePendingPulse{to{transform:translate(-50%,-50%) scale(1.18)}}
-@media(min-width:761px){.serveResultModal{align-items:center}}
+<style id="v150-268-serve-simple-input">
+.serveLandingActions{display:grid;grid-template-columns:1fr;gap:9px}
+.serveMissButton{width:100%;min-height:58px;border:1px solid rgba(248,113,113,.62);border-radius:13px;background:linear-gradient(135deg,#b91c1c,#7f1d1d);color:#fff;font-size:18px;font-weight:1000;letter-spacing:.08em}
+.serveMissButton:active{transform:translateY(1px)}
+.serveLandingMarker{border-color:#2563eb!important}
+@media(max-width:760px){.serveLandingActions{grid-column:1/-1;grid-template-columns:1fr 1fr}.serveMissButton,.serveLandingClear{min-height:50px}}
 </style>
 <script>
 (function(){
-  var state={level:'LEVEL 1',points:[],pending:null};
+  var state={level:'LEVEL 1',points:[],misses:0};
   function el(id){return document.getElementById(id)}
   function renderGrid(){
     var g=el('serveLandingGrid');
@@ -10006,20 +9992,24 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
       g.appendChild(area);
     }
   }
-  function setResultModal(show){var modal=el('serveResultModal');if(!modal)return;modal.classList.toggle('show',!!show);modal.setAttribute('aria-hidden',show?'false':'true')}
-  function render(){var box=el('serveLandingMarkers');box.innerHTML='';state.points.forEach(function(p){var m=document.createElement('i');m.className='serveLandingMarker';m.dataset.result=p.result||'';m.style.left=p.x+'%';m.style.top=p.y+'%';box.appendChild(m)});if(state.pending){var pm=document.createElement('i');pm.className='serveLandingMarker pending';pm.style.left=state.pending.x+'%';pm.style.top=state.pending.y+'%';box.appendChild(pm)}el('serveLandingCount').textContent=state.points.length;el('serveLandingUndo').disabled=!state.points.length||!!state.pending}
-  window.openServeLandingAnalysis=function(level){state.level=level||'LEVEL 1';state.points=[];state.pending=null;setResultModal(false);el('serveLandingLevelText').textContent=state.level;el('serveLandingLevelSide').textContent=state.level;renderGrid();render();el('serveLandingScreen').classList.add('show');el('serveLandingScreen').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
-  window.closeServeLandingAnalysis=function(){state.pending=null;setResultModal(false);el('serveLandingScreen').classList.remove('show');el('serveLandingScreen').setAttribute('aria-hidden','true');document.body.style.overflow='';openPracticeAnalysis('サーブ')};
-  window.undoServeLanding=function(){if(state.pending)return;state.points.pop();render()};
-  window.clearServeLanding=function(){state.pending=null;state.points=[];setResultModal(false);render()};
-  window.cancelServeResult=function(){state.pending=null;setResultModal(false);render()};
-  window.saveServeResult=function(result){if(!state.pending)return;state.points.push({x:state.pending.x,y:state.pending.y,result:result,level:state.level,createdAt:Date.now()});state.pending=null;setResultModal(false);render()};
-  document.addEventListener('DOMContentLoaded',function(){var court=el('serveLandingCourt');if(!court)return;court.addEventListener('pointerup',function(e){if(e.pointerType==='mouse'&&e.button!==0)return;if(state.pending)return;var r=court.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;state.pending={x:Math.max(1.8,Math.min(98.2,x)),y:Math.max(1.2,Math.min(98.8,y))};render();setResultModal(true)})});
+  function render(){
+    var box=el('serveLandingMarkers');box.innerHTML='';
+    state.points.forEach(function(p){var m=document.createElement('i');m.className='serveLandingMarker';m.style.left=p.x+'%';m.style.top=p.y+'%';box.appendChild(m)});
+    el('serveLandingCount').textContent=state.points.length+state.misses;
+    el('serveMissCount').textContent=state.misses;
+    el('serveLandingUndo').disabled=!(state.points.length||state.misses);
+  }
+  window.openServeLandingAnalysis=function(level){state.level=level||'LEVEL 1';state.points=[];state.misses=0;el('serveLandingLevelText').textContent=state.level;el('serveLandingLevelSide').textContent=state.level;renderGrid();render();el('serveLandingScreen').classList.add('show');el('serveLandingScreen').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  window.closeServeLandingAnalysis=function(){el('serveLandingScreen').classList.remove('show');el('serveLandingScreen').setAttribute('aria-hidden','true');document.body.style.overflow='';openPracticeAnalysis('サーブ')};
+  window.undoServeLanding=function(){if(state.points.length){state.points.pop()}else if(state.misses){state.misses--}render()};
+  window.clearServeLanding=function(){state.points=[];state.misses=0;render()};
+  window.recordServeMiss=function(){state.misses++;render()};
+  document.addEventListener('DOMContentLoaded',function(){var court=el('serveLandingCourt');if(!court)return;court.addEventListener('pointerup',function(e){if(e.pointerType==='mouse'&&e.button!==0)return;var r=court.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;state.points.push({x:Math.max(1.8,Math.min(98.2,x)),y:Math.max(1.2,Math.min(98.8,y)),level:state.level,createdAt:Date.now()});render()})});
 })();
 </script>
 
 <style id="v150-261-serve-one-screen">
-/* V150.267: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.268: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10054,7 +10044,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.267: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.268: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10069,7 +10059,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.267: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.268: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10082,7 +10072,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.267: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.268: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
