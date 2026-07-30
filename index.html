@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.280: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.281: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.280</div>
+    <div class="launchVersion">SETTER THEORY　V150.281</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.280</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.281</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10105,7 +10105,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 .serveSystemSwitch button.active{border-color:#60a5fa;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
 </style>
 <style id="v150-261-serve-one-screen">
-/* V150.280: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.281: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10140,7 +10140,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.280: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.281: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10155,7 +10155,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.280: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.281: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10168,7 +10168,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.280: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.281: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
@@ -10215,7 +10215,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-273-mb-libero-position-swap */</script>
 
 <style id="v150-274-serve-player-card-compact">
-/* V150.280: keep the player card compact so miss/undo/clear controls remain visible. */
+/* V150.281: keep the player card compact so miss/undo/clear controls remain visible. */
 #serveLandingModal .serveLandingSide{gap:7px!important;align-self:stretch!important}
 #serveLandingModal .servePlayerListCard{padding:7px 8px!important;border-radius:12px!important}
 #serveLandingModal .servePlayerListTitle{margin-bottom:4px!important;font-size:10px!important;line-height:1.2!important}
@@ -10246,8 +10246,8 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </style>
 <script>/* cache marker: 150-274-serve-player-card-compact */</script>
 
-<style id="v150-280-serve-result-dashboard">
-/* V150.280: サーブ結果ダッシュボード追加。 */
+<style id="v150-281-serve-level-separated">
+/* V150.281: サーブ結果ダッシュボード追加。 */
 #serveLandingScreen .serveLandingUndo{display:none!important}
 #serveLandingScreen .serveLandingMain{grid-template-columns:minmax(190px,240px) minmax(0,1fr) minmax(150px,190px)!important;max-width:1180px!important;width:100%!important;gap:12px!important}
 #serveLandingScreen .serveLandingSide{display:contents!important}
@@ -10291,13 +10291,15 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>
 (function(){
   var KEY='setterTheoryTeamsV1', selectedServer='', selectedTeam='', serverSearch='', playerStats={}, actionHistory=[];
+  var LEVELS=['LEVEL 1','LEVEL 2','LEVEL 3','LEVEL MAX'];
   function e(id){return document.getElementById(id)}
   function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
   function teams(){try{var x=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(x)?x:[]}catch(_){return[]}}
   function currentTeam(){return teams().find(function(t){return String(t.id)===String(selectedTeam)})||null}
   function players(){var t=currentTeam();return t&&Array.isArray(t.players)?t.players:[]}
-  function keyOf(p){return selectedTeam+'::'+p.id}
-  function statFor(p){var k=keyOf(p);return playerStats[k]||(playerStats[k]={success:0,miss:0})}
+  function currentLevel(){return ((e('serveLandingLevelText')||{}).textContent||'LEVEL 1').trim()||'LEVEL 1'}
+  function keyOf(p,level){return selectedTeam+'::'+p.id+'::'+(level||currentLevel())}
+  function statFor(p,level){var k=keyOf(p,level);return playerStats[k]||(playerStats[k]={success:0,miss:0})}
   function selectedPlayer(){return players().find(function(p){return String(p.id)===String(selectedServer)})||null}
   function rebuildCard(){
     var card=document.querySelector('#serveLandingScreen .servePlayerListCard');if(!card)return;
@@ -10310,62 +10312,58 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
     renderServers();
   }
   function renderServers(){
-    var list=e('serveServerList'),cur=e('serveServerCurrent');if(!list||!cur)return;var all=players(),q=serverSearch.trim().toLowerCase();var ps=q?all.filter(function(p){return String(p.name||'').toLowerCase().indexOf(q)!==-1}):all;
+    var list=e('serveServerList'),cur=e('serveServerCurrent');if(!list||!cur)return;var all=players(),q=serverSearch.trim().toLowerCase(),level=currentLevel();var ps=q?all.filter(function(p){return String(p.name||'').toLowerCase().indexOf(q)!==-1}):all;
     if(!selectedServer&&all.length)selectedServer=String(all[0].id);
-    list.innerHTML=ps.length?ps.map(function(p){var st=statFor(p),active=String(p.id)===String(selectedServer);return '<button type="button" class="serveServerBtn'+(active?' active':'')+'" data-id="'+esc(p.id)+'"><b>'+esc(p.number||'—')+'</b><span>'+esc(p.name||'名前未設定')+'</span><small>'+st.success+'成功 / '+st.miss+'ミス</small></button>'}).join(''):'<div style="color:#94a3b8;font-size:10px;padding:10px 2px">'+(q?'該当する選手がいません':'登録選手がありません')+'</div>';
+    list.innerHTML=ps.length?ps.map(function(p){var st=statFor(p,level),active=String(p.id)===String(selectedServer);return '<button type="button" class="serveServerBtn'+(active?' active':'')+'" data-id="'+esc(p.id)+'"><b>'+esc(p.number||'—')+'</b><span>'+esc(p.name||'名前未設定')+'</span><small>'+st.success+'成功 / '+st.miss+'ミス</small></button>'}).join(''):'<div style="color:#94a3b8;font-size:10px;padding:10px 2px">'+(q?'該当する選手がいません':'登録選手がありません')+'</div>';
     list.querySelectorAll('.serveServerBtn').forEach(function(b){b.onclick=function(){selectedServer=this.dataset.id;renderServers()}});
-    var p=selectedPlayer();if(!p){cur.innerHTML='<small>選択中</small><strong>サーバーを選択</strong>';return}var st=statFor(p),total=st.success+st.miss,rate=total?Math.round(st.success/total*100):0;
-    cur.innerHTML='<small>選択中のサーバー</small><strong>'+(p.number?esc(p.number)+' ':'')+esc(p.name)+'</strong><div class="stats"><span>成功<b>'+st.success+'</b></span><span>ミス<b>'+st.miss+'</b></span><span>成功率<b>'+rate+'%</b></span></div>';
+    var p=selectedPlayer();if(!p){cur.innerHTML='<small>選択中</small><strong>サーバーを選択</strong>';return}var st=statFor(p,level),total=st.success+st.miss,rate=total?Math.round(st.success/total*100):0;
+    cur.innerHTML='<small>選択中のサーバー ／ '+esc(level)+'</small><strong>'+(p.number?esc(p.number)+' ':'')+esc(p.name)+'</strong><div class="stats"><span>成功<b>'+st.success+'</b></span><span>ミス<b>'+st.miss+'</b></span><span>成功率<b>'+rate+'%</b></span></div>';
   }
-  function add(type,meta){var p=selectedPlayer();if(!p)return;var st=statFor(p);st[type]++;actionHistory.push({key:keyOf(p),playerId:p.id,playerName:p.name||'名前未設定',type:type,x:meta&&meta.x!=null?meta.x:null,y:meta&&meta.y!=null?meta.y:null,level:(e('serveLandingLevelText')||{}).textContent||'LEVEL 1'});renderServers()}
+  function add(type,meta){var p=selectedPlayer();if(!p)return;var level=currentLevel(),st=statFor(p,level);st[type]++;actionHistory.push({key:keyOf(p,level),playerId:p.id,playerName:p.name||'名前未設定',playerNumber:p.number||'',type:type,x:meta&&meta.x!=null?meta.x:null,y:meta&&meta.y!=null?meta.y:null,level:level});renderServers()}
   function undoCustom(){var h=actionHistory.pop();if(!h)return;var st=playerStats[h.key];if(st)st[h.type]=Math.max(0,st[h.type]-1);renderServers()}
   function clearCustom(){playerStats={};actionHistory=[];renderServers()}
-  function ensureFinishButton(){
-    var actions=document.querySelector('#serveLandingScreen .serveLandingActions');if(!actions)return;
-    if(!actions.querySelector('.serveFinishButton')){var b=document.createElement('button');b.type='button';b.className='serveFinishButton';b.textContent='分析終了';b.onclick=finishServeAnalysis;actions.appendChild(b)}
-  }
+  function ensureFinishButton(){var actions=document.querySelector('#serveLandingScreen .serveLandingActions');if(!actions)return;if(!actions.querySelector('.serveFinishButton')){var b=document.createElement('button');b.type='button';b.className='serveFinishButton';b.textContent='分析終了';b.onclick=finishServeAnalysis;actions.appendChild(b)}}
+  function buildRecordPlayers(level){return players().map(function(p){var st=playerStats[keyOf(p,level)]||{success:0,miss:0};return {id:p.id,name:p.name||'名前未設定',number:p.number||'',success:st.success||0,miss:st.miss||0}}).filter(function(r){return r.success||r.miss})}
   function finishServeAnalysis(){
-    var hasData=Object.keys(playerStats).some(function(k){var st=playerStats[k];return st&&(st.success||st.miss)});
-    if(!hasData){alert('入力データがありません。');return}
-    if(!confirm('この練習を保存して結果画面へ移動しますか？'))return;
-    var t=currentTeam(),level=(e('serveLandingLevelText')||{}).textContent||'LEVEL 1';
-    var rows=players().map(function(p){var st=playerStats[keyOf(p)]||{success:0,miss:0};return {id:p.id,name:p.name||'名前未設定',number:p.number||'',success:st.success||0,miss:st.miss||0}}).filter(function(r){return r.success||r.miss});
-    var record={id:'serve_'+Date.now(),createdAt:new Date().toISOString(),teamId:selectedTeam,teamName:t?t.name:'',level:level,players:rows,actions:actionHistory.slice()};
+    var hasData=actionHistory.length>0;if(!hasData){alert('入力データがありません。');return}if(!confirm('この練習を保存して結果画面へ移動しますか？'))return;
+    var t=currentTeam(),levelPlayers={};LEVELS.forEach(function(level){levelPlayers[level]=buildRecordPlayers(level)});
+    var aggregate={};actionHistory.forEach(function(a){var k=String(a.playerId),r=aggregate[k]||(aggregate[k]={id:a.playerId,name:a.playerName||'名前未設定',number:a.playerNumber||'',success:0,miss:0});r[a.type]=(r[a.type]||0)+1});
+    var record={id:'serve_'+Date.now(),createdAt:new Date().toISOString(),teamId:selectedTeam,teamName:t?t.name:'',level:currentLevel(),levels:LEVELS.slice(),levelPlayers:levelPlayers,players:Object.keys(aggregate).map(function(k){return aggregate[k]}),actions:actionHistory.slice()};
     try{var saved=JSON.parse(localStorage.getItem('setterTheoryServePracticeRecordsV1')||'[]');if(!Array.isArray(saved))saved=[];saved.unshift(record);localStorage.setItem('setterTheoryServePracticeRecordsV1',JSON.stringify(saved))}catch(err){console.error(err)}
-    showServeResult(record);
+    showServeResult(record,currentLevel());
   }
-  function showServeResult(record){
-    var old=e('serveResultOverlay');if(old)old.remove();
-    var totalS=record.players.reduce(function(a,r){return a+r.success},0),totalM=record.players.reduce(function(a,r){return a+r.miss},0),total=totalS+totalM,rate=total?Math.round(totalS/total*100):0;
-    var ranked=record.players.slice().sort(function(a,b){var ar=(a.success+a.miss)?a.success/(a.success+a.miss):0,br=(b.success+b.miss)?b.success/(b.success+b.miss):0;return br-ar||b.success-a.success});
-    var ranking=ranked.map(function(r,i){var n=r.success+r.miss,rr=n?Math.round(r.success/n*100):0;return '<div class="serveRankRow"><em>'+(i+1)+'</em><span>'+esc((r.number?r.number+' ':'')+r.name)+'</span><small>'+n+'本</small><b>'+rr+'%</b></div>'}).join('');
-    var heat=(record.actions||[]).filter(function(a){return a.type==='success'&&a.x!=null&&a.y!=null}).map(function(a){return '<i class="serveHeatPoint" style="left:'+Math.max(0,Math.min(100,a.x))+'%;top:'+Math.max(0,Math.min(100,a.y))+'%" title="'+esc(a.playerName)+'"></i>'}).join('');
-    if(!heat)heat='<div class="serveHeatEmpty">着地点データなし</div>';
-    var levels={};(record.actions||[]).forEach(function(a){var k=a.level||record.level||'LEVEL 1';levels[k]=levels[k]||{success:0,miss:0};levels[k][a.type]=(levels[k][a.type]||0)+1});
-    if(!Object.keys(levels).length)levels[record.level||'LEVEL 1']={success:totalS,miss:totalM};
-    var levelRows=Object.keys(levels).map(function(k){var x=levels[k],n=x.success+x.miss,r=n?Math.round(x.success/n*100):0;return '<div class="serveLevelRow"><span>'+esc(k)+'</span><div class="serveLevelTrack"><div class="serveLevelFill" style="width:'+r+'%"></div></div><b>'+r+'%</b></div>'}).join('');
-    var details=ranked.map(function(r){var n=r.success+r.miss,rr=n?Math.round(r.success/n*100):0;return '<details class="servePlayerDetail"><summary><span>'+esc((r.number?r.number+' ':'')+r.name)+'</span><b>'+r.success+'成功</b><b>'+r.miss+'ミス</b><b>'+rr+'%</b></summary><div class="servePlayerDetailBody">合計 '+n+'本 ／ 成功 '+r.success+'本 ／ ミス '+r.miss+'本</div></details>'}).join('');
+  function levelData(record,level){
+    var rows=(record.levelPlayers&&record.levelPlayers[level])?record.levelPlayers[level].slice():[];
+    if(!rows.length){var map={};(record.actions||[]).filter(function(a){return (a.level||record.level||'LEVEL 1')===level}).forEach(function(a){var k=String(a.playerId),r=map[k]||(map[k]={id:a.playerId,name:a.playerName||'名前未設定',number:a.playerNumber||'',success:0,miss:0});r[a.type]=(r[a.type]||0)+1});rows=Object.keys(map).map(function(k){return map[k]})}
+    return {rows:rows,actions:(record.actions||[]).filter(function(a){return (a.level||record.level||'LEVEL 1')===level})};
+  }
+  function resultBody(record,level){
+    var data=levelData(record,level),rows=data.rows,actions=data.actions,totalS=rows.reduce(function(a,r){return a+r.success},0),totalM=rows.reduce(function(a,r){return a+r.miss},0),total=totalS+totalM,rate=total?Math.round(totalS/total*100):0;
+    var ranked=rows.slice().sort(function(a,b){var ar=(a.success+a.miss)?a.success/(a.success+a.miss):0,br=(b.success+b.miss)?b.success/(b.success+b.miss):0;return br-ar||b.success-a.success});
+    var ranking=ranked.length?ranked.map(function(r,i){var n=r.success+r.miss,rr=n?Math.round(r.success/n*100):0;return '<div class="serveRankRow"><em>'+(i+1)+'</em><span>'+esc((r.number?r.number+' ':'')+r.name)+'</span><small>'+n+'本</small><b>'+rr+'%</b></div>'}).join(''):'<div class="serveHeatEmpty">このLEVELの入力なし</div>';
+    var heat=actions.filter(function(a){return a.type==='success'&&a.x!=null&&a.y!=null}).map(function(a){return '<i class="serveHeatPoint" style="left:'+Math.max(0,Math.min(100,a.x))+'%;top:'+Math.max(0,Math.min(100,a.y))+'%" title="'+esc(a.playerName)+'"></i>'}).join('');if(!heat)heat='<div class="serveHeatEmpty">着地点データなし</div>';
+    var details=ranked.length?ranked.map(function(r){var n=r.success+r.miss,rr=n?Math.round(r.success/n*100):0;return '<details class="servePlayerDetail"><summary><span>'+esc((r.number?r.number+' ':'')+r.name)+'</span><b>'+r.success+'成功</b><b>'+r.miss+'ミス</b><b>'+rr+'%</b></summary><div class="servePlayerDetailBody">合計 '+n+'本 ／ 成功 '+r.success+'本 ／ ミス '+r.miss+'本</div></details>'}).join(''):'<div class="serveHeatEmpty">このLEVELの入力なし</div>';
+    return '<section class="serveResultSummary"><div class="serveMetric"><span>総本数</span><b>'+total+'</b></div><div class="serveMetric"><span>成功</span><b>'+totalS+'</b></div><div class="serveMetric"><span>ミス</span><b>'+totalM+'</b></div><div class="serveMetric"><span>成功率</span><b>'+rate+'%</b></div></section><section class="serveResultCard"><h3>成功率ランキング</h3><div class="serveRanking">'+ranking+'</div></section><section class="serveResultCard"><h3>着地点ヒートマップ</h3><div class="serveHeatmap">'+heat+'</div></section><section class="serveResultCard" style="grid-column:1/-1"><h3>選手別詳細</h3><div class="servePlayerDetails">'+details+'</div></section>';
+  }
+  function showServeResult(record,initialLevel){
+    var old=e('serveResultOverlay');if(old)old.remove();var available=LEVELS.filter(function(l){return levelData(record,l).actions.length||levelData(record,l).rows.length});if(!available.length)available=[initialLevel||record.level||'LEVEL 1'];var active=available.indexOf(initialLevel)>=0?initialLevel:available[0];
     var overlay=document.createElement('div');overlay.id='serveResultOverlay';overlay.className='serveResultOverlay show';
-    overlay.innerHTML='<div class="serveResultPanel"><div class="serveResultHead"><div><h2>サーブ分析結果</h2><div class="serveResultMeta">'+esc(record.teamName||'チーム未選択')+' ／ '+esc(record.level)+'</div></div></div><div class="serveResultDashboard"><section class="serveResultSummary"><div class="serveMetric"><span>総本数</span><b>'+total+'</b></div><div class="serveMetric"><span>成功</span><b>'+totalS+'</b></div><div class="serveMetric"><span>ミス</span><b>'+totalM+'</b></div><div class="serveMetric"><span>成功率</span><b>'+rate+'%</b></div></section><section class="serveResultCard"><h3>成功率ランキング</h3><div class="serveRanking">'+ranking+'</div></section><section class="serveResultCard"><h3>着地点ヒートマップ</h3><div class="serveHeatmap">'+heat+'</div></section><section class="serveResultCard"><h3>LEVEL別成績</h3><div class="serveLevelBars">'+levelRows+'</div></section><section class="serveResultCard"><h3>選手別詳細</h3><div class="servePlayerDetails">'+details+'</div></section></div><div class="serveResultActions"><button type="button" onclick="document.getElementById(\'serveResultOverlay\').remove()">入力画面へ戻る</button><button type="button" class="primary" onclick="document.getElementById(\'serveResultOverlay\').remove();closeServeLandingAnalysis()">終了</button></div></div>';document.body.appendChild(overlay);
+    overlay.innerHTML='<div class="serveResultPanel"><div class="serveResultHead"><div><h2>サーブ分析結果</h2><div class="serveResultMeta">'+esc(record.teamName||'チーム未選択')+'</div></div></div><div class="serveLevelTabs">'+LEVELS.map(function(l){var has=available.indexOf(l)>=0;return '<button type="button" data-level="'+esc(l)+'" class="'+(l===active?'active ':'')+(has?'':'empty')+'">'+esc(l)+'</button>'}).join('')+'</div><div id="serveResultDashboard" class="serveResultDashboard">'+resultBody(record,active)+'</div><div class="serveResultActions"><button type="button" onclick="document.getElementById(\'serveResultOverlay\').remove()">入力画面へ戻る</button><button type="button" class="primary" onclick="document.getElementById(\'serveResultOverlay\').remove();closeServeLandingAnalysis()">終了</button></div></div>';
+    document.body.appendChild(overlay);overlay.querySelectorAll('.serveLevelTabs button').forEach(function(btn){btn.onclick=function(){var l=this.dataset.level;overlay.querySelectorAll('.serveLevelTabs button').forEach(function(x){x.classList.toggle('active',x===btn)});e('serveResultDashboard').innerHTML=resultBody(record,l)}});
   }
   document.addEventListener('DOMContentLoaded',function(){
-    ensureFinishButton();
-    var court=e('serveLandingCourt');if(court)court.addEventListener('pointerup',function(ev){if(ev.target.closest('.serveHumanIcon'))return;var r=court.getBoundingClientRect(),x=r.width?((ev.clientX-r.left)/r.width*100):null,y=r.height?((ev.clientY-r.top)/r.height*100):null;setTimeout(function(){add('success',{x:x,y:y})},0)});
-    var oldOpen=window.openServeLandingAnalysis;window.openServeLandingAnalysis=function(level){
-      selectedServer='';actionHistory=[];serverSearch='';
-      try{if(typeof oldOpen==='function')oldOpen(level);}catch(err){console.error('serve analysis open recovery',err);}
-      var screen=e('serveLandingScreen');if(screen){screen.classList.add('show');screen.setAttribute('aria-hidden','false');}
-      var levelText=e('serveLandingLevelText');if(levelText)levelText.textContent=level||'LEVEL 1';
-      document.body.style.overflow='hidden';
-      setTimeout(function(){rebuildCard();ensureFinishButton()},0);
-    };
-    var oldMiss=window.recordServeMiss;window.recordServeMiss=function(){oldMiss();add('miss')};
-    var oldUndo=window.undoServeLanding;window.undoServeLanding=function(){oldUndo();undoCustom()};
-    var oldClear=window.clearServeLanding;window.clearServeLanding=function(){oldClear();clearCustom()};
+    ensureFinishButton();var court=e('serveLandingCourt');if(court)court.addEventListener('pointerup',function(ev){if(ev.target.closest('.serveHumanIcon'))return;var r=court.getBoundingClientRect(),x=r.width?((ev.clientX-r.left)/r.width*100):null,y=r.height?((ev.clientY-r.top)/r.height*100):null;setTimeout(function(){add('success',{x:x,y:y})},0)});
+    var oldOpen=window.openServeLandingAnalysis;window.openServeLandingAnalysis=function(level){selectedServer='';actionHistory=[];playerStats={};serverSearch='';try{if(typeof oldOpen==='function')oldOpen(level)}catch(err){console.error('serve analysis open recovery',err)}var screen=e('serveLandingScreen');if(screen){screen.classList.add('show');screen.setAttribute('aria-hidden','false')}var levelText=e('serveLandingLevelText');if(levelText)levelText.textContent=level||'LEVEL 1';document.body.style.overflow='hidden';setTimeout(function(){rebuildCard();ensureFinishButton()},0)};
+    var observer=new MutationObserver(function(){renderServers()});var levelNode=e('serveLandingLevelText');if(levelNode)observer.observe(levelNode,{childList:true,characterData:true,subtree:true});
+    var oldMiss=window.recordServeMiss;window.recordServeMiss=function(){oldMiss();add('miss')};var oldUndo=window.undoServeLanding;window.undoServeLanding=function(){oldUndo();undoCustom()};var oldClear=window.clearServeLanding;window.clearServeLanding=function(){oldClear();clearCustom()};
   });
 })();
 </script>
-<script>/* cache marker: 150-280-serve-result-dashboard */</script>
+<style id="v150-281-level-separated-results">
+.serveLevelTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0 0 12px}.serveLevelTabs button{min-height:38px;border-radius:10px;border:1px solid rgba(148,163,184,.28);background:#111c30;color:#94a3b8;font-size:11px;font-weight:900}.serveLevelTabs button.active{background:#2563eb;border-color:#60a5fa;color:#fff}.serveLevelTabs button.empty{opacity:.48}.serveLevelTabs button.empty.active{opacity:1}.serveResultMeta{min-height:16px}
+</style>
+<script>/* cache marker: 150-281-serve-level-separated */</script>
+
 
 </body>
 </html>
@@ -15227,7 +15225,7 @@ html.booting #launchLanding{
 <script>/* cache marker: 150-198-pdf-player-all-roster */</script>
 
 <style id="v150-276-serve-three-column-layout">
-/* V150.280: 左=選手配置 / 中央=コート / 右=記録操作 */
+/* V150.281: 左=選手配置 / 中央=コート / 右=記録操作 */
 @media (orientation:landscape) and (min-width:761px){
   .serveLandingMain{
     display:grid!important;
