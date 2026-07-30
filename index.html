@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.277: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.278: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.277</div>
+    <div class="launchVersion">SETTER THEORY　V150.278</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.277</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.278</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10105,7 +10105,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 .serveSystemSwitch button.active{border-color:#60a5fa;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
 </style>
 <style id="v150-261-serve-one-screen">
-/* V150.277: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.278: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10140,7 +10140,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.277: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.278: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10155,7 +10155,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.277: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.278: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10168,7 +10168,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.277: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.278: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
@@ -10215,7 +10215,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-273-mb-libero-position-swap */</script>
 
 <style id="v150-274-serve-player-card-compact">
-/* V150.277: keep the player card compact so miss/undo/clear controls remain visible. */
+/* V150.278: keep the player card compact so miss/undo/clear controls remain visible. */
 #serveLandingModal .serveLandingSide{gap:7px!important;align-self:stretch!important}
 #serveLandingModal .servePlayerListCard{padding:7px 8px!important;border-radius:12px!important}
 #serveLandingModal .servePlayerListTitle{margin-bottom:4px!important;font-size:10px!important;line-height:1.2!important}
@@ -10247,7 +10247,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-274-serve-player-card-compact */</script>
 
 <style id="v150-277-serve-name-search">
-/* V150.277: サーバー一覧に名前検索を追加。一覧部分のみスクロール。 */
+/* V150.278: サーバー一覧に名前検索を追加。一覧部分のみスクロール。 */
 #serveLandingScreen .serveLandingUndo{display:none!important}
 #serveLandingScreen .serveLandingMain{grid-template-columns:minmax(190px,240px) minmax(0,1fr) minmax(150px,190px)!important;max-width:1180px!important;width:100%!important;gap:12px!important}
 #serveLandingScreen .serveLandingSide{display:contents!important}
@@ -10295,7 +10295,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
     renderServers();
   }
   function renderServers(){
-    var list=e('serveServerList'),cur=e('serveServerCurrent');if(!list||!cur)return;var all=players(),q=serverSearch.trim().toLocaleLowerCase('ja-JP');var ps=q?all.filter(function(p){return String(p.name||'').toLocaleLowerCase('ja-JP').indexOf(q)!==-1}):all;
+    var list=e('serveServerList'),cur=e('serveServerCurrent');if(!list||!cur)return;var all=players(),q=serverSearch.trim().toLowerCase();var ps=q?all.filter(function(p){return String(p.name||'').toLowerCase().indexOf(q)!==-1}):all;
     if(!selectedServer&&all.length)selectedServer=String(all[0].id);
     list.innerHTML=ps.length?ps.map(function(p){var st=statFor(p),active=String(p.id)===String(selectedServer);return '<button type="button" class="serveServerBtn'+(active?' active':'')+'" data-id="'+esc(p.id)+'"><b>'+esc(p.number||'—')+'</b><span>'+esc(p.name||'名前未設定')+'</span><small>'+st.success+'成功 / '+st.miss+'ミス</small></button>'}).join(''):'<div style="color:#94a3b8;font-size:10px;padding:10px 2px">'+(q?'該当する選手がいません':'登録選手がありません')+'</div>';
     list.querySelectorAll('.serveServerBtn').forEach(function(b){b.onclick=function(){selectedServer=this.dataset.id;renderServers()}});
@@ -10307,7 +10307,14 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   function clearCustom(){playerStats={};actionHistory=[];renderServers()}
   document.addEventListener('DOMContentLoaded',function(){
     var court=e('serveLandingCourt');if(court)court.addEventListener('pointerup',function(ev){if(ev.target.closest('.serveHumanIcon'))return;setTimeout(function(){add('success')},0)});
-    var oldOpen=window.openServeLandingAnalysis;window.openServeLandingAnalysis=function(level){oldOpen(level);selectedServer='';actionHistory=[];setTimeout(rebuildCard,0)};
+    var oldOpen=window.openServeLandingAnalysis;window.openServeLandingAnalysis=function(level){
+      selectedServer='';actionHistory=[];serverSearch='';
+      try{if(typeof oldOpen==='function')oldOpen(level);}catch(err){console.error('serve analysis open recovery',err);}
+      var screen=e('serveLandingScreen');if(screen){screen.classList.add('show');screen.setAttribute('aria-hidden','false');}
+      var levelText=e('serveLandingLevelText');if(levelText)levelText.textContent=level||'LEVEL 1';
+      document.body.style.overflow='hidden';
+      setTimeout(rebuildCard,0);
+    };
     var oldMiss=window.recordServeMiss;window.recordServeMiss=function(){oldMiss();add('miss')};
     var oldUndo=window.undoServeLanding;window.undoServeLanding=function(){oldUndo();undoCustom()};
     var oldClear=window.clearServeLanding;window.clearServeLanding=function(){oldClear();clearCustom()};
@@ -15176,7 +15183,7 @@ html.booting #launchLanding{
 <script>/* cache marker: 150-198-pdf-player-all-roster */</script>
 
 <style id="v150-276-serve-three-column-layout">
-/* V150.277: 左=選手配置 / 中央=コート / 右=記録操作 */
+/* V150.278: 左=選手配置 / 中央=コート / 右=記録操作 */
 @media (orientation:landscape) and (min-width:761px){
   .serveLandingMain{
     display:grid!important;
