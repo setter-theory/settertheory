@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.260: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.261: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.260</div>
+    <div class="launchVersion">SETTER THEORY　V150.261</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.260</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.261</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -9971,7 +9971,40 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   document.addEventListener('DOMContentLoaded',function(){var court=el('serveLandingCourt');if(!court)return;court.addEventListener('pointerup',function(e){if(e.pointerType==='mouse'&&e.button!==0)return;var r=court.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;state.points.push({x:Math.max(1.8,Math.min(98.2,x)),y:Math.max(1.2,Math.min(98.8,y))});render()})});
 })();
 </script>
-<script>/* cache marker: 150-260-serve-landing-input */</script>
+
+<style id="v150-261-serve-one-screen">
+/* V150.261: サーブ着地点入力を縦横とも1画面内に収める */
+#serveLandingScreen{overflow:hidden}
+.serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
+.serveLandingHeader{flex:0 0 auto}
+.serveLandingMain{height:0;min-height:0;overflow:hidden;align-items:center}
+.serveLandingCourtWrap{height:100%;min-height:0;overflow:hidden}
+#serveLandingCourt{width:auto;height:min(100%,calc(100dvh - 112px));max-width:100%;max-height:100%;flex:0 0 auto}
+.serveLandingSide{max-height:100%;overflow:hidden}
+@media(max-width:760px) and (orientation:portrait){
+  .serveLandingShell{height:100dvh}
+  .serveLandingMain{height:0;flex:1;display:grid;grid-template-rows:minmax(0,1fr) auto;padding:8px 10px 10px;gap:8px}
+  .serveLandingCourtWrap{height:100%;width:100%;min-height:0}
+  #serveLandingCourt{height:100%;width:auto;max-width:92vw;max-height:100%;aspect-ratio:1/2}
+  .serveLandingSide{width:100%;display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:stretch}
+  .serveLandingCard{padding:8px 10px;border-radius:12px;min-height:52px}
+  .serveLandingCard small{font-size:9px}
+  .serveLandingCard strong{font-size:20px;margin-top:2px}
+  .serveLandingGuide{display:none}
+  .serveLandingClear{grid-column:auto;width:auto;min-height:52px;padding:0 12px;font-size:12px}
+}
+@media(orientation:landscape){
+  .serveLandingMain{height:0;flex:1;grid-template-columns:minmax(0,1fr) 210px;padding:8px 12px;gap:12px}
+  .serveLandingCourtWrap{height:100%}
+  #serveLandingCourt{height:100%;width:auto;max-width:100%;max-height:100%}
+  .serveLandingSide{align-self:center;gap:8px}
+  .serveLandingCard{padding:10px 12px}
+  .serveLandingCard strong{font-size:23px}
+  .serveLandingGuide{font-size:12px;line-height:1.45}
+}
+</style>
+
+<script>/* cache marker: 150-261-serve-one-screen */</script>
 
 </body>
 </html>
