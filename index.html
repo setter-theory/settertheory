@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.259: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.260: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.259</div>
+    <div class="launchVersion">SETTER THEORY　V150.260</div>
   </div>
 </section>
 
@@ -6878,7 +6878,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.259</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.260</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -9903,11 +9903,76 @@ window.openPracticeAnalysis=function(name){
   var modal=document.getElementById('serveLevelModal');if(!modal)return;modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
 };
 window.closeServeLevelModal=function(){var modal=document.getElementById('serveLevelModal');if(!modal)return;modal.classList.remove('show');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';};
-window.startServeLevel=function(level){alert(level+' の分析画面は次の工程で実装します。');};
+window.startServeLevel=function(level){
+  closeServeLevelModal();
+  openServeLandingAnalysis(level);
+};
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeServeLevelModal();});
 document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target.classList.contains('serveLevelItem')||!e.target.open)return;document.querySelectorAll('.serveLevelItem[open]').forEach(function(item){if(item!==e.target)item.open=false;});},true);
 </script>
 <script>/* cache marker: 150-257-serve-level-accordion */</script>
+<style id="v150-260-serve-landing-input">
+#serveLandingScreen{position:fixed;inset:0;z-index:12500;display:none;background:#07101f;color:#f8fafc;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}
+#serveLandingScreen.show{display:block}
+.serveLandingShell{min-height:100dvh;display:flex;flex-direction:column}
+.serveLandingHeader{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 16px;background:rgba(7,16,31,.96);border-bottom:1px solid rgba(148,163,184,.2);backdrop-filter:blur(10px)}
+.serveLandingBack,.serveLandingUndo{min-height:42px;border:1px solid rgba(148,163,184,.32);border-radius:12px;background:#111c30;color:#e2e8f0;padding:0 14px;font-weight:900}.serveLandingUndo:disabled{opacity:.35}
+.serveLandingHeading{text-align:center;min-width:0}.serveLandingHeading b{display:block;font-size:18px}.serveLandingHeading span{display:block;margin-top:2px;color:#60a5fa;font-size:11px;font-weight:1000;letter-spacing:.12em}
+.serveLandingMain{width:min(980px,100%);margin:0 auto;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;padding:18px}
+.serveLandingCourtWrap{display:flex;align-items:center;justify-content:center;min-height:0}
+#serveLandingCourt{position:relative;width:min(100%,680px);aspect-ratio:1/2;background:#de7b30;border:6px solid #eaf2ff;box-shadow:0 18px 60px rgba(0,0,0,.38);touch-action:manipulation;user-select:none;-webkit-user-select:none;overflow:hidden}
+#serveLandingCourt:before{content:"";position:absolute;left:0;right:0;top:50%;height:5px;background:#f8fafc;transform:translateY(-50%);z-index:2;pointer-events:none}
+.serveAttackLine{position:absolute;left:0;right:0;height:3px;background:#f8fafc;opacity:.95;pointer-events:none}.serveAttackLine.top{top:33.333%}.serveAttackLine.bottom{top:66.666%}
+#serveLandingGrid{position:absolute;inset:0;display:grid;pointer-events:none}.serveGridCell{border:1px solid rgba(255,255,255,.28)}
+.serveLandingMarker{position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;border:5px solid #2563eb;box-shadow:0 3px 11px rgba(0,0,0,.5);transform:translate(-50%,-50%);z-index:4;pointer-events:none}.serveLandingMarker:after{content:"";position:absolute;inset:4px;border-radius:50%;background:#facc15}
+.serveLandingSide{align-self:start;display:grid;gap:12px}.serveLandingCard{border:1px solid rgba(148,163,184,.22);border-radius:17px;background:#111c30;padding:16px}.serveLandingCard small{display:block;color:#94a3b8;font-size:11px;font-weight:900;letter-spacing:.08em}.serveLandingCard strong{display:block;margin-top:5px;font-size:28px}.serveLandingGuide{margin:0;color:#cbd5e1;font-size:13px;line-height:1.7;font-weight:700}.serveLandingClear{width:100%;min-height:43px;border:1px solid rgba(248,113,113,.45);border-radius:12px;background:rgba(127,29,29,.28);color:#fecaca;font-weight:900}
+@media(max-width:760px){.serveLandingHeader{grid-template-columns:auto 1fr auto;padding:9px}.serveLandingBack,.serveLandingUndo{padding:0 10px;min-height:38px;font-size:12px}.serveLandingHeading b{font-size:15px}.serveLandingMain{display:flex;flex-direction:column;padding:10px;gap:10px}.serveLandingCourtWrap{width:100%}#serveLandingCourt{width:min(78vw,430px)}.serveLandingSide{width:100%;grid-template-columns:1fr 1fr}.serveLandingCard{padding:12px}.serveLandingGuide{grid-column:1/-1}.serveLandingClear{grid-column:1/-1}}
+@media(orientation:landscape) and (max-height:700px){.serveLandingMain{grid-template-columns:minmax(0,1fr) 210px;padding:10px}.serveLandingCourtWrap{height:calc(100dvh - 72px)}#serveLandingCourt{height:100%;width:auto}.serveLandingSide{display:grid}}
+</style>
+<div id="serveLandingScreen" aria-hidden="true">
+  <div class="serveLandingShell">
+    <header class="serveLandingHeader">
+      <button class="serveLandingBack" type="button" onclick="closeServeLandingAnalysis()">戻る</button>
+      <div class="serveLandingHeading"><b>サーブ着地点入力</b><span id="serveLandingLevelText">LEVEL 1</span></div>
+      <button id="serveLandingUndo" class="serveLandingUndo" type="button" onclick="undoServeLanding()" disabled>Undo</button>
+    </header>
+    <main class="serveLandingMain">
+      <div class="serveLandingCourtWrap">
+        <div id="serveLandingCourt" role="button" aria-label="サーブの着地点を入力">
+          <div class="serveAttackLine top"></div><div class="serveAttackLine bottom"></div>
+          <div id="serveLandingGrid"></div><div id="serveLandingMarkers"></div>
+        </div>
+      </div>
+      <aside class="serveLandingSide">
+        <div class="serveLandingCard"><small>記録数</small><strong id="serveLandingCount">0</strong></div>
+        <div class="serveLandingCard"><small>選択レベル</small><strong id="serveLandingLevelSide" style="font-size:18px">LEVEL 1</strong></div>
+        <p class="serveLandingGuide">相手コート内の着地点をタップしてください。入力位置にボールマーカーが残ります。</p>
+        <button class="serveLandingClear" type="button" onclick="clearServeLanding()">入力をすべて消す</button>
+      </aside>
+    </main>
+  </div>
+</div>
+<script>
+(function(){
+  var state={level:'LEVEL 1',points:[]};
+  function el(id){return document.getElementById(id)}
+  function gridFor(level){
+    if(level==='LEVEL 2')return [2,3];
+    if(level==='LEVEL 3')return [3,6];
+    if(level==='LEVEL MAX')return [6,9];
+    return [1,1];
+  }
+  function renderGrid(){var g=el('serveLandingGrid'),rc=gridFor(state.level);g.innerHTML='';g.style.gridTemplateColumns='repeat('+rc[0]+',1fr)';g.style.gridTemplateRows='repeat('+rc[1]+',1fr)';for(var i=0;i<rc[0]*rc[1];i++){var c=document.createElement('div');c.className='serveGridCell';g.appendChild(c)}}
+  function render(){var box=el('serveLandingMarkers');box.innerHTML='';state.points.forEach(function(p){var m=document.createElement('i');m.className='serveLandingMarker';m.style.left=p.x+'%';m.style.top=p.y+'%';box.appendChild(m)});el('serveLandingCount').textContent=state.points.length;el('serveLandingUndo').disabled=!state.points.length}
+  window.openServeLandingAnalysis=function(level){state.level=level||'LEVEL 1';state.points=[];el('serveLandingLevelText').textContent=state.level;el('serveLandingLevelSide').textContent=state.level;renderGrid();render();el('serveLandingScreen').classList.add('show');el('serveLandingScreen').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  window.closeServeLandingAnalysis=function(){el('serveLandingScreen').classList.remove('show');el('serveLandingScreen').setAttribute('aria-hidden','true');document.body.style.overflow='';openPracticeAnalysis('サーブ')};
+  window.undoServeLanding=function(){state.points.pop();render()};
+  window.clearServeLanding=function(){state.points=[];render()};
+  document.addEventListener('DOMContentLoaded',function(){var court=el('serveLandingCourt');if(!court)return;court.addEventListener('pointerup',function(e){if(e.pointerType==='mouse'&&e.button!==0)return;var r=court.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;state.points.push({x:Math.max(1.8,Math.min(98.2,x)),y:Math.max(1.2,Math.min(98.8,y))});render()})});
+})();
+</script>
+<script>/* cache marker: 150-260-serve-landing-input */</script>
+
 </body>
 </html>
 
