@@ -1313,7 +1313,8 @@ function finishMatch(){
     },80);
   }catch(error){
     console.error('finish match save failed',error);
-    alert('試合の保存に失敗したため、終了していません。データは入力画面に残っています。');
+    const detail=String(error&&error.setterTheoryDetail||storageErrorLabel(error));
+    alert(`試合の保存に失敗したため、終了していません。\nデータは入力画面に残っています。\n\n原因：${detail}`);
   }
 }
 
@@ -3322,30 +3323,61 @@ function getSavedMatches(){
   }
   return list;
 }
+function storageErrorLabel(error){
+  const name=String(error&&error.name||'Error');
+  const message=String(error&&error.message||'保存処理でエラーが発生しました');
+  if(name==='QuotaExceededError' || /quota|storage/i.test(message)) return '保存容量が上限に達しています（QuotaExceededError）';
+  if(/JSON|circular/i.test(message)) return '保存データの変換に失敗しました';
+  return `${name}: ${message}`;
+}
 function setSavedMatches(list){
   const normalized=(list||[]).map(migrateSavedMatchIdentities);
   const savedAt=new Date().toISOString();
   const serialized=JSON.stringify(normalized);
   const backupSerialized=JSON.stringify({savedAt,list:normalized});
-  // App-internal storage is the main record. The second key is an automatic recovery copy,
-  // so users do not need to export a CSV after every match.
-  localStorage.setItem(savedMatchesKey(),serialized);
-  localStorage.setItem(savedMatchesBackupKey(),backupSerialized);
+  const sizeKb=Math.max(1,Math.ceil(new Blob([serialized]).size/1024));
+  let backupSaved=false;
+
+  // V150.288: バックアップの二重保存が容量を圧迫して新規試合保存まで失敗しないよう、
+  // 先に古いバックアップを解放して主データを最優先で保存する。
+  try{ localStorage.removeItem(savedMatchesBackupKey()); }catch(_error){}
+
+  try{
+    localStorage.setItem(savedMatchesKey(),serialized);
+  }catch(error){
+    console.error('saved match primary write failed',error,{sizeKb,count:normalized.length});
+    error.setterTheoryDetail=`${storageErrorLabel(error)} / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
+    throw error;
+  }
+
   try{
     const verified=JSON.parse(localStorage.getItem(savedMatchesKey())||'null');
     if(!Array.isArray(verified) || verified.length!==normalized.length) throw new Error('saved match verification failed');
   }catch(error){
     console.error('saved match verification failed',error);
+    error.setterTheoryDetail=`保存後の確認に失敗しました / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
     throw error;
   }
-  updateSavedMatchBackupState(savedAt);
+
+  // 主データ保存後、空き容量がある場合だけ自動バックアップを作成する。
+  // バックアップ失敗は試合保存失敗として扱わず、主データを保持する。
+  try{
+    localStorage.setItem(savedMatchesBackupKey(),backupSerialized);
+    backupSaved=true;
+  }catch(error){
+    console.warn('saved match backup skipped',error,{sizeKb,count:normalized.length});
+  }
+  updateSavedMatchBackupState(savedAt,backupSaved,sizeKb);
 }
-function updateSavedMatchBackupState(savedAt){
+function updateSavedMatchBackupState(savedAt,backupSaved=true,sizeKb=0){
   const el=document.getElementById('savedMatchBackupState');
   if(!el) return;
   const d=savedAt?new Date(savedAt):null;
   const time=d&&!Number.isNaN(d.getTime())?`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:'';
-  el.textContent=time?`アプリ内自動バックアップ済み ${time}`:'アプリ内自動バックアップ有効';
+  if(!time){ el.textContent='アプリ内保存有効'; return; }
+  el.textContent=backupSaved
+    ? `アプリ内保存・自動バックアップ済み ${time}`
+    : `アプリ内保存済み ${time}（容量節約のため予備バックアップ省略${sizeKb?`・約${sizeKb}KB`:''}）`;
 }
 function suggestedMatchName(){
   const d=new Date();
