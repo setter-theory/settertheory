@@ -673,24 +673,34 @@ function save(reason="auto"){
     s.lastSavedAt=savedAt;
     validateStateForSave(s);
 
-    // V150.208: Undo履歴はメモリ上に保持し、端末保存は直近30件だけに制限する。
-    // 長い試合で履歴スナップショットが膨らみ、localStorage容量超過になるのを防ぐ。
-    const durableState={...s,hist:Array.isArray(s.hist)?s.hist.slice(-30):[]};
-    const emergency={...durableState,hist:[]};
-    localStorage.setItem("setterTheoryV2Emergency", JSON.stringify(emergency));
-
+    // V150.289: 途中試合を同じ大きさで3重保存していた処理を見直す。
+    // 主データを最優先にし、バックアップは空き容量がある場合だけ作成する。
+    const durableState={...s,hist:Array.isArray(s.hist)?s.hist.slice(-12):[]};
     const serialized=JSON.stringify(durableState);
+
+    try{ localStorage.removeItem("setterTheoryV2Backup"); }catch(_error){}
+    try{ localStorage.removeItem("setterTheoryV2Emergency"); }catch(_error){}
     localStorage.setItem("setterTheoryV2", serialized);
-    localStorage.setItem("setterTheoryV2Backup", serialized);
 
     const verified=JSON.parse(localStorage.getItem("setterTheoryV2")||"null");
     if(!verified || verified.lastSavedAt!==savedAt || Number(verified.my||0)!==Number(s.my||0) || Number(verified.op||0)!==Number(s.op||0) || (verified.logs||[]).length!==(s.logs||[]).length){
       throw new Error("autosave verification failed");
     }
+
+    try{ localStorage.setItem("setterTheoryV2Backup", serialized); }
+    catch(backupError){ console.warn("autosave backup skipped",backupError); }
+
+    // 緊急用はスコアと基本情報のみ。容量を圧迫しない。
+    try{
+      const emergency={...durableState,hist:[],logs:[],emergencyLogCount:(s.logs||[]).length};
+      localStorage.setItem("setterTheoryV2Emergency",JSON.stringify(emergency));
+    }catch(emergencyError){ console.warn("autosave emergency skipped",emergencyError); }
+
     updateAutosaveIndicator(savedAt);
     return true;
   }catch(e){
     console.error("autosave failed",reason,e);
+    window.__setterTheoryLastSaveError=e;
     updateAutosaveIndicator(null,true);
     return false;
   }
@@ -1516,7 +1526,9 @@ function finishMatch(){
     s.matchActive=false;
     s.matchEndedAt=new Date().toISOString();
     s.status='completed';
-    if(!save('finish-match')) throw new Error('finish state save failed');
+    // 保存試合への格納が確認できた後は、途中試合の大容量コピーを削除する。
+    // ここで再度フル保存して容量超過になる現象を防ぐ。
+    ['setterTheoryV2','setterTheoryV2Backup','setterTheoryV2Emergency'].forEach(key=>{ try{ localStorage.removeItem(key); }catch(_error){} });
     renderSavedMatches();
     alert('試合を保存して終了しました。');
     show('home');
@@ -1527,7 +1539,9 @@ function finishMatch(){
     },80);
   }catch(error){
     console.error('finish match save failed',error);
-    alert('試合の保存に失敗したため、終了していません。データは入力画面に残っています。');
+    const sourceError=error&&error.message==='finish state save failed'&&window.__setterTheoryLastSaveError?window.__setterTheoryLastSaveError:error;
+    const detail=String(sourceError&&sourceError.setterTheoryDetail||storageErrorLabel(sourceError));
+    alert(`試合の保存に失敗したため、終了していません。\nデータは入力画面に残っています。\n\n原因：${detail}`);
   }
 }
 
@@ -6267,31 +6281,45 @@ function compactSavedMatchForStorage(match){
   if(!compact.logCount) compact.logCount=Number(compact.csv&&Array.isArray(compact.csv.data)?compact.csv.data.length:0);
   return compact;
 }
+function storageErrorLabel(error){
+  const name=String(error&&error.name||'Error');
+  const message=String(error&&error.message||'保存処理でエラーが発生しました');
+  if(name==='QuotaExceededError' || /quota|storage/i.test(message)) return '保存容量が上限に達しています（QuotaExceededError）';
+  if(/verification/i.test(message)) return '保存後の確認に失敗しました';
+  return `${name}: ${message}`;
+}
 function setSavedMatches(list){
-  // V150.208: 過去の保存試合も書き込み時に軽量化し、容量を回復する。
+  // V150.289: 主データ保存前に古いバックアップを解放し、保存試合を最優先する。
   const normalized=(list||[]).map(migrateSavedMatchIdentities).map(compactSavedMatchForStorage);
   const savedAt=new Date().toISOString();
   const serialized=JSON.stringify(normalized);
   const backupSerialized=JSON.stringify({savedAt,list:normalized});
-  localStorage.setItem(savedMatchesKey(),serialized);
+  const sizeKb=Math.max(1,Math.ceil(new Blob([serialized]).size/1024));
+  try{ localStorage.removeItem(savedMatchesBackupKey()); }catch(_error){}
+  try{
+    localStorage.setItem(savedMatchesKey(),serialized);
+  }catch(error){
+    error.setterTheoryDetail=`${storageErrorLabel(error)} / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
+    throw error;
+  }
   try{
     const verified=JSON.parse(localStorage.getItem(savedMatchesKey())||'null');
     if(!Array.isArray(verified) || verified.length!==normalized.length) throw new Error('saved match verification failed');
-    // バックアップは主保存の検証後に更新する。容量不足時も主保存を失わない。
-    try{ localStorage.setItem(savedMatchesBackupKey(),backupSerialized); }
-    catch(backupError){ console.warn('saved match backup skipped',backupError); }
   }catch(error){
-    console.error('saved match verification failed',error);
+    error.setterTheoryDetail=`保存後の確認に失敗しました / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
     throw error;
   }
-  updateSavedMatchBackupState(savedAt);
+  let backupSaved=false;
+  try{ localStorage.setItem(savedMatchesBackupKey(),backupSerialized); backupSaved=true; }
+  catch(backupError){ console.warn('saved match backup skipped',backupError); }
+  updateSavedMatchBackupState(savedAt,backupSaved);
 }
-function updateSavedMatchBackupState(savedAt){
+function updateSavedMatchBackupState(savedAt,backupSaved=true){
   const el=document.getElementById('savedMatchBackupState');
   if(!el) return;
   const d=savedAt?new Date(savedAt):null;
   const time=d&&!Number.isNaN(d.getTime())?`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:'';
-  el.textContent=time?`アプリ内自動バックアップ済み ${time}`:'アプリ内自動バックアップ有効';
+  el.textContent=time?(backupSaved?`アプリ内自動バックアップ済み ${time}`:`保存済み ${time}（予備バックアップ省略）`):'アプリ内自動バックアップ有効';
 }
 function suggestedMatchName(){
   const d=new Date();
