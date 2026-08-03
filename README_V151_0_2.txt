@@ -1,2 +1,2 @@
-Setter Theory V151.0.2
+Setter Theory V151.0.4
 コーチボードの番号タップ／選手プルダウン表示修正。
