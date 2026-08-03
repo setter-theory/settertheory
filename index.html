@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.0</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.1</div>
   </div>
 </section>
 
@@ -5262,7 +5262,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.0';
+const APP_VERSION = 'V151.1.1';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5328,7 +5328,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.0</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.1</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5743,19 +5743,31 @@ document.addEventListener('DOMContentLoaded',()=>{
       next[index]=num;close();applyCoachLineup(next,true);status('コート位置'+(index+1)+'の選手を変更しました')
     });
   }
+  function openCoachPositionPicker(number){
+    const team=selectedCoachTeam();if(!team||!number){status('先に選手を選択してください');return}
+    const current=loadCoachPositions(team)[String(number)]||'';
+    const overlay=document.createElement('div');overlay.className='coachMiniPicker coachPositionMiniPicker';
+    overlay.innerHTML='<section><header><div><small>ポジション</small><strong>選択してください</strong></div><button type="button" class="coachMiniClose">×</button></header><div class="coachPositionMiniList">'+COACH_POSITION_OPTIONS.map(o=>'<button type="button" class="coachPositionMiniButton '+(current===o[0]?'active':'')+'" data-position="'+o[0]+'"><span class="coachPositionMiniDot" style="background:'+(COACH_POSITION_COLORS[o[0]]||COACH_POSITION_COLORS[''])+'"></span><b>'+(o[0]||'未設定')+'</b></button>').join('')+'</div><footer><button type="button" class="coachMiniCancel">キャンセル</button></footer></section>';
+    document.getElementById('coachBoardModal').appendChild(overlay);
+    const close=()=>overlay.remove();overlay.querySelector('.coachMiniClose').onclick=close;overlay.querySelector('.coachMiniCancel').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+    overlay.querySelectorAll('[data-position]').forEach(btn=>btn.onclick=()=>{
+      const map=loadCoachPositions(team),next=String(btn.dataset.position||'');map[String(number)]=next;saveCoachPositions(team,map);
+      state.pieces.filter(p=>p.team==='home'&&String(p.label)===String(number)).forEach(p=>p.position=next);
+      close();renderPieces();renderCoachLineupSelectors(currentCoachLineup());status('ポジションを'+(next||'未設定')+'に変更しました');
+    });
+  }
   function renderCoachLineupSelectors(lineup){
     const box=document.getElementById('coachLineupSelectors');if(!box)return;
     const team=selectedCoachTeam(),players=coachTeamPlayers(team),values=Array.isArray(lineup)?lineup:currentCoachLineup();
     if(!team){box.innerHTML='<div class="coachLineupEmpty">チームを選ぶと登録選手を設定できます</div>';return}
     const positionMap=loadCoachPositions(team);
     box.classList.toggle('swapModeActive',!!state.swapMode);
-    box.innerHTML='<div class="coachLineupHead"><div><b>コート選手</b><small>'+(state.swapMode?'入れ替える2人を順番にタップ':'選手名をタップして変更')+'</small></div><button type="button" class="coachSwapIcon '+(state.swapMode?'active':'')+'" aria-label="選手を入れ替え">⇄</button></div><div class="coachLineupGrid">'+Array.from({length:6},(_,i)=>{
-      const value=String(values[i]||''),player=players.find(p=>p.number===value),pos=positionMap[value]||'',color=COACH_POSITION_COLORS[pos]||COACH_POSITION_COLORS[''];
-      const label=player?(escapeCoach(player.number)+'　'+escapeCoach(player.name||'名前未設定')):'選手を選択';
-      return '<article class="coachAthleteCard '+(state.swapFirstId===String(i)?'swapSelected':'')+'" data-coach-lineup-slot="'+i+'" style="--position-color:'+color+'">'
-        +'<button type="button" class="coachAthleteMain" data-open-player="'+i+'"><span class="coachAthleteIndex">'+(i+1)+'</span><span class="coachAthleteLabel">'+label+'</span><span class="coachAthleteArrow">›</span></button>'
-        +'<div class="coachPositionChips" aria-label="ポジション">'+COACH_POSITION_OPTIONS.map(o=>'<button type="button" class="coachPositionChip '+(pos===o[0]?'active':'')+'" data-position="'+o[0]+'" data-player-number="'+escapeCoach(value)+'">'+(o[0]||'−')+'</button>').join('')+'</div>'
-        +'</article>';
+    box.innerHTML='<div class="coachLineupHead"><b>コート選手</b><button type="button" class="coachSwapIcon '+(state.swapMode?'active':'')+'" aria-label="選手を入れ替え">⇄</button></div><div class="coachSimpleGrid">'+Array.from({length:6},(_,i)=>{
+      const value=String(values[i]||''),pos=positionMap[value]||'',color=COACH_POSITION_COLORS[pos]||COACH_POSITION_COLORS[''];
+      return '<div class="coachSimpleSlot '+(state.swapFirstId===String(i)?'swapSelected':'')+'" data-coach-lineup-slot="'+i+'" style="--position-color:'+color+'">'
+        +'<button type="button" class="coachSimpleNumber" data-open-player="'+i+'">'+(value?escapeCoach(value):'−')+'</button>'
+        +'<button type="button" class="coachSimplePosition" data-open-position="'+escapeCoach(value)+'">'+(pos||'ポジ')+'</button>'
+        +'</div>';
     }).join('')+'</div>';
     box.querySelector('.coachSwapIcon').onclick=()=>window.toggleCoachSwapMode();
     box.querySelectorAll('[data-open-player]').forEach(btn=>btn.onclick=ev=>{
@@ -5763,12 +5775,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(state.swapMode){box.querySelector('[data-coach-lineup-slot="'+idx+'"]').click();return}
       openCoachPlayerPicker(idx,values)
     });
-    box.querySelectorAll('.coachPositionChip').forEach(btn=>btn.onclick=ev=>{
-      ev.preventDefault();ev.stopPropagation();if(state.swapMode)return;
-      const number=String(btn.dataset.playerNumber||'');if(!number){status('先に選手を選択してください');return}
-      const map=loadCoachPositions(team),next=String(btn.dataset.position||'');map[number]=next;saveCoachPositions(team,map);
-      state.pieces.filter(p=>p.team==='home'&&String(p.label)===number).forEach(p=>p.position=next);
-      renderPieces();renderCoachLineupSelectors(currentCoachLineup());status('ポジションを'+(next||'未設定')+'に変更しました')
+    box.querySelectorAll('[data-open-position]').forEach(btn=>btn.onclick=ev=>{
+      ev.preventDefault();ev.stopPropagation();if(state.swapMode)return;openCoachPositionPicker(String(btn.dataset.openPosition||''));
     });
     box.querySelectorAll('[data-coach-lineup-slot]').forEach(slot=>slot.addEventListener('click',ev=>{
       if(!state.swapMode)return;ev.preventDefault();ev.stopPropagation();const idx=String(slot.dataset.coachLineupSlot);
@@ -6982,7 +6990,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.0</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.1</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10701,7 +10709,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-296-coach-card-fit-initial-sync */</script>
 
 <style id="v150-300-coach-right-panel-finish">
-/* V151.1.0: coach-board right panel final spacing and legibility pass. */
+/* V151.1.1: coach-board right panel final spacing and legibility pass. */
 #coachBoardModal .coachBoardShell{
   grid-template-columns:180px minmax(0,1fr) clamp(238px,24vw,286px)!important;
 }
@@ -10751,8 +10759,8 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </style>
 <script>/* cache marker: 150-300-coach-right-panel-finish */</script>
 
-<style id="v151-1-0-coach-position-restored">
-/* V151.1.0: position controls restored, wide right panel retained. */
+<style id="v151-1-1-coach-position-restored">
+/* V151.1.1: position controls restored, wide right panel retained. */
 #coachBoardModal .coachBoardShell{grid-template-columns:180px minmax(0,1fr) clamp(268px,27vw,330px)!important}
 #coachBoardModal .coachBoardToolbarRight{padding:10px 10px 18px!important;overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable!important}
 #coachBoardModal .coachBoardToolbarRight .coachAccordion{width:100%!important;margin:0!important;overflow:hidden!important;border-radius:12px!important;flex:0 0 auto!important}
@@ -10782,10 +10790,10 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
  #coachBoardModal .coachPositionSelect{height:28px!important;min-height:28px!important;font-size:9px!important}
 }
 </style>
-<script>/* cache marker: v151-1-0-coach-major-update */</script>
+<script>/* cache marker: v151-1-1-coach-major-update */</script>
 
-<style id="v151-1-0-coach-player-select-swap-restored">
-/* V151.1.0: visible player selection and card-to-card swap restored. */
+<style id="v151-1-1-coach-player-select-swap-restored">
+/* V151.1.1: visible player selection and card-to-card swap restored. */
 #coachBoardModal .coachLineupSlot{grid-template-rows:58px 30px!important}
 #coachBoardModal .coachPlayerChoice{position:relative!important;display:grid!important;grid-template-columns:25px minmax(0,1fr)!important;align-items:center!important;gap:5px!important;height:58px!important;padding:5px!important;border:2px solid #60a5fa!important;border-radius:12px!important;background:#1d4ed8!important;box-sizing:border-box!important;overflow:hidden!important}
 #coachBoardModal .coachSlotNo{display:grid!important;place-items:center!important;width:24px!important;height:24px!important;border-radius:50%!important;background:rgba(15,23,42,.72)!important;color:#fff!important;font-size:13px!important;font-weight:1000!important;pointer-events:none!important}
@@ -10796,10 +10804,10 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachBoardModal #coachSwapPlayers{display:block!important;visibility:visible!important;opacity:1!important}
 @media(max-width:900px){#coachBoardModal .coachLineupSlot{grid-template-rows:54px 28px!important}#coachBoardModal .coachPlayerChoice{height:54px!important}.coachPlayerSelect{font-size:9px!important}}
 </style>
-<script>/* cache marker: v151-1-0-coach-player-select-swap-restored */</script>
+<script>/* cache marker: v151-1-1-coach-player-select-swap-restored */</script>
 
-<style id="v151-1-0-coach-player-picker-fix">
-/* V151.1.0: keep the native player select visible and tappable; number badge opens it too. */
+<style id="v151-1-1-coach-player-picker-fix">
+/* V151.1.1: keep the native player select visible and tappable; number badge opens it too. */
 #coachBoardModal .coachPlayerChoice > select[data-coach-lineup-index].coachPlayerSelect{
  position:static!important;inset:auto!important;display:block!important;
  width:100%!important;height:40px!important;min-height:40px!important;
@@ -10812,10 +10820,10 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachBoardModal .coachSlotNo{pointer-events:auto!important;cursor:pointer!important;position:relative!important;z-index:4!important}
 #coachBoardModal .coachLineupSelectors.swapModeActive .coachPlayerChoice > select[data-coach-lineup-index].coachPlayerSelect{pointer-events:none!important}
 </style>
-<script>/* cache marker: v151-1-0-coach-player-picker-fix */</script>
+<script>/* cache marker: v151-1-1-coach-player-picker-fix */</script>
 
-<style id="v151-1-0-coach-player-card-polish">
-/* V151.1.0: readable two-column player cards with explicit controls. */
+<style id="v151-1-1-coach-player-card-polish">
+/* V151.1.1: readable two-column player cards with explicit controls. */
 #coachBoardModal .coachLineupSelectors{
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
   gap:9px!important;padding:10px!important;
@@ -10866,9 +10874,9 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
  #coachBoardModal .coachPlayerChoice > select[data-coach-lineup-index].coachPlayerSelect{font-size:10px!important}
 }
 </style>
-<script>/* cache marker: v151-1-0-coach-player-card-polish */</script>
+<script>/* cache marker: v151-1-1-coach-player-card-polish */</script>
 
-<style id="v151-1-0-coach-athlete-ui">
+<style id="v151-1-1-coach-athlete-ui">
 #coachBoardModal .coachLineupSelectors{display:block!important;padding:10px!important;border-radius:14px!important;background:linear-gradient(180deg,#0f172a,#111827)!important;overflow:visible!important}
 #coachBoardModal .coachLineupHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
 #coachBoardModal .coachLineupHead>div{display:flex;flex-direction:column;min-width:0}.coachLineupHead b{font-size:13px}.coachLineupHead small{font-size:9px;color:#94a3b8;margin-top:2px}
@@ -10890,7 +10898,27 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachBoardModal .coachMiniPicker footer{padding:10px;border-top:1px solid #334155}.coachMiniCancel{width:100%;height:42px;border:1px solid #475569;border-radius:11px;background:#1e293b;color:#fff;font-weight:900}
 @media(max-width:900px){#coachBoardModal .coachLineupGrid{gap:6px}.coachAthleteCard{padding:5px!important}.coachAthleteLabel{font-size:10px!important}.coachPositionChip{font-size:7px!important;height:22px!important}}
 </style>
-<script>/* cache marker: v151-1-0-coach-athlete-ui */</script>
+<script>/* cache marker: v151-1-1-coach-athlete-ui */</script>
+
+<style id="v151-1-1-coach-simple-grid">
+#coachBoardModal .coachLineupSelectors{display:block!important;padding:8px!important;border-radius:12px!important;background:#0f172a!important;overflow:visible!important}
+#coachBoardModal .coachLineupHead{display:flex!important;align-items:center!important;justify-content:space-between!important;margin-bottom:7px!important}
+#coachBoardModal .coachLineupHead b{font-size:12px!important;color:#e2e8f0!important}
+#coachBoardModal .coachSwapIcon{width:30px!important;height:30px!important;border:1px solid #475569!important;border-radius:8px!important;background:#1e293b!important;color:#cbd5e1!important;font-size:17px!important}
+#coachBoardModal .coachSwapIcon.active{background:#b45309!important;border-color:#facc15!important;color:#fff!important}
+#coachBoardModal .coachSimpleGrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px 7px!important}
+#coachBoardModal .coachSimpleSlot{display:grid!important;grid-template-rows:38px 28px!important;gap:4px!important;min-width:0!important;padding:0!important;border:0!important;background:transparent!important}
+#coachBoardModal .coachSimpleNumber,#coachBoardModal .coachSimplePosition{width:100%!important;min-width:0!important;border-radius:9px!important;font-weight:1000!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#coachBoardModal .coachSimpleNumber{height:38px!important;border:2px solid var(--position-color)!important;background:#172033!important;color:#fff!important;font-size:17px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)!important}
+#coachBoardModal .coachSimplePosition{height:28px!important;border:1px solid #475569!important;background:var(--position-color)!important;color:#fff!important;font-size:10px!important}
+#coachBoardModal .coachSimpleSlot.swapSelected .coachSimpleNumber{border-color:#facc15!important;box-shadow:0 0 0 3px rgba(250,204,21,.32)!important;background:#854d0e!important}
+#coachBoardModal .coachPositionMiniList{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;padding:12px!important;overflow:auto!important}
+#coachBoardModal .coachPositionMiniButton{display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:48px!important;border:1px solid #475569!important;border-radius:11px!important;background:#172033!important;color:#fff!important;font-size:13px!important}
+#coachBoardModal .coachPositionMiniButton.active{border-color:#facc15!important;box-shadow:0 0 0 2px rgba(250,204,21,.25)!important}
+#coachBoardModal .coachPositionMiniDot{width:13px!important;height:13px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.65)!important}
+@media(max-width:900px){#coachBoardModal .coachSimpleGrid{gap:6px 5px!important}#coachBoardModal .coachSimpleSlot{grid-template-rows:34px 26px!important}#coachBoardModal .coachSimpleNumber{height:34px!important;font-size:15px!important}#coachBoardModal .coachSimplePosition{height:26px!important;font-size:9px!important}}
+</style>
+<script>/* cache marker: v151-1-1-coach-simple-grid */</script>
 </body>
 </html>
 
