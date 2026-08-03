@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.289: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.293: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.289</div>
+    <div class="launchVersion">SETTER THEORY　V150.293</div>
   </div>
 </section>
 
@@ -5327,7 +5327,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.292</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.293</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5639,7 +5639,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   function openNumberPicker(p){let old=document.getElementById('coachNumberPicker');if(old)old.remove();const box=document.createElement('div');box.id='coachNumberPicker';box.className='coachNumberPicker';box.innerHTML='<strong>番号を選択</strong><div>'+Array.from({length:18},(_,i)=>'<button type="button" data-n="'+(i+1)+'">'+(i+1)+'</button>').join('')+'</div><button type="button" class="cancel">閉じる</button>';document.getElementById('coachBoardModal').appendChild(box);box.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{pushHistory();p.label=b.dataset.n;renderPieces();box.remove();status('No.'+p.label+'に変更しました')}));box.querySelector('.cancel').addEventListener('click',()=>box.remove())}
   function pieceClick(ev){const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(state.swapMode&&p&&p.team==='home'){ev.preventDefault();if(!state.swapFirstId){state.swapFirstId=p.id;ev.currentTarget.classList.add('swapSelected');status('入れ替えるもう1人を選択してください');return}const a=state.pieces.find(v=>v.id===state.swapFirstId);if(a&&a.id!==p.id){pushHistory();[a.label,p.label]=[p.label,a.label];[a.name,p.name]=[p.name,a.name];renderPieces();renderCoachLineupSelectors();status('選手を入れ替えました')}state.swapFirstId=null;document.querySelectorAll('#coachCourt .coachPiece').forEach(e=>e.classList.remove('swapSelected'));return}if(state.tool!=='number'||state.playing)return;ev.preventDefault();if(p&&p.team!=='ball')openNumberPicker(p)}
   function applyScene(scene,animate,duration=750){if(!scene||!Array.isArray(scene.pieces))return;const next=JSON.parse(JSON.stringify(scene.pieces)),existing=new Map(Array.from(layer()?.querySelectorAll('.coachPiece')||[]).map(e=>[e.dataset.id,e]));state.pieces=next;state.drawings=JSON.parse(JSON.stringify(scene.drawings||[]));if(animate&&state.playing&&existing.size===next.length){next.forEach(p=>{const e=existing.get(p.id);if(!e)return;setPieceVisual(e,p);e.className='coachPiece '+p.team+' sceneMoving';e.style.transitionDuration=Math.max(300,duration-250)+'ms';requestAnimationFrame(()=>{e.style.left=p.x+'%';e.style.top=p.y+'%'})})}else renderPieces();renderDrawings()}
-  function pieceDown(ev){if(state.playing||state.pinch)return;if(state.tool==='number'){ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p);return}if(state.tool!=='select')return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
+  function pieceDown(ev){if(state.playing||state.pinch||state.swapMode)return;if(state.tool==='number'){ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(p&&p.team!=='ball')openNumberPicker(p);return}if(state.tool!=='select')return;ev.preventDefault();const p=state.pieces.find(v=>v.id===ev.currentTarget.dataset.id);if(!p)return;pushHistory();state.drag={id:p.id};ev.currentTarget.style.transition='none';ev.currentTarget.classList.add('dragging');ev.currentTarget.setPointerCapture(ev.pointerId);ev.currentTarget.addEventListener('pointermove',pieceMove);ev.currentTarget.addEventListener('pointerup',pieceUp,{once:true});ev.currentTarget.addEventListener('pointercancel',pieceUp,{once:true})}
   function pieceMove(ev){if(!state.drag)return;const pt=pointFromEvent(ev),p=state.pieces.find(v=>v.id===state.drag.id);if(!p)return;p.x=pt.x*100;p.y=pt.y*100;ev.currentTarget.style.left=p.x+'%';ev.currentTarget.style.top=p.y+'%'}
   function pieceUp(ev){ev.currentTarget.classList.remove('dragging');ev.currentTarget.removeEventListener('pointermove',pieceMove);state.drag=null}
   function pointSegmentDistancePx(px,py,ax,ay,bx,by){const vx=bx-ax,vy=by-ay,wx=px-ax,wy=py-ay,c1=vx*wx+vy*wy,c2=vx*vx+vy*vy,t=Math.max(0,Math.min(1,c2?c1/c2:0));return Math.hypot(px-(ax+t*vx),py-(ay+t*vy))}
@@ -5718,7 +5718,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   function savedCoachInitialLineup(team){try{const a=JSON.parse(localStorage.getItem(coachInitialLineupKey(team?.id))||'null');return Array.isArray(a)&&a.length===6?a.map(String):null}catch(e){return null}}
   function coachDefaultLineup(team){const players=coachTeamPlayers(team),valid=new Set(players.map(p=>p.number)),saved=savedCoachInitialLineup(team),out=[];(saved||Array.isArray(team?.startingLineup)&&team.startingLineup||[]).map(String).forEach(n=>{if(valid.has(n)&&!out.includes(n)&&out.length<6)out.push(n)});players.forEach(p=>{if(!out.includes(p.number)&&out.length<6)out.push(p.number)});while(out.length<6)out.push('');return out}
   function currentCoachLineup(){return state.pieces.filter(p=>p.team==='home').sort((a,b)=>a.id.localeCompare(b.id)).map(p=>String(p.label||''))}
-  function renderCoachLineupSelectors(lineup){const box=document.getElementById('coachLineupSelectors');if(!box)return;const team=selectedCoachTeam(),players=coachTeamPlayers(team),values=Array.isArray(lineup)?lineup:currentCoachLineup();if(!team){box.innerHTML='<span>チームを選ぶと登録選手を選択できます</span>';return}box.innerHTML='<b>コート選手 <small>上段 1・2・3／下段 4・5・6</small></b>'+Array.from({length:6},(_,i)=>'<label class="coachLineupSlot"><em>'+(i+1)+'</em><select data-coach-lineup-index="'+i+'"><option value="">未選択</option>'+players.map(p=>'<option value="'+escapeCoach(p.number)+'" '+(String(values[i]||'')===p.number?'selected':'')+'>'+escapeCoach(p.number+(p.name?'　'+p.name:''))+'</option>').join('')+'</select></label>').join('');box.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',()=>{const vals=Array.from(box.querySelectorAll('select')).map(x=>x.value);if(vals.filter(Boolean).length!==new Set(vals.filter(Boolean)).size){alert('同じ選手は2回選べません');renderCoachLineupSelectors(currentCoachLineup());return}applyCoachLineup(vals,true)}))}
+  function renderCoachLineupSelectors(lineup){const box=document.getElementById('coachLineupSelectors');if(!box)return;const team=selectedCoachTeam(),players=coachTeamPlayers(team),values=Array.isArray(lineup)?lineup:currentCoachLineup();if(!team){box.innerHTML='<span>チームを選ぶと登録選手を選択できます</span>';return}box.innerHTML='<b>コート選手 <small>番号を押して選手を変更（上段1・2・3／下段4・5・6）</small></b>'+Array.from({length:6},(_,i)=>{const value=String(values[i]||''),player=players.find(p=>p.number===value),caption=player?(player.number+(player.name?' '+player.name:'')):(value||'未選択');return '<label class="coachLineupSlot coachLineupDropdown"><span class="coachLineupCurrent"><strong>'+escapeCoach(value||String(i+1))+'</strong><small>'+escapeCoach(player?.name||'選手を選択')+'</small></span><select aria-label="コート位置'+(i+1)+'の選手" data-coach-lineup-index="'+i+'"><option value="">未選択</option>'+players.map(p=>'<option value="'+escapeCoach(p.number)+'" '+(value===p.number?'selected':'')+'>'+escapeCoach(p.number+(p.name?'　'+p.name:''))+'</option>').join('')+'</select></label>'}).join('');box.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',()=>{const vals=Array.from(box.querySelectorAll('select')).map(x=>x.value);if(vals.filter(Boolean).length!==new Set(vals.filter(Boolean)).size){alert('同じ選手は2回選べません');renderCoachLineupSelectors(currentCoachLineup());return}applyCoachLineup(vals,true)}))}
   function applyCoachLineup(lineup,keepPositions){const team=selectedCoachTeam(),players=coachTeamPlayers(team),names=Object.fromEntries(players.map(p=>[p.number,p.name]));const homes=state.pieces.filter(p=>p.team==='home').sort((a,b)=>a.id.localeCompare(b.id));homes.forEach((p,i)=>{p.label=String(lineup[i]||'');p.name=names[p.label]||''});renderPieces();renderCoachLineupSelectors(lineup);if(!keepPositions)window.applyCoachRotationStart?.(true)}
   window.applyCoachTeamSelection=function(){readCoachPlanControls();pushHistory();const team=selectedCoachTeam();if(!team){state.pieces=basePieces();renderPieces();renderCoachLineupSelectors([]);status('チームを選択してください');return}const lineup=coachDefaultLineup(team);applyCoachLineup(lineup,true);window.applyCoachRotationStart?.(true);status((team.name||'選択チーム')+'の登録選手をコートへ反映しました')}
   function fillCoachTeamSelect(){const el=document.getElementById('coachTeamSelect');if(!el)return;const teams=loadCoachTeams();el.innerHTML='<option value="">チームを選択</option>'+teams.map(t=>'<option value="'+escapeCoach(t.id)+'">'+escapeCoach(t.name||'名称未設定')+(t.year?'（'+escapeCoach(t.year)+'）':'')+'</option>').join('');el.value=state.teamId||'';renderCoachLineupSelectors()}
@@ -6385,7 +6385,7 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape')clos
 }
 </style>
 
-<script src="app_v141_setter_split.js?v=150289"></script>
+<script src="app_v141_setter_split.js?v=150293"></script>
 
 
 
@@ -6924,7 +6924,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.289</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.293</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10151,7 +10151,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 .serveSystemSwitch button.active{border-color:#60a5fa;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
 </style>
 <style id="v150-261-serve-one-screen">
-/* V150.289: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.293: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10186,7 +10186,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.289: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.293: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10201,7 +10201,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.289: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.293: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10214,7 +10214,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.289: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.293: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
@@ -10261,7 +10261,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-273-mb-libero-position-swap */</script>
 
 <style id="v150-274-serve-player-card-compact">
-/* V150.289: keep the player card compact so miss/undo/clear controls remain visible. */
+/* V150.293: keep the player card compact so miss/undo/clear controls remain visible. */
 #serveLandingModal .serveLandingSide{gap:7px!important;align-self:stretch!important}
 #serveLandingModal .servePlayerListCard{padding:7px 8px!important;border-radius:12px!important}
 #serveLandingModal .servePlayerListTitle{margin-bottom:4px!important;font-size:10px!important;line-height:1.2!important}
@@ -10293,7 +10293,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-274-serve-player-card-compact */</script>
 
 <style id="v150-283-serve-level-data-and-tabs-fix">
-/* V150.289: サーブ結果ダッシュボード追加。 */
+/* V150.293: サーブ結果ダッシュボード追加。 */
 #serveLandingScreen .serveLandingUndo{display:none!important}
 #serveLandingScreen .serveLandingMain{grid-template-columns:minmax(190px,240px) minmax(0,1fr) minmax(150px,190px)!important;max-width:1180px!important;width:100%!important;gap:12px!important}
 #serveLandingScreen .serveLandingSide{display:contents!important}
@@ -10547,6 +10547,18 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachBoardModal #coachSwapPlayers.active{background:#f59e0b!important;color:#111827!important;border-color:#fbbf24!important}
 #coachCourt .coachPiece.swapSelected{outline:5px solid #facc15!important;outline-offset:3px;filter:brightness(1.18);z-index:20!important}
 @media(max-width:760px){#coachBoardModal .coachPlanTools .coachLineupSelectors{grid-template-columns:repeat(3,minmax(0,1fr))!important}.coachPlanTools{grid-template-columns:1fr 1fr!important}}
+</style>
+
+<style id="v150-293-coach-player-dropdown-swap-fix">
+#coachBoardModal .coachLineupSelectors .coachLineupDropdown{position:relative!important;display:block!important;min-width:0;height:58px!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible}
+#coachBoardModal .coachLineupDropdown .coachLineupCurrent{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid #60a5fa;border-radius:13px;background:#1d4ed8;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.3);pointer-events:none;z-index:1}
+#coachBoardModal .coachLineupDropdown .coachLineupCurrent strong{font-size:16px;line-height:1;font-weight:1000}
+#coachBoardModal .coachLineupDropdown .coachLineupCurrent small{display:block;max-width:95%;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#dbeafe;font-size:9px;font-weight:900}
+#coachBoardModal .coachLineupDropdown select{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;opacity:0!important;z-index:2!important;cursor:pointer!important}
+#coachBoardModal #coachSwapPlayers.active{background:#f59e0b!important;color:#111827!important;border-color:#fbbf24!important}
+#coachCourt .coachPiece.home{cursor:pointer}
+#coachCourt .coachPiece.display-name,#coachCourt .coachPiece.display-both{padding:2px!important;line-height:1.05!important;text-align:center!important;white-space:normal!important;overflow:hidden!important;word-break:break-all!important;font-size:10px!important}
+#coachCourt .coachPiece.display-both{font-size:9px!important}
 </style>
 </body>
 </html>
@@ -15408,7 +15420,7 @@ html.booting #launchLanding{
 <script>/* cache marker: 150-198-pdf-player-all-roster */</script>
 
 <style id="v150-276-serve-three-column-layout">
-/* V150.289: 左=選手配置 / 中央=コート / 右=記録操作 */
+/* V150.293: 左=選手配置 / 中央=コート / 右=記録操作 */
 @media (orientation:landscape) and (min-width:761px){
   .serveLandingMain{
     display:grid!important;
