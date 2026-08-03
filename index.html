@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.300</div>
+    <div class="launchVersion">SETTER THEORY　V151.0.0</div>
   </div>
 </section>
 
@@ -5262,7 +5262,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V150.300';
+const APP_VERSION = 'V151.0.0';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5328,7 +5328,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.300</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.0.0</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5445,7 +5445,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           <select id="coachTeamSelect" data-cb-change="team-plan" aria-label="保存先チーム"></select>
           <select id="coachSystemName" data-cb-change="team-plan" aria-label="体系">
             <option value="レセプション体系">レセプション体系</option>
-            <option value="サーブレシーブ体系">サーブレシーブ体系</option>
+            
             <option value="ディグ体系">ディグ体系</option>
             <option value="ブロック体系">ブロック体系</option>
             <option value="フリーボール体系">フリーボール体系</option>
@@ -5567,7 +5567,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   function pushHistory(){state.history.push(snapshot());if(state.history.length>50)state.history.shift();state.future=[]}
   function restore(raw){try{const d=typeof raw==='string'?JSON.parse(raw):raw;if(Array.isArray(d.pieces))state.pieces=d.pieces;if(Array.isArray(d.drawings))state.drawings=d.drawings;if(Array.isArray(d.scenes))state.scenes=d.scenes;if(d.theme)state.theme=d.theme;if(d.playerDisplay)state.playerDisplay=d.playerDisplay;if(d.teamId!=null)state.teamId=d.teamId;if(d.systemName)state.systemName=d.systemName;if(d.rotation)state.rotation=d.rotation;syncCoachPlanControls();applyCourtTheme();updatePlayerDisplayButtons();renderPieces();renderDrawings();updateSceneStatus()}catch(e){}}
   function setPieceVisual(e,p){
-    if(p.team!=='ball'){const number=String(p.label||'');const name=String(p.name||'').trim();e.classList.remove('display-name','display-both');if(state.playerDisplay==='name'){e.classList.add('display-name');e.textContent=name||number;e.title=name||('No.'+number)}else if(state.playerDisplay==='both'){e.classList.add('display-both');e.textContent=name?(number+' '+name):number;e.title=name?('No.'+number+' '+name):('No.'+number)}else{e.textContent=number;e.title='No.'+number}return}
+    if(p.team!=='ball'){const number=String(p.label||'');const name=String(p.name||'').trim();e.classList.remove('display-name','display-both');if(p.team==='home'){p.position=p.position||coachPositionFor(number);e.dataset.position=p.position||'';e.style.background=COACH_POSITION_COLORS[p.position||'']||COACH_POSITION_COLORS[''];}if(state.playerDisplay==='name'){e.classList.add('display-name');e.textContent=name||number;e.title=name||('No.'+number)}else if(state.playerDisplay==='both'){e.classList.add('display-both');e.textContent=name?(number+' '+name):number;e.title=name?('No.'+number+' '+name):('No.'+number)}else{e.textContent=number;e.title='No.'+number}return}
     e.textContent='';
     e.setAttribute('aria-label','バレーボール');
     e.innerHTML='<svg class="coachVolleyballSvg" viewBox="0 0 120 120" aria-hidden="true">'
@@ -5714,13 +5714,51 @@ document.addEventListener('DOMContentLoaded',()=>{
   function escapeCoach(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
   function loadCoachTeams(){try{const a=JSON.parse(localStorage.getItem(TEAM_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
   function selectedCoachTeam(){return loadCoachTeams().find(t=>String(t.id)===String(state.teamId))||null}
-  function coachTeamPlayers(team){return (Array.isArray(team?.players)?team.players:[]).filter(p=>String(p?.number||'').trim()).map(p=>({number:String(p.number).trim(),name:String(p.name||'').trim()}))}
+  function coachTeamPlayers(team){return (Array.isArray(team?.players)?team.players:[]).filter(p=>String(p?.number||'').trim()).map(p=>({number:String(p.number).trim(),name:String(p.name||'').trim(),isSetter:!!(p.isSetter||p.setter===true||p.setter==='yes'||p.setter==='はい')}))}
+  const COACH_POSITION_OPTIONS=[['','未設定'],['S','S'],['OH','OH'],['MB','MB'],['OP','OP'],['L','L']];
+  const COACH_POSITION_COLORS={S:'#f59e0b',OH:'#ef4444',MB:'#22c55e',OP:'#2563eb',L:'#8b5cf6','':'#2563eb'};
+  function coachPositionKey(teamId){return 'setterTheoryCoachPositions:'+String(teamId||'')}
+  function loadCoachPositions(team){let map={};try{map=JSON.parse(localStorage.getItem(coachPositionKey(team?.id))||'{}')||{}}catch(e){};(coachTeamPlayers(team)||[]).forEach(p=>{if(!map[p.number]&&p.isSetter)map[p.number]='S'});return map}
+  function saveCoachPositions(team,map){if(team?.id)localStorage.setItem(coachPositionKey(team.id),JSON.stringify(map||{}))}
+  function coachPositionFor(number){const team=selectedCoachTeam();return loadCoachPositions(team)[String(number||'')]||''}
+  function applyCoachPiecePosition(piece){if(piece&&piece.team==='home')piece.position=coachPositionFor(piece.label)}
   function coachInitialLineupKey(teamId){return 'setterTheoryCoachInitialLineup:'+String(teamId||'')}
   function savedCoachInitialLineup(team){try{const a=JSON.parse(localStorage.getItem(coachInitialLineupKey(team?.id))||'null');return Array.isArray(a)&&a.length===6?a.map(String):null}catch(e){return null}}
   function coachDefaultLineup(team){const players=coachTeamPlayers(team),valid=new Set(players.map(p=>p.number)),saved=savedCoachInitialLineup(team),out=[];(saved||Array.isArray(team?.startingLineup)&&team.startingLineup||[]).map(String).forEach(n=>{if(valid.has(n)&&!out.includes(n)&&out.length<6)out.push(n)});players.forEach(p=>{if(!out.includes(p.number)&&out.length<6)out.push(p.number)});while(out.length<6)out.push('');return out}
   function currentCoachLineup(){return state.pieces.filter(p=>p.team==='home').sort((a,b)=>a.id.localeCompare(b.id)).map(p=>String(p.label||''))}
-  function renderCoachLineupSelectors(lineup){const box=document.getElementById('coachLineupSelectors');if(!box)return;const team=selectedCoachTeam(),players=coachTeamPlayers(team),values=Array.isArray(lineup)?lineup:currentCoachLineup();if(!team){box.innerHTML='<span>チームを選ぶと登録選手を選択できます</span>';return}box.classList.toggle('swapModeActive',!!state.swapMode);box.innerHTML='<b>コート選手 <small>通常時：番号を押して選手変更／入れ替え時：1人目→2人目をタップ</small></b>'+Array.from({length:6},(_,i)=>{const value=String(values[i]||''),player=players.find(p=>p.number===value);return '<label class="coachLineupSlot coachLineupDropdown'+(state.swapFirstId===String(i)?' swapSelected':'')+'" data-coach-lineup-slot="'+i+'"><span class="coachLineupCurrent"><strong>'+escapeCoach(value||String(i+1))+'</strong><small>'+escapeCoach(player?.name||'選手を選択')+'</small></span><select aria-label="コート位置'+(i+1)+'の選手" data-coach-lineup-index="'+i+'"><option value="">未選択</option>'+players.map(p=>'<option value="'+escapeCoach(p.number)+'" '+(value===p.number?'selected':'')+'>'+escapeCoach(p.number+(p.name?'　'+p.name:''))+'</option>').join('')+'</select></label>'}).join('');box.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',()=>{if(state.swapMode)return;const vals=Array.from(box.querySelectorAll('select')).map(x=>x.value);if(vals.filter(Boolean).length!==new Set(vals.filter(Boolean)).size){alert('同じ選手は2回選べません');renderCoachLineupSelectors(currentCoachLineup());return}applyCoachLineup(vals,true)}));box.querySelectorAll('[data-coach-lineup-slot]').forEach(slot=>slot.addEventListener('click',ev=>{if(!state.swapMode)return;ev.preventDefault();ev.stopPropagation();const idx=String(slot.dataset.coachLineupSlot);if(state.swapFirstId===null){state.swapFirstId=idx;renderCoachLineupSelectors(values);status('入れ替える2人目をタップしてください');return}if(state.swapFirstId===idx){state.swapFirstId=null;renderCoachLineupSelectors(values);status('1人目の選択を解除しました');return}const vals=[...values],a=Number(state.swapFirstId),b=Number(idx);[vals[a],vals[b]]=[vals[b],vals[a]];state.swapFirstId=null;applyCoachLineup(vals,true);status('コート選手カードの'+(a+1)+'番と'+(b+1)+'番を入れ替えました')}))}
-  function applyCoachLineup(lineup,keepPositions){const team=selectedCoachTeam(),players=coachTeamPlayers(team),names=Object.fromEntries(players.map(p=>[p.number,p.name]));const homes=state.pieces.filter(p=>p.team==='home').sort((a,b)=>a.id.localeCompare(b.id));homes.forEach((p,i)=>{p.label=String(lineup[i]||'');p.name=names[p.label]||''});renderPieces();renderCoachLineupSelectors(lineup);if(!keepPositions)window.applyCoachRotationStart?.(true)}
+  function renderCoachLineupSelectors(lineup){
+    const box=document.getElementById('coachLineupSelectors');if(!box)return;
+    const team=selectedCoachTeam(),players=coachTeamPlayers(team),values=Array.isArray(lineup)?lineup:currentCoachLineup();
+    if(!team){box.innerHTML='<span>チームを選ぶと登録選手を選択できます</span>';return}
+    const positionMap=loadCoachPositions(team);
+    box.classList.toggle('swapModeActive',!!state.swapMode);
+    box.innerHTML='<b>コート選手 <small>番号タップで選手変更／ポジションで色分け</small></b>'+Array.from({length:6},(_,i)=>{
+      const value=String(values[i]||''),player=players.find(p=>p.number===value),pos=positionMap[value]||'';
+      return '<div class="coachLineupSlot coachLineupDropdown'+(state.swapFirstId===String(i)?' swapSelected':'')+'" data-coach-lineup-slot="'+i+'">'
+        +'<label class="coachPlayerChoice"><span class="coachLineupCurrent"><strong>'+escapeCoach(value||String(i+1))+'</strong><small>'+escapeCoach(player?.name||'選手を選択')+'</small></span>'
+        +'<select aria-label="コート位置'+(i+1)+'の選手" data-coach-lineup-index="'+i+'"><option value="">未選択</option>'+players.map(p=>'<option value="'+escapeCoach(p.number)+'" '+(value===p.number?'selected':'')+'>'+escapeCoach(p.number+(p.name?'　'+p.name:''))+'</option>').join('')+'</select></label>'
+        +'<select class="coachPositionSelect" aria-label="'+escapeCoach(player?.name||('位置'+(i+1)))+'のポジション" data-coach-position-number="'+escapeCoach(value)+'">'+COACH_POSITION_OPTIONS.map(o=>'<option value="'+o[0]+'" '+(pos===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></div>';
+    }).join('');
+    box.querySelectorAll('[data-coach-lineup-index]').forEach(sel=>sel.addEventListener('change',()=>{
+      if(state.swapMode)return;const vals=Array.from(box.querySelectorAll('[data-coach-lineup-index]')).map(x=>x.value);
+      if(vals.filter(Boolean).length!==new Set(vals.filter(Boolean)).size){alert('同じ選手は2回選べません');renderCoachLineupSelectors(currentCoachLineup());return}
+      applyCoachLineup(vals,true)
+    }));
+    box.querySelectorAll('.coachPositionSelect').forEach(sel=>sel.addEventListener('change',ev=>{
+      ev.stopPropagation();const number=String(sel.dataset.coachPositionNumber||'');if(!number)return;
+      const map=loadCoachPositions(team);map[number]=sel.value||'';saveCoachPositions(team,map);
+      state.pieces.filter(p=>p.team==='home'&&String(p.label)===number).forEach(p=>p.position=map[number]);
+      renderPieces();renderCoachLineupSelectors(currentCoachLineup());status('ポジションを'+(sel.value||'未設定')+'に変更しました')
+    }));
+    box.querySelectorAll('[data-coach-lineup-slot]').forEach(slot=>slot.addEventListener('click',ev=>{
+      if(ev.target.closest('.coachPositionSelect'))return;if(!state.swapMode)return;ev.preventDefault();ev.stopPropagation();
+      const idx=String(slot.dataset.coachLineupSlot);
+      if(state.swapFirstId===null){state.swapFirstId=idx;renderCoachLineupSelectors(values);status('入れ替える2人目をタップしてください');return}
+      if(state.swapFirstId===idx){state.swapFirstId=null;renderCoachLineupSelectors(values);status('1人目の選択を解除しました');return}
+      const vals=[...values],a=Number(state.swapFirstId),b=Number(idx);[vals[a],vals[b]]=[vals[b],vals[a]];state.swapFirstId=null;applyCoachLineup(vals,true);status('コート選手カードの'+(a+1)+'番と'+(b+1)+'番を入れ替えました')
+    }))
+  }
+  function applyCoachLineup(lineup,keepPositions){const team=selectedCoachTeam(),players=coachTeamPlayers(team),names=Object.fromEntries(players.map(p=>[p.number,p.name])),positions=loadCoachPositions(team);const homes=state.pieces.filter(p=>p.team==='home').sort((a,b)=>a.id.localeCompare(b.id));homes.forEach((p,i)=>{p.label=String(lineup[i]||'');p.name=names[p.label]||'';p.position=positions[p.label]||''});renderPieces();renderCoachLineupSelectors(lineup);if(!keepPositions)window.applyCoachRotationStart?.(true)}
   window.applyCoachTeamSelection=function(){readCoachPlanControls();pushHistory();const team=selectedCoachTeam();if(!team){state.pieces=basePieces();renderPieces();renderCoachLineupSelectors([]);status('チームを選択してください');return}const lineup=coachDefaultLineup(team);applyCoachLineup(lineup,true);window.applyCoachRotationStart?.(true);status((team.name||'選択チーム')+'の登録選手をコートへ反映しました')}
   function fillCoachTeamSelect(){const el=document.getElementById('coachTeamSelect');if(!el)return;const teams=loadCoachTeams();el.innerHTML='<option value="">チームを選択</option>'+teams.map(t=>'<option value="'+escapeCoach(t.id)+'">'+escapeCoach(t.name||'名称未設定')+(t.year?'（'+escapeCoach(t.year)+'）':'')+'</option>').join('');el.value=state.teamId||'';renderCoachLineupSelectors()}
   function syncCoachPlanControls(){fillCoachTeamSelect();const t=document.getElementById('coachTeamSelect'),n=document.getElementById('coachSystemName'),r=document.getElementById('coachRotationSelect');if(t)t.value=state.teamId||'';if(n){const value=state.systemName||'レセプション体系';if(!Array.from(n.options).some(o=>o.value===value))n.add(new Option(value,value));n.value=value}if(r)r.value=state.rotation||'S1';renderCoachLineupSelectors()}
@@ -6925,7 +6963,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.300</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.0.0</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10644,7 +10682,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-296-coach-card-fit-initial-sync */</script>
 
 <style id="v150-300-coach-right-panel-finish">
-/* V150.300: coach-board right panel final spacing and legibility pass. */
+/* V151.0.0: coach-board right panel final spacing and legibility pass. */
 #coachBoardModal .coachBoardShell{
   grid-template-columns:180px minmax(0,1fr) clamp(238px,24vw,286px)!important;
 }
@@ -10693,6 +10731,39 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 }
 </style>
 <script>/* cache marker: 150-300-coach-right-panel-finish */</script>
+
+<style id="v151-0-0-coach-position-restored">
+/* V151.0.0: position controls restored, wide right panel retained. */
+#coachBoardModal .coachBoardShell{grid-template-columns:180px minmax(0,1fr) clamp(268px,27vw,330px)!important}
+#coachBoardModal .coachBoardToolbarRight{padding:10px 10px 18px!important;overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable!important}
+#coachBoardModal .coachBoardToolbarRight .coachAccordion{width:100%!important;margin:0!important;overflow:hidden!important;border-radius:12px!important;flex:0 0 auto!important}
+#coachBoardModal .coachBoardToolbarRight .coachAccordion summary{min-height:42px!important;padding:8px 11px!important;font-size:11px!important;white-space:normal!important}
+#coachBoardModal .coachBoardToolbarRight .coachAccordion>.coachToolGroup{padding:9px!important;gap:8px!important}
+#coachBoardModal .coachLineupSelectors{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;padding:8px!important}
+#coachBoardModal .coachLineupSelectors>b{grid-column:1/-1!important;font-size:11px!important;line-height:1.3!important}
+#coachBoardModal .coachLineupSelectors>b small{display:block!important;font-size:8px!important;color:#94a3b8!important;margin-top:2px!important}
+#coachBoardModal .coachLineupSlot{display:grid!important;grid-template-rows:56px 30px!important;gap:4px!important;min-width:0!important;height:auto!important;padding:0!important;background:transparent!important;border:0!important;overflow:visible!important}
+#coachBoardModal .coachPlayerChoice{position:relative!important;display:block!important;height:56px!important;min-width:0!important}
+#coachBoardModal .coachLineupCurrent{position:absolute!important;inset:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;border:2px solid #60a5fa!important;border-radius:12px!important;background:#1d4ed8!important;color:#fff!important;pointer-events:none!important;overflow:hidden!important;padding:3px!important}
+#coachBoardModal .coachLineupCurrent strong{font-size:16px!important;line-height:1!important}
+#coachBoardModal .coachLineupCurrent small{display:block!important;width:100%!important;font-size:8px!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;margin-top:3px!important}
+#coachBoardModal .coachPlayerChoice>[data-coach-lineup-index]{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;opacity:0!important;z-index:2!important;cursor:pointer!important}
+#coachBoardModal .coachPositionSelect{display:block!important;width:100%!important;height:30px!important;min-height:30px!important;padding:3px 4px!important;border:1px solid #64748b!important;border-radius:8px!important;background:#0f172a!important;color:#fff!important;font-size:10px!important;font-weight:1000!important;text-align:center!important;opacity:1!important;position:static!important}
+#coachBoardModal .coachLineupSlot.swapSelected .coachLineupCurrent{border-color:#facc15!important;box-shadow:0 0 0 3px rgba(250,204,21,.28)!important}
+#coachBoardModal .coachPiece.home[data-position="S"]{background:#f59e0b!important}
+#coachBoardModal .coachPiece.home[data-position="OH"]{background:#ef4444!important}
+#coachBoardModal .coachPiece.home[data-position="MB"]{background:#22c55e!important}
+#coachBoardModal .coachPiece.home[data-position="OP"]{background:#2563eb!important}
+#coachBoardModal .coachPiece.home[data-position="L"]{background:#8b5cf6!important}
+@media(max-width:900px){
+ #coachBoardModal .coachBoardShell{grid-template-columns:145px minmax(0,1fr) 270px!important}
+ #coachBoardModal .coachLineupSelectors{gap:6px!important;padding:7px!important}
+ #coachBoardModal .coachLineupSlot{grid-template-rows:52px 28px!important}
+ #coachBoardModal .coachPlayerChoice{height:52px!important}
+ #coachBoardModal .coachPositionSelect{height:28px!important;min-height:28px!important;font-size:9px!important}
+}
+</style>
+<script>/* cache marker: v151-0-0-coach-major-update */</script>
 </body>
 </html>
 
