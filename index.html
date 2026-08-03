@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.0.0</div>
+    <div class="launchVersion">SETTER THEORY　V151.0.1</div>
   </div>
 </section>
 
@@ -5262,7 +5262,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.0.0';
+const APP_VERSION = 'V151.0.1';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5328,7 +5328,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.0.0</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.0.1</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5735,8 +5735,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     box.innerHTML='<b>コート選手 <small>番号タップで選手変更／ポジションで色分け</small></b>'+Array.from({length:6},(_,i)=>{
       const value=String(values[i]||''),player=players.find(p=>p.number===value),pos=positionMap[value]||'';
       return '<div class="coachLineupSlot coachLineupDropdown'+(state.swapFirstId===String(i)?' swapSelected':'')+'" data-coach-lineup-slot="'+i+'">'
-        +'<label class="coachPlayerChoice"><span class="coachLineupCurrent"><strong>'+escapeCoach(value||String(i+1))+'</strong><small>'+escapeCoach(player?.name||'選手を選択')+'</small></span>'
-        +'<select aria-label="コート位置'+(i+1)+'の選手" data-coach-lineup-index="'+i+'"><option value="">未選択</option>'+players.map(p=>'<option value="'+escapeCoach(p.number)+'" '+(value===p.number?'selected':'')+'>'+escapeCoach(p.number+(p.name?'　'+p.name:''))+'</option>').join('')+'</select></label>'
+        +'<label class="coachPlayerChoice"><span class="coachSlotNo">'+(i+1)+'</span>'
+        +'<select class="coachPlayerSelect" aria-label="コート位置'+(i+1)+'の選手" data-coach-lineup-index="'+i+'"><option value="">選手を選択</option>'+players.map(p=>'<option value="'+escapeCoach(p.number)+'" '+(value===p.number?'selected':'')+'>'+escapeCoach(p.number+(p.name?'　'+p.name:''))+'</option>').join('')+'</select></label>'
         +'<select class="coachPositionSelect" aria-label="'+escapeCoach(player?.name||('位置'+(i+1)))+'のポジション" data-coach-position-number="'+escapeCoach(value)+'">'+COACH_POSITION_OPTIONS.map(o=>'<option value="'+o[0]+'" '+(pos===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></div>';
     }).join('');
     box.querySelectorAll('[data-coach-lineup-index]').forEach(sel=>sel.addEventListener('change',()=>{
@@ -6963,7 +6963,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.0.0</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.0.1</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10682,7 +10682,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-296-coach-card-fit-initial-sync */</script>
 
 <style id="v150-300-coach-right-panel-finish">
-/* V151.0.0: coach-board right panel final spacing and legibility pass. */
+/* V151.0.1: coach-board right panel final spacing and legibility pass. */
 #coachBoardModal .coachBoardShell{
   grid-template-columns:180px minmax(0,1fr) clamp(238px,24vw,286px)!important;
 }
@@ -10732,8 +10732,8 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </style>
 <script>/* cache marker: 150-300-coach-right-panel-finish */</script>
 
-<style id="v151-0-0-coach-position-restored">
-/* V151.0.0: position controls restored, wide right panel retained. */
+<style id="v151-0-1-coach-position-restored">
+/* V151.0.1: position controls restored, wide right panel retained. */
 #coachBoardModal .coachBoardShell{grid-template-columns:180px minmax(0,1fr) clamp(268px,27vw,330px)!important}
 #coachBoardModal .coachBoardToolbarRight{padding:10px 10px 18px!important;overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable!important}
 #coachBoardModal .coachBoardToolbarRight .coachAccordion{width:100%!important;margin:0!important;overflow:hidden!important;border-radius:12px!important;flex:0 0 auto!important}
@@ -10763,7 +10763,21 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
  #coachBoardModal .coachPositionSelect{height:28px!important;min-height:28px!important;font-size:9px!important}
 }
 </style>
-<script>/* cache marker: v151-0-0-coach-major-update */</script>
+<script>/* cache marker: v151-0-1-coach-major-update */</script>
+
+<style id="v151-0-1-coach-player-select-swap-restored">
+/* V151.0.1: visible player selection and card-to-card swap restored. */
+#coachBoardModal .coachLineupSlot{grid-template-rows:58px 30px!important}
+#coachBoardModal .coachPlayerChoice{position:relative!important;display:grid!important;grid-template-columns:25px minmax(0,1fr)!important;align-items:center!important;gap:5px!important;height:58px!important;padding:5px!important;border:2px solid #60a5fa!important;border-radius:12px!important;background:#1d4ed8!important;box-sizing:border-box!important;overflow:hidden!important}
+#coachBoardModal .coachSlotNo{display:grid!important;place-items:center!important;width:24px!important;height:24px!important;border-radius:50%!important;background:rgba(15,23,42,.72)!important;color:#fff!important;font-size:13px!important;font-weight:1000!important;pointer-events:none!important}
+#coachBoardModal .coachPlayerSelect{position:static!important;display:block!important;width:100%!important;height:40px!important;min-height:40px!important;opacity:1!important;z-index:auto!important;padding:4px 24px 4px 7px!important;border:1px solid rgba(255,255,255,.5)!important;border-radius:8px!important;background:#0f172a!important;color:#fff!important;font-size:10px!important;font-weight:1000!important;cursor:pointer!important}
+#coachBoardModal .coachLineupSelectors.swapModeActive .coachPlayerSelect{pointer-events:none!important}
+#coachBoardModal .coachLineupSelectors.swapModeActive .coachLineupSlot{cursor:pointer!important}
+#coachBoardModal .coachLineupSlot.swapSelected .coachPlayerChoice{border-color:#facc15!important;background:#a16207!important;box-shadow:0 0 0 3px rgba(250,204,21,.3)!important}
+#coachBoardModal #coachSwapPlayers{display:block!important;visibility:visible!important;opacity:1!important}
+@media(max-width:900px){#coachBoardModal .coachLineupSlot{grid-template-rows:54px 28px!important}#coachBoardModal .coachPlayerChoice{height:54px!important}.coachPlayerSelect{font-size:9px!important}}
+</style>
+<script>/* cache marker: v151-0-1-coach-player-select-swap-restored */</script>
 </body>
 </html>
 
