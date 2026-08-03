@@ -61,7 +61,7 @@ html.booting #launchLandingActions{
 .playerMiniStats>div[style]{border-top:2px solid var(--player-stat-color)}
 .playerMiniStats>div[style] b{color:var(--player-stat-color)}
 
-/* V150.294: Practice Aquila removed temporarily; serve analysis UI takes priority. */
+/* V150.295: Practice Aquila removed temporarily; serve analysis UI takes priority. */
 </style>
 
 <style id="v150-182-logo-flicker-fix">
@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V150.294</div>
+    <div class="launchVersion">SETTER THEORY　V150.295</div>
   </div>
 </section>
 
@@ -5327,7 +5327,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.294</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V150.295</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5726,7 +5726,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   function readCoachPlanControls(){state.teamId=document.getElementById('coachTeamSelect')?.value||'';state.systemName=document.getElementById('coachSystemName')?.value.trim()||'レセプション体系';state.rotation=document.getElementById('coachRotationSelect')?.value||'S1'}
   const ROTATION_POS={S1:[[22,84],[50,84],[78,84],[22,61],[50,61],[78,61]],S2:[[22,61],[22,84],[50,84],[50,61],[78,61],[78,84]],S3:[[50,61],[22,61],[22,84],[78,61],[78,84],[50,84]],S4:[[78,61],[50,61],[22,61],[78,84],[50,84],[22,84]],S5:[[78,84],[78,61],[50,61],[50,84],[22,84],[22,61]],S6:[[50,84],[78,84],[78,61],[22,84],[22,61],[50,61]]};
   window.toggleCoachSwapMode=function(){state.swapMode=!state.swapMode;state.swapFirstId=null;const b=document.getElementById('coachSwapPlayers');if(b)b.classList.toggle('active',state.swapMode);document.querySelectorAll('#coachCourt .coachPiece').forEach(e=>e.classList.remove('swapSelected'));renderCoachLineupSelectors(currentCoachLineup());status(state.swapMode?'右側のコート選手カードで、1人目→2人目をタップしてください':'選手入れ替えを終了しました')}
-  window.saveCoachInitialLineup=function(){const team=selectedCoachTeam();if(!team)return alert('先にチームを選択してください');const lineup=currentCoachLineup();if(lineup.filter(Boolean).length!==6||new Set(lineup).size!==6)return alert('コート選手6人を重複なく選択してください');localStorage.setItem(coachInitialLineupKey(team.id),JSON.stringify(lineup));status('現在の並びを「'+(team.name||'選択チーム')+'」の初期位置に設定しました')}
+  window.saveCoachInitialLineup=function(){const team=selectedCoachTeam();if(!team)return alert('先にチームを選択してください');const lineup=currentCoachLineup();if(lineup.filter(Boolean).length!==6||new Set(lineup).size!==6)return alert('コート選手6人を重複なく選択してください');localStorage.setItem(coachInitialLineupKey(team.id),JSON.stringify(lineup));applyCoachLineup(lineup,true);renderCoachLineupSelectors(lineup);renderPieces();requestAnimationFrame(()=>{renderPieces();renderCoachLineupSelectors(currentCoachLineup())});status('現在の並びを「'+(team.name||'選択チーム')+'」の初期位置に設定し、コートへ反映しました')}
   window.applyCoachRotationStart=function(silent){readCoachPlanControls();if(!silent)pushHistory();const pos=ROTATION_POS[state.rotation]||ROTATION_POS.S1;state.pieces.filter(p=>p.team==='home').sort((a,b)=>a.id.localeCompare(b.id)).forEach((p,i)=>{p.x=pos[i][0];p.y=pos[i][1]});state.drawings=[];state.scenes=[];state.currentScene=-1;renderPieces();renderDrawings();renderCoachLineupSelectors();updateSceneStatus(state.rotation+' 初期位置を表示しました')};
   window.openCoachPresentation=function(){readCoachPlanControls();if(!state.scenes.length){state.scenes=[{name:state.rotation+' 初期位置',pieces:JSON.parse(JSON.stringify(state.pieces)),drawings:JSON.parse(JSON.stringify(state.drawings))}];state.currentScene=0}document.getElementById('coachPresentation')?.remove();const source=document.getElementById('coachCourt'),parent=source?.parentNode,next=source?.nextSibling;if(!source||!parent)return;const box=document.createElement('div');box.id='coachPresentation';box.className='coachPresentation';box.innerHTML='<header><div><small>'+escapeCoach((selectedCoachTeam()||{}).name||'チーム未設定')+'</small><strong>'+escapeCoach(state.systemName)+' / '+escapeCoach(state.rotation)+'</strong></div><span id="coachPresentationCount"></span><button type="button" id="coachPresentationClose">×</button></header><main><div id="coachPresentationStage"></div></main><footer><button type="button" id="coachPresentationPrev">◀ 前へ</button><button type="button" id="coachPresentationNext">次へ ▶</button></footer>';document.body.appendChild(box);const stage=box.querySelector('#coachPresentationStage');stage.appendChild(source);source.classList.add('coachCourtPresented');let index=Math.max(0,state.currentScene);const draw=()=>{window.showCoachScene(index,false);box.querySelector('#coachPresentationCount').textContent=(index+1)+' / '+state.scenes.length;requestAnimationFrame(()=>resizeCanvas())};const move=d=>{index=(index+d+state.scenes.length)%state.scenes.length;draw()};const close=()=>{source.classList.remove('coachCourtPresented');if(next)parent.insertBefore(source,next);else parent.appendChild(source);box.remove();requestAnimationFrame(()=>resizeCanvas())};box.querySelector('#coachPresentationClose').onclick=close;box.querySelector('#coachPresentationPrev').onclick=()=>move(-1);box.querySelector('#coachPresentationNext').onclick=()=>move(1);let sx=0;box.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});box.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>45)move(dx<0?1:-1)},{passive:true});draw()}
   function newCoachBoardState(){window.stopCoachScenes(true);state.pieces=basePieces();state.drawings=[];state.scenes=[];state.history=[];state.future=[];state.currentScene=-1;state.selectedDrawing=-1;state.currentSaveId=null;state.currentSaveName='';state.teamId='';state.systemName='レセプション体系';state.rotation='S1';state.playerDisplay='number';state.theme='international';state.viewport={scale:1,x:0,y:0};state.tool='select';fillCoachTeamSelect();syncCoachPlanControls();applyCourtTheme();updatePlayerDisplayButtons();renderPieces();renderDrawings();applyViewport();status('新規コーチボード')}
@@ -6924,7 +6924,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.294</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V150.295</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10151,7 +10151,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 .serveSystemSwitch button.active{border-color:#60a5fa;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
 </style>
 <style id="v150-261-serve-one-screen">
-/* V150.294: サーブ着地点入力を縦横とも1画面内に収める */
+/* V150.295: サーブ着地点入力を縦横とも1画面内に収める */
 #serveLandingScreen{overflow:hidden}
 .serveLandingShell{height:100dvh;min-height:0;overflow:hidden}
 .serveLandingHeader{flex:0 0 auto}
@@ -10186,7 +10186,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v150-264-serve-half-court">
-/* V150.294: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
+/* V150.295: Level 2を横2×縦3の基準区画とし、Level 3は各区画を2×2、MAXは各区画を3×3に細分化 */
 #serveLandingCourt{aspect-ratio:1/1!important;}
 #serveLandingCourt:before{top:0!important;height:6px!important;transform:none!important;background:#f8fafc!important;}
 #serveLandingCourt .serveAttackLine.top{top:33.333%!important;}
@@ -10201,7 +10201,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-262-serve-half-court */</script>
 
 <style id="v150-267-player-centered-serve-grid">
-/* V150.294: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
+/* V150.295: 6人の守備エリアを固定し、各選手を中心に難易度別で細分化 */
 #serveLandingGrid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .servePlayerArea{position:relative;border:1.5px solid rgba(255,255,255,.48);overflow:hidden}
 .servePlayerCenter{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#f8fafc;border:3px solid rgba(37,99,235,.95);box-shadow:0 1px 5px rgba(0,0,0,.45);z-index:3}
@@ -10214,7 +10214,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-267-player-centered-serve-grid */</script>
 
 <style id="v150-267-grid-behind-attack-line">
-/* V150.294: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
+/* V150.295: 6人の守備分割をアタックライン〜エンドラインの6m範囲に限定 */
 #serveLandingGrid{inset:33.333% 0 0 0!important;}
 </style>
 <script>/* cache marker: 150-267-grid-behind-attack-line */</script>
@@ -10261,7 +10261,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-273-mb-libero-position-swap */</script>
 
 <style id="v150-274-serve-player-card-compact">
-/* V150.294: keep the player card compact so miss/undo/clear controls remain visible. */
+/* V150.295: keep the player card compact so miss/undo/clear controls remain visible. */
 #serveLandingModal .serveLandingSide{gap:7px!important;align-self:stretch!important}
 #serveLandingModal .servePlayerListCard{padding:7px 8px!important;border-radius:12px!important}
 #serveLandingModal .servePlayerListTitle{margin-bottom:4px!important;font-size:10px!important;line-height:1.2!important}
@@ -10293,7 +10293,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-274-serve-player-card-compact */</script>
 
 <style id="v150-283-serve-level-data-and-tabs-fix">
-/* V150.294: サーブ結果ダッシュボード追加。 */
+/* V150.295: サーブ結果ダッシュボード追加。 */
 #serveLandingScreen .serveLandingUndo{display:none!important}
 #serveLandingScreen .serveLandingMain{grid-template-columns:minmax(190px,240px) minmax(0,1fr) minmax(150px,190px)!important;max-width:1180px!important;width:100%!important;gap:12px!important}
 #serveLandingScreen .serveLandingSide{display:contents!important}
@@ -10561,7 +10561,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachCourt .coachPiece.display-both{font-size:9px!important}
 </style>
 
-<style id="v150-294-coach-card-swap-fit">
+<style id="v150-295-coach-card-fit-initial-sync">
 #coachBoardModal .coachRightPanel{overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important}
 #coachBoardModal .coachAccordion[open]>.coachPlanTools{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;padding:9px!important;align-content:start!important}
 #coachBoardModal .coachPlanTools #coachTeamSelect,#coachBoardModal .coachPlanTools #coachSystemName,#coachBoardModal .coachPlanTools .coachLineupSelectors{grid-column:1/-1!important}
@@ -10574,7 +10574,73 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachBoardModal .coachAccordion[open]{overflow:visible!important}
 @media(max-width:1200px){#coachBoardModal .coachLineupDropdown .coachLineupCurrent strong{font-size:14px!important}#coachBoardModal .coachLineupDropdown .coachLineupCurrent small{font-size:8px!important}}
 </style>
-<script>/* cache marker: 150-294-coach-card-swap-fit */</script>
+<script>/* cache marker: 150-295-coach-card-fit-initial-sync */</script>
+
+<style id="v150-295-coach-card-fit-initial-sync">
+/* V150.295: 右パネルのカード欠け・展開時の文字崩れを防止し、全項目を安定表示。 */
+#coachBoardModal .coachBoardToolbarRight{
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  padding:10px 11px 16px!important;
+  scrollbar-gutter:stable!important;
+  align-content:start!important;
+}
+#coachBoardModal .coachBoardToolbarRight>.coachToolbarTitle,
+#coachBoardModal .coachBoardToolbarRight>.coachAccordion{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  flex:0 0 auto!important;
+}
+#coachBoardModal .coachAccordion{
+  border-radius:11px!important;
+  clip-path:inset(0 round 11px)!important;
+  margin:0!important;
+}
+#coachBoardModal .coachAccordion summary{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:0 12px!important;
+  line-height:1.25!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+#coachBoardModal .coachAccordion summary::after{flex:0 0 auto!important;margin-left:8px!important}
+#coachBoardModal .coachAccordion>.coachToolGroup{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+#coachBoardModal .coachAccordion button,
+#coachBoardModal .coachAccordion select,
+#coachBoardModal .coachAccordion label{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#coachBoardModal .coachAccordion button{
+  white-space:normal!important;
+  line-height:1.15!important;
+  overflow-wrap:anywhere!important;
+}
+#coachBoardModal .coachPlanTools{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  align-items:stretch!important;
+}
+#coachBoardModal .coachPlanTools #coachTeamSelect,
+#coachBoardModal .coachPlanTools #coachSystemName,
+#coachBoardModal .coachPlanTools .coachLineupSelectors{grid-column:1/-1!important}
+#coachBoardModal .coachPlanTools .coachLineupSelectors{width:100%!important;box-sizing:border-box!important}
+@media(max-width:760px){
+  #coachBoardModal .coachBoardToolbarRight{padding:7px 8px 12px!important}
+  #coachBoardModal .coachAccordion summary{padding:0 8px!important;font-size:9px!important}
+}
+</style>
+<script>/* cache marker: 150-295-coach-card-fit-initial-sync */</script>
 </body>
 </html>
 
@@ -15435,7 +15501,7 @@ html.booting #launchLanding{
 <script>/* cache marker: 150-198-pdf-player-all-roster */</script>
 
 <style id="v150-276-serve-three-column-layout">
-/* V150.294: 左=選手配置 / 中央=コート / 右=記録操作 */
+/* V150.295: 左=選手配置 / 中央=コート / 右=記録操作 */
 @media (orientation:landscape) and (min-width:761px){
   .serveLandingMain{
     display:grid!important;
