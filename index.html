@@ -4970,7 +4970,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.26</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.27</div>
   </div>
 </section>
 
@@ -5281,7 +5281,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.26';
+const APP_VERSION = 'V151.1.27';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5347,7 +5347,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.26</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.27</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -6311,11 +6311,11 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape')clos
     resizeVideoDrawCanvas(c);renderVideoDrawings();return c;
   }
   function resizeVideoDrawCanvas(c){c=c||document.getElementById('videoDrawCanvas');if(!c)return;const r=c.getBoundingClientRect(),dpr=Math.max(1,window.devicePixelRatio||1);const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(c.width!==w||c.height!==h){c.width=w;c.height=h;renderVideoDrawings();}}
-  function drawVideoShape(ctx,d,w,h,index){ctx.save();ctx.globalAlpha=d.opacity==null?1:d.opacity;ctx.strokeStyle=d.color||'#ff3b30';ctx.lineWidth=(d.width||4)*(window.devicePixelRatio||1);ctx.lineCap='round';ctx.lineJoin='round';const P=p=>({x:p.x*w,y:p.y*h});if(d.type==='pen'&&d.points?.length){ctx.beginPath();d.points.forEach((p,i)=>{const q=P(p);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)});ctx.stroke();}else if(d.type==='arrow'){const a=P(d.start),b=P(d.end);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();const ang=Math.atan2(b.y-a.y,b.x-a.x),len=18*(window.devicePixelRatio||1);ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-len*Math.cos(ang-.5),b.y-len*Math.sin(ang-.5));ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-len*Math.cos(ang+.5),b.y-len*Math.sin(ang+.5));ctx.stroke();}else if(d.type==='circle'){const a=P(d.start),b=P(d.end),cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,rx=Math.abs(b.x-a.x)/2,ry=Math.abs(b.y-a.y)/2;ctx.beginPath();ctx.ellipse(cx,cy,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);ctx.stroke();}if(index===videoSelectedDrawing){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff';ctx.lineWidth=2*(window.devicePixelRatio||1);ctx.setLineDash([6,5]);const pts=d.type==='pen'?d.points:[d.start,d.end];if(pts&&pts.length){const xs=pts.map(p=>p.x*w),ys=pts.map(p=>p.y*h);ctx.strokeRect(Math.min(...xs)-8,Math.min(...ys)-8,Math.max(...xs)-Math.min(...xs)+16,Math.max(...ys)-Math.min(...ys)+16)}}ctx.restore();}
+  function drawVideoShape(ctx,d,w,h,index){ctx.save();ctx.globalAlpha=d.opacity==null?1:d.opacity;ctx.strokeStyle=d.color||'#ff3b30';ctx.lineWidth=(d.width||4)*(window.devicePixelRatio||1);ctx.lineCap='round';ctx.lineJoin='round';const P=p=>({x:p.x*w,y:p.y*h});if(d.type==='pen'&&d.points?.length){ctx.beginPath();d.points.forEach((p,i)=>{const q=P(p);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)});ctx.stroke();}else if(d.type==='arrow'){const a=P(d.start),b=P(d.end);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();const ang=Math.atan2(b.y-a.y,b.x-a.x),len=18*(window.devicePixelRatio||1);ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-len*Math.cos(ang-.5),b.y-len*Math.sin(ang-.5));ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-len*Math.cos(ang+.5),b.y-len*Math.sin(ang+.5));ctx.stroke();}else if(d.type==='circle'){const a=P(d.start),b=P(d.end),cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,rx=Math.abs(b.x-a.x)/2,ry=Math.abs(b.y-a.y)/2;ctx.beginPath();ctx.ellipse(cx,cy,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);ctx.stroke();}if(videoDrawTool==='move'&&index===videoSelectedDrawing){ctx.globalAlpha=1;ctx.strokeStyle='#ffffff';ctx.lineWidth=2*(window.devicePixelRatio||1);ctx.setLineDash([6,5]);const pts=d.type==='pen'?d.points:[d.start,d.end];if(pts&&pts.length){const xs=pts.map(p=>p.x*w),ys=pts.map(p=>p.y*h);ctx.strokeRect(Math.min(...xs)-8,Math.min(...ys)-8,Math.max(...xs)-Math.min(...xs)+16,Math.max(...ys)-Math.min(...ys)+16)}}ctx.restore();}
   function renderVideoDrawings(){const c=document.getElementById('videoDrawCanvas');if(!c)return;const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);videoDrawings.forEach((d,i)=>drawVideoShape(ctx,d,c.width,c.height,i));if(videoDrawCurrent)drawVideoShape(ctx,videoDrawCurrent,c.width,c.height,-1);}
   function videoShapeDistance(p,d){const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);if(d.type==='pen')return Math.min(...(d.points||[]).map(q=>dist(p,q)),99);if(d.type==='circle'){const cx=(d.start.x+d.end.x)/2,cy=(d.start.y+d.end.y)/2,rx=Math.abs(d.end.x-d.start.x)/2||.001,ry=Math.abs(d.end.y-d.start.y)/2||.001;return Math.abs(Math.hypot((p.x-cx)/rx,(p.y-cy)/ry)-1)*Math.min(rx,ry);}const a=d.start,b=d.end,vx=b.x-a.x,vy=b.y-a.y,l=vx*vx+vy*vy||1,t=Math.max(0,Math.min(1,((p.x-a.x)*vx+(p.y-a.y)*vy)/l));return dist(p,{x:a.x+t*vx,y:a.y+t*vy});}
   function moveVideoShape(d,dx,dy){const mv=p=>{p.x=Math.max(0,Math.min(1,p.x+dx));p.y=Math.max(0,Math.min(1,p.y+dy));};if(d.type==='pen')(d.points||[]).forEach(mv);else{mv(d.start);mv(d.end)}}
-  function bindVideoDrawCanvas(c){const pos=e=>{const r=c.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))}};c.addEventListener('pointerdown',e=>{if(videoDrawTool==='video')return;e.preventDefault();c.setPointerCapture?.(e.pointerId);const p=pos(e);if(videoDrawTool==='move'){let best=.045,idx=-1;videoDrawings.forEach((d,i)=>{const z=videoShapeDistance(p,d);if(z<best){best=z;idx=i}});videoSelectedDrawing=idx;if(idx>=0)videoDrag={index:idx,last:p};renderVideoDrawings();document.getElementById('videoBetaStatus').textContent=idx>=0?'図形を選択しました。ドラッグで移動できます。':'移動する図形をタップしてください。';return;}const base={color:videoDrawColor,width:videoDrawWidth,opacity:videoDrawTool==='highlighter'?.35:1};videoDrawCurrent=(videoDrawTool==='pen'||videoDrawTool==='highlighter')?{type:'pen',points:[p],...base}:{type:videoDrawTool,start:p,end:p,...base};renderVideoDrawings();});c.addEventListener('pointermove',e=>{const p=pos(e);if(videoDrag){const d=videoDrawings[videoDrag.index],dx=p.x-videoDrag.last.x,dy=p.y-videoDrag.last.y;moveVideoShape(d,dx,dy);videoDrag.last=p;renderVideoDrawings();e.preventDefault();return;}if(!videoDrawCurrent)return;e.preventDefault();if(videoDrawCurrent.type==='pen')videoDrawCurrent.points.push(p);else videoDrawCurrent.end=p;renderVideoDrawings();});const finish=e=>{if(videoDrag){videoDrag=null;document.getElementById('videoBetaStatus').textContent='図形を移動しました。描画更新で保存できます。';return;}if(!videoDrawCurrent)return;e.preventDefault();videoDrawings.push(videoDrawCurrent);videoSelectedDrawing=videoDrawings.length-1;videoDrawCurrent=null;renderVideoDrawings();document.getElementById('videoBetaStatus').textContent='描画しました。場面登録または「描画更新」で保存できます。';};c.addEventListener('pointerup',finish);c.addEventListener('pointercancel',finish);if(window.ResizeObserver){videoDrawResizeObserver?.disconnect();videoDrawResizeObserver=new ResizeObserver(()=>resizeVideoDrawCanvas(c));videoDrawResizeObserver.observe(c.parentElement);}}
+  function bindVideoDrawCanvas(c){const pos=e=>{const r=c.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))}};c.addEventListener('pointerdown',e=>{if(videoDrawTool==='video')return;e.preventDefault();c.setPointerCapture?.(e.pointerId);const p=pos(e);if(videoDrawTool==='move'){let best=.045,idx=-1;videoDrawings.forEach((d,i)=>{const z=videoShapeDistance(p,d);if(z<best){best=z;idx=i}});videoSelectedDrawing=idx;if(idx>=0)videoDrag={index:idx,last:p};renderVideoDrawings();document.getElementById('videoBetaStatus').textContent=idx>=0?'図形を選択しました。ドラッグで移動できます。':'移動する図形をタップしてください。';return;}const base={color:videoDrawColor,width:videoDrawWidth,opacity:videoDrawTool==='highlighter'?.35:1};videoDrawCurrent=(videoDrawTool==='pen'||videoDrawTool==='highlighter')?{type:'pen',points:[p],...base}:{type:videoDrawTool,start:p,end:p,...base};renderVideoDrawings();});c.addEventListener('pointermove',e=>{const p=pos(e);if(videoDrag){const d=videoDrawings[videoDrag.index],dx=p.x-videoDrag.last.x,dy=p.y-videoDrag.last.y;moveVideoShape(d,dx,dy);videoDrag.last=p;renderVideoDrawings();e.preventDefault();return;}if(!videoDrawCurrent)return;e.preventDefault();if(videoDrawCurrent.type==='pen')videoDrawCurrent.points.push(p);else videoDrawCurrent.end=p;renderVideoDrawings();});const finish=e=>{if(videoDrag){videoDrag=null;document.getElementById('videoBetaStatus').textContent='図形を移動しました。描画更新で保存できます。';return;}if(!videoDrawCurrent)return;e.preventDefault();videoDrawings.push(videoDrawCurrent);videoSelectedDrawing=-1;videoDrawCurrent=null;renderVideoDrawings();document.getElementById('videoBetaStatus').textContent='描画しました。場面登録または「描画更新」で保存できます。';};c.addEventListener('pointerup',finish);c.addEventListener('pointercancel',finish);if(window.ResizeObserver){videoDrawResizeObserver?.disconnect();videoDrawResizeObserver=new ResizeObserver(()=>resizeVideoDrawCanvas(c));videoDrawResizeObserver.observe(c.parentElement);}}
   window.setVideoDrawTool=function(tool){videoDrawTool=tool;if(tool!=='move')videoSelectedDrawing=-1;const c=ensureVideoDrawCanvas();c?.classList.toggle('drawing',['pen','highlighter','arrow','circle'].includes(tool));c?.classList.toggle('moving',tool==='move');document.querySelectorAll('[data-video-draw-tool]').forEach(b=>b.classList.toggle('active',b.dataset.videoDrawTool===tool));const names={video:'動画操作',pen:'ペン',highlighter:'蛍光ペン',arrow:'矢印',circle:'円',move:'選択・移動'};const st=document.getElementById('videoDrawStatus');if(st)st.textContent=(names[tool]||tool)+'モード';renderVideoDrawings();};
   window.setVideoDrawColor=function(v){videoDrawColor=v||'#ff3b30';};
   window.setVideoDrawWidth=function(v){videoDrawWidth=Math.max(1,Number(v)||4);};
@@ -7379,7 +7379,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.26</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.27</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -11098,7 +11098,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-296-coach-card-fit-initial-sync */</script>
 
 <style id="v150-300-coach-right-panel-finish">
-/* V151.1.26: coach-board right panel final spacing and legibility pass. */
+/* V151.1.27: coach-board right panel final spacing and legibility pass. */
 #coachBoardModal .coachBoardShell{
   grid-template-columns:180px minmax(0,1fr) clamp(238px,24vw,286px)!important;
 }
@@ -11149,7 +11149,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-300-coach-right-panel-finish */</script>
 
 <style id="v151-1-8-coach-position-restored">
-/* V151.1.26: position controls restored, wide right panel retained. */
+/* V151.1.27: position controls restored, wide right panel retained. */
 #coachBoardModal .coachBoardShell{grid-template-columns:180px minmax(0,1fr) clamp(268px,27vw,330px)!important}
 #coachBoardModal .coachBoardToolbarRight{padding:10px 10px 18px!important;overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable!important}
 #coachBoardModal .coachBoardToolbarRight .coachAccordion{width:100%!important;margin:0!important;overflow:hidden!important;border-radius:12px!important;flex:0 0 auto!important}
@@ -11182,7 +11182,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-coach-major-update */</script>
 
 <style id="v151-1-8-coach-player-select-swap-restored">
-/* V151.1.26: visible player selection and card-to-card swap restored. */
+/* V151.1.27: visible player selection and card-to-card swap restored. */
 #coachBoardModal .coachLineupSlot{grid-template-rows:58px 30px!important}
 #coachBoardModal .coachPlayerChoice{position:relative!important;display:grid!important;grid-template-columns:25px minmax(0,1fr)!important;align-items:center!important;gap:5px!important;height:58px!important;padding:5px!important;border:2px solid #60a5fa!important;border-radius:12px!important;background:#1d4ed8!important;box-sizing:border-box!important;overflow:hidden!important}
 #coachBoardModal .coachSlotNo{display:grid!important;place-items:center!important;width:24px!important;height:24px!important;border-radius:50%!important;background:rgba(15,23,42,.72)!important;color:#fff!important;font-size:13px!important;font-weight:1000!important;pointer-events:none!important}
@@ -11196,7 +11196,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-coach-player-select-swap-restored */</script>
 
 <style id="v151-1-8-coach-player-picker-fix">
-/* V151.1.26: keep the native player select visible and tappable; number badge opens it too. */
+/* V151.1.27: keep the native player select visible and tappable; number badge opens it too. */
 #coachBoardModal .coachPlayerChoice > select[data-coach-lineup-index].coachPlayerSelect{
  position:static!important;inset:auto!important;display:block!important;
  width:100%!important;height:40px!important;min-height:40px!important;
@@ -11212,7 +11212,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-coach-player-picker-fix */</script>
 
 <style id="v151-1-8-coach-player-card-polish">
-/* V151.1.26: readable two-column player cards with explicit controls. */
+/* V151.1.27: readable two-column player cards with explicit controls. */
 #coachBoardModal .coachLineupSelectors{
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
   gap:9px!important;padding:10px!important;
@@ -11347,7 +11347,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v151-1-8-presentation-coach-layout">
-/* V151.1.26: presentation player panel mirrors coach-board 3x2 layout, with a standalone bench player below. */
+/* V151.1.27: presentation player panel mirrors coach-board 3x2 layout, with a standalone bench player below. */
 .coachPresentationEditable main{display:grid!important;grid-template-columns:minmax(0,1fr) 250px!important;gap:8px!important;place-items:stretch!important;overflow:hidden!important}
 .coachPresentationEditable #coachPresentationStage{grid-column:1!important;grid-row:1!important}
 .coachPresentationEditable #coachPresentationTools{grid-column:2!important;grid-row:1!important;min-width:0!important;border-right:0!important;border-left:1px solid #334155!important}
