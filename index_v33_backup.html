@@ -1407,5 +1407,28 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 </script>
 <script>/* cache marker: 150-276-serve-server-selection */</script>
 
+
+<style id="v151-1-28-presentation-system-tabs-spacing">
+/* V151.1.28: reserve a dedicated row for the presentation system buttons so they never overlap the court. */
+#coachPresentation.coachPresentation{
+  grid-template-rows:auto auto minmax(0,1fr) auto!important;
+}
+#coachPresentation .coachPresentationSystemTabs{
+  grid-row:2!important;
+  position:relative!important;
+  z-index:6!important;
+  margin:0!important;
+  padding:7px 12px 9px!important;
+  flex-shrink:0!important;
+}
+#coachPresentation.coachPresentation>main{
+  grid-row:3!important;
+  min-height:0!important;
+}
+#coachPresentation.coachPresentation>footer{
+  grid-row:4!important;
+}
+</style>
+<script>/* cache marker: v151-1-28-presentation-system-tabs-spacing */</script>
 </body>
 </html>
