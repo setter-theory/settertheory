@@ -1408,8 +1408,8 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
 <script>/* cache marker: 150-276-serve-server-selection */</script>
 
 
-<style id="v151-1-29-presentation-system-tabs-spacing">
-/* V151.1.29: reserve a dedicated row for the presentation system buttons so they never overlap the court. */
+<style id="v151-1-32-presentation-system-tabs-spacing">
+/* V151.1.32: reserve a dedicated row for the presentation system buttons so they never overlap the court. */
 #coachPresentation.coachPresentation{
   grid-template-rows:auto auto minmax(0,1fr) auto!important;
 }
@@ -1429,10 +1429,10 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
   grid-row:4!important;
 }
 </style>
-<script>/* cache marker: v151-1-29-presentation-system-tabs-spacing */</script>
+<script>/* cache marker: v151-1-32-presentation-system-tabs-spacing */</script>
 
-<style id="v151-1-29-presentation-bottom-safe-area">
-/* V151.1.29: keep the full court above the presentation footer. */
+<style id="v151-1-32-presentation-bottom-safe-area">
+/* V151.1.32: keep the full court above the presentation footer. */
 #coachPresentation.coachPresentation>main{
   box-sizing:border-box!important;
   padding:8px 8px 18px!important;
@@ -1451,6 +1451,23 @@ body.menuOpen .sideOverlay{opacity:1;pointer-events:auto}body.menuOpen .sideMenu
   padding-bottom:max(10px,env(safe-area-inset-bottom))!important;
 }
 </style>
-<script>/* cache marker: v151-1-29-presentation-bottom-safe-area */</script>
+<script>/* cache marker: v151-1-32-presentation-bottom-safe-area */</script>
+
+<style id="v151-1-32-presentation-outer-frame-final-fit">
+/* V151.1.32: presentation only — keep the complete blue outer frame above the footer. */
+#coachPresentation.coachPresentation > main{
+  padding-bottom:18px!important;
+}
+#coachPresentation.coachPresentation #coachPresentationStage{
+  padding-bottom:18px!important;
+}
+#coachPresentation.coachPresentation #coachPresentationStage > .coachCourt.coachCourtPresented{
+  height:calc(100% - 24px)!important;
+  max-height:calc(100% - 24px)!important;
+  transform:scale(.985)!important;
+  transform-origin:center center!important;
+}
+</style>
+<script>/* cache marker: v151-1-32-presentation-outer-frame-final-fit */</script>
 </body>
 </html>
