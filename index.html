@@ -4968,7 +4968,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.12</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.13</div>
   </div>
 </section>
 
@@ -5262,7 +5262,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.12';
+const APP_VERSION = 'V151.1.13';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5328,7 +5328,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.12</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.13</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -5884,7 +5884,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     readCoachPlanControls();
     const rotations=['S1','S2','S3','S4','S5','S6'],presentationTeamId=String(state.teamId||''),presentationStartRotation=state.rotation||'S1';
     let activeSystem=coachSystemKey(state.systemName);
-    const availableSystems=Array.from(document.getElementById('coachSystemName')?.options||[]).map(o=>coachSystemKey(o.value)).filter(Boolean);
+    const systemSelect=document.getElementById('coachSystemName');
+    const availableSystems=Array.from(new Set([
+      ...Array.from(systemSelect?.options||[]).map(o=>coachSystemKey(o.value)).filter(Boolean),
+      'レセプション体系','ディグ体系','ブロック体系','フリーボール体系','攻撃体系'
+    ]));
     const completeSystem=name=>rotations.every(r=>coachSystemSetsByName(name,false)[r]);
     const missing=rotations.filter(r=>!coachSystemSetsByName(activeSystem,false)[r]);
     if(missing.length)return alert(activeSystem+'のプレゼンには6ローテ分の保存が必要です。未保存：'+missing.join('・'));
@@ -7188,7 +7192,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.12</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.13</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10907,7 +10911,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-296-coach-card-fit-initial-sync */</script>
 
 <style id="v150-300-coach-right-panel-finish">
-/* V151.1.12: coach-board right panel final spacing and legibility pass. */
+/* V151.1.13: coach-board right panel final spacing and legibility pass. */
 #coachBoardModal .coachBoardShell{
   grid-template-columns:180px minmax(0,1fr) clamp(238px,24vw,286px)!important;
 }
@@ -10958,7 +10962,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: 150-300-coach-right-panel-finish */</script>
 
 <style id="v151-1-8-coach-position-restored">
-/* V151.1.12: position controls restored, wide right panel retained. */
+/* V151.1.13: position controls restored, wide right panel retained. */
 #coachBoardModal .coachBoardShell{grid-template-columns:180px minmax(0,1fr) clamp(268px,27vw,330px)!important}
 #coachBoardModal .coachBoardToolbarRight{padding:10px 10px 18px!important;overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable!important}
 #coachBoardModal .coachBoardToolbarRight .coachAccordion{width:100%!important;margin:0!important;overflow:hidden!important;border-radius:12px!important;flex:0 0 auto!important}
@@ -10991,7 +10995,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-coach-major-update */</script>
 
 <style id="v151-1-8-coach-player-select-swap-restored">
-/* V151.1.12: visible player selection and card-to-card swap restored. */
+/* V151.1.13: visible player selection and card-to-card swap restored. */
 #coachBoardModal .coachLineupSlot{grid-template-rows:58px 30px!important}
 #coachBoardModal .coachPlayerChoice{position:relative!important;display:grid!important;grid-template-columns:25px minmax(0,1fr)!important;align-items:center!important;gap:5px!important;height:58px!important;padding:5px!important;border:2px solid #60a5fa!important;border-radius:12px!important;background:#1d4ed8!important;box-sizing:border-box!important;overflow:hidden!important}
 #coachBoardModal .coachSlotNo{display:grid!important;place-items:center!important;width:24px!important;height:24px!important;border-radius:50%!important;background:rgba(15,23,42,.72)!important;color:#fff!important;font-size:13px!important;font-weight:1000!important;pointer-events:none!important}
@@ -11005,7 +11009,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-coach-player-select-swap-restored */</script>
 
 <style id="v151-1-8-coach-player-picker-fix">
-/* V151.1.12: keep the native player select visible and tappable; number badge opens it too. */
+/* V151.1.13: keep the native player select visible and tappable; number badge opens it too. */
 #coachBoardModal .coachPlayerChoice > select[data-coach-lineup-index].coachPlayerSelect{
  position:static!important;inset:auto!important;display:block!important;
  width:100%!important;height:40px!important;min-height:40px!important;
@@ -11021,7 +11025,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-coach-player-picker-fix */</script>
 
 <style id="v151-1-8-coach-player-card-polish">
-/* V151.1.12: readable two-column player cards with explicit controls. */
+/* V151.1.13: readable two-column player cards with explicit controls. */
 #coachBoardModal .coachLineupSelectors{
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
   gap:9px!important;padding:10px!important;
@@ -11156,7 +11160,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 
 
 <style id="v151-1-8-presentation-coach-layout">
-/* V151.1.12: presentation player panel mirrors coach-board 3x2 layout, with a standalone bench player below. */
+/* V151.1.13: presentation player panel mirrors coach-board 3x2 layout, with a standalone bench player below. */
 .coachPresentationEditable main{display:grid!important;grid-template-columns:minmax(0,1fr) 250px!important;gap:8px!important;place-items:stretch!important;overflow:hidden!important}
 .coachPresentationEditable #coachPresentationStage{grid-column:1!important;grid-row:1!important}
 .coachPresentationEditable #coachPresentationTools{grid-column:2!important;grid-row:1!important;min-width:0!important;border-right:0!important;border-left:1px solid #334155!important}
@@ -11182,7 +11186,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 <script>/* cache marker: v151-1-8-presentation-coach-layout */</script>
 
 
-<style id="v151-1-12-presentation-system-tabs">
+<style id="v151-1-13-presentation-system-tabs">
 #coachPresentation .coachPresentationSystemTabs{display:flex;gap:8px;padding:8px 14px;background:#07111f;border-bottom:1px solid rgba(148,163,184,.24);overflow-x:auto}
 #coachPresentation .coachPresentationSystemTabs button{min-width:104px;border:1px solid #334155;border-radius:10px;background:#111827;color:#cbd5e1;padding:7px 10px;display:grid;gap:2px;place-items:center;white-space:nowrap}
 #coachPresentation .coachPresentationSystemTabs button span{font-weight:800;font-size:13px}
@@ -11191,7 +11195,16 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 #coachPresentation .coachPresentationSystemTabs button.active small{color:#dbeafe}
 #coachPresentation .coachPresentationSystemTabs button.incomplete{opacity:.48}
 </style>
-<script>/* cache marker: v151-1-12-presentation-system-tabs */</script>
+<script>/* cache marker: v151-1-13-presentation-system-tabs */</script>
+
+<style id="v151-1-13-presentation-system-tabs-visible">
+#coachPresentation.coachPresentation{grid-template-rows:auto auto minmax(0,1fr) auto!important}
+#coachPresentation #coachPresentationSystemTabs{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:20!important;min-height:62px!important;flex:0 0 auto!important;background:#07111f!important}
+#coachPresentation #coachPresentationSystemTabs:empty::after{content:"体系切替を読み込み中…";display:grid;place-items:center;width:100%;min-height:46px;color:#cbd5e1;font-size:12px;font-weight:900}
+#coachPresentation #coachPresentationSystemTabs button{display:grid!important;visibility:visible!important;opacity:1;flex:0 0 auto!important}
+#coachPresentation #coachPresentationSystemTabs button.incomplete{opacity:.58!important}
+</style>
+<script>/* cache marker: v151-1-13-presentation-system-tabs-visible */</script>
 </body>
 </html>
 
