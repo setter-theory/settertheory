@@ -1,4 +1,4 @@
-SETTER THEORY V151.1.17
+SETTER THEORY V151.1.18
 
 動画分析Beta更新
 ・YouTube URLを端末内に保存
@@ -8,4 +8,4 @@ SETTER THEORY V151.1.17
 ・レセプション／ディグ区分を動画ごとに保持
 ・同じYouTube動画を再保存した場合は内容を更新
 ・既存のコーチボード、体系別保存、プレゼン機能は変更なし
-・バージョン表記、APP_VERSION、Service WorkerキャッシュをV151.1.17へ統一
+・バージョン表記、APP_VERSION、Service WorkerキャッシュをV151.1.18へ統一
