@@ -4970,7 +4970,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.33</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.34</div>
   </div>
 </section>
 
@@ -5073,7 +5073,7 @@ html.appEntered #home.active{
         <div class="homeAccordionBody homeMainGroupBody">
           <div class="practiceAnalysisMenu">
             <button type="button" onclick="openPracticeAnalysis('サーブ')"><span>サーブ</span><small>LEVEL選択</small></button>
-            <button type="button" onclick="openPracticeAnalysis('レセプション')"><span>👐 レセプション</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('レセプション')"><span>👐 レセプション</span><small>入力可能</small></button>
             <button type="button" onclick="openPracticeAnalysis('ディグ')"><span>🛡️ ディグ</span><small>今後追加予定</small></button>
             <button type="button" onclick="openPracticeAnalysis('トス')"><span>🏐 トス</span><small>今後追加予定</small></button>
             <button type="button" onclick="openPracticeAnalysis('スパイク')"><span>💥 スパイク</span><small>今後追加予定</small></button>
@@ -5281,7 +5281,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.33';
+const APP_VERSION = 'V151.1.34';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5347,7 +5347,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.33</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.34</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -7379,7 +7379,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.33</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.34</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10400,6 +10400,7 @@ html.booting body{background:#02040a!important}
 </div>
 <script>
 window.openPracticeAnalysis=function(name){
+  if(name==='レセプション'){ openReceptionPractice(); return; }
   if(name!=='サーブ'){alert(name+'練習の分析機能は今後追加予定です。');return;}
   var modal=document.getElementById('serveLevelModal');if(!modal)return;modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
 };
@@ -16456,3 +16457,107 @@ html.booting #launchLanding{
 }
 </style>
 <script>/* cache marker: v151-1-32-presentation-court-fit */</script>
+
+
+<!-- V151.1.34 Reception Practice Analysis -->
+<style id="v151-1-34-reception-practice">
+#receptionPracticeScreen{position:fixed;inset:0;z-index:12600;display:none;background:#07101f;color:#f8fafc;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}
+#receptionPracticeScreen.show{display:block}
+.receptionShell{min-height:100dvh;display:flex;flex-direction:column}
+.receptionHeader{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 14px;background:rgba(7,16,31,.97);border-bottom:1px solid rgba(148,163,184,.2)}
+.receptionBack,.receptionUndo{min-height:40px;border:1px solid rgba(148,163,184,.32);border-radius:11px;background:#111c30;color:#e2e8f0;padding:0 12px;font-weight:900}.receptionUndo:disabled{opacity:.35}
+.receptionHeading{text-align:center}.receptionHeading b{display:block;font-size:18px}.receptionHeading span{display:block;color:#60a5fa;font-size:10px;font-weight:1000;letter-spacing:.12em;margin-top:2px}
+.receptionMain{width:min(920px,100%);margin:0 auto;display:grid;grid-template-columns:280px minmax(0,1fr);gap:14px;padding:14px;box-sizing:border-box}
+.receptionCard{border:1px solid rgba(148,163,184,.22);border-radius:16px;background:#111c30;padding:14px}
+.receptionCardTitle{font-size:12px;font-weight:1000;letter-spacing:.08em;color:#94a3b8;margin-bottom:8px}
+.receptionSelect{width:100%;min-height:42px;border:1px solid rgba(148,163,184,.3);border-radius:10px;background:#0b1425;color:#fff;padding:0 10px;font-weight:800;margin-bottom:9px}
+.receptionPlayerName{font-size:25px;font-weight:1000;line-height:1.2;margin:4px 0 3px}.receptionPlayerMeta{font-size:12px;color:#94a3b8;font-weight:800}
+.receptionScoreGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.receptionScoreBtn{min-height:78px;border:0;border-radius:15px;color:#fff;font-weight:1000;font-size:22px;box-shadow:0 7px 18px rgba(0,0,0,.2)}
+.receptionScoreBtn small{display:block;font-size:10px;margin-top:5px;opacity:.9}.receptionA{background:#16a34a}.receptionB{background:#2563eb}.receptionC{background:#d97706}.receptionMiss{background:#dc2626}
+.receptionStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.receptionStat{border:1px solid rgba(148,163,184,.18);border-radius:13px;background:#0b1425;padding:10px;text-align:center}.receptionStat small{display:block;color:#94a3b8;font-size:10px;font-weight:900}.receptionStat strong{display:block;font-size:25px;margin-top:3px}.receptionStat.total{grid-column:span 2}.receptionStat.rate{grid-column:span 2}.receptionStat.rate strong{color:#86efac}
+.receptionHistory{display:grid;gap:6px;max-height:220px;overflow:auto}.receptionHistoryRow{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;padding:8px 9px;border-radius:10px;background:#0b1425;font-size:12px}.receptionBadge{display:grid;place-items:center;height:30px;border-radius:8px;color:#fff;font-weight:1000}.receptionEmpty{color:#64748b;font-size:12px;text-align:center;padding:18px 4px}
+.receptionFooterActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.receptionFinish,.receptionClear{min-height:42px;border-radius:11px;font-weight:1000}.receptionFinish{border:0;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff}.receptionClear{border:1px solid rgba(248,113,113,.4);background:rgba(127,29,29,.25);color:#fecaca}
+.receptionGuide{font-size:12px;line-height:1.6;color:#cbd5e1;margin:8px 0 0}.receptionSavedNote{font-size:10px;color:#94a3b8;margin-top:8px}
+@media(max-width:720px){.receptionMain{grid-template-columns:1fr;padding:10px}.receptionScoreGrid{grid-template-columns:repeat(2,1fr)}.receptionScoreBtn{min-height:72px}.receptionStats{grid-template-columns:repeat(2,1fr)}.receptionStat.total,.receptionStat.rate{grid-column:span 1}.receptionHeader{padding:8px}.receptionHeading b{font-size:15px}.receptionBack,.receptionUndo{min-height:36px;padding:0 9px;font-size:11px}}
+</style>
+<div id="receptionPracticeScreen" aria-hidden="true">
+  <div class="receptionShell">
+    <header class="receptionHeader">
+      <button type="button" class="receptionBack" onclick="closeReceptionPractice()">← 戻る</button>
+      <div class="receptionHeading"><b>レセプション分析</b><span>PRACTICE ANALYSIS</span></div>
+      <button type="button" id="receptionUndo" class="receptionUndo" onclick="undoReceptionPractice()" disabled>↩ 取消</button>
+    </header>
+    <main class="receptionMain">
+      <section>
+        <div class="receptionCard">
+          <div class="receptionCardTitle">TEAM / PLAYER</div>
+          <select id="receptionTeamSelect" class="receptionSelect" onchange="changeReceptionTeam(this.value)"><option value="">チームを選択</option></select>
+          <select id="receptionPlayerSelect" class="receptionSelect" onchange="changeReceptionPlayer(this.value)"><option value="">選手を選択</option></select>
+          <div id="receptionPlayerName" class="receptionPlayerName">選手未選択</div>
+          <div id="receptionPlayerMeta" class="receptionPlayerMeta">チームと選手を選択してください</div>
+          <p class="receptionGuide">サーブレシーブ1本ごとに評価をタップします。A＝良好、B＝攻撃可能、C＝崩れ、ミス＝失点・返球不可として記録します。</p>
+        </div>
+        <div class="receptionCard" style="margin-top:10px">
+          <div class="receptionCardTitle">SESSION</div>
+          <div class="receptionStats">
+            <div class="receptionStat"><small>A</small><strong id="recA">0</strong></div>
+            <div class="receptionStat"><small>B</small><strong id="recB">0</strong></div>
+            <div class="receptionStat"><small>C</small><strong id="recC">0</strong></div>
+            <div class="receptionStat"><small>ミス</small><strong id="recM">0</strong></div>
+            <div class="receptionStat total"><small>総数</small><strong id="recTotal">0</strong></div>
+            <div class="receptionStat rate"><small>A+B率</small><strong id="recRate">0%</strong></div>
+          </div>
+          <div class="receptionFooterActions"><button class="receptionClear" type="button" onclick="clearReceptionPractice()">全消去</button><button class="receptionFinish" type="button" onclick="finishReceptionPractice()">分析終了・保存</button></div>
+          <div class="receptionSavedNote">保存先：この端末のSetter Theory内（レセプション練習履歴）</div>
+        </div>
+      </section>
+      <section>
+        <div class="receptionCard">
+          <div class="receptionCardTitle">INPUT</div>
+          <div class="receptionScoreGrid">
+            <button type="button" class="receptionScoreBtn receptionA" onclick="recordReceptionPractice('A')">A<small>良好</small></button>
+            <button type="button" class="receptionScoreBtn receptionB" onclick="recordReceptionPractice('B')">B<small>攻撃可能</small></button>
+            <button type="button" class="receptionScoreBtn receptionC" onclick="recordReceptionPractice('C')">C<small>崩れ</small></button>
+            <button type="button" class="receptionScoreBtn receptionMiss" onclick="recordReceptionPractice('MISS')">ミス<small>失点 / 返球不可</small></button>
+          </div>
+        </div>
+        <div class="receptionCard" style="margin-top:10px">
+          <div class="receptionCardTitle">RECENT LOG</div>
+          <div id="receptionHistory" class="receptionHistory"><div class="receptionEmpty">まだ入力はありません</div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script>
+(function(){
+  var TEAM_KEY='setterTheoryTeamsV1', SAVE_KEY='setterTheoryReceptionPracticeV1';
+  var state={teamId:'',playerId:'',logs:[]};
+  function el(id){return document.getElementById(id)}
+  function teams(){try{var a=JSON.parse(localStorage.getItem(TEAM_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+  function team(){return teams().find(function(t){return String(t.id)===String(state.teamId)})||null}
+  function player(){var t=team();return t&&Array.isArray(t.players)?t.players.find(function(p){return String(p.id)===String(state.playerId)}):null}
+  function fillTeams(){var s=el('receptionTeamSelect');if(!s)return;var old=state.teamId;s.innerHTML='<option value="">チームを選択</option>';teams().forEach(function(t){var o=document.createElement('option');o.value=t.id;o.textContent=(t.name||'チーム')+(t.year?' / '+t.year:'');s.appendChild(o)});s.value=old||''}
+  function fillPlayers(){var s=el('receptionPlayerSelect');if(!s)return;var old=state.playerId;s.innerHTML='<option value="">選手を選択</option>';var t=team();(t&&Array.isArray(t.players)?t.players:[]).forEach(function(p){var o=document.createElement('option');o.value=p.id;o.textContent=(p.number?('#'+p.number+' '):'')+(p.name||'選手');s.appendChild(o)});s.value=old||''}
+  function color(v){return v==='A'?'#16a34a':v==='B'?'#2563eb':v==='C'?'#d97706':'#dc2626'}
+  function label(v){return v==='MISS'?'ミス':v}
+  function render(){
+    var p=player(),t=team();el('receptionPlayerName').textContent=p?((p.number?'#'+p.number+' ':'')+(p.name||'選手')):'選手未選択';
+    el('receptionPlayerMeta').textContent=p?((t&&t.name?t.name:'')+(p.position?' / '+p.position:'')):'チームと選手を選択してください';
+    var c={A:0,B:0,C:0,MISS:0};state.logs.forEach(function(x){if(c[x.result]!==undefined)c[x.result]++});var total=state.logs.length;
+    el('recA').textContent=c.A;el('recB').textContent=c.B;el('recC').textContent=c.C;el('recM').textContent=c.MISS;el('recTotal').textContent=total;el('recRate').textContent=total?Math.round((c.A+c.B)/total*100)+'%':'0%';el('receptionUndo').disabled=!state.logs.length;
+    var h=el('receptionHistory');h.innerHTML='';if(!state.logs.length){h.innerHTML='<div class="receptionEmpty">まだ入力はありません</div>';return}state.logs.slice().reverse().slice(0,20).forEach(function(x){var r=document.createElement('div');r.className='receptionHistoryRow';r.innerHTML='<span class="receptionBadge" style="background:'+color(x.result)+'">'+label(x.result)+'</span><span>'+((x.number?'#'+x.number+' ':'')+x.name)+'</span><span>'+x.time+'</span>';h.appendChild(r)})
+  }
+  window.openReceptionPractice=function(){state.logs=[];state.teamId='';state.playerId='';fillTeams();fillPlayers();render();var s=el('receptionPracticeScreen');s.classList.add('show');s.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  window.closeReceptionPractice=function(){var s=el('receptionPracticeScreen');s.classList.remove('show');s.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.changeReceptionTeam=function(id){state.teamId=id||'';state.playerId='';fillPlayers();render()};
+  window.changeReceptionPlayer=function(id){state.playerId=id||'';render()};
+  window.recordReceptionPractice=function(result){var p=player();if(!p){alert('先に選手を選択してください。');return}var now=new Date();state.logs.push({result:result,teamId:state.teamId,playerId:state.playerId,number:String(p.number||''),name:p.name||'選手',time:now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),createdAt:Date.now()});render()};
+  window.undoReceptionPractice=function(){if(state.logs.length)state.logs.pop();render()};
+  window.clearReceptionPractice=function(){if(!state.logs.length)return;if(confirm('今回の入力をすべて消去しますか？')){state.logs=[];render()}};
+  window.finishReceptionPractice=function(){if(!state.logs.length){alert('まだ入力がありません。');return}var t=team(),p=player(),all=[];try{all=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');if(!Array.isArray(all))all=[]}catch(e){all=[]}var counts={A:0,B:0,C:0,MISS:0};state.logs.forEach(function(x){counts[x.result]=(counts[x.result]||0)+1});all.push({id:'rec_'+Date.now(),createdAt:Date.now(),teamId:state.teamId,teamName:t?t.name:'',playerId:state.playerId,playerName:p?p.name:'',playerNumber:p?String(p.number||''):'',total:state.logs.length,counts:counts,abRate:Math.round((counts.A+counts.B)/state.logs.length*100),logs:state.logs.slice()});localStorage.setItem(SAVE_KEY,JSON.stringify(all));alert('レセプション練習を保存しました。');closeReceptionPractice()};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el('receptionPracticeScreen').classList.contains('show'))closeReceptionPractice()});
+})();
+</script>
+<script>/* cache marker: v151-1-34-reception-practice */</script>
