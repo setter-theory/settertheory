@@ -1,4 +1,4 @@
-Setter Theory V151.1.44
+Setter Theory V151.1.45
 
 開発版。
 

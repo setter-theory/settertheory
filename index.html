@@ -4970,7 +4970,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.44</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.45</div>
   </div>
 </section>
 
@@ -5074,7 +5074,7 @@ html.appEntered #home.active{
           <div class="practiceAnalysisMenu">
             <button type="button" onclick="openPracticeAnalysis('サーブ')"><span>サーブ</span><small>LEVEL選択</small></button>
             <button type="button" onclick="openPracticeAnalysis('レセプション')"><span>👐 レセプション</span><small>入力可能</small></button>
-            <button type="button" onclick="openPracticeAnalysis('ディグ')"><span>🛡️ ディグ</span><small>今後追加予定</small></button>
+            <button type="button" onclick="openPracticeAnalysis('ディグ')"><span>🛡️ ディグ</span><small>入力可能</small></button>
             <button type="button" onclick="openPracticeAnalysis('トス')"><span>🏐 トス</span><small>今後追加予定</small></button>
             <button type="button" onclick="openPracticeAnalysis('スパイク')"><span>💥 スパイク</span><small>今後追加予定</small></button>
             <button type="button" onclick="openPracticeAnalysis('ブロック')"><span>🚧 ブロック</span><small>今後追加予定</small></button>
@@ -5281,7 +5281,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.44';
+const APP_VERSION = 'V151.1.45';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5347,7 +5347,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.44</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.45</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -7379,7 +7379,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.44</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.45</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10401,6 +10401,7 @@ html.booting body{background:#02040a!important}
 <script>
 window.openPracticeAnalysis=function(name){
   if(name==='レセプション'){ openReceptionPractice(); return; }
+  if(name==='ディグ'){ openDigPractice(); return; }
   if(name!=='サーブ'){alert(name+'練習の分析機能は今後追加予定です。');return;}
   var modal=document.getElementById('serveLevelModal');if(!modal)return;modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
 };
@@ -11009,7 +11010,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 .serveParticipantCount{display:grid;gap:5px;margin-bottom:8px;color:#94a3b8;font-size:9px;font-weight:900}.serveParticipantCount>div{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.serveParticipantCount button{min-height:28px;border:1px solid rgba(148,163,184,.25);border-radius:8px;background:#111c30;color:#cbd5e1;font-size:9px;font-weight:1000}.serveParticipantCount button.active{background:#2563eb;border-color:#60a5fa;color:#fff}
 .serveMultiServerList{display:grid!important;gap:6px!important;overflow:visible!important}.serveMultiServerCard{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:5px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#0b1424}.serveMultiServerCard.active{border-color:#facc15;background:rgba(250,204,21,.10);box-shadow:0 0 0 2px rgba(250,204,21,.11)}.serveMultiActivate{display:grid;grid-template-columns:24px minmax(0,1fr);grid-template-rows:auto auto;gap:1px 6px;align-items:center;width:100%;border:0;background:transparent;color:#fff;padding:2px;text-align:left}.serveMultiActivate:disabled{opacity:.55}.serveMultiSlot{grid-row:1/3;display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#1d4ed8;color:#fff;font-size:10px;font-weight:1000}.serveMultiActivate strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.serveMultiActivate small{font-size:8px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.serveMultiSelect{width:100%;height:27px;border:1px solid rgba(148,163,184,.24);border-radius:7px;background:#07101f;color:#e2e8f0;padding:0 5px;font-size:8px;font-weight:800}.serveActiveQuick{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:6px}.serveActiveQuick span{padding:3px 1px;border-radius:6px;background:#07101f;color:#cbd5e1;font-size:7px;text-align:center}
 @media(max-width:760px){.serveParticipantCount>div{grid-template-columns:repeat(5,1fr)}.serveMultiServerCard{padding:3px}.serveMultiActivate strong{font-size:9px}.serveMultiActivate small{font-size:7px}.serveMultiSelect{height:24px;font-size:7px}}
-/* V151.1.44: サーブLEVEL定義と履歴・成長のLEVEL別分離 */
+/* V151.1.45: サーブLEVEL定義と履歴・成長のLEVEL別分離 */
 #serveLandingScreen .servePlayerListCard.serveCount5,#serveLandingScreen .servePlayerListCard.serveCount6{padding:6px!important;overflow:hidden!important}
 #serveLandingScreen .serveCount5 .serveServerTitle,#serveLandingScreen .serveCount6 .serveServerTitle{margin-bottom:3px;font-size:11px}
 #serveLandingScreen .serveCount5 .serveServerTeam,#serveLandingScreen .serveCount6 .serveServerTeam{grid-template-columns:62px minmax(0,1fr);align-items:center;gap:4px;margin-bottom:4px;font-size:8px}
@@ -11575,12 +11576,12 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 </script>
 <script>/* cache marker: v151-1-40-serve-growth-targets */</script>
 
-<script>/* cache marker: v151-1-44-serve-target-attack-endline-fit */</script>
+<script>/* cache marker: v151-1-45-serve-target-attack-endline-fit */</script>
 
-<style id="v151-1-44-serve-level-separation">
+<style id="v151-1-45-serve-level-separation">
 .serveLevelPurpose{font-size:8px;line-height:1.35;font-weight:900;color:#fde68a;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:5px 6px;margin-bottom:2px}
 </style>
-<script>/* cache marker: v151-1-44-serve-level-separation */</script>
+<script>/* cache marker: v151-1-45-serve-level-separation */</script>
 </body>
 </html>
 
@@ -16553,7 +16554,7 @@ html.booting #launchLanding{
 <script>/* cache marker: v151-1-32-presentation-court-fit */</script>
 
 
-<!-- V151.1.44 Reception Practice Analysis: multi-player one-tap input -->
+<!-- V151.1.45 Reception Practice Analysis: multi-player one-tap input -->
 <style id="v151-1-37-reception-practice">
 #receptionPracticeScreen{position:fixed;inset:0;z-index:12600;display:none;background:#07101f;color:#f8fafc;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}
 #receptionPracticeScreen.show{display:block}
@@ -16719,3 +16720,169 @@ html.booting #launchLanding{
 })();
 </script>
 <script>/* cache marker: v151-1-37-reception-multiplayer */</script>
+<!-- V151.1.45 Dig Practice Analysis: multi-player one-tap input -->
+<style id="v151-1-37-dig-practice">
+#digPracticeScreen{position:fixed;inset:0;z-index:12600;display:none;background:#07101f;color:#f8fafc;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}
+#digPracticeScreen.show{display:block}
+.digShell{min-height:100dvh;display:flex;flex-direction:column}
+.digHeader{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 14px;background:rgba(7,16,31,.97);border-bottom:1px solid rgba(148,163,184,.2)}
+.digBack,.digUndo{min-height:40px;border:1px solid rgba(148,163,184,.32);border-radius:11px;background:#111c30;color:#e2e8f0;padding:0 12px;font-weight:900}.digUndo:disabled{opacity:.35}
+.digHeading{text-align:center}.digHeading b{display:block;font-size:18px}.digHeading span{display:block;color:#60a5fa;font-size:10px;font-weight:1000;letter-spacing:.12em;margin-top:2px}
+.digMain{width:min(1180px,100%);margin:0 auto;padding:12px;box-sizing:border-box;display:grid;gap:10px}
+.digSetup{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:10px}
+.digCard{border:1px solid rgba(148,163,184,.22);border-radius:16px;background:#111c30;padding:12px}
+.digCardTitle{font-size:11px;font-weight:1000;letter-spacing:.08em;color:#94a3b8;margin-bottom:7px}
+.digSelect{width:100%;min-height:42px;border:1px solid rgba(148,163,184,.3);border-radius:10px;background:#0b1425;color:#fff;padding:0 10px;font-weight:800}
+.digCountRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.digCountLabel{font-size:12px;font-weight:900;color:#cbd5e1;margin-right:3px}
+.digCountBtn{min-width:48px;min-height:40px;border:1px solid rgba(96,165,250,.35);border-radius:10px;background:#0b1425;color:#bfdbfe;font-weight:1000;font-size:15px}.digCountBtn.active{background:#2563eb;color:#fff;border-color:#60a5fa;box-shadow:0 0 0 2px rgba(96,165,250,.15)}
+.digGuide{font-size:12px;line-height:1.55;color:#cbd5e1;margin:8px 0 0}.digGuide strong{color:#fff}
+.digPlayers{display:grid;grid-template-columns:repeat(var(--rec-cols,3),minmax(0,1fr));gap:9px}
+.digPlayerCard{min-width:0;border:1px solid rgba(148,163,184,.22);border-radius:16px;background:#111c30;padding:10px;display:flex;flex-direction:column;gap:8px}
+.digPlayerCard .digSelect{min-height:40px;font-size:12px}
+.digPlayerHead{min-height:48px}.digPlayerName{font-size:19px;font-weight:1000;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.digPlayerMeta{font-size:10px;color:#94a3b8;font-weight:800;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.digScoreGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.digScoreBtn{min-height:64px;border:0;border-radius:13px;color:#fff;font-weight:1000;font-size:22px;box-shadow:0 5px 14px rgba(0,0,0,.18);touch-action:manipulation}.digScoreBtn:active{transform:scale(.97)}
+.digScoreBtn small{display:block;font-size:9px;margin-top:3px;opacity:.92}.digScoreBtn:disabled{filter:grayscale(.6);opacity:.35;box-shadow:none}
+.digA{background:#16a34a}.digB{background:#2563eb}.digC{background:#d97706}.digMiss{background:#dc2626}
+.digMiniStats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.digMiniStat{border-radius:9px;background:#0b1425;padding:6px 3px;text-align:center}.digMiniStat small{display:block;color:#94a3b8;font-size:8px;font-weight:900}.digMiniStat strong{display:block;font-size:16px;margin-top:1px}.digMiniStat.rate strong{color:#86efac}
+.digBottom{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:10px}.digHistory{display:grid;gap:5px;max-height:160px;overflow:auto}.digHistoryRow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:7px;align-items:center;padding:7px 8px;border-radius:9px;background:#0b1425;font-size:11px}.digBadge{display:grid;place-items:center;height:27px;border-radius:7px;color:#fff;font-weight:1000}.digEmpty{color:#64748b;font-size:12px;text-align:center;padding:16px 4px}
+.digSessionStats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.digSessionStat{border:1px solid rgba(148,163,184,.18);border-radius:11px;background:#0b1425;padding:8px;text-align:center}.digSessionStat small{display:block;color:#94a3b8;font-size:9px;font-weight:900}.digSessionStat strong{display:block;font-size:22px;margin-top:2px}.digSessionStat.rate strong{color:#86efac}
+.digFooterActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.digFinish,.digClear{min-height:42px;border-radius:11px;font-weight:1000}.digFinish{border:0;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff}.digClear{border:1px solid rgba(248,113,113,.4);background:rgba(127,29,29,.25);color:#fecaca}.digSavedNote{font-size:9px;color:#94a3b8;margin-top:7px}
+
+.digResultScreen{position:fixed;inset:0;z-index:12620;display:none;background:#07101f;color:#f8fafc;overflow:auto;-webkit-overflow-scrolling:touch;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif}.digResultScreen.show{display:block}
+.digResultShell{min-height:100dvh}.digResultHeader{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 14px;background:rgba(7,16,31,.97);border-bottom:1px solid rgba(148,163,184,.2)}.digResultHeader h2{margin:0;text-align:center;font-size:19px}.digResultHeader span{display:block;text-align:center;color:#60a5fa;font-size:10px;letter-spacing:.12em;margin-top:2px;font-weight:900}.digResultBtn{min-height:40px;border-radius:11px;padding:0 13px;font-weight:1000}.digResultBack{border:1px solid rgba(148,163,184,.32);background:#111c30;color:#e2e8f0}.digResultClose{border:0;background:#2563eb;color:#fff}
+.digResultMain{width:min(1180px,100%);margin:0 auto;padding:14px;box-sizing:border-box;display:grid;gap:12px}.digResultHero{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,150px);gap:10px}.digResultCard{border:1px solid rgba(148,163,184,.22);background:#111c30;border-radius:16px;padding:13px}.digResultTitle{font-size:11px;color:#94a3b8;font-weight:1000;letter-spacing:.08em}.digResultTeam{font-size:22px;font-weight:1000;margin-top:6px}.digResultSub{font-size:11px;color:#94a3b8;margin-top:3px}.digBig{text-align:center}.digBig small{display:block;color:#94a3b8;font-size:10px;font-weight:900}.digBig strong{display:block;font-size:34px;margin-top:3px}.digBig.rate strong{color:#86efac}
+.digBreakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.digBreakItem{text-align:center;border-radius:12px;background:#0b1425;padding:10px 5px}.digBreakItem small{display:block;font-size:9px;color:#94a3b8}.digBreakItem strong{display:block;font-size:22px;margin-top:3px}.digBreakItem em{display:block;font-style:normal;font-size:10px;color:#cbd5e1;margin-top:2px}
+.digPlayerResults{display:grid;grid-template-columns:repeat(var(--result-cols,3),minmax(0,1fr));gap:9px}.digResultPlayer{border:1px solid rgba(148,163,184,.22);background:#111c30;border-radius:16px;padding:12px;display:grid;gap:9px}.digResultPlayerHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.digResultPlayerName{font-size:18px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.digResultPlayerTotal{font-size:10px;color:#94a3b8;white-space:nowrap}.digRateRow{display:grid;grid-template-columns:74px minmax(0,1fr) 48px;gap:7px;align-items:center;font-size:10px;font-weight:900}.digRateTrack{height:9px;border-radius:999px;background:#0b1425;overflow:hidden}.digRateFill{height:100%;border-radius:999px}.digRateValue{text-align:right}.digPlayerBottom{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.digMetric{background:#0b1425;border-radius:10px;padding:7px;text-align:center}.digMetric small{display:block;color:#94a3b8;font-size:8px}.digMetric strong{display:block;font-size:19px;margin-top:2px}.digMetric.rate strong{color:#86efac}
+.digResultActions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.digResultAction{min-height:44px;border-radius:11px;padding:0 18px;font-weight:1000}.digResultAction.secondary{border:1px solid rgba(148,163,184,.32);background:#111c30;color:#e2e8f0}.digResultAction.primary{border:0;background:#2563eb;color:#fff}
+.digTargetRow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px;padding-top:9px;border-top:1px solid rgba(148,163,184,.18)}.digTargetRow label{font-size:11px;font-weight:1000;color:#cbd5e1}.digTargetRow input{width:72px;min-height:38px;border:1px solid rgba(96,165,250,.35);border-radius:10px;background:#0b1425;color:#fff;text-align:center;font-size:16px;font-weight:1000}.digTargetRow span{font-weight:1000}.digHistoryOpen{margin-left:auto;min-height:38px;border:1px solid rgba(96,165,250,.35);border-radius:10px;background:#172554;color:#dbeafe;padding:0 12px;font-weight:1000}.digBig.goal strong{color:#facc15}.digBig.goal em{display:block;font-size:11px;font-style:normal;font-weight:1000;margin-top:3px;color:#cbd5e1}
+.digGrowthScreen{position:fixed;inset:0;z-index:12640;display:none;background:#07101f;color:#f8fafc;overflow:auto;-webkit-overflow-scrolling:touch;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif}.digGrowthScreen.show{display:block}.digGrowthHeader{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 14px;background:rgba(7,16,31,.97);border-bottom:1px solid rgba(148,163,184,.2)}.digGrowthHeader h2{margin:0;text-align:center;font-size:19px}.digGrowthHeader span{display:block;text-align:center;color:#60a5fa;font-size:10px;letter-spacing:.12em;margin-top:2px;font-weight:900}.digGrowthMain{width:min(1180px,100%);margin:0 auto;padding:14px;box-sizing:border-box;display:grid;gap:12px}.digGrowthFilters{display:grid;grid-template-columns:220px 220px minmax(0,1fr);gap:8px}.digGrowthTabs{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.digGrowthTab{min-width:58px;min-height:42px;border:1px solid rgba(96,165,250,.35);border-radius:10px;background:#0b1425;color:#bfdbfe;font-weight:1000}.digGrowthTab.active{background:#2563eb;color:#fff}.digGrowthSummary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.digGrowthMetric{border:1px solid rgba(148,163,184,.2);border-radius:14px;background:#111c30;padding:10px;text-align:center}.digGrowthMetric small{display:block;color:#94a3b8;font-size:9px;font-weight:900}.digGrowthMetric strong{display:block;font-size:24px;margin-top:3px}.digChartCard{border:1px solid rgba(148,163,184,.22);background:#111c30;border-radius:16px;padding:12px}.digChartLegend{display:flex;gap:16px;flex-wrap:wrap;font-size:10px;color:#cbd5e1;margin:4px 0 8px}.digLegendDot{display:inline-block;width:12px;height:3px;border-radius:999px;margin-right:5px;vertical-align:middle}.digChartWrap{width:100%;overflow-x:auto}.digChartSvg{width:100%;min-width:700px;height:330px;display:block}.digChartEmpty{padding:70px 10px;text-align:center;color:#64748b}.digSavedList{display:grid;gap:7px}.digSavedRow{display:grid;grid-template-columns:150px minmax(0,1fr) 95px 95px 86px;gap:8px;align-items:center;padding:10px;border-radius:12px;background:#0b1425;border:1px solid rgba(148,163,184,.14)}.digSavedRow button{min-height:34px;border:1px solid rgba(96,165,250,.35);border-radius:9px;background:#172554;color:#dbeafe;font-weight:900}.digSavedAchieved{color:#86efac;font-weight:1000}.digSavedMissed{color:#fca5a5;font-weight:1000}
+@media(max-width:760px){.digResultHero{grid-template-columns:1fr 1fr}.digGrowthFilters{grid-template-columns:1fr}.digGrowthTabs{justify-content:flex-start}.digGrowthSummary{grid-template-columns:repeat(2,1fr)}.digSavedRow{grid-template-columns:1fr 1fr}.digSavedRow .savedName{grid-column:1/-1}.digResultHero .team{grid-column:1/-1}.digPlayerResults{grid-template-columns:1fr!important}.digBreakdown{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.digMain{padding:9px}.digSetup{grid-template-columns:1fr}.digBottom{grid-template-columns:1fr}.digPlayers{grid-template-columns:repeat(2,minmax(0,1fr))!important}.digScoreBtn{min-height:58px}}
+@media(max-width:520px){.digHeader{padding:7px}.digHeading b{font-size:14px}.digBack,.digUndo{min-height:35px;padding:0 8px;font-size:10px}.digPlayers{grid-template-columns:1fr!important}.digPlayerCard{padding:9px}.digScoreGrid{grid-template-columns:repeat(4,1fr)}.digScoreBtn{min-height:56px;font-size:18px}.digScoreBtn small{display:none}}
+</style>
+<div id="digPracticeScreen" aria-hidden="true">
+  <div class="digShell">
+    <header class="digHeader">
+      <button type="button" class="digBack" onclick="closeDigPractice()">← 戻る</button>
+      <div class="digHeading"><b>ディグ分析</b><span>MULTI PLAYER / ONE TAP</span></div>
+      <button type="button" id="digUndo" class="digUndo" onclick="undoDigPractice()" disabled>↩ 取消</button>
+    </header>
+    <main class="digMain">
+      <section class="digSetup">
+        <div class="digCard">
+          <div class="digCardTitle">TEAM</div>
+          <select id="digTeamSelect" class="digSelect" onchange="changeDigTeam(this.value)"><option value="">チームを選択</option></select>
+        </div>
+        <div class="digCard">
+          <div class="digCardTitle">DEFENDERS</div>
+          <div class="digCountRow"><span class="digCountLabel">同時に守る人数</span><button type="button" id="recCount2" class="digCountBtn" onclick="setDigPlayerCount(2)">2人</button><button type="button" id="recCount3" class="digCountBtn active" onclick="setDigPlayerCount(3)">3人</button><button type="button" id="recCount4" class="digCountBtn" onclick="setDigPlayerCount(4)">4人</button></div>
+          <p class="digGuide"><strong>入力は1タップ。</strong> ボールをディグした選手のカードで A / B / C / ミス を押します。毎回選手を選び直す必要はありません。</p>
+          <div class="digTargetRow"><label for="digTargetRate">目標ディグ返球率</label><input id="digTargetRate" type="number" min="0" max="100" step="1" value="70"><span>%</span><button type="button" class="digHistoryOpen" onclick="openDigGrowth()">保存履歴・成長</button></div>
+        </div>
+      </section>
+      <section id="digPlayers" class="digPlayers" style="--rec-cols:3"></section>
+      <section class="digBottom">
+        <div class="digCard">
+          <div class="digCardTitle">RECENT LOG</div>
+          <div id="digHistory" class="digHistory"><div class="digEmpty">まだ入力はありません</div></div>
+        </div>
+        <div class="digCard">
+          <div class="digCardTitle">SESSION TOTAL</div>
+          <div class="digSessionStats"><div class="digSessionStat"><small>総入力</small><strong id="recTotal">0</strong></div><div class="digSessionStat rate"><small>A+B率</small><strong id="recRate">0%</strong></div></div>
+          <div class="digFooterActions"><button class="digClear" type="button" onclick="clearDigPractice()">全消去</button><button class="digFinish" type="button" onclick="finishDigPractice()">分析終了・保存</button></div>
+          <div class="digSavedNote">保存先：この端末のSetter Theory内（ディグ練習履歴）</div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="digResultScreen" class="digResultScreen" aria-hidden="true">
+  <div class="digResultShell">
+    <header class="digResultHeader">
+      <button type="button" class="digResultBtn digResultBack" onclick="returnDigInput()">← 入力画面</button>
+      <div><h2>ディグ分析結果</h2><span>PRACTICE RESULT</span></div>
+      <button type="button" class="digResultBtn digResultClose" onclick="closeDigResult()">終了</button>
+    </header>
+    <main class="digResultMain">
+      <section class="digResultHero">
+        <div class="digResultCard team"><div class="digResultTitle">TEAM / SESSION</div><div id="recResultTeam" class="digResultTeam">-</div><div id="recResultDate" class="digResultSub">-</div></div>
+        <div class="digResultCard digBig"><small>総入力</small><strong id="recResultTotal">0</strong></div>
+        <div class="digResultCard digBig rate"><small>全体 A+B率</small><strong id="recResultAB">0%</strong></div>
+        <div class="digResultCard digBig goal"><small>目標 / 判定</small><strong id="recResultGoal">70%</strong><em id="recResultJudge">-</em></div>
+      </section>
+      <section class="digResultCard"><div class="digResultTitle">全体内訳</div><div id="recResultBreakdown" class="digBreakdown"></div></section>
+      <section><div class="digResultTitle" style="margin:0 0 7px 4px">選手別結果</div><div id="recResultPlayers" class="digPlayerResults"></div></section>
+      <div class="digResultActions"><button type="button" class="digResultAction secondary" onclick="returnDigInput()">入力画面に戻る</button><button type="button" class="digResultAction secondary" onclick="openDigGrowth()">保存履歴・成長</button><button type="button" class="digResultAction primary" onclick="closeDigResult()">分析を終了</button></div>
+    </main>
+  </div>
+</div>
+<div id="digGrowthScreen" class="digGrowthScreen" aria-hidden="true">
+  <header class="digGrowthHeader"><button type="button" class="digResultBtn digResultBack" onclick="closeDigGrowth()">← 戻る</button><div><h2>ディグ成長</h2><span>HISTORY / TARGET / TREND</span></div><button type="button" class="digResultBtn digResultClose" onclick="closeDigGrowth()">閉じる</button></header>
+  <main class="digGrowthMain">
+    <section class="digResultCard digGrowthFilters"><select id="recGrowthTeam" class="digSelect" onchange="changeDigGrowthTeam(this.value)"><option value="">全チーム</option></select><select id="recGrowthPlayer" class="digSelect" onchange="changeDigGrowthPlayer(this.value)"><option value="">チーム全体</option></select><div class="digGrowthTabs"><button class="digGrowthTab active" data-period="day" onclick="setDigGrowthPeriod('day')">日</button><button class="digGrowthTab" data-period="week" onclick="setDigGrowthPeriod('week')">週</button><button class="digGrowthTab" data-period="month" onclick="setDigGrowthPeriod('month')">月</button><button class="digGrowthTab" data-period="year" onclick="setDigGrowthPeriod('year')">年</button></div></section>
+    <section class="digGrowthSummary"><div class="digGrowthMetric"><small>表示期間の平均</small><strong id="recGrowthAvg">-</strong></div><div class="digGrowthMetric"><small>平均目標</small><strong id="recGrowthGoal">-</strong></div><div class="digGrowthMetric"><small>目標達成率</small><strong id="recGrowthHit">-</strong></div><div class="digGrowthMetric"><small>練習回数</small><strong id="recGrowthSessions">0</strong></div></section>
+    <section class="digChartCard"><div class="digResultTitle">返球率の推移</div><div class="digChartLegend"><span><i class="digLegendDot" style="background:#60a5fa"></i>実績 A+B率</span><span><i class="digLegendDot" style="background:#facc15"></i>目標ディグ返球率</span></div><div id="recGrowthChart" class="digChartWrap"></div></section>
+    <section class="digResultCard"><div class="digResultTitle" style="margin-bottom:8px">保存した練習</div><div id="recGrowthList" class="digSavedList"></div></section>
+  </main>
+</div>
+<script>
+(function(){
+  var SAVE_KEY='setterTheoryDigPracticeV1',TEAM_KEY='setterTheoryTeamsV1';
+  var growth={teamId:'',playerId:'',period:'day'};
+  function e(id){return document.getElementById(id)}
+  function saves(){try{var a=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');return Array.isArray(a)?a:[]}catch(x){return []}}
+  function teams(){try{var a=JSON.parse(localStorage.getItem(TEAM_KEY)||'[]');return Array.isArray(a)?a:[]}catch(x){return []}}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function fillTeam(){var s=e('recGrowthTeam'),old=growth.teamId;s.innerHTML='<option value="">全チーム</option>';teams().forEach(function(t){var o=document.createElement('option');o.value=t.id;o.textContent=(t.name||'チーム')+(t.year?' / '+t.year:'');s.appendChild(o)});s.value=old||''}
+  function fillPlayer(){var s=e('recGrowthPlayer'),old=growth.playerId,ids={};s.innerHTML='<option value="">チーム全体</option>';saves().filter(function(x){return !growth.teamId||String(x.teamId)===String(growth.teamId)}).forEach(function(x){(x.players||[]).forEach(function(p){if(!ids[p.playerId])ids[p.playerId]={id:p.playerId,name:(p.playerNumber?'#'+p.playerNumber+' ':'')+(p.playerName||'選手')};})});Object.keys(ids).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=ids[k].name;s.appendChild(o)});s.value=old&&ids[old]?old:'';if(old&&!ids[old])growth.playerId=''}
+  function sessionValue(x){if(!growth.playerId)return Number(x.abRate)||0;var p=(x.players||[]).find(function(p){return String(p.playerId)===String(growth.playerId)});return p?Number(p.abRate)||0:null}
+  function keyFor(ts){var d=new Date(ts),y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();if(growth.period==='day')return y+'-'+String(m).padStart(2,'0')+'-'+String(day).padStart(2,'0');if(growth.period==='month')return y+'-'+String(m).padStart(2,'0');if(growth.period==='year')return String(y);var t=new Date(y,d.getMonth(),day);var dow=(t.getDay()+6)%7;t.setDate(t.getDate()-dow);return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')}
+  function labelFor(k){if(growth.period==='day'){var a=k.split('-');return Number(a[1])+'/'+Number(a[2])}if(growth.period==='week'){var a=k.split('-');return Number(a[1])+'/'+Number(a[2])+'週'}if(growth.period==='month'){var a=k.split('-');return a[0]+'/'+Number(a[1])}return k}
+  function filtered(){return saves().filter(function(x){if(growth.teamId&&String(x.teamId)!==String(growth.teamId))return false;return sessionValue(x)!==null}).sort(function(a,b){return a.createdAt-b.createdAt})}
+  function aggregate(list){var g={};list.forEach(function(x){var k=keyFor(x.createdAt),v=sessionValue(x),goal=isFinite(Number(x.targetRate))?Number(x.targetRate):70;if(!g[k])g[k]={key:k,actual:0,goal:0,n:0,hits:0};g[k].actual+=v;g[k].goal+=goal;g[k].n++;if(v>=goal)g[k].hits++});return Object.keys(g).sort().map(function(k){var z=g[k];return{key:k,label:labelFor(k),actual:Math.round(z.actual/z.n),goal:Math.round(z.goal/z.n),n:z.n,hits:z.hits}})}
+  function draw(points){var box=e('recGrowthChart');if(!points.length){box.innerHTML='<div class="digChartEmpty">保存された練習データがありません</div>';return}var w=Math.max(700,points.length*92),h=330,pad={l:48,r:24,t:24,b:55},iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;function X(i){return pad.l+(points.length===1?iw/2:i*iw/(points.length-1))}function Y(v){return pad.t+(100-v)*ih/100}var svg=['<svg class="digChartSvg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">'];[0,25,50,70,75,100].forEach(function(v){svg.push('<line x1="'+pad.l+'" y1="'+Y(v)+'" x2="'+(w-pad.r)+'" y2="'+Y(v)+'" stroke="rgba(148,163,184,.18)" stroke-width="1"/><text x="'+(pad.l-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" fill="#94a3b8" font-size="10">'+v+'%</text>')});var actual=points.map(function(p,i){return X(i)+','+Y(p.actual)}).join(' '),goal=points.map(function(p,i){return X(i)+','+Y(p.goal)}).join(' ');svg.push('<polyline fill="none" stroke="#facc15" stroke-width="3" stroke-dasharray="8 6" points="'+goal+'"/><polyline fill="none" stroke="#60a5fa" stroke-width="4" points="'+actual+'"/>');points.forEach(function(p,i){var x=X(i),ya=Y(p.actual),yg=Y(p.goal),ok=p.actual>=p.goal;svg.push('<circle cx="'+x+'" cy="'+yg+'" r="4" fill="#facc15"/><circle cx="'+x+'" cy="'+ya+'" r="6" fill="'+(ok?'#22c55e':'#ef4444')+'" stroke="#fff" stroke-width="1.5"/><text x="'+x+'" y="'+(ya-10)+'" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="700">'+p.actual+'%</text><text x="'+x+'" y="'+(h-28)+'" text-anchor="middle" fill="#cbd5e1" font-size="10">'+esc(p.label)+'</text>')});svg.push('</svg>');box.innerHTML=svg.join('')}
+  function render(){var list=filtered(),pts=aggregate(list),sum=list.reduce(function(a,x){return a+(sessionValue(x)||0)},0),goalSum=list.reduce(function(a,x){return a+(isFinite(Number(x.targetRate))?Number(x.targetRate):70)},0),hits=list.filter(function(x){return (sessionValue(x)||0)>=(isFinite(Number(x.targetRate))?Number(x.targetRate):70)}).length;e('recGrowthAvg').textContent=list.length?Math.round(sum/list.length)+'%':'-';e('recGrowthGoal').textContent=list.length?Math.round(goalSum/list.length)+'%':'-';e('recGrowthHit').textContent=list.length?Math.round(hits/list.length*100)+'%':'-';e('recGrowthSessions').textContent=list.length;document.querySelectorAll('.digGrowthTab').forEach(function(b){b.classList.toggle('active',b.dataset.period===growth.period)});draw(pts);var out=e('recGrowthList');out.innerHTML='';if(!list.length){out.innerHTML='<div class="digEmpty">保存された練習データがありません</div>';return}list.slice().reverse().forEach(function(x){var v=sessionValue(x),goal=isFinite(Number(x.targetRate))?Number(x.targetRate):70,ok=v>=goal,d=new Date(x.createdAt),r=document.createElement('div');r.className='digSavedRow';r.innerHTML='<span>'+d.toLocaleDateString('ja-JP')+'</span><span class="savedName">'+esc(x.teamName||'チーム')+(growth.playerId?' / '+esc(((x.players||[]).find(function(p){return String(p.playerId)===String(growth.playerId)})||{}).playerName||'選手'):'')+'</span><span>実績 <b>'+v+'%</b></span><span>目標 <b>'+goal+'%</b></span><span class="'+(ok?'digSavedAchieved':'digSavedMissed')+'">'+(ok?'達成':'未達')+'</span>';var btn=document.createElement('button');btn.type='button';btn.textContent='詳細';btn.onclick=function(){openSavedDigResult(x.id)};r.appendChild(btn);out.appendChild(r)})}
+  window.openDigGrowth=function(){fillTeam();fillPlayer();render();var s=e('digGrowthScreen');s.classList.add('show');s.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  window.closeDigGrowth=function(){var s=e('digGrowthScreen');s.classList.remove('show');s.setAttribute('aria-hidden','true');document.body.style.overflow='hidden'};
+  window.changeDigGrowthTeam=function(v){growth.teamId=v||'';growth.playerId='';fillPlayer();render()};
+  window.changeDigGrowthPlayer=function(v){growth.playerId=v||'';render()};
+  window.setDigGrowthPeriod=function(v){growth.period=v||'day';render()};
+  window.openSavedDigResult=function(id){var x=saves().find(function(s){return String(s.id)===String(id)});if(!x)return;closeDigGrowth();if(typeof window.__renderDigSavedResult==='function')window.__renderDigSavedResult(x)};
+})();
+</script>
+<script>
+(function(){
+  var TEAM_KEY='setterTheoryTeamsV1', SAVE_KEY='setterTheoryDigPracticeV1';
+  var state={teamId:'',playerCount:3,playerIds:['','','',''],logs:[]};
+  function el(id){return document.getElementById(id)}
+  function teams(){try{var a=JSON.parse(localStorage.getItem(TEAM_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+  function team(){return teams().find(function(t){return String(t.id)===String(state.teamId)})||null}
+  function players(){var t=team();return t&&Array.isArray(t.players)?t.players:[]}
+  function playerById(id){return players().find(function(p){return String(p.id)===String(id)})||null}
+  function fillTeams(){var s=el('digTeamSelect');if(!s)return;var old=state.teamId;s.innerHTML='<option value="">チームを選択</option>';teams().forEach(function(t){var o=document.createElement('option');o.value=t.id;o.textContent=(t.name||'チーム')+(t.year?' / '+t.year:'');s.appendChild(o)});s.value=old||''}
+  function playerOptions(selected,slot){var html='<option value="">選手を選択</option>';players().forEach(function(p){var disabled=state.playerIds.some(function(id,i){return i!==slot&&id&&String(id)===String(p.id)});html+='<option value="'+String(p.id).replace(/"/g,'&quot;')+'"'+(String(selected)===String(p.id)?' selected':'')+(disabled?' disabled':'')+'>'+((p.number?('#'+p.number+' '):'')+(p.name||'選手'))+'</option>'});return html}
+  function countsFor(id){var c={A:0,B:0,C:0,MISS:0,total:0};state.logs.forEach(function(x){if(String(x.playerId)!==String(id))return;if(c[x.result]!==undefined)c[x.result]++;c.total++});return c}
+  function color(v){return v==='A'?'#16a34a':v==='B'?'#2563eb':v==='C'?'#d97706':'#dc2626'}
+  function label(v){return v==='MISS'?'ミス':v}
+  function renderPlayers(){var wrap=el('digPlayers');if(!wrap)return;wrap.style.setProperty('--rec-cols',String(state.playerCount));wrap.innerHTML='';for(var i=0;i<state.playerCount;i++){var id=state.playerIds[i]||'',p=playerById(id),c=countsFor(id),rate=c.total?Math.round((c.A+c.B)/c.total*100):0;var card=document.createElement('div');card.className='digPlayerCard';card.innerHTML='<select class="digSelect" aria-label="選手'+(i+1)+'" onchange="changeDigSlotPlayer('+i+',this.value)">'+playerOptions(id,i)+'</select><div class="digPlayerHead"><div class="digPlayerName">'+(p?((p.number?'#'+p.number+' ':'')+(p.name||'選手')):'選手 '+(i+1))+'</div><div class="digPlayerMeta">'+(p?(p.position||'ディグ参加'):'選手を選択してください')+'</div></div><div class="digScoreGrid"><button type="button" class="digScoreBtn digA" '+(p?'':'disabled')+' onclick="recordDigPractice('+i+',\'A\')">A<small>良好</small></button><button type="button" class="digScoreBtn digB" '+(p?'':'disabled')+' onclick="recordDigPractice('+i+',\'B\')">B<small>攻撃可能</small></button><button type="button" class="digScoreBtn digC" '+(p?'':'disabled')+' onclick="recordDigPractice('+i+',\'C\')">C<small>崩れ</small></button><button type="button" class="digScoreBtn digMiss" '+(p?'':'disabled')+' onclick="recordDigPractice('+i+',\'MISS\')">ミス<small>返球不可</small></button></div><div class="digMiniStats"><div class="digMiniStat"><small>本数</small><strong>'+c.total+'</strong></div><div class="digMiniStat"><small>A</small><strong>'+c.A+'</strong></div><div class="digMiniStat rate"><small>A+B率</small><strong>'+rate+'%</strong></div></div>';wrap.appendChild(card)}}
+  function render(){renderPlayers();var c={A:0,B:0,C:0,MISS:0};state.logs.forEach(function(x){if(c[x.result]!==undefined)c[x.result]++});var total=state.logs.length;el('recTotal').textContent=total;el('recRate').textContent=total?Math.round((c.A+c.B)/total*100)+'%':'0%';el('digUndo').disabled=!state.logs.length;[2,3,4].forEach(function(n){var b=el('recCount'+n);if(b)b.classList.toggle('active',n===state.playerCount)});var h=el('digHistory');h.innerHTML='';if(!state.logs.length){h.innerHTML='<div class="digEmpty">まだ入力はありません</div>';return}state.logs.slice().reverse().slice(0,24).forEach(function(x){var r=document.createElement('div');r.className='digHistoryRow';r.innerHTML='<span class="digBadge" style="background:'+color(x.result)+'">'+label(x.result)+'</span><span>'+((x.number?'#'+x.number+' ':'')+x.name)+'</span><span>'+x.time+'</span>';h.appendChild(r)})}
+  var lastResult=null;
+  function pct(n,total){return total?Math.round(n/total*100):0}
+  function renderDigResult(data){if(!data)return;lastResult=data;el('recResultTeam').textContent=data.teamName||'チーム未設定';var d=new Date(data.createdAt);el('recResultDate').textContent=d.toLocaleDateString('ja-JP')+' '+d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});el('recResultTotal').textContent=data.total;el('recResultAB').textContent=data.abRate+'%';var goal=Number(data.targetRate);if(!isFinite(goal))goal=70;el('recResultGoal').textContent=goal+'%';var diff=data.abRate-goal,j=el('recResultJudge');j.textContent=(diff>=0?'達成 +':'未達 ')+diff+'pt';j.style.color=diff>=0?'#86efac':'#fca5a5';var defs=[['A','#16a34a'],['B','#2563eb'],['C','#d97706'],['MISS','#dc2626']];var bd=el('recResultBreakdown');bd.innerHTML='';defs.forEach(function(dv){var n=data.counts[dv[0]]||0,box=document.createElement('div');box.className='digBreakItem';box.innerHTML='<small>'+label(dv[0])+'</small><strong style="color:'+dv[1]+'">'+n+'</strong><em>'+pct(n,data.total)+'%</em>';bd.appendChild(box)});var wrap=el('recResultPlayers');wrap.style.setProperty('--result-cols',String(Math.min(4,Math.max(2,data.players.length))));wrap.innerHTML='';data.players.slice().sort(function(a,b){return b.abRate-a.abRate||b.total-a.total}).forEach(function(p){var card=document.createElement('div');card.className='digResultPlayer';var bars=defs.map(function(dv){var n=p.counts[dv[0]]||0,rate=pct(n,p.total);return '<div class="digRateRow"><span>'+label(dv[0])+' '+n+'</span><div class="digRateTrack"><div class="digRateFill" style="width:'+rate+'%;background:'+dv[1]+'"></div></div><span class="digRateValue">'+rate+'%</span></div>'}).join('');card.innerHTML='<div class="digResultPlayerHead"><div class="digResultPlayerName">'+(p.playerNumber?'#'+p.playerNumber+' ':'')+(p.playerName||'選手')+'</div><div class="digResultPlayerTotal">'+p.total+'本</div></div>'+bars+'<div class="digPlayerBottom"><div class="digMetric"><small>A率</small><strong>'+pct(p.counts.A||0,p.total)+'%</strong></div><div class="digMetric rate"><small>A+B率</small><strong>'+p.abRate+'%</strong></div></div>';wrap.appendChild(card)});var rs=el('digResultScreen');rs.classList.add('show');rs.setAttribute('aria-hidden','false')}
+  window.__renderDigSavedResult=renderDigResult;
+  window.returnDigInput=function(){var rs=el('digResultScreen');rs.classList.remove('show');rs.setAttribute('aria-hidden','true');var ps=el('digPracticeScreen');ps.classList.add('show');ps.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  window.closeDigResult=function(){var rs=el('digResultScreen');rs.classList.remove('show');rs.setAttribute('aria-hidden','true');var ps=el('digPracticeScreen');ps.classList.remove('show');ps.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.openDigPractice=function(){state.logs=[];state.teamId='';state.playerCount=3;state.playerIds=['','','',''];fillTeams();var tg=el('digTargetRate');if(tg)tg.value='70';render();var s=el('digPracticeScreen');s.classList.add('show');s.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};
+  window.closeDigPractice=function(){var s=el('digPracticeScreen');s.classList.remove('show');s.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+  window.changeDigTeam=function(id){state.teamId=id||'';state.playerIds=['','','',''];render()};
+  window.setDigPlayerCount=function(n){n=Math.max(2,Math.min(4,Number(n)||3));state.playerCount=n;for(var i=n;i<4;i++)state.playerIds[i]='';render()};
+  window.changeDigSlotPlayer=function(slot,id){slot=Number(slot);if(id&&state.playerIds.some(function(v,i){return i!==slot&&String(v)===String(id)})){alert('同じ選手は同時に2枠へ登録できません。');render();return}state.playerIds[slot]=id||'';render()};
+  window.recordDigPractice=function(slot,result){slot=Number(slot);var id=state.playerIds[slot],p=playerById(id);if(!p){alert('この枠の選手を選択してください。');return}var now=new Date();state.logs.push({result:result,teamId:state.teamId,playerId:id,number:String(p.number||''),name:p.name||'選手',slot:slot,time:now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),createdAt:Date.now()});render()};
+  window.undoDigPractice=function(){if(state.logs.length)state.logs.pop();render()};
+  window.clearDigPractice=function(){if(!state.logs.length)return;if(confirm('今回の入力をすべて消去しますか？')){state.logs=[];render()}};
+  window.finishDigPractice=function(){if(!state.logs.length){alert('まだ入力がありません。');return}var selected=state.playerIds.slice(0,state.playerCount).filter(Boolean);if(selected.length<2){alert('ディグ参加選手を2人以上選択してください。');return}var t=team(),all=[];try{all=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]');if(!Array.isArray(all))all=[]}catch(e){all=[]}var summary=selected.map(function(id){var p=playerById(id),c=countsFor(id);return{playerId:id,playerName:p?p.name:'',playerNumber:p?String(p.number||''):'',total:c.total,counts:{A:c.A,B:c.B,C:c.C,MISS:c.MISS},abRate:c.total?Math.round((c.A+c.B)/c.total*100):0}});var totalCounts={A:0,B:0,C:0,MISS:0};state.logs.forEach(function(x){totalCounts[x.result]=(totalCounts[x.result]||0)+1});var saved={id:'rec_'+Date.now(),createdAt:Date.now(),teamId:state.teamId,teamName:t?t.name:'',playerCount:state.playerCount,players:summary,total:state.logs.length,counts:totalCounts,abRate:Math.round((totalCounts.A+totalCounts.B)/state.logs.length*100),targetRate:Math.max(0,Math.min(100,Number(el('digTargetRate')&&el('digTargetRate').value)||70)),logs:state.logs.slice()};all.push(saved);localStorage.setItem(SAVE_KEY,JSON.stringify(all));var ps=el('digPracticeScreen');ps.classList.remove('show');ps.setAttribute('aria-hidden','true');renderDigResult(saved)};
+  document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;if(el('digResultScreen').classList.contains('show'))closeDigResult();else if(el('digPracticeScreen').classList.contains('show'))closeDigPractice()});
+})();
+</script>
+<script>/* cache marker: v151-1-45-dig-multiplayer */</script>
