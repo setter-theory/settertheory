@@ -4970,7 +4970,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.37</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.38</div>
   </div>
 </section>
 
@@ -5281,7 +5281,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.37';
+const APP_VERSION = 'V151.1.38';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5347,7 +5347,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.37</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.38</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -7379,7 +7379,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.37</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.38</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10798,6 +10798,8 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   var selectedTeam='';
   var selectedServer='';
   var serverSearch='';
+  var serveParticipantCount=3;
+  var serveParticipantIds=['','','','','',''];
   var sessionActions=[];
   var sessionRecordId='';
 
@@ -10813,27 +10815,43 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   function syncTopCounts(){var st=statFor(currentLevel(),selectedServer||null);var sc=e('serveSuccessCount'),mc=e('serveMissCount');if(sc)sc.textContent=String(st.success);if(mc)mc.textContent=String(st.miss)}
   function renderSessionMarkers(){var box=e('serveLandingMarkers');if(!box)return;var level=currentLevel(),team=String(selectedTeam||'');box.innerHTML='';sessionActions.filter(function(a){return a.type==='success'&&a.level===level&&String(a.teamId||'')===team&&a.x!=null&&a.y!=null}).forEach(function(a){var m=document.createElement('i');m.className='serveLandingMarker';m.style.left=Math.max(0,Math.min(100,Number(a.x)))+'%';m.style.top=Math.max(0,Math.min(100,Number(a.y)))+'%';box.appendChild(m)})}
 
+  function serveUsedIds(exceptIndex){return serveParticipantIds.slice(0,serveParticipantCount).filter(function(id,i){return i!==exceptIndex&&id})}
+  function autoFillServeParticipants(){
+    var all=players(),used=[];
+    for(var i=0;i<serveParticipantCount;i++){
+      var id=serveParticipantIds[i];
+      if(id&&all.some(function(p){return String(p.id)===String(id)})&&used.indexOf(String(id))<0){used.push(String(id));continue}
+      var next=all.find(function(p){return used.indexOf(String(p.id))<0});
+      serveParticipantIds[i]=next?String(next.id):'';
+      if(next)used.push(String(next.id));
+    }
+    for(var j=serveParticipantCount;j<6;j++)serveParticipantIds[j]='';
+    if(!selectedServer||serveParticipantIds.slice(0,serveParticipantCount).indexOf(String(selectedServer))<0)selectedServer=serveParticipantIds[0]||'';
+  }
+  function servePlayerOptions(selected,slot){
+    var used=serveUsedIds(slot);
+    return '<option value="">選手を選択</option>'+players().map(function(p){var id=String(p.id),disabled=used.indexOf(id)>=0?' disabled':'';return '<option value="'+esc(id)+'"'+(id===String(selected)?' selected':'')+disabled+'>'+esc((p.number?p.number+' ':'')+(p.name||'名前未設定'))+'</option>'}).join('');
+  }
   function rebuildCard(){
     var card=document.querySelector('#serveLandingScreen .servePlayerListCard');if(!card)return;
-    card.innerHTML='<div class="serveServerTitle">サーバー選択</div><label class="serveServerTeam"><span>登録チーム</span><select id="serveServerTeamSelect"></select></label><label class="serveServerSearch"><span>名前検索</span><input id="serveServerSearchInput" type="search" placeholder="選手名を入力" autocomplete="off"></label><div id="serveServerList"></div><div id="serveServerCurrent" class="serveServerCurrent"></div>';
+    card.innerHTML='<div class="serveServerTitle">サーブ参加選手</div><label class="serveServerTeam"><span>登録チーム</span><select id="serveServerTeamSelect"></select></label><div class="serveParticipantCount" role="group" aria-label="参加人数"><span>参加人数</span><div>'+[2,3,4,5,6].map(function(n){return '<button type="button" data-count="'+n+'" class="'+(n===serveParticipantCount?'active':'')+'">'+n+'人</button>'}).join('')+'</div></div><div id="serveServerList" class="serveMultiServerList"></div><div id="serveServerCurrent" class="serveServerCurrent"></div>';
     var sel=e('serveServerTeamSelect'),ts=teams();
     sel.innerHTML='<option value="">登録チームを選択</option>'+ts.map(function(t){return '<option value="'+esc(t.id)+'">'+esc(t.name)+(t.year?'（'+esc(t.year)+'）':'')+'</option>'}).join('');
     if(!selectedTeam&&ts.length)selectedTeam=String(ts[0].id);sel.value=selectedTeam;
-    sel.onchange=function(){selectedTeam=this.value;selectedServer='';serverSearch='';var q=e('serveServerSearchInput');if(q)q.value='';renderServers();renderSessionMarkers()};
-    var search=e('serveServerSearchInput');if(search){search.value=serverSearch;search.oninput=function(){serverSearch=this.value||'';renderServers()}}
-    renderServers();
+    sel.onchange=function(){selectedTeam=this.value;selectedServer='';serveParticipantIds=['','','','','',''];autoFillServeParticipants();renderServers();renderSessionMarkers()};
+    Array.prototype.forEach.call(card.querySelectorAll('.serveParticipantCount button'),function(btn){btn.onclick=function(){serveParticipantCount=Number(this.getAttribute('data-count'))||3;autoFillServeParticipants();rebuildCard();renderSessionMarkers()}});
+    autoFillServeParticipants();renderServers();
   }
   function renderServers(){
     var list=e('serveServerList'),cur=e('serveServerCurrent');if(!list||!cur)return;
-    var all=players(),q=serverSearch.trim().toLowerCase(),level=currentLevel();
-    var shown=q?all.filter(function(p){return String(p.name||'').toLowerCase().indexOf(q)!==-1}):all;
-    if(!selectedServer&&all.length)selectedServer=String(all[0].id);
-    list.innerHTML=shown.length?shown.map(function(p){var st=statFor(level,p.id),active=String(p.id)===String(selectedServer);return '<button type="button" class="serveServerBtn'+(active?' active':'')+'" data-id="'+esc(p.id)+'"><b>'+esc(p.number||'—')+'</b><span>'+esc(p.name||'名前未設定')+'</span><small>'+st.success+'成功 / '+st.miss+'ミス</small></button>'}).join(''):'<div style="color:#94a3b8;font-size:10px;padding:10px 2px">'+(q?'該当する選手がいません':'登録選手がありません')+'</div>';
-    Array.prototype.forEach.call(list.querySelectorAll('.serveServerBtn'),function(b){b.onclick=function(){selectedServer=this.getAttribute('data-id')||'';renderServers()}});
+    autoFillServeParticipants();var level=currentLevel();list.innerHTML='';
+    for(var i=0;i<serveParticipantCount;i++){
+      (function(slot){var id=serveParticipantIds[slot]||'',p=players().find(function(x){return String(x.id)===String(id)})||null,st=id?statFor(level,id):{success:0,miss:0},total=st.success+st.miss,rate=total?Math.round(st.success/total*100):0;var box=document.createElement('div');box.className='serveMultiServerCard'+(String(id)===String(selectedServer)&&id?' active':'');box.innerHTML='<button type="button" class="serveMultiActivate" '+(id?'':'disabled')+'><span class="serveMultiSlot">'+(slot+1)+'</span><strong>'+(p?esc((p.number?p.number+' ':'')+(p.name||'名前未設定')):'選手 '+(slot+1))+'</strong><small>'+total+'本 / 成功 '+st.success+' / ミス '+st.miss+' / '+rate+'%</small></button><select class="serveMultiSelect" aria-label="サーブ参加選手'+(slot+1)+'">'+servePlayerOptions(id,slot)+'</select>';list.appendChild(box);var activate=box.querySelector('.serveMultiActivate');activate.onclick=function(){selectedServer=id;renderServers();renderSessionMarkers()};var select=box.querySelector('.serveMultiSelect');select.onchange=function(){serveParticipantIds[slot]=this.value||'';if(this.value)selectedServer=this.value;else if(String(selectedServer)===String(id))selectedServer='';autoFillServeParticipants();renderServers();renderSessionMarkers()}})(i);
+    }
     var p=selectedPlayer();
-    if(!p){cur.innerHTML='<small>選択中</small><strong>サーバーを選択</strong>';syncTopCounts();renderSessionMarkers();return}
+    if(!p){cur.innerHTML='<small>入力する選手</small><strong>選手カードをタップ</strong>';syncTopCounts();renderSessionMarkers();return}
     var st=statFor(level,p.id),total=st.success+st.miss,rate=total?Math.round(st.success/total*100):0;
-    cur.innerHTML='<small>選択中のサーバー ／ '+esc(level)+'</small><strong>'+(p.number?esc(p.number)+' ':'')+esc(p.name)+'</strong>';
+    cur.innerHTML='<small>入力する選手 ／ '+esc(level)+'</small><strong>'+(p.number?esc(p.number)+' ':'')+esc(p.name)+'</strong><div class="serveActiveQuick"><span>'+total+'本</span><span>成功 '+st.success+'</span><span>ミス '+st.miss+'</span><span>'+rate+'%</span></div>';
     syncTopCounts();renderSessionMarkers();
   }
   function addAction(type,point){
@@ -10927,7 +10945,7 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   document.addEventListener('DOMContentLoaded',function(){
     var oldOpen=window.openServeLandingAnalysis;
     window.openServeLandingAnalysis=function(level){
-      selectedServer='';selectedTeam='';serverSearch='';sessionActions=[];sessionRecordId='';
+      selectedServer='';selectedTeam='';serverSearch='';serveParticipantCount=3;serveParticipantIds=['','','','','',''];sessionActions=[];sessionRecordId='';
       try{if(typeof oldOpen==='function')oldOpen(level)}catch(err){console.error('serve open recovery',err)}
       var screen=e('serveLandingScreen');if(screen){screen.classList.add('show');screen.setAttribute('aria-hidden','false')}
       var tx=e('serveLandingLevelText');if(tx)tx.textContent=LEVELS.indexOf(level)>=0?level:'LEVEL 1';
@@ -10984,6 +11002,14 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 @media(max-width:760px){#serveLandingScreen .serveLandingActions{grid-column:3!important;display:flex!important}.serveSavedRecordCard{grid-template-columns:1fr}.serveSavedRecordCard span{grid-row:auto}}
 </style>
 <script>/* cache marker: 150-287-serve-saved-practice-right-panel */</script>
+<style id="v151-1-38-serve-multiplayer">
+#serveLandingScreen .servePlayerListCard{overflow:auto!important}
+.serveParticipantCount{display:grid;gap:5px;margin-bottom:8px;color:#94a3b8;font-size:9px;font-weight:900}.serveParticipantCount>div{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.serveParticipantCount button{min-height:28px;border:1px solid rgba(148,163,184,.25);border-radius:8px;background:#111c30;color:#cbd5e1;font-size:9px;font-weight:1000}.serveParticipantCount button.active{background:#2563eb;border-color:#60a5fa;color:#fff}
+.serveMultiServerList{display:grid!important;gap:6px!important;overflow:visible!important}.serveMultiServerCard{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:5px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#0b1424}.serveMultiServerCard.active{border-color:#facc15;background:rgba(250,204,21,.10);box-shadow:0 0 0 2px rgba(250,204,21,.11)}.serveMultiActivate{display:grid;grid-template-columns:24px minmax(0,1fr);grid-template-rows:auto auto;gap:1px 6px;align-items:center;width:100%;border:0;background:transparent;color:#fff;padding:2px;text-align:left}.serveMultiActivate:disabled{opacity:.55}.serveMultiSlot{grid-row:1/3;display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#1d4ed8;color:#fff;font-size:10px;font-weight:1000}.serveMultiActivate strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.serveMultiActivate small{font-size:8px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.serveMultiSelect{width:100%;height:27px;border:1px solid rgba(148,163,184,.24);border-radius:7px;background:#07101f;color:#e2e8f0;padding:0 5px;font-size:8px;font-weight:800}.serveActiveQuick{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:6px}.serveActiveQuick span{padding:3px 1px;border-radius:6px;background:#07101f;color:#cbd5e1;font-size:7px;text-align:center}
+@media(max-width:760px){.serveParticipantCount>div{grid-template-columns:repeat(5,1fr)}.serveMultiServerCard{padding:3px}.serveMultiActivate strong{font-size:9px}.serveMultiActivate small{font-size:7px}.serveMultiSelect{height:24px;font-size:7px}}
+</style>
+<script>/* cache marker: v151-1-38-serve-multiplayer */</script>
+
 
 <style id="v150-291-coach-team-presentation">
 #coachBoardModal .coachPlanTools{grid-template-columns:1fr 1fr!important}#coachBoardModal .coachPlanTools #coachTeamSelect,#coachBoardModal .coachPlanTools #coachSystemName{grid-column:1/-1!important}#coachBoardModal .coachPlanTools input{min-height:34px;border:1px solid #475569;border-radius:9px;background:#1e293b;color:#fff;padding:0 8px;font-size:9px;font-weight:900}.coachSaveTeam{border:1px solid #334155;border-radius:10px;overflow:hidden;margin-bottom:8px}.coachSaveTeam>summary{padding:9px 11px;background:#172033;color:#e2e8f0;font-weight:1000;cursor:pointer}.coachSaveTeam>summary small{color:#93c5fd;margin-left:5px}.coachPresentation{position:fixed;inset:0;z-index:180000;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:#020617;color:#fff}.coachPresentation header,.coachPresentation footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:#0f172a}.coachPresentation header small{display:block;color:#93c5fd;font-weight:900}.coachPresentation header strong{font-size:16px}.coachPresentation header button{width:42px;height:42px;border:0;border-radius:10px;background:#334155;color:#fff;font-size:26px}.coachPresentation main{display:grid;place-items:center;min-height:0;padding:8px}.coachPresentationStage{width:100%;height:100%;display:grid;place-items:center}.coachPresentationStage .coachCourt{height:100%!important;max-height:100%!important;width:auto!important;max-width:100%!important;margin:auto!important}.coachPresentation footer{justify-content:center}.coachPresentation footer button{min-width:140px;min-height:48px;border:0;border-radius:12px;background:#1d4ed8;color:#fff;font-weight:1000;font-size:15px}@media(max-width:760px){.coachPresentation header strong{font-size:12px}.coachPresentation footer button{min-width:120px}}
@@ -16459,7 +16485,7 @@ html.booting #launchLanding{
 <script>/* cache marker: v151-1-32-presentation-court-fit */</script>
 
 
-<!-- V151.1.37 Reception Practice Analysis: multi-player one-tap input -->
+<!-- V151.1.38 Reception Practice Analysis: multi-player one-tap input -->
 <style id="v151-1-37-reception-practice">
 #receptionPracticeScreen{position:fixed;inset:0;z-index:12600;display:none;background:#07101f;color:#f8fafc;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}
 #receptionPracticeScreen.show{display:block}
