@@ -3309,6 +3309,22 @@ function buildSetterInsight(){
   </div>`;
 }
 
+// V151.1.33: Excelが「5-1」等のスコアを日付へ自動変換しないよう、Score列だけ安全な数式文字列で出力する。
+function csvExcelSafeValue(header,value){
+  const text=String(value??'');
+  if(String(header)==='Score' && /^\d+\s*-\s*\d+$/.test(text.trim())) return `="${text.trim()}"`;
+  return text;
+}
+function csvQuote(value){ return `"${String(value??'').replaceAll('"','""')}"`; }
+function csvNormalizeImportedValue(header,value){
+  const text=String(value??'').trim();
+  if(String(header)==='Score'){
+    const m=text.match(/^=\s*"(\d+\s*-\s*\d+)"$/);
+    if(m) return m[1].replace(/\s+/g,'');
+  }
+  return text;
+}
+
 function downloadCSV(){
   const reportSetters=reportSetterNumbers();
   const analyses=Object.fromEntries(reportSetters.map((n,i)=>[String(n),{idx:i+1,a:currentSetterAnalysisFor(n)}]));
@@ -3326,7 +3342,7 @@ function downloadCSV(){
   rows.push([]);
   rows.push(["SecondBallSummary","Number","Name","Total","Left","Center","Right","Back","Two"]);
   secondBallAnalysis().players.forEach(p=>rows.push(["SecondBallSummary",p.num,p.name,p.total,p.counts["レフト"],p.counts["センター"],p.counts["ライト"],p.counts["バック"],p.counts["ツー"]]));
-  const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(",")).join("\n");
+  const csv=rows.map((r,rowIndex)=>r.map((v,colIndex)=>csvQuote(csvExcelSafeValue(rowIndex===0?r[colIndex]:rows[0]?.[colIndex],v))).join(",")).join("\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="setter_theory_log.csv"; a.click();
 }
@@ -6600,7 +6616,7 @@ function savedMatchCsvText(match){
     ? parsed.headers.map(String)
     : [...new Set((parsed.data||[]).flatMap(row=>Object.keys(row||{})))];
   const rows=[headers,...(parsed.data||[]).map(row=>headers.map(h=>row&&row[h]!==undefined?row[h]:''))];
-  return rows.map(row=>row.map(value=>`"${String(value??'').replaceAll('"','""')}"`).join(',')).join('\n');
+  return rows.map((row,rowIndex)=>row.map((value,colIndex)=>csvQuote(csvExcelSafeValue(rowIndex===0?headers[colIndex]:headers[colIndex],value))).join(',')).join('\n');
 }
 function exportSavedMatchCsv(id){
   try{
@@ -7835,7 +7851,7 @@ function parseCSVText(text){
   const headers = rows[0].map((h,i)=>String(h || `列${i+1}`).trim());
   const data = rows.slice(1).map(r=>{
     const obj = {};
-    headers.forEach((h,i)=>obj[h] = (r[i] ?? "").trim());
+    headers.forEach((h,i)=>obj[h] = csvNormalizeImportedValue(h,(r[i] ?? "")));
     return obj;
   });
   return {headers, data};
