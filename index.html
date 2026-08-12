@@ -4970,7 +4970,7 @@ html.appEntered #home.active{
       <button type="button" onclick="showAccountComingSoon('ログイン')">ログイン</button>
     </div>
 
-    <div class="launchVersion">SETTER THEORY　V151.1.38</div>
+    <div class="launchVersion">SETTER THEORY　V151.1.39</div>
   </div>
 </section>
 
@@ -5281,7 +5281,7 @@ html.appEntered #home.active{
 }
 </style>
 <script>
-const APP_VERSION = 'V151.1.38';
+const APP_VERSION = 'V151.1.39';
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.coachBoardToolbar').forEach(panel=>{
     panel.querySelectorAll('.coachAccordion').forEach(item=>{
@@ -5347,7 +5347,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="coachBoardModal" class="coachBoardModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coachBoardTitle">
   <section class="coachBoardShell">
     <header class="coachBoardHeader">
-      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.38</em></h2></div>
+      <div><small>SETTER THEORY</small><h2 id="coachBoardTitle">コーチボード <em>V151.1.39</em></h2></div>
       <button type="button" class="coachBoardClose" data-cb-action="close" aria-label="閉じる">×</button>
     </header>
 
@@ -7379,7 +7379,7 @@ function closePositionManager(){const m=document.getElementById('positionManager
 }
 </style>
 
-<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.38</div>
+<div id="recoveryBuildMarker" style="position:fixed;right:6px;bottom:6px;z-index:99999;font-size:9px;font-weight:800;color:#64748b;background:rgba(255,255,255,.88);padding:3px 5px;border-radius:6px;pointer-events:none">V151.1.39</div>
 \n<style>\n/* V141: ローテーション別トス配分 */\n.v141RotationSection{margin-top:22px;padding-top:18px;border-top:2px solid #e2e8f0}.v141RotationSection h4{margin:0;font-size:18px;color:#0f172a}.v141RotationNote{margin-top:3px;font-size:12px;color:#64748b}.v141RotTossWrap{display:grid;gap:14px;margin-top:12px}\n.v141RotTossSummary{font-size:13px;color:#64748b;text-align:right}.v141RotTossSummary b{font-size:16px;color:#0f172a}\n.v141RotTossRow{padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}\n.v141RotTossRow.current{border:2px solid #ef4444;padding:13px;box-shadow:0 0 0 3px rgba(239,68,68,.08)}\n.v141RotTossHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.v141RotTossHead strong{font-size:18px;color:#0f172a}.v141RotTossHead span{font-size:12px;color:#64748b;font-weight:700}\n.v141RotTossTrack{height:24px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;position:relative}\n.v141RotTossSegment{display:block;height:100%;min-width:2px}.v141RotTossEmpty{width:100%;text-align:center;font-size:11px;color:#94a3b8}\n.v141RotTossDetails{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}\n.v141RotTossDetail{display:grid;grid-template-columns:8px 1fr auto;grid-template-areas:'dot label count' '. pct pct';align-items:center;gap:2px 5px;padding:6px 7px;border-radius:9px;background:#f8fafc;font-size:11px;color:#475569}\n.v141RotTossDetail i{grid-area:dot;width:8px;height:8px;border-radius:50%}.v141RotTossDetail b{grid-area:count;color:#0f172a;font-size:13px}.v141RotTossDetail em{grid-area:pct;font-style:normal;text-align:right;color:#64748b;font-size:10px}\n@media(max-width:720px){.v141RotTossDetails{grid-template-columns:repeat(2,minmax(0,1fr))}.v141RotTossDetail:last-child{grid-column:span 2}.v141RotTossRow{padding:11px}.v141RotTossRow.current{padding:10px}}\n</style>\n
 <style>
 /* V141: セッター別トス分析 */
@@ -10834,6 +10834,8 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
   }
   function rebuildCard(){
     var card=document.querySelector('#serveLandingScreen .servePlayerListCard');if(!card)return;
+    card.classList.remove('serveCount2','serveCount3','serveCount4','serveCount5','serveCount6');
+    card.classList.add('serveCount'+serveParticipantCount);
     card.innerHTML='<div class="serveServerTitle">サーブ参加選手</div><label class="serveServerTeam"><span>登録チーム</span><select id="serveServerTeamSelect"></select></label><div class="serveParticipantCount" role="group" aria-label="参加人数"><span>参加人数</span><div>'+[2,3,4,5,6].map(function(n){return '<button type="button" data-count="'+n+'" class="'+(n===serveParticipantCount?'active':'')+'">'+n+'人</button>'}).join('')+'</div></div><div id="serveServerList" class="serveMultiServerList"></div><div id="serveServerCurrent" class="serveServerCurrent"></div>';
     var sel=e('serveServerTeamSelect'),ts=teams();
     sel.innerHTML='<option value="">登録チームを選択</option>'+ts.map(function(t){return '<option value="'+esc(t.id)+'">'+esc(t.name)+(t.year?'（'+esc(t.year)+'）':'')+'</option>'}).join('');
@@ -11002,13 +11004,33 @@ document.addEventListener('toggle',function(e){if(!e.target.classList||!e.target
 @media(max-width:760px){#serveLandingScreen .serveLandingActions{grid-column:3!important;display:flex!important}.serveSavedRecordCard{grid-template-columns:1fr}.serveSavedRecordCard span{grid-row:auto}}
 </style>
 <script>/* cache marker: 150-287-serve-saved-practice-right-panel */</script>
-<style id="v151-1-38-serve-multiplayer">
+<style id="v151-1-39-serve-multiplayer">
 #serveLandingScreen .servePlayerListCard{overflow:auto!important}
 .serveParticipantCount{display:grid;gap:5px;margin-bottom:8px;color:#94a3b8;font-size:9px;font-weight:900}.serveParticipantCount>div{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.serveParticipantCount button{min-height:28px;border:1px solid rgba(148,163,184,.25);border-radius:8px;background:#111c30;color:#cbd5e1;font-size:9px;font-weight:1000}.serveParticipantCount button.active{background:#2563eb;border-color:#60a5fa;color:#fff}
 .serveMultiServerList{display:grid!important;gap:6px!important;overflow:visible!important}.serveMultiServerCard{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:5px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#0b1424}.serveMultiServerCard.active{border-color:#facc15;background:rgba(250,204,21,.10);box-shadow:0 0 0 2px rgba(250,204,21,.11)}.serveMultiActivate{display:grid;grid-template-columns:24px minmax(0,1fr);grid-template-rows:auto auto;gap:1px 6px;align-items:center;width:100%;border:0;background:transparent;color:#fff;padding:2px;text-align:left}.serveMultiActivate:disabled{opacity:.55}.serveMultiSlot{grid-row:1/3;display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#1d4ed8;color:#fff;font-size:10px;font-weight:1000}.serveMultiActivate strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.serveMultiActivate small{font-size:8px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.serveMultiSelect{width:100%;height:27px;border:1px solid rgba(148,163,184,.24);border-radius:7px;background:#07101f;color:#e2e8f0;padding:0 5px;font-size:8px;font-weight:800}.serveActiveQuick{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:6px}.serveActiveQuick span{padding:3px 1px;border-radius:6px;background:#07101f;color:#cbd5e1;font-size:7px;text-align:center}
 @media(max-width:760px){.serveParticipantCount>div{grid-template-columns:repeat(5,1fr)}.serveMultiServerCard{padding:3px}.serveMultiActivate strong{font-size:9px}.serveMultiActivate small{font-size:7px}.serveMultiSelect{height:24px;font-size:7px}}
+/* V151.1.39: 5〜6人でも全参加カードを1画面内に表示 */
+#serveLandingScreen .servePlayerListCard.serveCount5,#serveLandingScreen .servePlayerListCard.serveCount6{padding:6px!important;overflow:hidden!important}
+#serveLandingScreen .serveCount5 .serveServerTitle,#serveLandingScreen .serveCount6 .serveServerTitle{margin-bottom:3px;font-size:11px}
+#serveLandingScreen .serveCount5 .serveServerTeam,#serveLandingScreen .serveCount6 .serveServerTeam{grid-template-columns:62px minmax(0,1fr);align-items:center;gap:4px;margin-bottom:4px;font-size:8px}
+#serveLandingScreen .serveCount5 .serveServerTeam select,#serveLandingScreen .serveCount6 .serveServerTeam select{height:25px;font-size:8px}
+#serveLandingScreen .serveCount5 .serveParticipantCount,#serveLandingScreen .serveCount6 .serveParticipantCount{grid-template-columns:48px minmax(0,1fr);align-items:center;gap:4px;margin-bottom:4px;font-size:8px}
+#serveLandingScreen .serveCount5 .serveParticipantCount>div,#serveLandingScreen .serveCount6 .serveParticipantCount>div{gap:2px}
+#serveLandingScreen .serveCount5 .serveParticipantCount button,#serveLandingScreen .serveCount6 .serveParticipantCount button{min-height:22px;padding:0;font-size:8px}
+#serveLandingScreen .serveCount5 .serveMultiServerList,#serveLandingScreen .serveCount6 .serveMultiServerList{gap:3px!important;min-height:0;flex:1}
+#serveLandingScreen .serveCount5 .serveMultiServerCard,#serveLandingScreen .serveCount6 .serveMultiServerCard{padding:2px 3px;gap:2px;border-radius:8px;min-height:0}
+#serveLandingScreen .serveCount5 .serveMultiActivate,#serveLandingScreen .serveCount6 .serveMultiActivate{grid-template-columns:20px minmax(0,1fr);padding:0;gap:0 4px}
+#serveLandingScreen .serveCount5 .serveMultiSlot,#serveLandingScreen .serveCount6 .serveMultiSlot{width:19px;height:19px;font-size:8px}
+#serveLandingScreen .serveCount5 .serveMultiActivate strong,#serveLandingScreen .serveCount6 .serveMultiActivate strong{font-size:8px;line-height:10px}
+#serveLandingScreen .serveCount5 .serveMultiActivate small,#serveLandingScreen .serveCount6 .serveMultiActivate small{font-size:6.5px;line-height:8px}
+#serveLandingScreen .serveCount5 .serveMultiSelect,#serveLandingScreen .serveCount6 .serveMultiSelect{height:21px;font-size:7px;padding:0 3px}
+#serveLandingScreen .serveCount5 .serveServerCurrent,#serveLandingScreen .serveCount6 .serveServerCurrent{margin-top:3px;padding:4px 6px}
+#serveLandingScreen .serveCount5 .serveServerCurrent small,#serveLandingScreen .serveCount6 .serveServerCurrent small{font-size:6px}
+#serveLandingScreen .serveCount5 .serveServerCurrent strong,#serveLandingScreen .serveCount6 .serveServerCurrent strong{font-size:9px;margin-top:0}
+#serveLandingScreen .serveCount5 .serveActiveQuick,#serveLandingScreen .serveCount6 .serveActiveQuick{margin-top:2px;gap:2px}
+#serveLandingScreen .serveCount5 .serveActiveQuick span,#serveLandingScreen .serveCount6 .serveActiveQuick span{font-size:6px;padding:2px 0}
 </style>
-<script>/* cache marker: v151-1-38-serve-multiplayer */</script>
+<script>/* cache marker: v151-1-39-serve-multiplayer */</script>
 
 
 <style id="v150-291-coach-team-presentation">
@@ -16485,7 +16507,7 @@ html.booting #launchLanding{
 <script>/* cache marker: v151-1-32-presentation-court-fit */</script>
 
 
-<!-- V151.1.38 Reception Practice Analysis: multi-player one-tap input -->
+<!-- V151.1.39 Reception Practice Analysis: multi-player one-tap input -->
 <style id="v151-1-37-reception-practice">
 #receptionPracticeScreen{position:fixed;inset:0;z-index:12600;display:none;background:#07101f;color:#f8fafc;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;overflow:auto;-webkit-overflow-scrolling:touch}
 #receptionPracticeScreen.show{display:block}
