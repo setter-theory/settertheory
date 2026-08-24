@@ -6876,24 +6876,39 @@ function compareCardHtml(m){
   const info=compareMatchInfo(m);
   return `<span class="compareCardDate">📅 ${escapeHtml(info.date)}</span><span class="compareCardMatch">🏐 ${escapeHtml(info.match)}</span><span class="compareCardMeta">👤 ${escapeHtml(info.setter)}　・　IQ ${info.iq}　・　トス ${info.total}本</span>`;
 }
-function renderComparePicker(side,list,selectedId){
+function renderComparePicker(side,list,selectedId,excludeId=''){
   const card=document.getElementById(side==='from'?'compareFromCard':'compareToCard');
   const panel=document.getElementById(side==='from'?'compareFromList':'compareToList');
   const selected=list.find(m=>String(m.id)===String(selectedId));
   if(card) card.innerHTML=compareCardHtml(selected);
-  if(panel) panel.innerHTML=list.map(m=>`<button type="button" class="compareChoice ${String(m.id)===String(selectedId)?'selected':''}" onclick="selectCompareMatch('${side}','${m.id}')">${compareCardHtml(m)}</button>`).join('');
+  const choices=list.filter(m=>!excludeId || String(m.id)!==String(excludeId));
+  if(panel) panel.innerHTML=choices.map(m=>`<button type="button" class="compareChoice ${String(m.id)===String(selectedId)?'selected':''}" onclick="selectCompareMatch('${side}','${m.id}')">${compareCardHtml(m)}</button>`).join('');
 }
 function toggleComparePicker(side){
   const panel=document.getElementById(side==='from'?'compareFromList':'compareToList');
   const other=document.getElementById(side==='from'?'compareToList':'compareFromList');
+  const current=document.getElementById(side==='from'?'compareFrom':'compareTo');
+  const otherSelect=document.getElementById(side==='from'?'compareTo':'compareFrom');
   if(other) other.hidden=true;
-  if(panel) panel.hidden=!panel.hidden;
+  if(panel){
+    renderComparePicker(side,getSavedMatches(),current?.value||'',otherSelect?.value||'');
+    panel.hidden=!panel.hidden;
+  }
 }
 function selectCompareMatch(side,id){
   const select=document.getElementById(side==='from'?'compareFrom':'compareTo');
+  const otherSelect=document.getElementById(side==='from'?'compareTo':'compareFrom');
+  const result=document.getElementById('compareResult');
+  if(otherSelect && String(otherSelect.value)===String(id)){
+    if(result) result.innerHTML='<div class="csvSmall">同じ試合は比較できません。別の試合を選択してください。</div>';
+    return;
+  }
   if(select) select.value=id;
   const list=getSavedMatches();
-  renderComparePicker(side,list,id);
+  const from=document.getElementById('compareFrom');
+  const to=document.getElementById('compareTo');
+  renderComparePicker('from',list,from?.value||'',to?.value||'');
+  renderComparePicker('to',list,to?.value||'',from?.value||'');
   const panel=document.getElementById(side==='from'?'compareFromList':'compareToList');
   if(panel) panel.hidden=true;
 }
@@ -6912,12 +6927,12 @@ function renderCompareSelectors(){
   if(list.length>=2){
     from.value=list.some(m=>String(m.id)===String(previousFrom))?previousFrom:list[1].id;
     to.value=list.some(m=>String(m.id)===String(previousTo))?previousTo:list[0].id;
-    renderComparePicker('from',list,from.value);
-    renderComparePicker('to',list,to.value);
+    renderComparePicker('from',list,from.value,to.value);
+    renderComparePicker('to',list,to.value,from.value);
     if(result && (!result.dataset.touched)) compareSavedMatches();
   }else{
-    renderComparePicker('from',list,list[0]&&list[0].id);
-    renderComparePicker('to',list,'');
+    renderComparePicker('from',list,list[0]&&list[0].id,'');
+    renderComparePicker('to',list,'',list[0]&&list[0].id);
     if(result) result.innerHTML='<div class="csvSmall">保存した試合が2件以上あると比較できます。</div>';
   }
 }
@@ -7033,7 +7048,7 @@ function compareSavedMatches(){
   if(result) result.dataset.touched='1';
   if(!result) return;
   if(list.length<2){ result.innerHTML='<div class="csvSmall">保存した試合が2件以上必要です。</div>'; return; }
-  if(fromId===toId){ result.innerHTML='<div class="csvSmall">別々の試合を選んでください。</div>'; return; }
+  if(fromId===toId){ result.innerHTML='<div class="csvSmall">同じ試合は比較できません。別の試合を選択してください。</div>'; return; }
   const from=list.find(x=>x.id===fromId);
   const to=list.find(x=>x.id===toId);
   if(!from||!to){ result.innerHTML='<div class="csvSmall">比較対象が見つかりません。</div>'; return; }
