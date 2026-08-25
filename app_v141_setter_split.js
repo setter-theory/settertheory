@@ -675,7 +675,7 @@ function save(reason="auto"){
 
     // V150.289: 途中試合を同じ大きさで3重保存していた処理を見直す。
     // 主データを最優先にし、バックアップは空き容量がある場合だけ作成する。
-    const durableState={...s,hist:Array.isArray(s.hist)?s.hist.slice(-12):[]};
+    const durableState={...s,hist:Array.isArray(s.hist)?s.hist.slice(-2):[]};
     const serialized=JSON.stringify(durableState);
 
     try{ localStorage.removeItem("setterTheoryV2Backup"); }catch(_error){}
@@ -687,8 +687,10 @@ function save(reason="auto"){
       throw new Error("autosave verification failed");
     }
 
-    try{ localStorage.setItem("setterTheoryV2Backup", serialized); }
-    catch(backupError){ console.warn("autosave backup skipped",backupError); }
+    try{
+      const backupState={...durableState,hist:[]};
+      localStorage.setItem("setterTheoryV2Backup", JSON.stringify(backupState));
+    } catch(backupError){ console.warn("autosave backup skipped",backupError); }
 
     // 緊急用はスコアと基本情報のみ。容量を圧迫しない。
     try{
@@ -759,7 +761,7 @@ function load(){
 
 function snap(){
   s.hist.push(JSON.stringify({...s,hist:[]}));
-  if(s.hist.length>300)s.hist.shift();
+  if(s.hist.length>20)s.hist.shift();
 }
 function rotateClockwiseOnce(a){
   // 標準ローテーション定義：
@@ -6194,7 +6196,7 @@ function createStablePlayerId(){ return createEntityId('player'); }
 function getPlayerRegistry(){
   try{ const v=JSON.parse(localStorage.getItem(playerRegistryKey())||'{}'); return v&&typeof v==='object'&&!Array.isArray(v)?v:{}; }catch(e){ return {}; }
 }
-function setPlayerRegistry(v){ localStorage.setItem(playerRegistryKey(),JSON.stringify(v||{})); }
+function setPlayerRegistry(v){ try{ localStorage.setItem(playerRegistryKey(),JSON.stringify(v||{})); return true; }catch(error){ console.warn('player registry save skipped',error); return false; } }
 function identityLookupKey(name,num=''){
   const no=String(num||'').trim();
   if(no && no!=='-' && no!=='0') return `number:${no}`;
@@ -6263,7 +6265,19 @@ function migrateSavedMatchIdentities(match){
 function savedMatchesBackupKey(){ return 'setterTheorySavedMatchesV21Backup'; }
 function normalizeSavedMatchList(value){
   if(!Array.isArray(value)) return null;
-  return value.map(migrateSavedMatchIdentities);
+  return value.map(match=>{
+    try{ return migrateSavedMatchIdentities(match); }
+    catch(error){
+      console.warn('saved match identity migration skipped',error);
+      return match;
+    }
+  });
+}
+function savedMatchStoreTimestamp(store){
+  if(!store) return '';
+  if(store.savedAt) return String(store.savedAt);
+  const times=(store.list||[]).map(m=>String(m&&m.savedAt||'')).filter(Boolean).sort();
+  return times.length?times[times.length-1]:'';
 }
 function readSavedMatchStore(key){
   try{
@@ -6281,13 +6295,21 @@ function getSavedMatches(){
   const backup=readSavedMatchStore(savedMatchesBackupKey());
   let chosen=primary;
   if(!chosen && backup) chosen=backup;
-  else if(primary && backup && backup.savedAt && primary.savedAt && backup.savedAt>primary.savedAt) chosen=backup;
+  else if(primary && backup){
+    const primaryTime=savedMatchStoreTimestamp(primary);
+    const backupTime=savedMatchStoreTimestamp(backup);
+    if(backupTime && (!primaryTime || backupTime>primaryTime)) chosen=backup;
+  }
   const list=(chosen&&chosen.list)||[];
-  // If primary is missing/corrupt, restore it from the automatic in-app backup.
+  // Only restore primary when it is genuinely missing/corrupt or backup is demonstrably newer.
   if((!primary || chosen===backup) && backup){
     try{ localStorage.setItem(savedMatchesKey(),JSON.stringify(list)); }catch(error){ console.error('saved match primary restore failed',error); }
   }
   return list;
+}
+function findSavedMatchByAnyId(id){
+  const key=String(id||'');
+  return getSavedMatches().find(x=>String(x&&x.id||'')===key || String(x&&x.matchId||'')===key) || null;
 }
 function compactSavedMatchForStorage(match){
   const compact={...match};
@@ -6305,23 +6327,36 @@ function storageErrorLabel(error){
   return `${name}: ${message}`;
 }
 function setSavedMatches(list){
-  // V150.289: 主データ保存前に古いバックアップを解放し、保存試合を最優先する。
+  // V151.1.57: never discard the last usable backup before the new primary is verified.
   const normalized=(list||[]).map(migrateSavedMatchIdentities).map(compactSavedMatchForStorage);
   const savedAt=new Date().toISOString();
   const serialized=JSON.stringify(normalized);
   const backupSerialized=JSON.stringify({savedAt,list:normalized});
   const sizeKb=Math.max(1,Math.ceil(new Blob([serialized]).size/1024));
-  try{ localStorage.removeItem(savedMatchesBackupKey()); }catch(_error){}
+  const previousBackup=localStorage.getItem(savedMatchesBackupKey());
+  let primarySaved=false;
   try{
     localStorage.setItem(savedMatchesKey(),serialized);
-  }catch(error){
-    error.setterTheoryDetail=`${storageErrorLabel(error)} / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
-    throw error;
+    primarySaved=true;
+  }catch(firstError){
+    // If space is tight, free only the backup and retry once. Existing primary remains untouched on failed setItem.
+    try{ localStorage.removeItem(savedMatchesBackupKey()); }catch(_error){}
+    try{
+      localStorage.setItem(savedMatchesKey(),serialized);
+      primarySaved=true;
+    }catch(error){
+      // Best effort: put the previous backup back so a failed new save cannot remove the recovery copy.
+      if(previousBackup){ try{ localStorage.setItem(savedMatchesBackupKey(),previousBackup); }catch(_restoreError){} }
+      error.setterTheoryDetail=`${storageErrorLabel(error)} / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
+      throw error;
+    }
   }
+  if(!primarySaved) throw new Error('saved match primary save failed');
   try{
     const verified=JSON.parse(localStorage.getItem(savedMatchesKey())||'null');
     if(!Array.isArray(verified) || verified.length!==normalized.length) throw new Error('saved match verification failed');
   }catch(error){
+    if(previousBackup){ try{ localStorage.setItem(savedMatchesBackupKey(),previousBackup); }catch(_restoreError){} }
     error.setterTheoryDetail=`保存後の確認に失敗しました / 保存データ約${sizeKb}KB / ${normalized.length}試合`;
     throw error;
   }
@@ -6578,7 +6613,7 @@ function enrichParsedWithSavedSetterMetadata(parsed,match){
 
 function loadSavedMatch(id){
   try{
-    const m=getSavedMatches().find(x=>String(x.id)===String(id));
+    const m=findSavedMatchByAnyId(id);
     if(!m){ alert('保存データが見つかりません。'); return; }
 
     // V126: the report host is inside the collapsed Data Management panel.
@@ -6620,7 +6655,7 @@ function savedMatchCsvText(match){
 }
 function exportSavedMatchCsv(id){
   try{
-    const match=getSavedMatches().find(x=>String(x.id)===String(id));
+    const match=findSavedMatchByAnyId(id);
     if(!match){ alert('保存データが見つかりません。'); return; }
     const csv=savedMatchCsvText(match);
     const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
@@ -6639,7 +6674,7 @@ function exportSavedMatchCsv(id){
 }
 function printSavedMatchPdf(id){
   try{
-    const match=getSavedMatches().find(x=>String(x.id)===String(id));
+    const match=findSavedMatchByAnyId(id);
     if(!match){ alert('保存データが見つかりません。'); return; }
     const parsed=enrichParsedWithSavedSetterMetadata(
       recoveryNormalizePayload(match.csv||match,match.fileName||match.title||'保存試合'),
@@ -6656,7 +6691,7 @@ function printSavedMatchPdf(id){
 
 function deleteSavedMatch(id){
   if(!confirm('この保存試合を削除しますか？')) return;
-  setSavedMatches(getSavedMatches().filter(x=>x.id!==id));
+  setSavedMatches(getSavedMatches().filter(x=>String(x.id)!==String(id) && String(x.matchId)!==String(id)));
   renderSavedMatches();
 }
 
@@ -6755,7 +6790,7 @@ function reassignUnassignedSavedMatches(){
 
 function renameSavedMatch(id){
   const list=getSavedMatches();
-  const m=list.find(x=>x.id===id);
+  const m=list.find(x=>String(x.id)===String(id) || String(x.matchId)===String(id));
   if(!m) return;
   const name=prompt('試合名を変更', m.title || '');
   if(!name) return;
@@ -6785,8 +6820,8 @@ function savedMatchItemHtml(m){
     </div>
     <div class="savedMatchActions">
       <div class="savedIqBadgeGroup ${iqItems.length>1?'isTwoSetter':''}">${iqBadges}</div>
-      <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id}')">PDF</button>
-      <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id}')">CSV</button>
+      <button class="miniBtn pdf" type="button" onclick="printSavedMatchPdf('${m.id||m.matchId}')">PDF</button>
+      <button class="miniBtn csv" type="button" onclick="exportSavedMatchCsv('${m.id||m.matchId}')">CSV</button>
       <button class="miniBtn teamReassign" type="button" onclick="reassignSavedMatchTeam('${m.id}')">チーム再設定</button>
       <button class="miniBtn gray" type="button" onclick="renameSavedMatch('${m.id}')">名前</button>
       <button class="miniBtn danger" type="button" onclick="deleteSavedMatch('${m.id}')">削除</button>
